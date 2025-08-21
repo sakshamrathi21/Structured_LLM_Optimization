@@ -1,1 +1,0 @@
-source ~/.venvs/saksham/bin/activate
