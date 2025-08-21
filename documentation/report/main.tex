@@ -1,50 +1,9 @@
-%%%
-%%% BACHELOR'S THESIS TEMPLATE - ENGLISH
-%%%  
-%%%  * the master file
-%%%
-%%%  This template requites compilation by the sequence
-%%%    latex -> bibtex -> latex (2x) -> dvips -> ps2pdf
-%%%  cslatex can be used instead of latex
-%%%  pdflatex or pdfcslatex can be used if certain parts are adjusted
-%%%
-%%%  AUTHORS:  Martin Mares (mares@kam.mff.cuni.cz)
-%%%            Arnost Komarek (komarek@karlin.mff.cuni.cz), 2011
-%%%            Michal Kulich (kulich@karlin.mff.cuni.cz), 2013
-%%%
-%%%  LAST UPDATED: 20130318
-%%%  
-%%%  ===========================================================================
-
-%%%%% Single page layout:
-%%%%% ----------------------------------------------------
 \documentclass[12pt, a4paper]{report}
-\setlength\textwidth{145mm}
 \setlength\textheight{247mm}
-\setlength\oddsidemargin{15mm}
-\setlength\evensidemargin{15mm}
 \setlength\topmargin{0mm}
 \setlength\headsep{0mm}
 \setlength\headheight{0mm}
 \let\openright=\clearpage
-
-
-%%%%% Double page layout
-%%%%% ----------------------------------------------------
-% \documentclass[12pt, a4paper, twoside, openright]{report}
-% \setlength\textwidth{145mm}
-% \setlength\textheight{247mm}
-% \setlength\oddsidemargin{15mm}
-% \setlength\evensidemargin{0mm}
-% \setlength\topmargin{0mm}
-% \setlength\headsep{0mm}
-% \setlength\headheight{0mm}
-% \let\openright=\cleardoublepage
-
-
-
-%%% Additional useful packages
-%%% ----------------------------------------------------------------
 \usepackage{amsmath}        
 \usepackage{amsfonts}       
 \usepackage{amsthm}         
@@ -70,16 +29,13 @@
             breaklinks
 		}
 \hypersetup{
-  colorlinks   = true, %Colours links instead of ugly boxes
-  urlcolor     = blue, %Colour for external hyperlinks
-  linkcolor    = blue, %Colour of internal links
-  citecolor    = red   %Colour of citations
+  colorlinks   = true,
+  urlcolor     = blue,
+  linkcolor    = blue, 
+  citecolor    = red   
 		}
 
-
-
-%%% -------------------------------------
-\newcommand{\FIGDIR}{./figures}    %%% directory containing figures
+\newcommand{\FIGDIR}{./figures}  
 
 
 \theoremstyle{plain}
@@ -104,10 +60,6 @@
 \rightline{\SquareCastShadowBottomRight}
 }
 
-
-
-
-%%%%% ------------------------------------------------------------
 \DefineVerbatimEnvironment{PCinout}{Verbatim}{fontsize=\small, frame=single}
 
 
@@ -133,31 +85,16 @@
 \newcommand{\pulrad}[1]{\raisebox{1.5ex}[0pt]{#1}}
 \newcommand{\mc}[1]{\multicolumn{1}{c}{#1}}
 
-
-
-%%%%% Main document
-%%%%% ---------------------
-
 \begin{document}
 
 
-\include{first_page}
-
-%%% List of figures
+\include{intro}
 \listoffigures
-
-%%% List of tables
 \listoftables
-
-%%% 
-%\chapter*{List of abbreviations}
-%\addcontentsline{toc}{chapter}{List of abbreviations}
-
-
-%%% The Appendix. 
-%\chapter*{Appendix}
-%\addcontentsline{toc}{chapter}{Appendix}
-
+\include{chap1}
+\include{chap2}
+\include{chap3}
+\include{chap4}
 
 
 \end{document}
