@@ -10,6 +10,8 @@ else:
 
 # python3 -m sglang.launch_server --model-path meta-llama/Llama-3.1-8B-Instruct --host 0.0.0.0 --mem-fraction-static 0.7 --disable-cuda-graph
 
+# python3 -m sglang.launch_server   --model-path TinyLlama/TinyLlama-1.1B-Chat-v1.0   --host 0.0.0.0
+
 server_process, port = launch_server_cmd(
     """
 python3 -m sglang.launch_server --model-path meta-llama/Llama-3.1-8B-Instruct \

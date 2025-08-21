@@ -3,7 +3,7 @@ import requests
 port = 30000
 url = f"http://localhost:{port}/v1/chat/completions"
 
-llm_input_message = "Hi, how is life going?"
+llm_input_message = "How is a page fault handled? Answer briefly."
 
 data = {
     "model": "meta-llama/Llama-3.1-8B-Instruct",
