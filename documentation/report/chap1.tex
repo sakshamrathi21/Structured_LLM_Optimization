@@ -184,3 +184,24 @@ Decode tokens & 0.0002 \\
 \end{table}
 
 
+\section{Batch of Requests} 
+We will measure the time taken to process a batch of requests, by varying the batch size:
+
+Total number of queries:  24
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Technique Used} & \textbf{Time (s)} \\
+\hline
+Transformers (batch size = 1) & 30.21 \\
+Transformers (batch size = 2) & 19.51 \\
+Transformers (batch size = 3) & 18.64 \\
+vLLM (no system prompt pre-filling) & 0.82 \\
+vLLM (with system prompt pre-filling) & 0.57 \\
+SGLang & 1.03 \\
+\hline
+\end{tabular}
+\caption{Measuring the time taken to process a batch of requests using different techniques}
+\end{table}
