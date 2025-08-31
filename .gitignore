@@ -1,2 +1,8 @@
-code/log/*.pt.trace.json
-.vscode
+.DS_Store
+*.out
+*.log
+*.fls
+*.aux
+*.fdb_latexmk
+*.synctex.gz
+*.toc
