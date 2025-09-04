@@ -206,3 +206,90 @@ NEO & 0.55 \\
 \end{tabular}
 \caption{Measuring the time taken to process a batch of requests using different techniques}
 \end{table}
+
+\section{Throughput and Latency Measurements across different techniques}
+Here is the experiment setup:
+\begin{itemize}
+    \item Model: \texttt{TinyLlama/TinyLlama-1.1B-Chat-v1.0}
+    \item System Prompt: Roughly 1500 tokens (adopted from Ostep MLFQ schedulung chapter)
+    \item Queries: 100 queries, each of length 10-20 tokens
+    \item Max Output Length: 80 tokens
+    \item Techniques Compared: vLLM (with and without automatic prompt caching), SGLang, NEO, Transformers (batch size 1)
+\end{itemize}
+
+Here is how we generate the load:
+
+\begin{algorithm}[H]
+\caption{Workload Generation at Target QPS}
+\KwIn{LLM model \texttt{llm}, list of \texttt{prompts}, parameters \texttt{sampling\_params}, target QPS \texttt{qps}}
+\KwOut{Latencies of requests}
+
+Initialize empty list \texttt{latencies} \;
+Set \texttt{interval} $\gets 1 / \texttt{qps}$ \;
+Set \texttt{start\_time} $\gets$ current time \;
+Set index $i \gets 0$ \;
+Initialize empty \texttt{backlog} \;
+Set \texttt{next\_time} $\gets$ current time \;
+
+\While{$i <$ length(\texttt{prompts})}{
+    Set \texttt{now} $\gets$ current time \;
+    Compute \texttt{intervals\_passed} $\gets \lfloor (now - next\_time) / interval \rfloor + 1$ \;
+
+    \tcp{By the time we reached here, a few intervals might have passed, so we add that many prompts to the backload}
+    \For{$k = 1$ \KwTo \texttt{intervals\_passed}}{
+        \If{$i <$ length(\texttt{prompts})}{
+            Append \texttt{prompts[i]} to \texttt{backlog} \;
+            Increment $i$ \;
+        }
+    }
+    
+    \If{\texttt{backlog} is not empty}{
+        Set \texttt{batch\_start} $\gets$ current time \;
+        Call \texttt{llm.generate(backlog, sampling\_params)} \;
+        Set \texttt{batch\_latency} $\gets$ current time $-$ \texttt{batch\_start} \;
+        \tcp{All the requests in the backloag have the same latency because they were processed in a batch}
+        \ForEach{request in \texttt{backlog}}{
+            Append \texttt{batch\_latency} to \texttt{latencies} \;
+        }
+        Clear \texttt{backlog} \;
+    }
+
+    Update \texttt{next\_time} $\gets$ \texttt{next\_time} $+$ \texttt{intervals\_passed} $\times$ \texttt{interval} \;
+    \tcp{If we are ahead of the schedule, we sleep until the next request time}
+    Set \texttt{sleep\_time} $\gets \max(0, next\_time - \texttt{current time})$ \;
+    \texttt{sleep(sleep\_time)} \;
+}
+\Return (\texttt{latencies}) \;
+\end{algorithm}
+
+
+
+We primarily measure the following metrics:
+\begin{itemize}
+    \item \textbf{Throughput (QPS)}: Total number of requests / Total time taken
+    \item \textbf{Average Latency (s)}: Average time taken per request, basically the time a user will have to wait
+    \item \textbf{P95 Latency (s)}: 95th percentile latency across all requests, this helps us understand the tail latency, which in turn blocks the next batch of requests
+\end{itemize}
+
+
+Here are the results:
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{\FIGDIR/throughput_vs_qps.png}
+    \caption{Throughput}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{\FIGDIR/avg_latency_vs_qps.png}
+    \caption{Average Latency}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{\FIGDIR/p95_latency_vs_qps.png}
+    \caption{P95 Latency}
+\end{figure}
+
