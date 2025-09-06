@@ -6,3 +6,12 @@
 *.fdb_latexmk
 *.synctex.gz
 *.toc
+*.bcf
+*.run.xml
+*.snm
+*.nav
+*.vrb
+*.bbl
+*.lof
+*.lot
+.DS_Store
