@@ -214,7 +214,7 @@ Here is the experiment setup:
     \item System Prompt: Roughly 1500 tokens (adopted from Ostep MLFQ schedulung chapter)
     \item Queries: 100 queries, each of length 10-20 tokens
     \item Max Output Length: 80 tokens
-    \item Techniques Compared: vLLM (with and without automatic prompt caching), SGLang, swiftLLM, Transformers (batch size 1)
+    \item Techniques Compared: vLLM (with and without automatic prompt caching), SGLang, swiftLLM
 \end{itemize}
 
 Here is how we generate the load:
@@ -262,7 +262,7 @@ Set \texttt{next\_time} $\gets$ current time \;
 \Return (\texttt{latencies}) \;
 \end{algorithm}
 
-
+\vspace{5pt}
 
 We primarily measure the following metrics:
 \begin{itemize}
@@ -271,25 +271,14 @@ We primarily measure the following metrics:
     \item \textbf{P95 Latency (s)}: 95th percentile latency across all requests, this helps us understand the tail latency, which in turn blocks the next batch of requests
 \end{itemize}
 
-
-Here are the results:
-
-
-\begin{figure}[h]
+\begin{figure}[p]
     \centering
-    \includegraphics[width=0.9\textwidth]{\FIGDIR/throughput_vs_qps.png}
+    \includegraphics[width=0.7\textwidth]{\FIGDIR/throughput_vs_qps.png}
     \caption{Throughput}
-\end{figure}
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.9\textwidth]{\FIGDIR/avg_latency_vs_qps.png}
+    \includegraphics[width=0.7\textwidth]{\FIGDIR/avg_latency_vs_qps.png}
     \caption{Average Latency}
-\end{figure}
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.9\textwidth]{\FIGDIR/p95_latency_vs_qps.png}
+    \includegraphics[width=0.7\textwidth]{\FIGDIR/p95_latency_vs_qps.png}
     \caption{P95 Latency}
 \end{figure}
-
