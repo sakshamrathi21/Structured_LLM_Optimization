@@ -129,6 +129,55 @@ An \textbf{inference engine} is the software and systems layer that manages the 
 \end{itemize}
 
 
+\section{Prefill vs Decode}
+
+LLM inference consists of two phases:
+
+\begin{itemize}
+    \item \textbf{Prefill:} The input/prompt is ingested in parallel. All tokens are processed together to build the key-value (KV) cache, enabling the generation of the first output token.
+    \item \textbf{Decode:} Subsequent tokens are generated auto-regressively. Each new token is computed sequentially using the KV cache from earlier steps.
+\end{itemize}
+
+\noindent
+In short, \emph{prefill is parallel and one-time}, while \emph{decode is sequential and repeated}.
 
 
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{\FIGDIR/pd.png}
+    \caption{Prefill vs Decode}
+\end{figure}
+
+
+\section{Metrics}
+
+The performance of LLM inference is typically measured using two key metrics:
+
+\subsection{Throughput}
+\begin{itemize}
+    \item Defined as the number of tokens processed per second.
+    \item Reflects system efficiency and GPU utilization across multiple requests.
+\end{itemize}
+
+\subsection{Latency}
+\begin{itemize}
+    \item Measures the responsiveness of the system.
+    \item \textbf{Time to first token (TTFT):} Corresponds to the prefill phase, i.e., the delay before the first output token is produced.
+    \item \textbf{Time between tokens:} Corresponds to the decode phase, i.e., the per-token delay during sequential generation.
+\end{itemize}
+
+\section{KV Caching}
+
+\begin{itemize}
+    \item \textbf{Query (Q):} A representation of the current token, used to score its relevance against all past tokens. During decoding, we only compute the query for the token currently being processed.
+    \item \textbf{Key (K):} Keys act like labels for tokens in the sequence. They are used to match queries and determine which past tokens are relevant.
+    \item \textbf{Value (V):} Values are the actual token representations. Once relevance scores are computed (using Q and K), the corresponding values are aggregated to produce the output representation.
+\end{itemize}
+
+In causal self-attention, the attention for the current token depends on the keys (K) and values (V) of all past tokens.  
+
+\begin{itemize}
+    \item \textbf{Without caching:} K and V for all previous tokens are recomputed at every decoding step, causing redundant work.
+    \item \textbf{With caching:} K and V are generated once during prefill/decoding and stored. At each new step, only the K and V for the latest token are computed, while past values are reused.
+\end{itemize}
