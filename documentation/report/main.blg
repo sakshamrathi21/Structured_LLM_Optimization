@@ -1,0 +1,70 @@
+This is BibTeX, Version 0.99d (TeX Live 2024/Homebrew)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+A level-1 auxiliary file: intro.aux
+A level-1 auxiliary file: background.aux
+A level-1 auxiliary file: flash_attention.aux
+A level-1 auxiliary file: vllm.aux
+A level-1 auxiliary file: swiftllm.aux
+A level-1 auxiliary file: sglang.aux
+A level-1 auxiliary file: initial_experiments.aux
+A level-1 auxiliary file: qlora.aux
+The style file: plainnat.bst
+Database file #1: references.bib
+Warning--to sort, need author or key in llm_generate
+Warning--to sort, need author or key in USENIX_article
+Warning--to sort, need author or key in 3
+Warning--empty author in 3
+Warning--empty journal in 3
+Warning--empty year in 3
+Warning--empty year in 3
+Warning--empty author in USENIX_article
+Warning--empty journal in USENIX_article
+Warning--empty year in USENIX_article
+Warning--empty year in USENIX_article
+Warning--empty author in llm_generate
+Warning--empty journal in llm_generate
+Warning--empty year in llm_generate
+Warning--empty year in llm_generate
+You've used 3 entries,
+            2773 wiz_defined-function locations,
+            609 strings with 5384 characters,
+and the built_in function-call counts, 810 in all, are:
+= -- 72
+> -- 0
+< -- 0
++ -- 3
+- -- 0
+* -- 77
+:= -- 82
+add.period$ -- 6
+call.type$ -- 3
+change.case$ -- 9
+chr.to.int$ -- 3
+cite$ -- 24
+duplicate$ -- 57
+empty$ -- 100
+format.name$ -- 0
+if$ -- 175
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 3
+newline$ -- 20
+num.names$ -- 0
+pop$ -- 45
+preamble$ -- 1
+purify$ -- 6
+quote$ -- 0
+skip$ -- 31
+stack$ -- 0
+substring$ -- 9
+swap$ -- 0
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 33
+warning$ -- 15
+while$ -- 0
+width$ -- 0
+write$ -- 34
+(There were 15 warnings)

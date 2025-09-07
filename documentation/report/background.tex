@@ -1,1 +1,134 @@
 \chapter{Background}
+Language models (LMs) are statistical models that predict the next word in a sequence given the previous words. They basically give us a probability distribution over words based on the context provided by the preceeding words. They enable machines to understand and generate human language. They can be used for a lot of tasks like answering questions, text summarization, translation, code generation and more.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\FIGDIR/recursive-token-generation.DxoklRFR_Z1SHbzz.png}
+    \caption{Adopted from \citet{llm_generate}}
+\end{figure}
+
+\section{Stages in the Model Creation Pipeline}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\FIGDIR/sys.png}
+    \caption{Adopted from \citet{USENIX_article}}
+\end{figure}
+
+
+
+
+
+\begin{itemize}
+    \item \textbf{Data Preparation:} The initial stage involves gathering and preprocessing the training data, which can be categorized into two parts: (1) pretraining data, consisting of extensive unlabeled corpora obtained from public or private sources and curated through processes like detoxification and deduplication; (2) alignment data, comprising a smaller set of high-quality labeled corpora used to align the model with specific tasks. This data is typically acquired through expensive human annotation or labeling. Besides, all the data must be tokenized to ensure compatibility with the model's input.
+    \item \textbf{Pretraining:} It involves self-supervised training on large-scale curated data, demanding a majority of resources within the overall development workflow. Training LLMs efficiently at scale necessitates various system innovations, such as state-sharding optimizers, meticulous model placement using data, pipeline, and tensor parallelisms.
+    \item \textbf{Alignment:} This stage aims to adapt LLMs with user intent on a wide range of downstream tasks. Two primary aligning paradigms are commonly used: (1) prompt engineering, specifying prompts (i.e., inputs) without modifying model parameters. For example, in text summarization, appending a prompt “TL; DR” to the input article can improve model performance; (2) fine-tuning, updating model parameters on a task-specific dataset to improve performance in a particular domain.
+    \item \textbf{Evaluation:} Given the vast application scenarios of LLM, it may be inaccurate to assess model quality solely based on a single metric like training loss. There are numerous factors to consider, such as accuracy, fairness, and toxicity. Consequently, it is crucial to account for a diverse set of criteria and measure performance across multiple tasks. Furthermore, regular evaluation is essential during the pretraining stage to provide timely feedback on model quality.
+    \item \textbf{Deployment:} To meet the strict cost and latency constraints of LLM applications, several advanced techniques have been developed to achieve efficient model serving, including quantization, distillation, CUDA kernel optimization, model parallelism and memory management.
+\end{itemize}
+
+
+\section{Transformer Architecture}
+\subsection{Tokenization}
+Tokenization is the process of converting raw text into a sequence of tokens that the model can process. Instead of working directly with characters or words, modern language models often rely on subword tokenization methods such as Byte Pair Encoding (BPE), WordPiece, or SentencePiece. These approaches break words into smaller, more frequent units, balancing vocabulary size and representation power. For example, the word ``unhappiness'' may be split into ``un'', ``happiness'', while rare words are decomposed into character-level units. Tokenization ensures consistent representation of unseen or rare words and significantly reduces out-of-vocabulary issues.
+
+\subsection{Embedding and Attention}
+Once tokenized, tokens are mapped into continuous vector representations called embeddings. These embeddings capture semantic and syntactic relationships among words, such that similar words are close in the embedding space. Positional encodings are added to embeddings to preserve word order information, since attention mechanisms are permutation invariant by default.
+
+Attention is the core mechanism of transformer models. It allows the model to selectively focus on different parts of the input sequence when generating or predicting tokens. Given a query, attention computes weighted similarities with key-value pairs, enabling contextualized representations that consider both local and long-range dependencies.
+
+\subsection{Multi-Head Masked Attention}
+Masked attention is used in autoregressive language models to prevent the model from ``looking ahead'' at future tokens during training. This masking enforces causality by ensuring that each token can only attend to itself and preceding tokens. Multi-head attention extends this concept by computing multiple attention functions in parallel. Each head captures different aspects of relationships—such as syntactic dependencies, semantic similarity, or positional cues. The outputs of all heads are concatenated and linearly transformed, providing a richer, more expressive representation of the input.
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\FIGDIR/arch.png}
+    \caption{Architecture of a Large Language Model (\citet{3})}
+\end{figure}
+
+
+\section{Inferencing}
+\section{LLM Inferencing}
+
+Large Language Model (LLM) inferencing refers to the process of using a trained model to generate predictions (such as text completions, answers, translations, etc.) given some input. Unlike training, where parameters are updated, inferencing only runs the trained model forward to produce outputs.  
+
+\subsection{Forward Pass}
+\begin{itemize}
+    \item The forward pass is the core computation step in inferencing. 
+    \item Input tokens (converted to embeddings) are passed layer by layer through the transformer blocks:
+    \begin{itemize}
+        \item Embedding $\rightarrow$ Attention $\rightarrow$ Feedforward $\rightarrow$ Normalization (repeated across layers).
+    \end{itemize}
+    \item Each forward pass produces \emph{logits}: a vector of unnormalized scores for the next token in the vocabulary.
+\end{itemize}
+
+\subsection{Token Probability Distribution}
+\begin{itemize}
+    \item The logits are passed through a softmax to get probabilities.
+    \item These probabilities define the model's belief about which token should come next.
+    \item Different decoding strategies may be applied:
+    \begin{itemize}
+        \item \textbf{Greedy decoding}: pick the token with maximum probability.
+        \item \textbf{Sampling}: sample a token according to the probability distribution.
+        \item \textbf{Top-k / Top-p sampling}: restrict sampling to the most probable tokens.
+        \item \textbf{Beam search}: keep multiple hypotheses alive and expand them.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Generation Loop}
+\begin{itemize}
+    \item Inferencing is auto-regressive:
+    \begin{enumerate}
+        \item Generate one token.
+        \item Append it to the context.
+        \item Feed back into the model.
+    \end{enumerate}
+    \item Repeat until a stopping criterion (e.g., end-of-sequence token or maximum length) is reached.
+\end{itemize}
+
+\subsection{Modes of Inference}
+\begin{itemize}
+    \item \textbf{Forward only} (logits for a given input): used in classification, scoring, and embeddings.
+    \item \textbf{Generate} (auto-regressive token loop): used in chatbots, summarization, and translation.
+    \item \textbf{Hybrid tasks}: e.g., retrieval-augmented generation (RAG), where inference integrates external knowledge.
+\end{itemize}
+
+\section{Inference Engines}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\FIGDIR/llm-inference-n-serving.drawio.png.png}
+    \caption{Architecture of a Large Language Model (\citet{3})}
+\end{figure}
+
+An \textbf{inference engine} is the software and systems layer that manages the execution of large language model (LLM) inference on hardware resources. While the model architecture and parameters define the computation, inference engines ensure that requests are executed efficiently, reliably, and at scale. 
+\begin{itemize}
+    \item \textbf{Batching:}  
+    Multiple user requests are grouped into a single batch to maximize GPU utilization and reduce per-request overhead. Efficient batching is crucial for achieving high throughput in production environments.
+    
+    \item \textbf{Streaming:}  
+    Outputs are generated token-by-token and streamed back to the user as they are produced, reducing latency for interactive applications such as chatbots.
+    
+    \item \textbf{Fault Management:}  
+    Inference engines must be resilient to hardware or software failures. This includes checkpointing, task retries, and robust scheduling.
+    
+    \item \textbf{Error Handling:}  
+    Engines provide mechanisms for handling issues such as invalid inputs, out-of-memory errors, or timeouts without disrupting other active requests.
+    
+    \item \textbf{Parallelism (Multi-GPU):}  
+    Large models often cannot fit on a single GPU. Inference engines handle model parallelism and pipeline parallelism to distribute computation across multiple GPUs or nodes, while minimizing communication overhead.
+\end{itemize}
+
+\subsection{Optimizations in Inference Engines}
+\begin{itemize}
+    \item \textbf{Memory Storage Optimizations:}  
+    Inference engines carefully manage GPU memory by caching key-value pairs (KV cache), reusing memory buffers, and applying quantization or weight-sharing techniques to reduce footprint.
+    
+    \item \textbf{Offloading:}  
+    Portions of the model state or intermediate activations can be offloaded to CPU or other storage when not actively needed on the GPU. This allows inference of models larger than GPU memory capacity.
+\end{itemize}
+
+
+
+
+
