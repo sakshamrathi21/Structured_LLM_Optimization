@@ -1,5 +1,0 @@
-=== Running with QPS=100 ===
-Total requests: 100
-Avg latency: 2.101s
-P95 latency: 2.687s
-Throughput: 20.61 req/s
