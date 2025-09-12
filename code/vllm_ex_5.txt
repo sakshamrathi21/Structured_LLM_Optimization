@@ -1,0 +1,77 @@
+
+
+=== Running with QPS=5 ===
+Total requests: 100
+Avg latency: 5.608s
+P95 latency: 6.871s
+Throughput: 3.85 req/s
+
+
+=== Running with QPS=10 ===
+Total requests: 100
+Avg latency: 5.546s
+P95 latency: 6.223s
+Throughput: 5.44 req/s
+
+
+=== Running with QPS=15 ===
+Total requests: 100
+Avg latency: 7.634s
+P95 latency: 9.260s
+Throughput: 5.72 req/s
+
+
+=== Running with QPS=20 ===
+Total requests: 100
+Avg latency: 7.824s
+P95 latency: 9.900s
+Throughput: 5.92 req/s
+
+
+=== Running with QPS=25 ===
+Total requests: 100
+Avg latency: 8.139s
+P95 latency: 9.083s
+Throughput: 6.39 req/s
+
+
+=== Running with QPS=30 ===
+Total requests: 100
+Avg latency: 13.792s
+P95 latency: 13.892s
+Throughput: 5.63 req/s
+
+
+=== Running with QPS=35 ===
+Total requests: 100
+Avg latency: 13.873s
+P95 latency: 13.964s
+Throughput: 5.29 req/s
+
+
+=== Running with QPS=40 ===
+Total requests: 100
+Avg latency: 13.546s
+P95 latency: 13.639s
+Throughput: 5.57 req/s
+
+
+=== Running with QPS=45 ===
+Total requests: 100
+Avg latency: 12.097s
+P95 latency: 12.185s
+Throughput: 6.42 req/s
+
+
+=== Running with QPS=50 ===
+Total requests: 100
+Avg latency: 13.038s
+P95 latency: 13.121s
+Throughput: 5.58 req/s
+
+
+=== Running with QPS=100 ===
+Total requests: 100
+Avg latency: 14.121s
+P95 latency: 14.212s
+Throughput: 5.18 req/s

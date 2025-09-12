@@ -1,0 +1,369 @@
+INFO 09-12 11:30:29 llm_engine.py:100] Initializing an LLM engine (v0.4.2) with config: model='TinyLlama/TinyLlama-1.1B-Chat-v1.0', speculative_config=None, tokenizer='TinyLlama/TinyLlama-1.1B-Chat-v1.0', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=2048, download_dir=None, load_format=LoadFormat.AUTO, tensor_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, kv_cache_dtype=auto, quantization_param_path=None, device_config=cuda, decoding_config=DecodingConfig(guided_decoding_backend='outlines'), seed=0, served_model_name=TinyLlama/TinyLlama-1.1B-Chat-v1.0)
+INFO 09-12 11:30:30 pynccl_utils.py:17] Failed to import NCCL library: Cannot find libnccl.so.2 in the system.
+INFO 09-12 11:30:30 pynccl_utils.py:18] It is expected if you are not running on NVIDIA GPUs.
+INFO 09-12 11:30:34 selector.py:27] Using FlashAttention-2 backend.
+INFO 09-12 11:30:37 weight_utils.py:199] Using model weights format ['*.safetensors']
+INFO 09-12 11:30:46 model_runner.py:175] Loading model weights took 2.0512 GB
+INFO 09-12 11:30:48 gpu_executor.py:114] # GPU blocks: 112122, # CPU blocks: 11915
+INFO 09-12 11:30:50 model_runner.py:937] Capturing the model for CUDA graphs. This may lead to unexpected consequences if the model is not static. To run the model in eager mode, set 'enforce_eager=True' or use '--enforce-eager' in the CLI.
+INFO 09-12 11:30:50 model_runner.py:941] CUDA graphs can take additional 1~3 GiB memory per GPU. If you are running out of memory, consider decreasing `gpu_memory_utilization` or enforcing eager mode. You can also reduce the `max_num_seqs` as needed to decrease memory usage.
+INFO 09-12 11:30:55 model_runner.py:1017] Graph capturing finished in 6 secs.
+Generation Start Time: 1757656856.2388844
+Logging started → gpu_mem_bw_log.txt
+[LOGGER] Added request 0 at time 1757656856.2659
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 0] token CompletionOutput(index=0, text='The', token_ids=[1576], cumulative_logprob=-0.2562136948108673, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656856.3146 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 0] token CompletionOutput(index=0, text='The main', token_ids=[1576, 1667], cumulative_logprob=-0.2638964708894491, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.3196 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 0] token CompletionOutput(index=0, text='The main goal', token_ids=[1576, 1667, 7306], cumulative_logprob=-0.2639302065508673, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.3244 sec
+[LOGGER] Added request 1 at time 1757656856.3261
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 0] token CompletionOutput(index=0, text='The main goal of', token_ids=[1576, 1667, 7306, 310], cumulative_logprob=-0.2639634653896792, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.3311 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 1] token CompletionOutput(index=0, text='The', token_ids=[1576], cumulative_logprob=-0.015085890889167786, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656856.3517 sec
+[LOGGER] Number of outputs in this step: 2
+[LOGGER][Req 0] token CompletionOutput(index=0, text='The main goal of ML', token_ids=[1576, 1667, 7306, 310, 23158], cumulative_logprob=-0.26744581646926235, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.3564 sec
+[LOGGER][Req 1] token CompletionOutput(index=0, text='The ML', token_ids=[1576, 23158], cumulative_logprob=-0.31742577254772186, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.3564 sec
+[LOGGER] Number of outputs in this step: 2
+[LOGGER][Req 0] token CompletionOutput(index=0, text='The main goal of MLF', token_ids=[1576, 1667, 7306, 310, 23158, 29943], cumulative_logprob=-0.26744581646926235, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.3608 sec
+[LOGGER][Req 1] token CompletionOutput(index=0, text='The MLF', token_ids=[1576, 23158, 29943], cumulative_logprob=-0.31742577254772186, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.3608 sec
+[LOGGER] Number of outputs in this step: 2
+[LOGGER][Req 0] token CompletionOutput(index=0, text='The main goal of MLFQ', token_ids=[1576, 1667, 7306, 310, 23158, 29943, 29984], cumulative_logprob=-0.26744581646926235, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.3650 sec
+[LOGGER][Req 1] token CompletionOutput(index=0, text='The MLFQ', token_ids=[1576, 23158, 29943, 29984], cumulative_logprob=-0.31742577254772186, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.3650 sec
+[LOGGER] Number of outputs in this step: 2
+[LOGGER][Req 0] token CompletionOutput(index=0, text='The main goal of MLFQ sched', token_ids=[1576, 1667, 7306, 310, 23158, 29943, 29984, 28598], cumulative_logprob=-0.44818933196074795, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.3693 sec
+[LOGGER][Req 1] token CompletionOutput(index=0, text='The MLFQ sch', token_ids=[1576, 23158, 29943, 29984, 1364], cumulative_logprob=-0.33593775145709515, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.3693 sec
+[LOGGER] Number of outputs in this step: 2
+[LOGGER][Req 0] token CompletionOutput(index=0, text='The main goal of MLFQ scheduling', token_ids=[1576, 1667, 7306, 310, 23158, 29943, 29984, 28598, 19478], cumulative_logprob=-0.4481904048437855, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.3736 sec
+[LOGGER][Req 1] token CompletionOutput(index=0, text='The MLFQ scheduler', token_ids=[1576, 23158, 29943, 29984, 1364, 14952], cumulative_logprob=-0.3359378706663776, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.3736 sec
+[LOGGER] Number of outputs in this step: 2
+[LOGGER][Req 0] token CompletionOutput(index=0, text='The main goal of MLFQ scheduling is', token_ids=[1576, 1667, 7306, 310, 23158, 29943, 29984, 28598, 19478, 338], cumulative_logprob=-0.9202511448378345, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656856.3779 sec
+[LOGGER][Req 1] token CompletionOutput(index=0, text='The MLFQ scheduler was', token_ids=[1576, 23158, 29943, 29984, 1364, 14952, 471], cumulative_logprob=-0.399134887382381, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.3779 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 1] token CompletionOutput(index=0, text='The MLFQ scheduler was first', token_ids=[1576, 23158, 29943, 29984, 1364, 14952, 471, 937], cumulative_logprob=-0.43982660211622004, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.3823 sec
+[LOGGER] Added request 2 at time 1757656856.3857
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 1] token CompletionOutput(index=0, text='The MLFQ scheduler was first described', token_ids=[1576, 23158, 29943, 29984, 1364, 14952, 471, 937, 5439], cumulative_logprob=-0.464240027591579, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.3865 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 2] token CompletionOutput(index=0, text='The', token_ids=[1576], cumulative_logprob=-0.5395021438598633, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656856.4065 sec
+[LOGGER] Number of outputs in this step: 2
+[LOGGER][Req 1] token CompletionOutput(index=0, text='The MLFQ scheduler was first described in', token_ids=[1576, 23158, 29943, 29984, 1364, 14952, 471, 937, 5439, 297], cumulative_logprob=-0.8166369926184345, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656856.4111 sec
+[LOGGER][Req 2] token CompletionOutput(index=0, text='The two', token_ids=[1576, 1023], cumulative_logprob=-0.9583079814910889, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.4111 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 2] token CompletionOutput(index=0, text='The two primary', token_ids=[1576, 1023, 7601], cumulative_logprob=-0.9631719123572111, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.4154 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 2] token CompletionOutput(index=0, text='The two primary problems', token_ids=[1576, 1023, 7601, 4828], cumulative_logprob=-0.9632672752413782, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.4198 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 2] token CompletionOutput(index=0, text='The two primary problems ML', token_ids=[1576, 1023, 7601, 4828, 23158], cumulative_logprob=-1.2911020304236445, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.4241 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 2] token CompletionOutput(index=0, text='The two primary problems MLF', token_ids=[1576, 1023, 7601, 4828, 23158, 29943], cumulative_logprob=-1.2911020304236445, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.4284 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 2] token CompletionOutput(index=0, text='The two primary problems MLFQ', token_ids=[1576, 1023, 7601, 4828, 23158, 29943, 29984], cumulative_logprob=-1.2911020304236445, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.4327 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 2] token CompletionOutput(index=0, text='The two primary problems MLFQ tries', token_ids=[1576, 1023, 7601, 4828, 23158, 29943, 29984, 14335], cumulative_logprob=-1.3197622812513146, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.4370 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 2] token CompletionOutput(index=0, text='The two primary problems MLFQ tries to', token_ids=[1576, 1023, 7601, 4828, 23158, 29943, 29984, 14335, 304], cumulative_logprob=-1.3197625196698652, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.4412 sec
+[LOGGER] Added request 3 at time 1757656856.4451
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 2] token CompletionOutput(index=0, text='The two primary problems MLFQ tries to solve', token_ids=[1576, 1023, 7601, 4828, 23158, 29943, 29984, 14335, 304, 4505], cumulative_logprob=-1.3199588381030196, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656856.4459 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 3] token CompletionOutput(index=0, text='Yes', token_ids=[8241], cumulative_logprob=-3.5210139751434326, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656856.4659 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 3] token CompletionOutput(index=0, text='Yes,', token_ids=[8241, 29892], cumulative_logprob=-3.5212336537369993, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.4702 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 3] token CompletionOutput(index=0, text='Yes, it', token_ids=[8241, 29892, 372], cumulative_logprob=-4.998728131962707, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.4746 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 3] token CompletionOutput(index=0, text="Yes, it'", token_ids=[8241, 29892, 372, 29915], cumulative_logprob=-7.102571105671814, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.4790 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 3] token CompletionOutput(index=0, text="Yes, it's", token_ids=[8241, 29892, 372, 29915, 29879], cumulative_logprob=-7.102573847481608, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.4834 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 3] token CompletionOutput(index=0, text="Yes, it's possible", token_ids=[8241, 29892, 372, 29915, 29879, 1950], cumulative_logprob=-7.162483742544055, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.4877 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 3] token CompletionOutput(index=0, text="Yes, it's possible to", token_ids=[8241, 29892, 372, 29915, 29879, 1950, 304], cumulative_logprob=-7.172645549373328, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.4920 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 3] token CompletionOutput(index=0, text="Yes, it's possible to apply", token_ids=[8241, 29892, 372, 29915, 29879, 1950, 304, 3394], cumulative_logprob=-7.898329834537208, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.4962 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 3] token CompletionOutput(index=0, text="Yes, it's possible to apply Single", token_ids=[8241, 29892, 372, 29915, 29879, 1950, 304, 3394, 16740], cumulative_logprob=-9.4901553197667, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.5005 sec
+[LOGGER] Added request 4 at time 1757656856.5045
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 3] token CompletionOutput(index=0, text="Yes, it's possible to apply Single-", token_ids=[8241, 29892, 372, 29915, 29879, 1950, 304, 3394, 16740, 29899], cumulative_logprob=-9.617117698387801, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656856.5053 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 4] token CompletionOutput(index=0, text='R', token_ids=[29934], cumulative_logprob=-0.2919746935367584, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656856.5255 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 4] token CompletionOutput(index=0, text='Round', token_ids=[29934, 618], cumulative_logprob=-0.2919866143947729, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.5299 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 4] token CompletionOutput(index=0, text='Round Robin', token_ids=[29934, 618, 13104], cumulative_logprob=-0.31834848404287186, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.5343 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 4] token CompletionOutput(index=0, text='Round Robin sched', token_ids=[29934, 618, 13104, 28598], cumulative_logprob=-1.9731566476857552, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.5387 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 4] token CompletionOutput(index=0, text='Round Robin scheduling', token_ids=[29934, 618, 13104, 28598, 19478], cumulative_logprob=-1.9732023038031912, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.5430 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 4] token CompletionOutput(index=0, text='Round Robin scheduling is', token_ids=[29934, 618, 13104, 28598, 19478, 338], cumulative_logprob=-2.3849773861529684, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.5473 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 4] token CompletionOutput(index=0, text='Round Robin scheduling is not', token_ids=[29934, 618, 13104, 28598, 19478, 338, 451], cumulative_logprob=-2.70500819460176, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.5515 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 4] token CompletionOutput(index=0, text='Round Robin scheduling is not ideal', token_ids=[29934, 618, 13104, 28598, 19478, 338, 451, 10839], cumulative_logprob=-4.437138483679519, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.5556 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 4] token CompletionOutput(index=0, text='Round Robin scheduling is not ideal for', token_ids=[29934, 618, 13104, 28598, 19478, 338, 451, 10839, 363], cumulative_logprob=-4.437424902595012, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.5599 sec
+[LOGGER] Added request 5 at time 1757656856.5637
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 4] token CompletionOutput(index=0, text='Round Robin scheduling is not ideal for maxim', token_ids=[29934, 618, 13104, 28598, 19478, 338, 451, 10839, 363, 5256], cumulative_logprob=-6.4102439924845385, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656856.5644 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 5] token CompletionOutput(index=0, text='The', token_ids=[1576], cumulative_logprob=-0.03670966252684593, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656856.5847 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 5] token CompletionOutput(index=0, text='The cru', token_ids=[1576, 7618], cumulative_logprob=-0.0429704450070858, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.5891 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 5] token CompletionOutput(index=0, text='The crux', token_ids=[1576, 7618, 29916], cumulative_logprob=-0.04297116026259573, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.5936 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 5] token CompletionOutput(index=0, text='The crux question', token_ids=[1576, 7618, 29916, 1139], cumulative_logprob=-0.04496045224345835, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.5981 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 5] token CompletionOutput(index=0, text='The crux question behind', token_ids=[1576, 7618, 29916, 1139, 5742], cumulative_logprob=-0.04665476817149283, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.6026 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 5] token CompletionOutput(index=0, text='The crux question behind ML', token_ids=[1576, 7618, 29916, 1139, 5742, 23158], cumulative_logprob=-0.050052177277166265, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.6071 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 5] token CompletionOutput(index=0, text='The crux question behind MLF', token_ids=[1576, 7618, 29916, 1139, 5742, 23158, 29943], cumulative_logprob=-0.050052177277166265, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.6114 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 5] token CompletionOutput(index=0, text='The crux question behind MLFQ', token_ids=[1576, 7618, 29916, 1139, 5742, 23158, 29943, 29984], cumulative_logprob=-0.050052177277166265, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.6158 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 5] token CompletionOutput(index=0, text='The crux question behind MLFQ sched', token_ids=[1576, 7618, 29916, 1139, 5742, 23158, 29943, 29984, 28598], cumulative_logprob=-0.16408937808569135, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.6203 sec
+[LOGGER] Added request 6 at time 1757656856.6230
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 5] token CompletionOutput(index=0, text='The crux question behind MLFQ scheduling', token_ids=[1576, 7618, 29916, 1139, 5742, 23158, 29943, 29984, 28598, 19478], cumulative_logprob=-0.16409211989548567, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656856.6247 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 6] token CompletionOutput(index=0, text='ML', token_ids=[1988], cumulative_logprob=-0.036068473011255264, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656856.6451 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 6] token CompletionOutput(index=0, text='MLF', token_ids=[1988, 29943], cumulative_logprob=-0.03606859222053771, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.6494 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 6] token CompletionOutput(index=0, text='MLFQ', token_ids=[1988, 29943, 29984], cumulative_logprob=-0.03606859222053771, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.6538 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 6] token CompletionOutput(index=0, text='MLFQ attempts', token_ids=[1988, 29943, 29984, 14734], cumulative_logprob=-0.05837694741784816, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.6583 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 6] token CompletionOutput(index=0, text='MLFQ attempts to', token_ids=[1988, 29943, 29984, 14734, 304], cumulative_logprob=-0.05840877579247916, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.6628 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 6] token CompletionOutput(index=0, text='MLFQ attempts to predict', token_ids=[1988, 29943, 29984, 14734, 304, 8500], cumulative_logprob=-0.058893839934164305, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.6672 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 6] token CompletionOutput(index=0, text='MLFQ attempts to predict job', token_ids=[1988, 29943, 29984, 14734, 304, 8500, 4982], cumulative_logprob=-0.059148676915349085, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.6715 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 6] token CompletionOutput(index=0, text='MLFQ attempts to predict job behavior', token_ids=[1988, 29943, 29984, 14734, 304, 8500, 4982, 6030], cumulative_logprob=-0.05916119381253537, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.6759 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 6] token CompletionOutput(index=0, text='MLFQ attempts to predict job behavior by', token_ids=[1988, 29943, 29984, 14734, 304, 8500, 4982, 6030, 491], cumulative_logprob=-0.2364328728563052, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.6802 sec
+[LOGGER] Added request 7 at time 1757656856.6831
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 6] token CompletionOutput(index=0, text='MLFQ attempts to predict job behavior by obser', token_ids=[1988, 29943, 29984, 14734, 304, 8500, 4982, 6030, 491, 5366], cumulative_logprob=-0.4245164172298175, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656856.6845 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 7] token CompletionOutput(index=0, text='In', token_ids=[797], cumulative_logprob=-0.24761982262134552, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656856.7045 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 7] token CompletionOutput(index=0, text='In the', token_ids=[797, 278], cumulative_logprob=-1.3040000945329666, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.7085 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 7] token CompletionOutput(index=0, text='In the context', token_ids=[797, 278, 3030], cumulative_logprob=-1.308786200825125, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.7126 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 7] token CompletionOutput(index=0, text='In the context of', token_ids=[797, 278, 3030, 310], cumulative_logprob=-1.3087945454408327, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.7168 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 7] token CompletionOutput(index=0, text='In the context of the', token_ids=[797, 278, 3030, 310, 278], cumulative_logprob=-3.663562344818274, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.7209 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 7] token CompletionOutput(index=0, text='In the context of the ML', token_ids=[797, 278, 3030, 310, 278, 23158], cumulative_logprob=-4.085633652715842, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.7251 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 7] token CompletionOutput(index=0, text='In the context of the MLF', token_ids=[797, 278, 3030, 310, 278, 23158, 29943], cumulative_logprob=-4.085633891134393, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.7293 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 7] token CompletionOutput(index=0, text='In the context of the MLFQ', token_ids=[797, 278, 3030, 310, 278, 23158, 29943, 29984], cumulative_logprob=-4.085633891134393, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.7333 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 7] token CompletionOutput(index=0, text='In the context of the MLFQ sch', token_ids=[797, 278, 3030, 310, 278, 23158, 29943, 29984, 1364], cumulative_logprob=-4.489616619854104, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.7377 sec
+[LOGGER] Added request 8 at time 1757656856.7425
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 7] token CompletionOutput(index=0, text='In the context of the MLFQ scheduler', token_ids=[797, 278, 3030, 310, 278, 23158, 29943, 29984, 1364, 14952], cumulative_logprob=-4.489616619854104, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656856.7434 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 8] token CompletionOutput(index=0, text='ML', token_ids=[1988], cumulative_logprob=-0.007542584091424942, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656856.7643 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 8] token CompletionOutput(index=0, text='MLF', token_ids=[1988, 29943], cumulative_logprob=-0.007542584091424942, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.7684 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 8] token CompletionOutput(index=0, text='MLFQ', token_ids=[1988, 29943, 29984], cumulative_logprob=-0.007542584091424942, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.7726 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 8] token CompletionOutput(index=0, text='MLFQ uses', token_ids=[1988, 29943, 29984, 3913], cumulative_logprob=-0.19251495972275734, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.7768 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 8] token CompletionOutput(index=0, text='MLFQ uses multiple', token_ids=[1988, 29943, 29984, 3913, 2999], cumulative_logprob=-0.19266157639503945, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.7810 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 8] token CompletionOutput(index=0, text='MLFQ uses multiple que', token_ids=[1988, 29943, 29984, 3913, 2999, 712], cumulative_logprob=-0.19273405301646562, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.7852 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 8] token CompletionOutput(index=0, text='MLFQ uses multiple queues', token_ids=[1988, 29943, 29984, 3913, 2999, 712, 1041], cumulative_logprob=-0.19273417222574807, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.7893 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 8] token CompletionOutput(index=0, text='MLFQ uses multiple queues to', token_ids=[1988, 29943, 29984, 3913, 2999, 712, 1041, 304], cumulative_logprob=-1.2256557248838291, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.7934 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 8] token CompletionOutput(index=0, text='MLFQ uses multiple queues to address', token_ids=[1988, 29943, 29984, 3913, 2999, 712, 1041, 304, 3211], cumulative_logprob=-2.704071571708475, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.7975 sec
+[LOGGER] Added request 9 at time 1757656856.8018
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 8] token CompletionOutput(index=0, text='MLFQ uses multiple queues to address two', token_ids=[1988, 29943, 29984, 3913, 2999, 712, 1041, 304, 3211, 1023], cumulative_logprob=-3.2968547843702183, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656856.8025 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 9] token CompletionOutput(index=0, text='ML', token_ids=[1988], cumulative_logprob=-1.3022356033325195, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656856.8225 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 9] token CompletionOutput(index=0, text='MLF', token_ids=[1988, 29943], cumulative_logprob=-1.3022356033325195, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.8266 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 9] token CompletionOutput(index=0, text='MLFQ', token_ids=[1988, 29943, 29984], cumulative_logprob=-1.3022356033325195, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.8307 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 9] token CompletionOutput(index=0, text='MLFQ assign', token_ids=[1988, 29943, 29984, 3566], cumulative_logprob=-1.3254895526915789, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.8348 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 9] token CompletionOutput(index=0, text='MLFQ assigns', token_ids=[1988, 29943, 29984, 3566, 29879], cumulative_logprob=-1.3255282949612592, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.8390 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 9] token CompletionOutput(index=0, text='MLFQ assigns jobs', token_ids=[1988, 29943, 29984, 3566, 29879, 17643], cumulative_logprob=-1.3278678992719506, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.8432 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 9] token CompletionOutput(index=0, text='MLFQ assigns jobs to', token_ids=[1988, 29943, 29984, 3566, 29879, 17643, 304], cumulative_logprob=-1.329103693315119, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.8474 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 9] token CompletionOutput(index=0, text='MLFQ assigns jobs to que', token_ids=[1988, 29943, 29984, 3566, 29879, 17643, 304, 712], cumulative_logprob=-1.3334216544826631, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.8515 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 9] token CompletionOutput(index=0, text='MLFQ assigns jobs to queues', token_ids=[1988, 29943, 29984, 3566, 29879, 17643, 304, 712, 1041], cumulative_logprob=-1.3334218929012138, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.8555 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 9] token CompletionOutput(index=0, text='MLFQ assigns jobs to queues based', token_ids=[1988, 29943, 29984, 3566, 29879, 17643, 304, 712, 1041, 2729], cumulative_logprob=-1.442338957865985, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656856.8596 sec
+[LOGGER] Added request 10 at time 1757656856.8661
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 10] token CompletionOutput(index=0, text='Rule', token_ids=[10740], cumulative_logprob=-0.08520881831645966, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656856.8859 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 10] token CompletionOutput(index=0, text='Rule ', token_ids=[10740, 29871], cumulative_logprob=-0.08521024882691108, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.8899 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 10] token CompletionOutput(index=0, text='Rule 1', token_ids=[10740, 29871, 29896], cumulative_logprob=-0.0852107256639556, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.8940 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 10] token CompletionOutput(index=0, text='Rule 1 of', token_ids=[10740, 29871, 29896, 310], cumulative_logprob=-0.08772371592817763, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.8980 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 10] token CompletionOutput(index=0, text='Rule 1 of ML', token_ids=[10740, 29871, 29896, 310, 23158], cumulative_logprob=-0.11036601546106795, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.9021 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 10] token CompletionOutput(index=0, text='Rule 1 of MLF', token_ids=[10740, 29871, 29896, 310, 23158, 29943], cumulative_logprob=-0.11036601546106795, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.9061 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 10] token CompletionOutput(index=0, text='Rule 1 of MLFQ', token_ids=[10740, 29871, 29896, 310, 23158, 29943, 29984], cumulative_logprob=-0.11036601546106795, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.9102 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 10] token CompletionOutput(index=0, text='Rule 1 of MLFQ is', token_ids=[10740, 29871, 29896, 310, 23158, 29943, 29984, 338], cumulative_logprob=-0.35193635406790236, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.9142 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 10] token CompletionOutput(index=0, text='Rule 1 of MLFQ is as', token_ids=[10740, 29871, 29896, 310, 23158, 29943, 29984, 338, 408], cumulative_logprob=-2.8967335361510322, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656856.9182 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 10] token CompletionOutput(index=0, text='Rule 1 of MLFQ is as follows', token_ids=[10740, 29871, 29896, 310, 23158, 29943, 29984, 338, 408, 4477], cumulative_logprob=-2.8968223431281785, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656856.9223 sec
+[LOGGER] Added request 11 at time 1757656856.9304
+[LOGGER] Added request 12 at time 1757656856.9963
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 12] token CompletionOutput(index=0, text='ML', token_ids=[1988], cumulative_logprob=-0.23549598455429077, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656857.0159 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 12] token CompletionOutput(index=0, text='MLF', token_ids=[1988, 29943], cumulative_logprob=-0.23549598455429077, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.0199 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 12] token CompletionOutput(index=0, text='MLFQ', token_ids=[1988, 29943, 29984], cumulative_logprob=-0.23549598455429077, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.0238 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 12] token CompletionOutput(index=0, text='MLFQ handles', token_ids=[1988, 29943, 29984, 17766], cumulative_logprob=-0.7102705240249634, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.0277 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 12] token CompletionOutput(index=0, text='MLFQ handles jobs', token_ids=[1988, 29943, 29984, 17766, 17643], cumulative_logprob=-0.7130668368190527, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.0317 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 12] token CompletionOutput(index=0, text='MLFQ handles jobs with', token_ids=[1988, 29943, 29984, 17766, 17643, 411], cumulative_logprob=-0.7135897903935984, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.0357 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 12] token CompletionOutput(index=0, text='MLFQ handles jobs with equal', token_ids=[1988, 29943, 29984, 17766, 17643, 411, 5186], cumulative_logprob=-0.7137203160527861, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.0398 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 12] token CompletionOutput(index=0, text='MLFQ handles jobs with equal priority', token_ids=[1988, 29943, 29984, 17766, 17643, 411, 5186, 20136], cumulative_logprob=-0.7170200627151644, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.0438 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 12] token CompletionOutput(index=0, text='MLFQ handles jobs with equal priority by', token_ids=[1988, 29943, 29984, 17766, 17643, 411, 5186, 20136, 491], cumulative_logprob=-1.1753081362548983, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.0478 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 12] token CompletionOutput(index=0, text='MLFQ handles jobs with equal priority by having', token_ids=[1988, 29943, 29984, 17766, 17643, 411, 5186, 20136, 491, 2534], cumulative_logprob=-6.216067222863785, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656857.0518 sec
+[LOGGER] Added request 13 at time 1757656857.0705
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 13] token CompletionOutput(index=0, text='ML', token_ids=[1988], cumulative_logprob=-0.24264870584011078, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656857.0899 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 13] token CompletionOutput(index=0, text='MLF', token_ids=[1988, 29943], cumulative_logprob=-0.24264870584011078, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.0938 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 13] token CompletionOutput(index=0, text='MLFQ', token_ids=[1988, 29943, 29984], cumulative_logprob=-0.24264870584011078, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.0978 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 13] token CompletionOutput(index=0, text='MLFQ (', token_ids=[1988, 29943, 29984, 313], cumulative_logprob=-3.8883181661367416, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.1017 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 13] token CompletionOutput(index=0, text='MLFQ (Multi', token_ids=[1988, 29943, 29984, 313, 15329], cumulative_logprob=-3.896538338623941, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.1057 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 13] token CompletionOutput(index=0, text='MLFQ (Multi-', token_ids=[1988, 29943, 29984, 313, 15329, 29899], cumulative_logprob=-3.900619236752391, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.1097 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 13] token CompletionOutput(index=0, text='MLFQ (Multi-Level', token_ids=[1988, 29943, 29984, 313, 15329, 29899, 10108], cumulative_logprob=-3.9167226795107126, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.1136 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 13] token CompletionOutput(index=0, text='MLFQ (Multi-Level Fe', token_ids=[1988, 29943, 29984, 313, 15329, 29899, 10108, 5169], cumulative_logprob=-3.9167279247058104, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.1175 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 13] token CompletionOutput(index=0, text='MLFQ (Multi-Level Feed', token_ids=[1988, 29943, 29984, 313, 15329, 29899, 10108, 5169, 287], cumulative_logprob=-3.916728043915093, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.1215 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 13] token CompletionOutput(index=0, text='MLFQ (Multi-Level Feedback', token_ids=[1988, 29943, 29984, 313, 15329, 29899, 10108, 5169, 287, 1627], cumulative_logprob=-3.9167396071488767, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656857.1255 sec
+[LOGGER] Added request 14 at time 1757656857.1350
+[LOGGER] Added request 15 at time 1757656857.2091
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 15] token CompletionOutput(index=0, text='In', token_ids=[797], cumulative_logprob=-0.45365044474601746, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656857.2290 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 15] token CompletionOutput(index=0, text='In ML', token_ids=[797, 23158], cumulative_logprob=-0.5520038679242134, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.2330 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 15] token CompletionOutput(index=0, text='In MLF', token_ids=[797, 23158, 29943], cumulative_logprob=-0.5520038679242134, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.2369 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 15] token CompletionOutput(index=0, text='In MLFQ', token_ids=[797, 23158, 29943, 29984], cumulative_logprob=-0.5520038679242134, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.2409 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 15] token CompletionOutput(index=0, text='In MLFQ,', token_ids=[797, 23158, 29943, 29984, 29892], cumulative_logprob=-0.5616611987352371, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.2448 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 15] token CompletionOutput(index=0, text='In MLFQ, CPU', token_ids=[797, 23158, 29943, 29984, 29892, 10808], cumulative_logprob=-0.5715214600786567, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.2488 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 15] token CompletionOutput(index=0, text='In MLFQ, CPU-', token_ids=[797, 23158, 29943, 29984, 29892, 10808, 29899], cumulative_logprob=-0.5715340961833135, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.2528 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 15] token CompletionOutput(index=0, text='In MLFQ, CPU-int', token_ids=[797, 23158, 29943, 29984, 29892, 10808, 29899, 524], cumulative_logprob=-0.5724952954114997, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.2567 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 15] token CompletionOutput(index=0, text='In MLFQ, CPU-intensive', token_ids=[797, 23158, 29943, 29984, 29892, 10808, 29899, 524, 6270], cumulative_logprob=-0.5725018519010519, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.2606 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 15] token CompletionOutput(index=0, text='In MLFQ, CPU-intensive jobs', token_ids=[797, 23158, 29943, 29984, 29892, 10808, 29899, 524, 6270, 17643], cumulative_logprob=-0.5744009587947403, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656857.2648 sec
+[LOGGER] Added request 16 at time 1757656857.2734
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 16] token CompletionOutput(index=0, text='In', token_ids=[797], cumulative_logprob=-0.21374021470546722, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656857.2933 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 16] token CompletionOutput(index=0, text='In ML', token_ids=[797, 23158], cumulative_logprob=-0.25856632739305496, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.2975 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 16] token CompletionOutput(index=0, text='In MLF', token_ids=[797, 23158, 29943], cumulative_logprob=-0.25856632739305496, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.3021 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 16] token CompletionOutput(index=0, text='In MLFQ', token_ids=[797, 23158, 29943, 29984], cumulative_logprob=-0.25856632739305496, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.3062 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 16] token CompletionOutput(index=0, text='In MLFQ,', token_ids=[797, 23158, 29943, 29984, 29892], cumulative_logprob=-0.28895031474530697, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.3102 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 16] token CompletionOutput(index=0, text='In MLFQ, a', token_ids=[797, 23158, 29943, 29984, 29892, 263], cumulative_logprob=-0.2921538152731955, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.3142 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 16] token CompletionOutput(index=0, text='In MLFQ, a job', token_ids=[797, 23158, 29943, 29984, 29892, 263, 4982], cumulative_logprob=-0.29295172228012234, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.3182 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 16] token CompletionOutput(index=0, text="In MLFQ, a job'", token_ids=[797, 23158, 29943, 29984, 29892, 263, 4982, 29915], cumulative_logprob=-0.34074145986232907, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.3222 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 16] token CompletionOutput(index=0, text="In MLFQ, a job's", token_ids=[797, 23158, 29943, 29984, 29892, 263, 4982, 29915, 29879], cumulative_logprob=-0.34074145986232907, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.3262 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 16] token CompletionOutput(index=0, text="In MLFQ, a job's all", token_ids=[797, 23158, 29943, 29984, 29892, 263, 4982, 29915, 29879, 599], cumulative_logprob=-0.34959835337940603, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656857.3310 sec
+[LOGGER] Added request 17 at time 1757656857.3484
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 17] token CompletionOutput(index=0, text='In', token_ids=[797], cumulative_logprob=-2.6099300384521484, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656857.3684 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 17] token CompletionOutput(index=0, text='In the', token_ids=[797, 278], cumulative_logprob=-3.68908154964447, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.3724 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 17] token CompletionOutput(index=0, text='In the original', token_ids=[797, 278, 2441], cumulative_logprob=-5.858837962150574, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.3764 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 17] token CompletionOutput(index=0, text='In the original ML', token_ids=[797, 278, 2441, 23158], cumulative_logprob=-6.160712629556656, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.3804 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 17] token CompletionOutput(index=0, text='In the original MLF', token_ids=[797, 278, 2441, 23158, 29943], cumulative_logprob=-6.160712629556656, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.3843 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 17] token CompletionOutput(index=0, text='In the original MLFQ', token_ids=[797, 278, 2441, 23158, 29943, 29984], cumulative_logprob=-6.160712629556656, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.3883 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 17] token CompletionOutput(index=0, text='In the original MLFQ design', token_ids=[797, 278, 2441, 23158, 29943, 29984, 2874], cumulative_logprob=-6.6271524131298065, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.3922 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 17] token CompletionOutput(index=0, text='In the original MLFQ design described', token_ids=[797, 278, 2441, 23158, 29943, 29984, 2874, 5439], cumulative_logprob=-11.911191910505295, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.3962 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 17] token CompletionOutput(index=0, text='In the original MLFQ design described in', token_ids=[797, 278, 2441, 23158, 29943, 29984, 2874, 5439, 297], cumulative_logprob=-11.96624730154872, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.4002 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 17] token CompletionOutput(index=0, text='In the original MLFQ design described in the', token_ids=[797, 278, 2441, 23158, 29943, 29984, 2874, 5439, 297, 278], cumulative_logprob=-11.975380410440266, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656857.4042 sec
+[LOGGER] Added request 18 at time 1757656857.4226
+[LOGGER] Added request 19 at time 1757656857.4916
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 19] token CompletionOutput(index=0, text='If', token_ids=[3644], cumulative_logprob=-3.1823184490203857, logprobs=None, finish_reason=None, stop_reason=None) Prefill time: 1757656857.5115 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 19] token CompletionOutput(index=0, text='If a', token_ids=[3644, 263], cumulative_logprob=-3.1884464230388403, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.5155 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 19] token CompletionOutput(index=0, text='If a single', token_ids=[3644, 263, 2323], cumulative_logprob=-3.7815624680370092, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.5194 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 19] token CompletionOutput(index=0, text='If a single long', token_ids=[3644, 263, 2323, 1472], cumulative_logprob=-3.7823015308822505, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.5233 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 19] token CompletionOutput(index=0, text='If a single long-', token_ids=[3644, 263, 2323, 1472, 29899], cumulative_logprob=-3.7823264453127194, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.5272 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 19] token CompletionOutput(index=0, text='If a single long-running', token_ids=[3644, 263, 2323, 1472, 29899, 21094], cumulative_logprob=-3.7823350283451873, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.5311 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 19] token CompletionOutput(index=0, text='If a single long-running job', token_ids=[3644, 263, 2323, 1472, 29899, 21094, 4982], cumulative_logprob=-3.784556646425699, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.5351 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 19] token CompletionOutput(index=0, text='If a single long-running job (', token_ids=[3644, 263, 2323, 1472, 29899, 21094, 4982, 313], cumulative_logprob=-5.128354687769388, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.5391 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 19] token CompletionOutput(index=0, text='If a single long-running job (i', token_ids=[3644, 263, 2323, 1472, 29899, 21094, 4982, 313, 29875], cumulative_logprob=-5.59761770494697, logprobs=None, finish_reason=None, stop_reason=None) latency: 1757656857.5431 sec
+[LOGGER] Number of outputs in this step: 1
+[LOGGER][Req 19] token CompletionOutput(index=0, text='If a single long-running job (i.', token_ids=[3644, 263, 2323, 1472, 29899, 21094, 4982, 313, 29875, 29889], cumulative_logprob=-5.59761794336552, logprobs=None, finish_reason=length, stop_reason=None) latency: 1757656857.5471 sec
+[LOGGER] Final Time: 1757656857.5472555
+Logging stopped.
+Generation End Time: 1757656857.5602498
+Time: 1.3213653564453125 s, Outputs: 17

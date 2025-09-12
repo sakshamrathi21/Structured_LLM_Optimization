@@ -12,14 +12,25 @@ def _logging_worker(log_file, interval):
     pynvml.nvmlInit()
     handle = pynvml.nvmlDeviceGetHandleByIndex(0)
 
-    mem_list = []
+    data_list = []
     next_time = time.time()
 
     while not _stop_flag:
         ts = time.time()
+
+        # GPU memory usage
         mem_info = pynvml.nvmlDeviceGetMemoryInfo(handle)
-        gpu_mem_used = mem_info.used / (1024**2)
-        mem_list.append((ts, gpu_mem_used))
+        gpu_mem_used = mem_info.used / (1024**2)  # MB
+
+        # PCIe throughput (MB/s)
+        try:
+            pcie_rx = pynvml.nvmlDeviceGetPcieThroughput(handle, pynvml.NVML_PCIE_UTIL_RX_BYTES)  # CPU → GPU
+            pcie_tx = pynvml.nvmlDeviceGetPcieThroughput(handle, pynvml.NVML_PCIE_UTIL_TX_BYTES)  # GPU → CPU
+        except pynvml.NVMLError:
+            print("PCIe throughput not supported on this GPU.")
+            pcie_rx = pcie_tx = 0.0
+
+        data_list.append((ts, gpu_mem_used, pcie_rx, pcie_tx))
 
         # drift-corrected sleep
         next_time += interval
@@ -29,14 +40,13 @@ def _logging_worker(log_file, interval):
 
     # dump all at once
     with open(log_file, "w") as f:
-        f.write("timestamp,gpu_mem_used_MB\n")
-        f.writelines(f"{ts:.6f},{mem:.2f}\n" for ts, mem in mem_list)
+        f.write("timestamp,gpu_mem_used_MB,pcie_rx_MBps,pcie_tx_MBps\n")
+        f.writelines(f"{ts:.6f},{mem:.2f},{rx:.2f},{tx:.2f}\n" for ts, mem, rx, tx in data_list)
 
     pynvml.nvmlShutdown()
 
 
-def start_logging(log_file="gpu_mem_log.txt", interval=0.01):
-    """Start background logging of GPU memory only (non-blocking)."""
+def start_logging(log_file="gpu_mem_bw_log.txt", interval=0.01):
     global _logging_thread, _stop_flag
     if _logging_thread is not None:
         print("Logging already running.")
@@ -48,7 +58,6 @@ def start_logging(log_file="gpu_mem_log.txt", interval=0.01):
 
 
 def stop_logging():
-    """Stop background logging."""
     global _logging_thread, _stop_flag
     if _logging_thread is None:
         print("No active logging.")
