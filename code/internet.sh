@@ -1,1 +1,1 @@
-curl --location-trusted -u 22b1003:30adfb3feaa0d021afb1ad514d0742a8 "https://internet-sso.iitb.ac.in/login.php" > /dev/null
+curl --location-trusted -u 22b1003:d12962f89a2300286353ca2ef273421e "https://internet-sso.iitb.ac.in/login.php" > /dev/null

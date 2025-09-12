@@ -1,0 +1,12 @@
+LICENSE
+README.md
+setup.py
+SwiftLLM.egg-info/PKG-INFO
+SwiftLLM.egg-info/SOURCES.txt
+SwiftLLM.egg-info/dependency_links.txt
+SwiftLLM.egg-info/not-zip-safe
+SwiftLLM.egg-info/top_level.txt
+swiftllm/__init__.py
+swiftllm/engine_config.py
+swiftllm/model_config.py
+swiftllm/utils.py

@@ -22,11 +22,11 @@ class ModelCall:
             outputs = self.model(**inputs, use_cache=True)
         return outputs.past_key_values
 
-    def continue_from_cache_manual(self, past_key_values, new_query, max_new_tokens=50):
+    def continue_from_cache_manual(self, pkv, new_query, max_new_tokens=100):
         input_ids = self.tokenizer(new_query, return_tensors="pt").to(self.model.device)["input_ids"]
 
         generated = []
-        pkv = self.clone_past_key_values(past_key_values)  # safe copy
+        # pkv = self.clone_past_key_values(past_key_values)  # safe copy
 
         for _ in range(max_new_tokens):
             with torch.no_grad():
@@ -71,7 +71,7 @@ class ModelCall:
             return tuple(tuple(t.clone() for t in layer) for layer in pkv)
 
 
-    def run_full_prompt(self, system_prompt, new_query, max_new_tokens=50):
+    def run_full_prompt(self, system_prompt, new_query, max_new_tokens=100):
         """Generate by feeding system prompt + query together."""
         full_prompt = system_prompt + "\n" + new_query
         input_ids = self.tokenizer(full_prompt, return_tensors="pt").to(self.model.device)["input_ids"]
@@ -84,32 +84,102 @@ class ModelCall:
                 # print(self.tokenizer.decode(next_token[0], skip_special_tokens=True), end="", flush=True)
 
         return self.tokenizer.decode(input_ids[0], skip_special_tokens=True)
+    
+    def profile_pipeline(self, system_prompt, query, max_new_tokens=50):
+        times = {}
+
+        # Tokenization system prompt
+        t0 = time.time()
+        system_inputs = self.tokenizer(system_prompt, return_tensors="pt").to(self.model.device)
+        times["tokenize_system"] = time.time() - t0
+
+        # System prompt forward (fill KV cache)
+        t0 = time.time()
+        with torch.no_grad():
+            outputs = self.model(**system_inputs, use_cache=True)
+        pkv = outputs.past_key_values
+        times["system_forward"] = time.time() - t0
+
+        # Tokenize query
+        t0 = time.time()
+        query_inputs = self.tokenizer(query, return_tensors="pt").to(self.model.device)["input_ids"]
+        times["tokenize_query"] = time.time() - t0
+
+        # Token generation loop
+        generated = []
+        t0 = time.time()
+        with torch.no_grad():
+            for _ in range(max_new_tokens):
+                step_start = time.time()
+                outputs = self.model(
+                    input_ids=query_inputs,
+                    past_key_values=pkv,
+                    use_cache=True
+                )
+                step_time = time.time() - step_start
+                times.setdefault("per_token", []).append(step_time)
+
+                next_token = outputs.logits[:, -1, :].argmax(dim=-1, keepdim=True)
+                generated.append(next_token)
+                query_inputs = next_token
+                pkv = outputs.past_key_values
+                if next_token.item() == self.tokenizer.eos_token_id:
+                    break
+        times["generation_total"] = time.time() - t0
+
+        # Final decode
+        t0 = time.time()
+        gen_ids = torch.cat(generated, dim=1)
+        decoded = self.tokenizer.decode(gen_ids[0], skip_special_tokens=True)
+        times["decode_tokens"] = time.time() - t0
+
+        return decoded, times
 
 
 if __name__ == "__main__":
     model = ModelCall()
 
-    system_prompt = """You are an expert in computer science, specializing in operating systems. You have deep knowledge of OS concepts including process scheduling, virtual memory, file systems, I/O management, concurrency, deadlocks, and kernel-level optimizations.
+    system_prompt = """The lecture introduces semaphores, a synchronization primitive similar to condition variables, used to coordinate threads. A semaphore maintains a counter, initialized to some value. The down (wait) operation decrements the counter and blocks the thread if it becomes negative, while the up (post) operation increments the counter and wakes a blocked thread. The counter cannot be directly accessed, only modified via these operations.
+Semaphores can be used for mutual exclusion (binary semaphores), functioning like locks. They are also useful for synchronization between threads, e.g., enforcing execution order (T1 before T2) or ensuring two threads finish one step before starting another. Incorrect usage can cause deadlocks, such as when both threads wait on each other.
+The producer-consumer problem is revisited using semaphores. Two semaphores track empty and filled buffer slots, while a binary semaphore (mutex) ensures mutual exclusion on buffer access. Misuse, like holding locks during blocking down calls, can also lead to deadlocks.
+Guidelines emphasize careful initialization, ensuring every down has a corresponding up, and using separate semaphores for signaling and locking. The lecture also covers batched processing with semaphores, showing how request threads and a batch processor can coordinate efficiently.
+Semaphores thus provide flexible yet tricky synchronization, requiring careful design to avoid deadlocks.
     """
-    query1 = """Explain in detail how the Linux Completely Fair Scheduler (CFS) ensures fairness among processes, and analyze its time complexity compared to traditional round-robin scheduling."""
+    query1 = """How does the down operation on a semaphore synchronize threads during execution?"""
 
-    query2 = """Describe the sequence of steps the Linux kernel follows when handling a page fault in a process running inside a virtual memory system, including all key data structures involved."""
+    query2 = """Why is an extra binary semaphore (mutex) needed in producer-consumer implementation?"""
 
+    decoded, times = model.profile_pipeline(system_prompt, query1)
 
-    # # ---------------- Experiment 1: Cached system prompt ----------------
+    print("\n=== Profiling Results ===")
+    for stage, t in times.items():
+        if isinstance(t, list):
+            print(f"{stage}: mean {sum(t)/len(t):.4f}s, first token {t[0]:.4f}s")
+        else:
+            print(f"{stage}: {t:.4f}s")
+
+    print("\nGenerated response:", decoded)
+
+    exit(1)
+
+    # # # ---------------- Experiment 1: Cached system prompt ----------------
     # print("\nRunning cached prompt experiment...")
+    # t0_start = time.time()
     # past = model.warmup_with_system_prompt(system_prompt)
-
+    # past1 = model.clone_past_key_values(past)
+    # t0_end = time.time()
+    # print("[SYSTEM PROMPT] Time taken for filling system prompt along with cloning is: ", round(t0_end - t0_start, 3), "seconds")
     # t1_start = time.time()
     # resp1 = model.continue_from_cache_manual(past, query1)
-    # resp2 = model.continue_from_cache_manual(past, query2)
+    # resp2 = model.continue_from_cache_manual(past1, query2)
     # t1_end = time.time()
 
     # print("[CACHE] Time for 2 queries:", round(t1_end - t1_start, 3), "seconds")
-    # # print("[CACHE] Q1:", resp1)
-    # # print("[CACHE] Q2:", resp2)
+    # print("[CACHE] Q1:", resp1)
+    # print("-----------------------")
+    # print("[CACHE] Q2:", resp2)
 
-    # # ---------------- Experiment 2: Full prompt every time ----------------
+    # # # ---------------- Experiment 2: Full prompt every time ----------------
     # print("\nRunning full prompt experiment...")
     # t2_start = time.time()
     # resp3 = model.run_full_prompt(system_prompt, query1)
@@ -136,17 +206,17 @@ if __name__ == "__main__":
     #     f.write(prof.key_averages().table(sort_by="cuda_time_total", row_limit=1000))
     # prof.export_chrome_trace("trace.json")
 
-    with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA]) as prof:
-        past = model.warmup_with_system_prompt(system_prompt)
-    print(prof.key_averages().table(sort_by="cuda_time_total", row_limit=20, max_name_column_width=240))
+    # with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA]) as prof:
+    #     past = model.warmup_with_system_prompt(system_prompt)
+    # print(prof.key_averages().table(sort_by="cuda_time_total", row_limit=20, max_name_column_width=240))
 
     with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA]) as prof:
-        resp1 = model.continue_from_cache_manual(past, query1)
+        resp1 = model.run_full_prompt(system_prompt, query1)
     print(prof.key_averages().table(sort_by="cuda_time_total", row_limit=20, max_name_column_width=240))
 
-    with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA]) as prof:
-        resp2 = model.continue_from_cache_manual(past, query2)
-    print(prof.key_averages().table(sort_by="cuda_time_total", row_limit=20, max_name_column_width=240))
+    # with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA]) as prof:
+    #     resp2 = model.continue_from_cache_manual(past, query2)
+    # print(prof.key_averages().table(sort_by="cuda_time_total", row_limit=20, max_name_column_width=240))
 
 
 

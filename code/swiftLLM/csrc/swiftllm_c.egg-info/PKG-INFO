@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: swiftllm_c
+Version: 0.0.1
+Summary: Some C++/CUDA sources for SwiftLLM.
+Home-page: 
+Author: Shengyu Liu
+Author-email: shengyu.liu@stu.pku.edu.cn
+Requires-Python: >=3.9
+Dynamic: author
+Dynamic: author-email
+Dynamic: requires-python
+Dynamic: summary
