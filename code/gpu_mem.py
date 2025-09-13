@@ -1,74 +1,130 @@
 import time
-import threading
+import multiprocessing as mp
 import pynvml
+import csv
 
 # Globals
-_logging_thread = None
-_stop_flag = False
+_processes = {}
+_queues = {}
+_stop_event = None
+_manager = None
+_interval = 0.01
+_log_file = "gpu_metrics.csv"
 
 
-def _logging_worker(log_file, interval):
-    global _stop_flag
+def _gpu_logger(metric, interval, queue, stop_event):
+    """Worker for logging a single metric into its queue."""
     pynvml.nvmlInit()
     handle = pynvml.nvmlDeviceGetHandleByIndex(0)
 
-    data_list = []
     next_time = time.time()
-
-    while not _stop_flag:
+    while not stop_event.is_set():
         ts = time.time()
 
-        # GPU memory usage
-        mem_info = pynvml.nvmlDeviceGetMemoryInfo(handle)
-        gpu_mem_used = mem_info.used / (1024**2)  # MB
+        if metric == "mem":
+            val = pynvml.nvmlDeviceGetMemoryInfo(handle).used / (1024**2)  # MB
+        elif metric == "pcie_rx":
+            try:
+                val = pynvml.nvmlDeviceGetPcieThroughput(handle, pynvml.NVML_PCIE_UTIL_RX_BYTES)
+            except pynvml.NVMLError:
+                val = 0.0
+        elif metric == "pcie_tx":
+            try:
+                val = pynvml.nvmlDeviceGetPcieThroughput(handle, pynvml.NVML_PCIE_UTIL_TX_BYTES)
+            except pynvml.NVMLError:
+                val = 0.0
+        else:
+            val = None
 
-        # PCIe throughput (MB/s)
-        try:
-            pcie_rx = pynvml.nvmlDeviceGetPcieThroughput(handle, pynvml.NVML_PCIE_UTIL_RX_BYTES)  # CPU → GPU
-            pcie_tx = pynvml.nvmlDeviceGetPcieThroughput(handle, pynvml.NVML_PCIE_UTIL_TX_BYTES)  # GPU → CPU
-        except pynvml.NVMLError:
-            print("PCIe throughput not supported on this GPU.")
-            pcie_rx = pcie_tx = 0.0
+        queue.put((metric, ts, val))
 
-        data_list.append((ts, gpu_mem_used, pcie_rx, pcie_tx))
-
-        # drift-corrected sleep
         next_time += interval
         delay = next_time - time.time()
         if delay > 0:
             time.sleep(delay)
 
-    # dump all at once
-    with open(log_file, "w") as f:
-        f.write("timestamp,gpu_mem_used_MB,pcie_rx_MBps,pcie_tx_MBps\n")
-        f.writelines(f"{ts:.6f},{mem:.2f},{rx:.2f},{tx:.2f}\n" for ts, mem, rx, tx in data_list)
-
     pynvml.nvmlShutdown()
 
 
-def start_logging(log_file="gpu_mem_bw_log.txt", interval=0.01):
-    global _logging_thread, _stop_flag
-    if _logging_thread is not None:
+def _merge_and_write(queues, csv_file):
+    """Merge results from multiple queues and align by timestamp."""
+    data = {"mem": {}, "pcie_rx": {}, "pcie_tx": {}}
+
+    for metric, q in queues.items():
+        while not q.empty():
+            _, ts, val = q.get()
+            data[metric][round(ts, 3)] = val  # round to ms for alignment
+
+    all_ts = sorted(set().union(*[data[m].keys() for m in data]))
+
+    with open(csv_file, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["timestamp", "gpu_mem_used_MB", "pcie_rx_MBps", "pcie_tx_MBps"])
+        for ts in all_ts:
+            row = [
+                f"{ts:.3f}",
+                f"{data['mem'].get(ts, '-')}",
+                f"{data['pcie_rx'].get(ts, '-')}",
+                f"{data['pcie_tx'].get(ts, '-')}"
+            ]
+            writer.writerow(row)
+
+
+def start_logging(log_file="gpu_metrics.csv", interval=0.01):
+    """Start three logging processes."""
+    global _processes, _queues, _stop_event, _manager, _interval, _log_file
+
+    if _processes:
         print("Logging already running.")
         return
-    _stop_flag = False
-    _logging_thread = threading.Thread(target=_logging_worker, args=(log_file, interval), daemon=True)
-    _logging_thread.start()
+
+    _interval = interval
+    _log_file = log_file
+    _manager = mp.Manager()
+    _stop_event = mp.Event()
+
+    _queues = {
+        "mem": _manager.Queue(),
+        "pcie_rx": _manager.Queue(),
+        "pcie_tx": _manager.Queue()
+    }
+
+    _processes = {
+        m: mp.Process(target=_gpu_logger, args=(m, _interval, _queues[m], _stop_event))
+        for m in _queues
+    }
+
+    for p in _processes.values():
+        p.start()
+
     print(f"Logging started → {log_file}")
 
 
 def stop_logging():
-    global _logging_thread, _stop_flag
-    if _logging_thread is None:
+    """Stop all logging processes and merge results into a CSV."""
+    global _processes, _queues, _stop_event, _manager, _log_file
+
+    if not _processes:
         print("No active logging.")
         return
-    _stop_flag = True
-    _logging_thread.join()
-    _logging_thread = None
-    print("Logging stopped.")
+
+    _stop_event.set()
+    for p in _processes.values():
+        p.join()
+
+    print("Processes stopped. Writing CSV...")
+    _merge_and_write(_queues, _log_file)
+
+    # cleanup
+    _processes = {}
+    _queues = {}
+    _stop_event = None
+    _manager = None
+
+    print(f"Done → {_log_file}")
 
 
 if __name__ == "__main__":
-    start_logging(interval=0.01)  # 100 Hz sampling
-    time.sleep(5)                 # workload
+    start_logging(interval=0.01)
+    time.sleep(5)   # workload
     stop_logging()

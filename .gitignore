@@ -17,3 +17,5 @@
 *.blg
 .DS_Store
 code/log/*.pt.trace.json
+out_*
+__pycache__/

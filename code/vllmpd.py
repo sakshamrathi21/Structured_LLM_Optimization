@@ -4,7 +4,7 @@ import pandas as pd
 
 # --- INPUT FILES ---
 logfile = "out_20"          # LLM logs
-gpulogfile = "gpu_mem_bw_log.txt"  # GPU/CPU metrics log from start_logging()
+gpulogfile = "gpu_metrics.csv"  # GPU/CPU metrics log from start_logging()
 
 # --- REGEX PATTERNS FOR LLM LOG ---
 gen_start_re = re.compile(r"Generation Start Time: ([\d.]+)")
@@ -42,8 +42,10 @@ for req in requests.values():
         req["prefill"] -= gen_start
     req["tokens"] = [t - gen_start for t in req["tokens"]]
 
+import pandas as pd
+
 # --- PARSE GPU/CPU LOG ---
-df = pd.read_csv(gpulogfile)
+df = pd.read_csv(gpulogfile, na_values="-")   # treat "-" as NaN
 df["timestamp"] = df["timestamp"] - gen_start  # align with gen_start
 
 # Rename columns to match our log format if needed
@@ -51,6 +53,10 @@ df.rename(columns={
     "pcie_rx_MBps": "cpu_to_gpu_MBps",
     "pcie_tx_MBps": "gpu_to_cpu_MBps"
 }, inplace=True)
+
+
+
+
 
 # --- PLOTTING ---
 fig, axes = plt.subplots(3, 1, figsize=(14, 10), sharex=True,
@@ -83,15 +89,42 @@ ax.set_title("LLM Request Timelines (normalized)")
 ax.legend(loc="upper right")
 
 # ---- (2) GPU Memory ----
-axes[1].plot(df["timestamp"], df["gpu_mem_used_MB"], label="GPU Mem (MB)", color="tab:blue")
+mask = df["gpu_mem_used_MB"].notna()
+axes[1].plot(
+    df.loc[mask, "timestamp"],
+    df.loc[mask, "gpu_mem_used_MB"],
+    label="GPU Mem (MB)",
+    color="tab:blue",
+    marker="o",       # circle markers
+    linestyle="-"     # keep line if you want; use "" for points only
+)
 axes[1].set_ylabel("GPU Mem (MB)")
 axes[1].legend(loc="upper right")
 
 # ---- (3) PCIe Bandwidth (CPU→GPU & GPU→CPU) ----
-axes[2].plot(df["timestamp"], df["cpu_to_gpu_MBps"], label="CPU→GPU BW", color="tab:green")
-axes[2].plot(df["timestamp"], df["gpu_to_cpu_MBps"], label="GPU→CPU BW", color="tab:red")
+mask_rx = df["cpu_to_gpu_MBps"].notna()
+axes[2].plot(
+    df.loc[mask_rx, "timestamp"],
+    df.loc[mask_rx, "cpu_to_gpu_MBps"],
+    label="CPU→GPU BW",
+    color="tab:green",
+    marker="o",
+    linestyle="-"
+)
+
+mask_tx = df["gpu_to_cpu_MBps"].notna()
+axes[2].plot(
+    df.loc[mask_tx, "timestamp"],
+    df.loc[mask_tx, "gpu_to_cpu_MBps"],
+    label="GPU→CPU BW",
+    color="tab:red",
+    marker="o",
+    linestyle="-"
+)
+
 axes[2].set_ylabel("BW MB/s")
 axes[2].legend(loc="upper right")
+
 
 plt.tight_layout()
 plt.savefig("llm_with_gpu_metrics.png")
