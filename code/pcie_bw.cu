@@ -3,7 +3,7 @@
   Measure PCIe (GPU<->CPU) bandwidth both directions.
 
   Build:
-    nvcc -O2 -std=c++14 -o pcie_bw pcie_bw.cu
+    nvcc -o pcie_bw pcie_bw.cu -ccbin g++-11 -std=c++14
 
   Run:
     ./pcie_bw
