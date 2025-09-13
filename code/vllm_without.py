@@ -26,7 +26,7 @@ def main():
     )
     # TinyLlama/TinyLlama-1.1B-Chat-v1.0
     # meta-llama/Llama-3.1-8B-Instruct
-    sampling_params = SamplingParams(temperature=0.7, max_tokens=10)
+    sampling_params = SamplingParams(temperature=0.7, max_tokens=30)
     prompts = prompts[:10]
     start = time.time()
     print("Generation Start Time:", start)
@@ -36,7 +36,7 @@ def main():
         use_tqdm=True,
         prompts=prompts,
         sampling_params=sampling_params,
-        interval=0.05
+        interval=0.01
     )
     stop_logging()
     end = time.time()

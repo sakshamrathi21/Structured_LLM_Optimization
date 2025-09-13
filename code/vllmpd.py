@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # --- INPUT FILES ---
-logfile = "out_20"          # LLM logs
+logfile = "out_100"          # LLM logs
 gpulogfile = "gpu_metrics.csv"  # GPU/CPU metrics log from start_logging()
 
 # --- REGEX PATTERNS FOR LLM LOG ---
@@ -127,5 +127,5 @@ axes[2].legend(loc="upper right")
 
 
 plt.tight_layout()
-plt.savefig("llm_with_gpu_metrics.png")
+plt.savefig("../results/llm_timelines_100.png")
 # plt.show()
