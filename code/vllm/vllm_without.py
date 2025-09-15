@@ -22,7 +22,8 @@ def main():
 
     llm = LLM(
         model=model_name,
-        gpu_memory_utilization=0.85,
+        gpu_memory_utilization=0.5,
+        enforce_eager=True,
     )
     # TinyLlama/TinyLlama-1.1B-Chat-v1.0
     # meta-llama/Llama-3.1-8B-Instruct

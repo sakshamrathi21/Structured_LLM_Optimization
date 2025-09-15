@@ -6,7 +6,7 @@ url = f"http://localhost:{port}/v1/chat/completions"
 llm_input_message = "How is a page fault handled? Answer briefly."
 
 data = {
-    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "model": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
     "messages": [{"role": "user", "content": llm_input_message}],
 }
 
