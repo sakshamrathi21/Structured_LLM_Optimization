@@ -127,5 +127,5 @@ axes[2].legend(loc="upper right")
 
 
 plt.tight_layout()
-plt.savefig("../results/llm_timelines_100.png")
+plt.savefig("../../results/llm_timelines_100.png")
 # plt.show()

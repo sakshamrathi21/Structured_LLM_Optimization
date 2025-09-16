@@ -7,10 +7,11 @@ from gpu_mem import stop_logging, start_logging
 def main():
     model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
+    system_prompt_halved = system_prompt[0:len(system_prompt)]
     prompts = []
     for q in queries:
         chat_messages = [
-            {"role": "system", "content": system_prompt},
+            {"role": "system", "content": system_prompt_halved},
             {"role": "user", "content": q},
         ]
         full_prompt = tokenizer.apply_chat_template(
@@ -22,8 +23,8 @@ def main():
 
     llm = LLM(
         model=model_name,
-        gpu_memory_utilization=0.5,
-        enforce_eager=True,
+        gpu_memory_utilization=0.75,
+        enable_chunked_prefill=True,
     )
     # TinyLlama/TinyLlama-1.1B-Chat-v1.0
     # meta-llama/Llama-3.1-8B-Instruct

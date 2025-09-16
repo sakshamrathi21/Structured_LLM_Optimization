@@ -21,18 +21,48 @@ def _gpu_logger(metric, interval, queue, stop_event):
     while not stop_event.is_set():
         ts = time.time()
 
+        # ---- MEMORY USAGE ----
         if metric == "mem":
             val = pynvml.nvmlDeviceGetMemoryInfo(handle).used / (1024**2)  # MB
+
+        # ---- PCIe Throughput ----
         elif metric == "pcie_rx":
             try:
-                val = pynvml.nvmlDeviceGetPcieThroughput(handle, pynvml.NVML_PCIE_UTIL_RX_BYTES)
+                val = pynvml.nvmlDeviceGetPcieThroughput(
+                    handle, pynvml.NVML_PCIE_UTIL_RX_BYTES
+                )
             except pynvml.NVMLError:
                 val = 0.0
         elif metric == "pcie_tx":
             try:
-                val = pynvml.nvmlDeviceGetPcieThroughput(handle, pynvml.NVML_PCIE_UTIL_TX_BYTES)
+                val = pynvml.nvmlDeviceGetPcieThroughput(
+                    handle, pynvml.NVML_PCIE_UTIL_TX_BYTES
+                )
             except pynvml.NVMLError:
                 val = 0.0
+
+        # ---- GPU + Memory Controller Utilization ----
+        elif metric == "gpu_util":
+            print(pynvml.nvmlDeviceGetUtilizationRates(handle))
+            try:
+                util = pynvml.nvmlDeviceGetUtilizationRates(handle)
+                val = util.gpu  # % of time GPU SMs are active
+            except pynvml.NVMLError:
+                val = 0.0
+        elif metric == "mem_util":
+            try:
+                util = pynvml.nvmlDeviceGetUtilizationRates(handle)
+                val = util.memory  # % of time memory controller is active
+            except pynvml.NVMLError:
+                val = 0.0
+
+        # ---- GPU Power Draw (W) ----
+        elif metric == "power":
+            try:
+                val = pynvml.nvmlDeviceGetPowerUsage(handle) / 1000.0  # W
+            except pynvml.NVMLError:
+                val = 0.0
+
         else:
             val = None
 
@@ -48,7 +78,7 @@ def _gpu_logger(metric, interval, queue, stop_event):
 
 def _merge_and_write(queues, csv_file):
     """Merge results from multiple queues and align by timestamp."""
-    data = {"mem": {}, "pcie_rx": {}, "pcie_tx": {}}
+    data = {m: {} for m in queues}
 
     for metric, q in queues.items():
         while not q.empty():
@@ -59,19 +89,30 @@ def _merge_and_write(queues, csv_file):
 
     with open(csv_file, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["timestamp", "gpu_mem_used_MB", "pcie_rx_MBps", "pcie_tx_MBps"])
+        writer.writerow([
+            "timestamp",
+            "gpu_mem_used_MB",
+            "pcie_rx_MBps",
+            "pcie_tx_MBps",
+            "gpu_util_percent",
+            "mem_util_percent",
+            "power_W"
+        ])
         for ts in all_ts:
             row = [
                 f"{ts:.3f}",
                 f"{data['mem'].get(ts, '-')}",
                 f"{data['pcie_rx'].get(ts, '-')}",
-                f"{data['pcie_tx'].get(ts, '-')}"
+                f"{data['pcie_tx'].get(ts, '-')}",
+                f"{data['gpu_util'].get(ts, '-')}",
+                f"{data['mem_util'].get(ts, '-')}",
+                f"{data['power'].get(ts, '-')}"
             ]
             writer.writerow(row)
 
 
 def start_logging(log_file="gpu_metrics.csv", interval=0.01):
-    """Start three logging processes."""
+    """Start logging processes for multiple GPU metrics."""
     global _processes, _queues, _stop_event, _manager, _interval, _log_file
 
     if _processes:
@@ -83,11 +124,9 @@ def start_logging(log_file="gpu_metrics.csv", interval=0.01):
     _manager = mp.Manager()
     _stop_event = mp.Event()
 
-    _queues = {
-        "mem": _manager.Queue(),
-        "pcie_rx": _manager.Queue(),
-        "pcie_tx": _manager.Queue()
-    }
+    metrics = ["mem", "pcie_rx", "pcie_tx", "gpu_util", "mem_util", "power"]
+
+    _queues = {m: _manager.Queue() for m in metrics}
 
     _processes = {
         m: mp.Process(target=_gpu_logger, args=(m, _interval, _queues[m], _stop_event))
@@ -126,5 +165,5 @@ def stop_logging():
 
 if __name__ == "__main__":
     start_logging(interval=0.01)
-    time.sleep(5)   # workload
+    time.sleep(5)   # workload here
     stop_logging()
