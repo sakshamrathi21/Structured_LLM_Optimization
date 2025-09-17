@@ -1,1 +1,30 @@
 \chapter{Maths behind LLMs}
+\section{Transformer FLOPs}
+The motivation for this section comes from \cite{casson2023transformerflops}. Counting the number of floating-point operations (FLOPs) in Transformers is a useful way to estimate compute requirements and measure efficiency. 
+
+\subsection{Model parameters (TinyLlama-1.1B-Chat)}
+\begin{align*}
+d &= 2048 \quad\text{(hidden size)}\\
+L &= 22   \quad\text{(number of transformer layers)}\\
+n_{\text{heads}} &= 32\\
+d_{\text{ff}} &= 5632 \quad\text{(intermediate / FFN size)}\\
+V &= 32000 \quad\text{(vocabulary size)}\\
+n_{\text{ctx}} &= 2048 \quad\text{(context / sequence length used below)}
+\end{align*}
+
+\subsection{FLOPs Calculation}
+
+Let's explain each operation and variable here:
+\begin{itemize}
+    \item Embed: learned token embeddings and learned positional embeddings. $d_{model}$ is the dimensionality of the residual stream.
+    \item Attention: QKV: linear layer in multi-head self-attention to project input into queries, keys, and values. $n_{layers}$ is the number of layers. $d_{attn}$ is the dimensionality of the output of multi-headed attention which is equal to $d_{key} \times n_{heads}$. $d_{key}$ is the dimension of the key, query, and value projections. $n_{heads}$ is the number of attention heads in a layer. In practice, Transformers are implemented such that $d_{attn} = d_{model}$. 
+    \item Attention: Mask: dot-product between query and keys. $n_{ctx}$ is the context/sequence length. 
+    \item Attention: Project: linear layer to project concatenated attention heads output to $d_{model}$. 
+    \item Feedforward: two linear layers in the MLP block. $d_{ff}$ is the size of the output dimensionality of the first linear layer. $d_{ff} = 4 d_{model}$ is commonly used. 
+    \item De-embed: linear layer to obtain logits over vocabulary. $n_{vocab}$ is the number of tokens in the vocabulary. 
+\end{itemize}
+
+
+Combining all the non-embedding FLOPs terms gets us
+
+\[C_{forward} = 2N + 2n_{layer} n_{ctx} d_{attn}\]
