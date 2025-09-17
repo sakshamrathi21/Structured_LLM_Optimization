@@ -24,7 +24,7 @@ def main():
     llm = LLM(
         model=model_name,
         gpu_memory_utilization=0.75,
-        enable_chunked_prefill=True,
+        # enable_chunked_prefill=True,
     )
     # TinyLlama/TinyLlama-1.1B-Chat-v1.0
     # meta-llama/Llama-3.1-8B-Instruct
@@ -38,7 +38,7 @@ def main():
         use_tqdm=True,
         prompts=prompts,
         sampling_params=sampling_params,
-        interval=0.00
+        interval=0.01
     )
     stop_logging()
     end = time.time()
