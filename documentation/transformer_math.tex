@@ -2,16 +2,6 @@
 \section{Transformer FLOPs}
 The motivation for this section comes from \cite{casson2023transformerflops}. Counting the number of floating-point operations (FLOPs) in Transformers is a useful way to estimate compute requirements and measure efficiency. 
 
-\subsection{Model parameters (TinyLlama-1.1B-Chat)}
-\begin{align*}
-d &= 2048 \quad\text{(hidden size)}\\
-L &= 22   \quad\text{(number of transformer layers)}\\
-n_{\text{heads}} &= 32\\
-d_{\text{ff}} &= 5632 \quad\text{(intermediate / FFN size)}\\
-V &= 32000 \quad\text{(vocabulary size)}\\
-n_{\text{ctx}} &= 2048 \quad\text{(context / sequence length used below)}
-\end{align*}
-
 \subsection{FLOPs Calculation}
 
 Let's explain each operation and variable here:
@@ -28,3 +18,56 @@ Let's explain each operation and variable here:
 Combining all the non-embedding FLOPs terms gets us
 
 \[C_{forward} = 2N + 2n_{layer} n_{ctx} d_{attn}\]
+
+% include an image here
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\FIGDIR/tflops.png}
+    \caption{FLOPs Calculation Breakdown (from \cite{casson2023transformerflops})}
+\end{figure}
+
+
+\subsection{Model parameters (TinyLlama-1.1B-Chat)}
+\begin{align*}
+d &= 2048 \quad\text{(hidden size)}\\
+L &= 22   \quad\text{(number of transformer layers)}\\
+n_{\text{heads}} &= 32\\
+d_{\text{ff}} &= 5632 \quad\text{(intermediate / FFN size)}\\
+V &= 32000 \quad\text{(vocabulary size)}\\
+n_{\text{ctx}} &= 2048 \quad\text{(context / sequence length used below)}
+\end{align*}
+
+
+\subsection{FLOPs Calculation for TinyLlama-1.1B-Chat}
+\[
+C_{forward} 
+= 2N + 2n_{layer} n_{ctx} d_{attn} 
+= 2.2 \times 10^9 + 1.84549376 \times 10^8 
+= 2.3845 \times 10^9\ \text{FLOPs}.
+\]
+
+\subsection{Efficiency Calculation}
+We ran inference on TinyLlama-1.1B-Chat using a single NVIDIA RTX6000 Ada GPU. Based on the docs from NVIDIA (\cite{adalovelacertx6000}), the theoretical peak performance for FP16 is 1457 TFLOPs.
+
+\subsection{Efficiency Calculation}
+We ran inference on TinyLlama-1.1B-Chat using a single NVIDIA RTX6000 Ada GPU. Based on the docs from NVIDIA (\cite{adalovelacertx6000}), the theoretical peak performance for FP16 is 1457 TFLOPs.
+
+So, the time taken for a forward pass of $n_{ctx} = 2048$ tokens should be:
+\[
+T = \frac{C_{forward} \times n_{ctx}}{\text{Peak TFLOPs}}
+\]
+
+\[
+= \frac{(2.3845 \times 10^9) \times 2048}{1.457 \times 10^{15}}
+\]
+
+\[
+= \frac{4.879 \times 10^{12}}{1.457 \times 10^{15}}
+\]
+
+\[
+= 3.35 \times 10^{-3}\ \text{seconds} \ (\approx 3.35\ \text{ms})
+\]
+
+

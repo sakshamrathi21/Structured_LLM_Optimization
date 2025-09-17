@@ -29,7 +29,7 @@ def main():
     # TinyLlama/TinyLlama-1.1B-Chat-v1.0
     # meta-llama/Llama-3.1-8B-Instruct
     sampling_params = SamplingParams(temperature=0.7, max_tokens=30)
-    prompts = prompts[:10]
+    # prompts = prompts[:10]
     start = time.time()
     print("Generation Start Time:", start)
     # outputs = llm.generate(prompts, sampling_params)
