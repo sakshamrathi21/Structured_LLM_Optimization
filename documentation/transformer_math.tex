@@ -30,12 +30,11 @@ Combining all the non-embedding FLOPs terms gets us
 
 \subsection{Model parameters (TinyLlama-1.1B-Chat)}
 \begin{align*}
-d &= 2048 \quad\text{(hidden size)}\\
 L &= 22   \quad\text{(number of transformer layers)}\\
 n_{\text{heads}} &= 32\\
 d_{\text{ff}} &= 5632 \quad\text{(intermediate / FFN size)}\\
 V &= 32000 \quad\text{(vocabulary size)}\\
-n_{\text{ctx}} &= 2048 \quad\text{(context / sequence length used below)}
+n_{\text{ctx}} &= 2048 \quad\text{(context / sequence length)}
 \end{align*}
 
 
@@ -48,7 +47,7 @@ C_{forward}
 \]
 
 \subsection{Efficiency Calculation}
-We ran inference on TinyLlama-1.1B-Chat using a single NVIDIA RTX6000 Ada GPU. Based on the docs from NVIDIA (\cite{adalovelacertx6000}), the theoretical peak performance for FP16 is 1457 TFLOPs.
+We ran inference on TinyLlama-1.1B-Chat using a single Nvidia RTX6000 Ada GPU. Based on the docs from Nvidia (\cite{adalovelacertx6000}), the theoretical peak performance for FP16 is 1457 TFLOPs.
 
 \subsection{Efficiency Calculation}
 We ran inference on TinyLlama-1.1B-Chat using a single NVIDIA RTX6000 Ada GPU. Based on the docs from NVIDIA (\cite{adalovelacertx6000}), the theoretical peak performance for FP16 is 1457 TFLOPs.
@@ -71,3 +70,7 @@ T = \frac{C_{forward} \times n_{ctx}}{\text{Peak TFLOPs}}
 \]
 
 
+During our experiments, we observed that the actual time taken for a forward pass of 100 prompts, each with a context length of 2048 tokens, was approximately 4.4s. Therefore, the time taken for a single forward pass with a context length of 2048 tokens is approximately 0.044s (or 44ms).
+
+Thus, the efficiency can be calculated as:
+\[\text{Efficiency} = \frac{\text{Theoretical Time}}{\text{Actual Time}} = \frac{3.35\ \text{ms}}{44\ \text{ms}} \approx 7.6\%\]
