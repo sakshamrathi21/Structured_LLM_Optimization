@@ -74,3 +74,36 @@ During our experiments, we observed that the actual time taken for a forward pas
 
 Thus, the efficiency can be calculated as:
 \[\text{Efficiency} = \frac{\text{Theoretical Time}}{\text{Actual Time}} = \frac{3.35\ \text{ms}}{44\ \text{ms}} \approx 7.6\%\]
+
+
+
+\subsection{Summary of the nomenclature used}
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|p{10cm}|}
+\hline
+\textbf{Variable} & \textbf{Meaning} \\
+\hline
+$d_{model}$ & Dimensionality of the residual stream (hidden size of the Transformer). \\
+\hline
+$L$ or $n_{layers}$ & Number of Transformer layers (blocks). \\
+\hline
+$n_{heads}$ & Number of attention heads in each multi-head attention layer. \\
+\hline
+$d_{key}$ & Dimensionality of each head’s key, query, and value vectors. \\
+\hline
+$d_{attn}$ & Dimensionality of the concatenated multi-head attention output. Typically $d_{attn} = d_{key} \times n_{heads} = d_{model}$. \\
+\hline
+$n_{ctx}$ & Context length or sequence length, i.e., number of tokens processed in one forward pass. \\
+\hline
+$d_{ff}$ & Size of the hidden layer in the feedforward (MLP) block. Commonly $d_{ff} = 4d_{model}$. \\
+\hline
+$n_{vocab}$ or $V$ & Vocabulary size: number of tokens in the tokenizer vocabulary. \\
+\hline
+$N$ & Total number of trainable parameters in the model. \\
+\hline
+$C_{forward}$ & FLOPs required for a single forward pass per token. \\
+\hline
+\end{tabular}
+\caption{Variables used in FLOPs}
+\end{table}
