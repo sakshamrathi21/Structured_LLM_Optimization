@@ -127,5 +127,5 @@ axes[2].legend(loc="upper right")
 
 
 plt.tight_layout()
-plt.savefig("../../results/llm_timelines_infinite_chunked_prefill.png")
+plt.savefig("../../results/llm_timelines_100_chunked_prefill.png")
 # plt.show()
