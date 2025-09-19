@@ -330,3 +330,29 @@ We primarily measure the following metrics:
     \caption{Chunked Prefill Enabled - All requests at once}
 \end{figure}
     
+
+\clearpage
+
+
+
+\section{Maximum Throughput with vLLM}
+All requests sent together
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/vllm_batch_outputs_chunked_prefill.png}
+    \caption{Number of batch outputs - chunked prefill enabled}
+\end{figure}
+
+Total time taken: 3.84s (100 requests)
+Throughput Observed: 26.04 QPS
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/vllm_batch_outputs.png}
+    \caption{Number of batch outputs - chunked prefill disabled}
+\end{figure}
+
+Total time taken: 4.97s (100 requests)
+Throughput Observed: 20.12 QPS
