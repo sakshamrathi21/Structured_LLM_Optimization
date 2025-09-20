@@ -1,6 +1,8 @@
 from vllm import LLM, SamplingParams
 from transformers import AutoTokenizer
 import time
+import cupy
+from nvtx import annotate
 from system_prompt import system_prompt, queries
 from gpu_mem import stop_logging, start_logging
 
@@ -33,14 +35,13 @@ def main():
     start = time.time()
     print("Generation Start Time:", start)
     # outputs = llm.generate(prompts, sampling_params)
-    start_logging()
-    outputs = llm._run_engine(
-        use_tqdm=True,
-        prompts=prompts,
-        sampling_params=sampling_params,
-        interval=0.01
-    )
-    stop_logging()
+    with annotate("LLM forward"):
+        outputs = llm._run_engine(
+            use_tqdm=True,
+            prompts=prompts,
+            sampling_params=sampling_params,
+            interval=0.01
+        )
     end = time.time()
     print("Generation End Time:", end)
 
