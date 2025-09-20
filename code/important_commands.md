@@ -42,6 +42,6 @@ python examples/example.py --model-path ~/.cache/huggingface/hub/models--TinyLla
 
 NSYS:
 ```bash
-nsys profile --trace=cuda --cuda-memory-usage=true --gpu-metrics-device=all --gpu-metrics-frequency=200 -o llm_mem_bw python vllm_without.py
+nsys profile --trace=cuda --cuda-memory-usage=true --gpu-metrics-device=all --gpu-metrics-frequency=10 -o llm_mem_bw python vllm_without.py
 
 ```
