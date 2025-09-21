@@ -42,8 +42,7 @@ python examples/example.py --model-path ~/.cache/huggingface/hub/models--TinyLla
 
 NSYS:
 ```bash
-nsys profile --trace=cuda --cuda-memory-usage=true --gpu-metrics-device=all --gpu-metrics-frequency=10 -o llm_mem_bw python vllm_without.py
-
+nsys profile --trace=cuda --cuda-memory-usage=true --gpu-metrics-device=all -o llm_mem_bw python vllm_without.py
 ```
 
 ---
@@ -51,5 +50,5 @@ nsys profile --trace=cuda --cuda-memory-usage=true --gpu-metrics-device=all --gp
 NVIDIA-SMI
 
 ```bash
-nvidia-smi --query-gpu=timestamp,utilization.gpu,utilization.memory,memory.used,memory.total --format=csv -lms 10
+nvidia-smi --query-gpu=timestamp,utilization.gpu,memory.used,memory.total --format=csv -lms 50
 ```
