@@ -52,3 +52,11 @@ NVIDIA-SMI
 ```bash
 nvidia-smi --query-gpu=timestamp,utilization.gpu,memory.used,memory.total --format=csv -lms 50
 ```
+
+---
+
+CUDA-compilation
+
+```bash
+nvcc -ccbin=/usr/bin/gcc-11 -std=c++17 -o matmul matrixmul.cu -lcudart -lstdc++
+```
