@@ -3,6 +3,7 @@ from transformers import AutoTokenizer
 import time
 from system_prompt import system_prompt, queries
 from gpu_mem import stop_logging, start_logging
+import torch
 
 def main():
     model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
@@ -30,19 +31,25 @@ def main():
     # meta-llama/Llama-3.1-8B-Instruct
     sampling_params = SamplingParams(temperature=0.7, max_tokens=30)
     # prompts = prompts[:10]
-    start = time.time()
-    print("Generation Start Time:", start)
+    # start = time.time()
+    # print("Generation Start Time:", start)
     # outputs = llm.generate(prompts, sampling_params)
+    start = torch.cuda.Event(enable_timing=True)
+    end = torch.cuda.Event(enable_timing=True)
+    start.record()
     outputs = llm._run_engine(
         use_tqdm=True,
         prompts=prompts,
         sampling_params=sampling_params,
         interval=0.01
     )
-    end = time.time()
-    print("Generation End Time:", end)
+    end.record()
+    torch.cuda.synchronize()
+    print("Elapsed time (ms):", start.elapsed_time(end))
+    # end = time.time()
+    # print("Generation End Time:", end)
 
-    print("Time:", end - start, "s, Outputs:", len(outputs))
+    # print("Time:", end - start, "s, Outputs:", len(outputs))
     # for q, out in zip(queries, outputs):
     #     print(f"\nUser: {q}\nAssistant: {out.outputs[0].text.strip()}")
 
