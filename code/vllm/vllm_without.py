@@ -21,12 +21,11 @@ def main():
             add_generation_prompt=True,
         )
         prompts.append(full_prompt)
-    enable_chunked_prefill = True
+    enable_chunked_prefill = False
     llm = LLM(
         model=model_name,
         gpu_memory_utilization=0.85,
         enable_chunked_prefill=enable_chunked_prefill,
-        max_num_batched_tokens=2048
     )
     # TinyLlama/TinyLlama-1.1B-Chat-v1.0
     # meta-llama/Llama-3.1-8B-Instruct
@@ -34,7 +33,9 @@ def main():
     # prompts = prompts[:10]
     
     # outputs = llm.generate(prompts, sampling_params)
-    for interval in [1/5, 1/10, 1/20, 1/30, 1/50, 1/100]:
+    # for interval in [1/5, 1/10, 1/20, 1/30, 1/50, 1/100]:
+    # prompts = prompts[0:10]
+    for interval in [1/100]:
         start = time.time()
         outputs = llm._run_engine(
             use_tqdm=True,
