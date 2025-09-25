@@ -165,5 +165,5 @@ def stop_logging():
 
 if __name__ == "__main__":
     start_logging(interval=0.01)
-    time.sleep(5)   # workload here
+    time.sleep(10)   # workload here
     stop_logging()
