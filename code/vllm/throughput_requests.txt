@@ -1,0 +1,26 @@
+Processed prompts: 88it [00:21,  4.01it/s]
+Throughput:  4.009977849441934 req/s (enabling chunked prefill: True ) Interval: 0.2  Len outputs: 88
+Processed prompts: 100it [00:10,  9.11it/s]
+Throughput:  9.103997778386162 req/s (enabling chunked prefill: True ) Interval: 0.1  Len outputs: 100
+Processed prompts: 100it [00:06, 16.54it/s]
+Throughput:  16.53526212345237 req/s (enabling chunked prefill: True ) Interval: 0.05  Len outputs: 100
+Processed prompts: 100it [00:04, 22.46it/s]
+Throughput:  22.44112894345898 req/s (enabling chunked prefill: True ) Interval: 0.03333333333333333  Len outputs: 100
+Processed prompts: 99it [00:04, 23.57it/s]
+Throughput:  23.55249520738177 req/s (enabling chunked prefill: True ) Interval: 0.02  Len outputs: 99
+Processed prompts: 99it [00:04, 23.42it/s]
+Throughput:  23.404697137587195 req/s (enabling chunked prefill: True ) Interval: 0.01  Len outputs: 99
+
+
+Processed prompts: 56it [00:21,  2.55it/s]
+Throughput:  2.550850978443329 req/s (enabling chunked prefill: False ) Interval: 0.2  Len outputs: 56
+Processed prompts: 99it [00:10,  9.12it/s]
+Throughput:  9.122802281240508 req/s (enabling chunked prefill: False ) Interval: 0.1  Len outputs: 99
+Processed prompts: 99it [00:05, 16.62it/s]
+Throughput:  16.617132919744623 req/s (enabling chunked prefill: False ) Interval: 0.05  Len outputs: 99
+Processed prompts: 100it [00:04, 22.64it/s]
+Throughput:  22.625523851609977 req/s (enabling chunked prefill: False ) Interval: 0.03333333333333333  Len outputs: 100
+Processed prompts: 100it [00:03, 30.91it/s]
+Throughput:  30.88512684811333 req/s (enabling chunked prefill: False ) Interval: 0.02  Len outputs: 100
+Processed prompts: 100it [00:03, 30.40it/s]
+Throughput:  30.377328017324107 req/s (enabling chunked prefill: False ) Interval: 0.01  Len outputs: 100

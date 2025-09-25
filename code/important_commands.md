@@ -58,5 +58,5 @@ nvidia-smi --query-gpu=timestamp,utilization.gpu,memory.used,memory.total --form
 CUDA-compilation
 
 ```bash
-nvcc -ccbin=/usr/bin/gcc-11 -std=c++17 -o matmul matrixmul.cu -lcudart -lstdc++
+nvcc -ccbin=/usr/bin/gcc-11 -std=c++17 -o matmul matrixmul.cu -lcudart -lstdc++ -lnvToolsExt
 ```
