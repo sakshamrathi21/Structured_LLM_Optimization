@@ -27,7 +27,8 @@ def main():
         gpu_memory_utilization=0.85,
         enable_chunked_prefill=enable_chunked_prefill,
         max_num_batched_tokens=512,
-        enable_prefix_caching=True
+        enable_prefix_caching=True,
+        disable_log_stats=False
     )
     # TinyLlama/TinyLlama-1.1B-Chat-v1.0
     # meta-llama/Llama-3.1-8B-Instruct
@@ -35,7 +36,7 @@ def main():
     # prompts = prompts[:10]
     # prompts *= 10
     # start_time = time.time()
-    # outputs = llm.generate(prompts, sampling_params)
+    outputs = llm.generate(prompts, sampling_params)
     # end_time = time.time()
     # print("Throughput: ", len(outputs) / (end_time - start_time), "req/s (enabling chunked prefill:", enable_chunked_prefill, ")")
     
@@ -52,19 +53,19 @@ def main():
     #     end = time.time()
     #     print("Throughput: ", len(outputs) / (end - start), "req/s (enabling chunked prefill:", enable_chunked_prefill, ")", "Interval:", interval, " Len outputs:", len(outputs))
 
-    for interval in [1/5, 1/10, 1/20, 1/30, 1/50, 1/100]:
-    # prompts = prompts[0:10]
-    # for interval in [1/100]:
-        start = time.time()
-        outputs = llm.generate(
-            use_tqdm=True,
-            prompts=prompts,
-            sampling_params=sampling_params,
-            request_interval=interval,
-            continuous=True,
-        )
-        end = time.time()
-        print("Throughput: ", len(outputs) / (end - start), "req/s (enabling chunked prefill:", enable_chunked_prefill, ")", "Interval:", interval, " Len outputs:", len(outputs))
+    # for interval in [1/5, 1/10, 1/20, 1/30, 1/50, 1/100]:
+    # # prompts = prompts[0:10]
+    # # for interval in [1/100]:
+    #     start = time.time()
+    #     outputs = llm.generate(
+    #         use_tqdm=True,
+    #         prompts=prompts,
+    #         sampling_params=sampling_params,
+    #         request_interval=interval,
+    #         continuous=True,
+    #     )
+    #     end = time.time()
+    #     print("Throughput: ", len(outputs) / (end - start), "req/s (enabling chunked prefill:", enable_chunked_prefill, ")", "Interval:", interval, " Len outputs:", len(outputs))
     #     time.sleep(2)
     # print("Time:", end - start, "s, Outputs:", len(outputs))
     # for q, out in zip(queries, outputs):
