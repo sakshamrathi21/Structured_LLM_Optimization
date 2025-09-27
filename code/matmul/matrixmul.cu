@@ -4,7 +4,7 @@
 #include <nvToolsExt.h>   // NVTX for timeline ranges
 
 #define BLOCK_SIZE 16      // threads per block dimension
-#define TILE_SIZE 1024      // host tiling (adjust based on GPU memory)
+#define TILE_SIZE 2048      // host tiling (adjust based on GPU memory)
 
 // CUDA kernel with shared memory tiling
 __global__ void matmul_tiled(float *A, float *B, float *C, int n) {

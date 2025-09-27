@@ -1,7 +1,0 @@
-Processing [report3.sqlite] with [/opt/nvidia/nsight-systems/2022.4.2/host-linux-x64/reports/gputrace.py]... 
-Start (ns),Duration (ns),CorrId,GrdX,GrdY,GrdZ,BlkX,BlkY,BlkZ,Reg/Trd,StcSMem (MB),DymSMem (MB),Bytes (MB),Throughput (MBps),SrcMemKd,DstMemKd,Device,Ctx,Strm,Name
-625070316,2992372,108,None,None,None,None,None,None,None,None,None,16.777,5603.590,Pageable,Device,NVIDIA RTX 6000 Ada Generation (0),1,7,[CUDA memcpy HtoD]
-628268033,2913811,109,None,None,None,None,None,None,None,None,None,16.777,5754.585,Pageable,Device,NVIDIA RTX 6000 Ada Generation (0),1,7,[CUDA memcpy HtoD]
-631414038,3066900,110,128,128,1,16,16,1,40,0.000,0.000,None,,None,None,NVIDIA RTX 6000 Ada Generation (0),1,7,"matmul_kernel(float *, float *, float *, int)"
-634483242,12211024,111,None,None,None,None,None,None,None,None,None,16.777,1358.954,Device,Pageable,NVIDIA RTX 6000 Ada Generation (0),1,7,[CUDA memcpy DtoH]
-
