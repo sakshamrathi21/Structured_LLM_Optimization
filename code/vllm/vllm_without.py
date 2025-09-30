@@ -21,22 +21,34 @@ def main():
             add_generation_prompt=True,
         )
         prompts.append(full_prompt)
-    enable_chunked_prefill = True
-    prompts = prompts[0:10]
+    enable_chunked_prefill = False
     llm = LLM(
         model=model_name,
         gpu_memory_utilization=0.85,
         enable_chunked_prefill=enable_chunked_prefill,
         max_num_batched_tokens=512,
-        enable_prefix_caching=True,
+        enable_prefix_caching=False,
         disable_log_stats=False
     )
     # TinyLlama/TinyLlama-1.1B-Chat-v1.0
     # meta-llama/Llama-3.1-8B-Instruct
     sampling_params = SamplingParams(temperature=0.7, max_tokens=30)
-    start_time = time.time()
-    outputs = llm.generate(prompts, sampling_params)
-    end_time = time.time()
+    for interval in [5, 10, 20, 30, 50, 80, 100, 120, 150, 200, 250, 300, 350, 500]:
+        initial_start_time = time.time()
+        multiplier = int(interval/10)
+        if multiplier == 0:
+            multiplier += 1
+        all_prompts = prompts * multiplier
+        for i in range(0, len(all_prompts), interval):
+            start_time = time.time()
+            outputs = llm.generate(all_prompts[i:i+interval], sampling_params)
+            time.sleep(max(0, 1 - time.time() + start_time))
+        print(f"Throughput for interval ({interval}): ", len(all_prompts) / (time.time() - initial_start_time), "req/s (enabling chunked prefill:", enable_chunked_prefill, ")")
+
+    
+    # start_time = time.time()
+    # outputs = llm.generate(prompts, sampling_params)
+    # end_time = time.time()
     # print("Throughput: ", len(outputs) / (end_time - start_time), "req/s (enabling chunked prefill:", enable_chunked_prefill, ")")
     
     # for interval in [1/5, 1/10, 1/20, 1/30, 1/50, 1/100]:
@@ -53,12 +65,12 @@ def main():
     #     print("Throughput: ", len(outputs) / (end - start), "req/s (enabling chunked prefill:", enable_chunked_prefill, ")", "Interval:", interval, " Len outputs:", len(outputs))
 
     # for interval in [1/5, 1/10, 1/20, 1/30, 1/50, 1/100]:
-    
-    # for interval in [1/20]:
+    # all_prompts = prompts * 10
+    # for interval in [100]:
     #     start = time.time()
     #     outputs = llm.generate2(
     #         use_tqdm=True,
-    #         prompts=prompts,
+    #         prompts=all_prompts,
     #         sampling_params=sampling_params,
     #         request_interval=interval,
     #         continuous=True,
