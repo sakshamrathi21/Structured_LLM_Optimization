@@ -27,18 +27,20 @@ def main():
         model=model_name,
         gpu_memory_utilization=0.85,
         enable_chunked_prefill=enable_chunked_prefill,
-        max_num_batched_tokens=1024,
+        max_num_batched_tokens=16384,
         enable_prefix_caching=True,
         disable_log_stats=False
     )
     # TinyLlama/TinyLlama-1.1B-Chat-v1.0
     # meta-llama/Llama-3.1-8B-Instruct
+    prompts *= 100
     sampling_params = SamplingParams(temperature=0.7, max_tokens=30)
     for interval in [500]:
         initial_start_time = time.time()
         multiplier = int(interval/10)
         if multiplier == 0:
             multiplier += 1
+        multiplier = 1
         all_prompts = prompts * multiplier
         for i in range(0, len(all_prompts), interval):
             start_time = time.time()
