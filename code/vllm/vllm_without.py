@@ -25,17 +25,20 @@ def main():
     enable_chunked_prefill = True
     llm = LLM(
         model=model_name,
-        gpu_memory_utilization=0.85,
+        gpu_memory_utilization=0.75,
         enable_chunked_prefill=enable_chunked_prefill,
         max_num_batched_tokens=16384,
         enable_prefix_caching=True,
-        disable_log_stats=False
+        # disable_log_stats=False,
+        max_num_seqs=750,
+	    # enforce_eager=True,
     )
     # TinyLlama/TinyLlama-1.1B-Chat-v1.0
     # meta-llama/Llama-3.1-8B-Instruct
-    prompts *= 100
+    prompts *= 200
     sampling_params = SamplingParams(temperature=0.7, max_tokens=30)
-    for interval in [500]:
+    
+    for interval in [20000]:
         initial_start_time = time.time()
         multiplier = int(interval/10)
         if multiplier == 0:
@@ -45,7 +48,7 @@ def main():
         for i in range(0, len(all_prompts), interval):
             start_time = time.time()
             outputs = llm.generate(all_prompts[i:i+interval], sampling_params)
-            time.sleep(max(0, 1 - time.time() + start_time))
+            # time.sleep(max(0, 1 - time.time() + start_time))
         print(f"Throughput for interval ({interval}): ", len(all_prompts) / (time.time() - initial_start_time), "req/s (enabling chunked prefill:", enable_chunked_prefill, ")")
 
     # prompts *= 100
