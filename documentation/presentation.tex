@@ -63,12 +63,34 @@
 
 \section{Batch of requests through various Engines}
 \begin{frame}{Batch of requests through various Engines}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Technique Used} & \textbf{Time (s)} \\
+\hline
+Transformers (batch size = 1) & 30.21 \\
+Transformers (batch size = 2) & 19.51 \\
+Transformers (batch size = 3) & 18.64 \\
+vLLM (no system prompt pre-filling) & 0.45 \\
+SGLang (fork) & 1.03 \\
+SGLang (run\_batch) & 0.40 \\
+NEO & 0.55 \\
+\hline
+\end{tabular}
+\caption{Measuring the time taken to process a batch of 24 requests using different techniques}
+\end{table}
     
 \end{frame}
 
 \section{LLM Request Timelines}
 \begin{frame}{LLM Request Timelines}
-    
+    \begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/llm_timelines_20.png}
+    \caption{20 Requests per second - without chunked prefill - vLLM V0 Engine}
+\end{figure}
 \end{frame}
 
 \section{NSYS Measurements}
@@ -78,7 +100,11 @@
 
 \section{Throughput vs Load for vLLM}
 \begin{frame}{Throughput vs Load for vLLM}
-    
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{../results/throughput_comparison_vllm.png}
+    \caption{Throughput vs Load}
+\end{figure}
 \end{frame}
 
 
