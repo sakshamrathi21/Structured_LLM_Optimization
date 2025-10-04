@@ -1,0 +1,123 @@
+\documentclass[Serif, 10pt, brown]{beamer}
+\usepackage{booktabs,xcolor}
+\usepackage{pifont}
+\newcommand*\CHECK{\ding{51}}
+\usepackage{array}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+%
+\usepackage{setspace,mathtools,amssymb,multirow,array,amsmath,tikz}
+\usepackage[normalsize]{subfigure}
+\usetikzlibrary{patterns}
+\usetikzlibrary{automata,positioning,decorations.pathreplacing,decorations}
+
+\usepackage{curves}
+\usepackage{wasysym}
+\usepackage{epsfig,epstopdf,graphicx}
+
+\curvewarnfalse
+%
+\newtheorem{proposition}{Proposition}
+\theoremstyle{example}
+\newtheorem{theoremh}{Theorem}
+\theoremstyle{plain}
+\renewcommand{\textfraction}{0.01}
+\renewcommand{\floatpagefraction}{0.99}
+\newcommand{\ul}{\underline}
+\newcounter{units}
+\setbeamercovered{dynamic}
+\logo{\includegraphics[width=0.5in,keepaspectratio]{iitb_logo.png}}
+
+\mode<presentation>
+	{
+\usetheme[right,currentsection, hideothersubsections]{UTD}
+			\useoutertheme{sidebar} \useinnertheme[shadow]{rounded}
+			\usecolortheme{whale} \usecolortheme{orchid}
+			\usefonttheme[onlymath]{serif}
+			\setbeamertemplate{footline}{\centerline{Slide \insertframenumber/\inserttotalframenumber}}
+	}
+
+\usebeamercolor[fg]{author in sidebar}
+\title[{Systems for LLMs}]{\sc Benchmarking and Performance Analysis of LLM Inferencing Systems}
+% \author[\ul{Authors}]{{\bf { Saksham Rathi }}\\ {\footnotesize \hspace{0cm} (22B1003)}}
+\institute[UTD]{\sc\small Systems for LLMs\\ Under Prof. Mythili Vutukuru}
+\date[UCI]{Indian Institute of Technology Bombay \\ Autumn 2025-26}
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}{Contents}
+	\tableofcontents
+\end{frame}
+
+\section{Workload Picked}
+\begin{frame}{Workload Picked}
+    \begin{itemize}
+        \item Targeted a very specific workload
+        \item Large system prompt ($\approx$ 1500 tokens) containing useful context and shared across all the queries
+        \item Varying query input rate (from 5 req/sec to 700 req/sec)
+        \item Small query sizes (10 to 20 tokens each) and small output requirements (capped at 30 to 50 tokens)
+        \item Ideally, prefix sharing should help a lot
+        \item \textbf{Next Step:} Family of requests, each family with a particular large system prompt and a few queries
+    \end{itemize}
+\end{frame}
+
+\section{Batch of requests through various Engines}
+\begin{frame}{Batch of requests through various Engines}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Technique Used} & \textbf{Time (s)} \\
+\hline
+Transformers (batch size = 1) & 30.21 \\
+Transformers (batch size = 2) & 19.51 \\
+Transformers (batch size = 3) & 18.64 \\
+vLLM (no system prompt pre-filling) & 0.45 \\
+SGLang (fork) & 1.03 \\
+SGLang (run\_batch) & 0.40 \\
+NEO & 0.55 \\
+\hline
+\end{tabular}
+\caption{Measuring the time taken to process a batch of 24 requests using different techniques}
+\end{table}
+    
+\end{frame}
+
+\section{LLM Request Timelines}
+\begin{frame}{LLM Request Timelines}
+    \begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/llm_timelines_20.png}
+    \caption{20 Requests per second - without chunked prefill - vLLM V0 Engine}
+\end{figure}
+\end{frame}
+
+\section{NSYS Measurements}
+\begin{frame}{NSYS Measurements}
+    
+\end{frame}
+
+\section{Throughput vs Load for vLLM}
+\begin{frame}{Throughput vs Load for vLLM}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{../results/throughput_comparison_vllm.png}
+    \caption{Throughput vs Load}
+\end{figure}
+\end{frame}
+
+
+\section{Future Steps}
+\begin{frame}{Future Steps}
+    
+\end{frame}
+
+
+\begin{frame}
+    \Huge{\centerline{\bf Thank You}}
+\end{frame}
+
+\end{document}
+
+
