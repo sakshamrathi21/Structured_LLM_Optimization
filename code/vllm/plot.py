@@ -28,7 +28,7 @@ plt.ylabel("Avg Latency (s)")
 plt.title("Average Latency vs QPS")
 plt.grid(True)
 plt.legend()
-plt.savefig("avg_latency_vs_qps.png")
+plt.savefig("../../results/avg_latency_vs_qps.png")
 
 # --- Plot P95 Latency ---
 plt.figure(figsize=(8, 5))
@@ -40,7 +40,7 @@ plt.ylabel("P95 Latency (s)")
 plt.title("P95 Latency vs QPS")
 plt.grid(True)
 plt.legend()
-plt.savefig("p95_latency_vs_qps.png")
+plt.savefig("../../results/p95_latency_vs_qps.png")
 
 # --- Plot Throughput ---
 plt.figure(figsize=(8, 5))
@@ -52,4 +52,4 @@ plt.ylabel("Throughput (req/s)")
 plt.title("Throughput vs QPS")
 plt.grid(True)
 plt.legend()
-plt.savefig("throughput_vs_qps.png")
+plt.savefig("../../results/throughput_vs_qps.png")
