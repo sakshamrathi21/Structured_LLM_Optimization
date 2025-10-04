@@ -84,6 +84,22 @@ NEO & 0.55 \\
     
 \end{frame}
 
+\begin{frame}{Batch of requests through various Engines}
+    \begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{../results/throughput_vs_qps.png}
+    \caption{Throughput comparison across varying workloads}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Batch of requests through various Engines}
+    \begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{../results/avg_latency_vs_qps.png}
+    \caption{Average Latency comparison across varying workloads}
+\end{figure}
+\end{frame}
+
 \section{LLM Request Timelines}
 \begin{frame}{LLM Request Timelines}
     \begin{figure}[h]
@@ -95,7 +111,11 @@ NEO & 0.55 \\
 
 \section{NSYS Measurements}
 \begin{frame}{NSYS Measurements}
-    
+    \begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{../results/nsys_metrics_llm_inference.png}
+    \caption{NSYS Metrics Snapshot}
+\end{figure}
 \end{frame}
 
 \section{Throughput vs Load for vLLM}
@@ -107,13 +127,49 @@ NEO & 0.55 \\
 \end{figure}
 \end{frame}
 
+\section{GPU Memory Breakdown}
 
-\section{Future Steps}
-\begin{frame}{Future Steps}
-    
+\begin{frame}{GPU Memory Breakdown}
+    \begin{table}[h!]
+\centering
+\begin{tabular}{|c|p{4cm}|}
+\hline
+\textbf{Component} & \textbf{Memory Occupied} \\
+\hline
+Weights  & 0.93 GiB \\
+\hline
+Peak Activation  & 4.07 GiB \\
+\hline
+Non-Torch  & 0.02 GiB \\
+\hline
+CUDA Graph & 0.41 GiB \\
+\hline
+KV Cache: Intersection (Prefix)  & 1,280 tokens / 0.0157 GiB \\
+\hline
+KV Cache: Extras for Requests  & 640 tokens (10 requests × 64 tokens) / 0.0078 GiB \\
+\hline
+KV Cache: Free & 2,672,880 tokens / 32.8445 GiB \\
+\hline
+\end{tabular}
+\caption{GPU Memory Breakdown and KV Cache Usage}
+\label{tab:gpu_memory_breakdown}
+\end{table}
 \end{frame}
 
 
+\section{Future Steps}
+\begin{frame}{Future Steps}
+\begin{itemize}
+    \item Find the max throughput we can achieve for this kind of workload through vLLM
+    \item Find the throughput for a family of requests, each family sharing a system prompt amongst its members
+    \item Explore other batching techniques for such a family of requests, taking prefix sharing into consideration
+    \item Possible changes to the scheduling algorithm
+    \item Can we offload stuff to CPU, when we have computed the KV Cache, and we just need to perform decode operations?
+    \item Possible optimizations to fine tuning
+\end{itemize}
+\end{frame}
+
+\section{}
 \begin{frame}
     \Huge{\centerline{\bf Thank You}}
 \end{frame}
