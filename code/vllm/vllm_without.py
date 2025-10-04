@@ -29,15 +29,14 @@ def main():
         enable_chunked_prefill=enable_chunked_prefill,
         max_num_batched_tokens=16384,
         enable_prefix_caching=True,
-        # disable_log_stats=False,
         max_num_seqs=750,
-	    # enforce_eager=True,
     )
     # TinyLlama/TinyLlama-1.1B-Chat-v1.0
     # meta-llama/Llama-3.1-8B-Instruct
     prompts *= 200
     sampling_params = SamplingParams(temperature=0.7, max_tokens=30)
-    
+    llm.generate(prompts[0:10], sampling_params)
+    return
     for interval in [20000]:
         initial_start_time = time.time()
         multiplier = int(interval/10)
