@@ -11,6 +11,7 @@
 \usetikzlibrary{automata,positioning,decorations.pathreplacing,decorations}
 
 \usepackage{curves}
+\usepackage{caption}
 \usepackage{wasysym}
 \usepackage{epsfig,epstopdf,graphicx}
 
@@ -38,7 +39,7 @@
 
 \usebeamercolor[fg]{author in sidebar}
 \title[{Systems for LLMs}]{\sc Benchmarking and Performance Analysis of LLM Inferencing Systems}
-% \author[\ul{Authors}]{{\bf { Saksham Rathi }}\\ {\footnotesize \hspace{0cm} (22B1003)}}
+\author[\ul{Authors}]{{\textbf{Saksham Rathi}}}
 \institute[UTD]{\sc\small Systems for LLMs\\ Under Prof. Mythili Vutukuru}
 \date[UCI]{Indian Institute of Technology Bombay \\ Autumn 2025-26}
 
@@ -85,11 +86,20 @@ NEO & 0.55 \\
 \end{frame}
 
 \begin{frame}{Batch of requests through various Engines}
-    \begin{figure}[h]
-    \centering
-    \includegraphics[width=0.7\textwidth]{../results/throughput_vs_qps.png}
-    \caption{Throughput comparison across varying workloads}
-\end{figure}
+    \begin{columns}[T, totalwidth=\textwidth]
+        \begin{column}{0.6\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{../results/throughput_vs_qps.png}
+            \vspace{0.3em}
+            \captionof{figure}{Throughput comparison across varying workloads}
+        \end{column}
+        \begin{column}{0.4\textwidth}
+            \begin{itemize}
+                \item SwiftLLM is a small copy (2000 lines of code) of vLLM, promises to perform equivalent to vLLM.
+                \item SGLANG performs quite better because of prefix sharing through radix tree.
+            \end{itemize}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Batch of requests through various Engines}
@@ -102,12 +112,23 @@ NEO & 0.55 \\
 
 \section{LLM Request Timelines}
 \begin{frame}{LLM Request Timelines}
-    \begin{figure}[h]
-    \centering
-    \includegraphics[width=0.7\textwidth]{figures/llm_timelines_20.png}
-    \caption{20 Requests per second - without chunked prefill - vLLM V0 Engine}
-\end{figure}
+    \begin{columns}[T, totalwidth=\textwidth]
+        \begin{column}{0.6\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{figures/llm_timelines_20.png}
+            \vspace{0.3em}
+            \captionof{figure}{20 Requests per second — without chunked prefill — vLLM V0 Engine}
+        \end{column}
+        \begin{column}{0.4\textwidth}
+            \begin{itemize}
+                \item Prefills take too much time as compared to decodes, primiarily because of large system prompt size.
+                \item In this mode prefills can't go along with decodes.
+                \item Prefills are preferred over decodes to reduce TTFT but total response time is quite high.
+            \end{itemize}
+        \end{column}
+    \end{columns}
 \end{frame}
+
 
 \section{NSYS Measurements}
 \begin{frame}{NSYS Measurements}
@@ -116,15 +137,31 @@ NEO & 0.55 \\
     \includegraphics[width=0.7\textwidth]{../results/nsys_metrics_llm_inference.png}
     \caption{NSYS Metrics Snapshot}
 \end{figure}
+
+\begin{itemize}
+    \item For compute: we just check SM Active and Warp occupancy.
+    \item For memory: vLLM books all the available memory in the start, scheduler stats show the actual KV Cache usage.
+    \item PCIe Bandwidth isn't utilized fully - small workloads - no need to transfer stuff to CPU.
+\end{itemize}
 \end{frame}
 
 \section{Throughput vs Load for vLLM}
+
 \begin{frame}{Throughput vs Load for vLLM}
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.7\textwidth]{../results/throughput_comparison_vllm.png}
-    \caption{Throughput vs Load}
-\end{figure}
+    \begin{columns}[T, totalwidth=\textwidth]
+        \begin{column}{0.6\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{../results/throughput_comparison_vllm.png}
+            \captionof{figure}{Throughput vs Load}
+        \end{column}
+        \begin{column}{0.4\textwidth}
+            \begin{itemize}
+                \item Chunked prefill does not really help that much for our type of workload.
+                \item Prefix caching helps a lot, as is visible from the immense difference in throughputs.
+                \item By changing the batch size (in terms of number of sequences and the token budget), we can achieve higher throughputs too.
+            \end{itemize}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \section{GPU Memory Breakdown}
