@@ -63,51 +63,41 @@
 \end{frame}
 
 \section{Batch of requests through various Engines}
-\begin{frame}{Batch of requests through various Engines}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{|l|c|}
-\hline
-\textbf{Technique Used} & \textbf{Time (s)} \\
-\hline
-Transformers (batch size = 1) & 30.21 \\
-Transformers (batch size = 2) & 19.51 \\
-Transformers (batch size = 3) & 18.64 \\
-vLLM (no system prompt pre-filling) & 0.45 \\
-SGLang (fork) & 1.03 \\
-SGLang (run\_batch) & 0.40 \\
-NEO & 0.55 \\
-\hline
-\end{tabular}
-\caption{Measuring the time taken to process a batch of 24 requests using different techniques}
-\end{table}
-    
-\end{frame}
 
 \begin{frame}{Batch of requests through various Engines}
     \begin{columns}[T, totalwidth=\textwidth]
-        \begin{column}{0.6\textwidth}
+        \begin{column}{0.4\textwidth}
             \centering
             \includegraphics[width=\textwidth]{../results/throughput_vs_qps.png}
             \vspace{0.3em}
             \captionof{figure}{Throughput comparison across varying workloads}
         \end{column}
-        \begin{column}{0.4\textwidth}
+        \begin{column}{0.6\textwidth}
             \begin{itemize}
                 \item SwiftLLM is a small copy (2000 lines of code) of vLLM, promises to perform equivalent to vLLM.
                 \item SGLANG performs quite better because of prefix sharing through radix tree.
             \end{itemize}
+            \begin{table}[h]
+            \centering
+            \scriptsize
+            \begin{tabular}{|l|c|}
+            \hline
+            \textbf{Technique Used} & \textbf{Time (s)} \\
+            \hline
+            Transformers (batch size = 1) & 30.21 \\
+            Transformers (batch size = 2) & 19.51 \\
+            Transformers (batch size = 3) & 18.64 \\
+            vLLM (no system prompt pre-filling) & 0.45 \\
+            SGLang (fork) & 1.03 \\
+            SGLang (run\_batch) & 0.40 \\
+            NEO & 0.55 \\
+            \hline
+            \end{tabular}
+            \caption{Measuring the time taken to process a batch of 24 requests using different techniques}
+            \end{table}
+    
         \end{column}
     \end{columns}
-\end{frame}
-
-\begin{frame}{Batch of requests through various Engines}
-    \begin{figure}[h]
-    \centering
-    \includegraphics[width=0.7\textwidth]{../results/avg_latency_vs_qps.png}
-    \caption{Average Latency comparison across varying workloads}
-\end{figure}
 \end{frame}
 
 \section{LLM Request Timelines}
@@ -194,17 +184,30 @@ KV Cache: Free & 2,672,880 tokens / 32.8445 GiB \\
 \end{frame}
 
 
-\section{Future Steps}
-\begin{frame}{Future Steps}
-\begin{itemize}
-    \item Find the max throughput we can achieve for this kind of workload through vLLM
-    \item Find the throughput for a family of requests, each family sharing a system prompt amongst its members
-    \item Explore other batching techniques for such a family of requests, taking prefix sharing into consideration
-    \item Possible changes to the scheduling algorithm
-    \item Can we offload stuff to CPU, when we have computed the KV Cache, and we just need to perform decode operations?
-    \item Possible optimizations to fine tuning
-\end{itemize}
+\section{The Broader Goal}
+
+\begin{frame}{Broader Goal}
+    \begin{itemize}
+        \item Without prefix sharing, the effective batch size is constrained by the model’s maximum context length (e.g., 32,768 tokens for a small Qwen model). 
+        \item If each request occupies about 1,500 tokens, we can fit only around 20 requests within a single batch before hitting the limit.
+        \item With prefix sharing, the limiting factor shifts from context size to compute utilization. As the number of concurrent requests grows, per-request latency increases, and beyond a point, overall throughput would start declining.
+        \item The next step is to design a better scheduling algorithm for families of such requests (each family sharing a common system prompt). At each scheduling step, we must decide whether to prefill a shared prefix or decode tokens for an existing request. (None of the existing schedulers actually take care about the number of tokens shared between requests).
+    \end{itemize}
 \end{frame}
+
+\begin{frame}{Broader Goal (continued)}
+    \begin{itemize}
+        \item Another key direction is to explore KV cache offloading to the CPU and the feasibility of continuing decodes there.
+        \item We also aim to assess whether fine-tuning improves model response quality and accuracy.
+        \item Broadly, we have two strategies:
+        \begin{itemize}
+            \item Pass the entire system prompt with each request, or
+            \item Fine-tune the model for each family of related requests.
+        \end{itemize}
+        \item For both strategies, we need to evaluate the trade-offs between performance (e.g., large-context overhead during inference) and response quality (gains from fine-tuning).
+    \end{itemize}
+\end{frame}
+
 
 \section{}
 \begin{frame}
