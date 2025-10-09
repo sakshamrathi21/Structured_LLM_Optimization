@@ -49,10 +49,8 @@
 	\tableofcontents
 \end{frame}
 
-% =========================================================
 \section{Workload Picked}
 
-% --- NEW: Split into two slides ---
 \begin{frame}{Workload Setup}
 \begin{itemize}
     \item \textbf{Goal:} Evaluate inference performance of LLMs under short queries with large shared context.
@@ -104,7 +102,7 @@ Engines leveraging prefix caching (e.g., SGLang) should perform far better than 
         \end{column}
         \begin{column}{0.6\textwidth}
             \begin{itemize}
-                \item \textbf{SwiftLLM:} lightweight vLLM clone (~2000 LOC), but performs the worst.
+                \item \textbf{SwiftLLM:} lightweight vLLM clone ($\sim$2000 LOC), but doesn't performs that well.
                 \item \textbf{SGLang:} achieves best performance via radix-tree prefix sharing.
             \end{itemize}
             \begin{table}[h]
@@ -181,27 +179,6 @@ Engines leveraging prefix caching (e.g., SGLang) should perform far better than 
 \end{columns}
 \end{frame}
 
-\section{NSYS Measurements}
-
-\begin{frame}{Results: NSYS Measurements}
-\begin{block}{Goal}
-Understand compute vs memory utilization and bottlenecks.
-\end{block}
-\vspace{1cm}
-\centering
-\includegraphics[width=\textwidth]{../results/nsys_metrics_llm_inference.png}
-\captionof{figure}{NSYS Metrics Snapshot}
-\end{frame}
-
-\begin{frame}{Observation: NSYS Profiling}
-\begin{itemize}
-    \item Compute: SM Active and Warp occupancy.
-    \item Memory: vLLM books full GPU memory upfront.
-    \item vLLM scheduler stats show the actual KV Cache Usage.
-    \item PCIe Bandwidth low → small workloads, minimal CPU transfer.
-\end{itemize}
-\end{frame}
-
 \section{Throughput vs Load for vLLM}
 
 \begin{frame}{Results: Throughput vs Load for vLLM}
@@ -223,6 +200,27 @@ Understand compute vs memory utilization and bottlenecks.
 \begin{block}{Observation}
     Saturation begins at $\sim$300 req/sec — compute bottleneck.
 \end{block}
+\end{frame}
+
+\section{NSYS Measurements}
+
+\begin{frame}{Results: NSYS Measurements}
+\begin{block}{Goal}
+Understand compute vs memory utilization and bottlenecks.
+\end{block}
+\vspace{1cm}
+\centering
+\includegraphics[width=\textwidth]{../results/nsys_metrics_llm_inference.png}
+\captionof{figure}{NSYS Metrics Snapshot}
+\end{frame}
+
+\begin{frame}{Observation: NSYS Profiling}
+\begin{itemize}
+    \item Compute: SM Active and Warp occupancy.
+    \item Memory: vLLM books full GPU memory upfront.
+    \item vLLM scheduler stats show the actual KV Cache Usage.
+    \item PCIe Bandwidth low → small workloads, minimal CPU transfer.
+\end{itemize}
 \end{frame}
 
 \section{GPU Memory Breakdown}
