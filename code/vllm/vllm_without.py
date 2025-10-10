@@ -7,7 +7,8 @@ import torch
 
 def main():
     # model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-    model_name = "qwen/qwen2.5-0.5b-instruct"
+    # model_name = "qwen/qwen2.5-0.5b-instruct"
+    model_name = "meta-llama/Llama-2-7b-chat-hf"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     system_prompt_halved = system_prompt[0:len(system_prompt)]
     prompts = []
