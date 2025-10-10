@@ -60,3 +60,11 @@ CUDA-compilation
 ```bash
 nvcc -ccbin=/usr/bin/gcc-11 -std=c++17 -o matmul matrixmul.cu -lcudart -lstdc++ -lnvToolsExt
 ```
+
+---
+
+DCGMI
+
+```bash
+sudo dcgmi dmon -e 1002,1005,1009,1010 -d 1
+```
