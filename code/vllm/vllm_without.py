@@ -33,23 +33,23 @@ def main():
         max_num_seqs=1000,
     )
     sampling_params = SamplingParams(temperature=0.7, max_tokens=30)
-    # for interval in [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]:
-    #     initial_start_time = time.time()
-    #     multiplier = int(interval/10)
-    #     if multiplier == 0:
-    #         multiplier += 1
-    #     all_prompts = prompts * multiplier
-    #     for i in range(0, len(all_prompts), interval):
-    #         start_time = time.time()
-    #         outputs = llm.generate(all_prompts[i:i+interval], sampling_params)
-    #         time.sleep(max(0, 1 - time.time() + start_time))
-    #     print(f"Throughput for interval ({interval}): ", len(all_prompts) / (time.time() - initial_start_time), "req/s (enabling chunked prefill:", enable_chunked_prefill, ")")
+    for interval in [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]:
+        initial_start_time = time.time()
+        multiplier = int(interval/10)
+        if multiplier == 0:
+            multiplier += 1
+        all_prompts = prompts * multiplier
+        for i in range(0, len(all_prompts), interval):
+            start_time = time.time()
+            outputs = llm.generate(all_prompts[i:i+interval], sampling_params)
+            time.sleep(max(0, 1 - time.time() + start_time))
+        print(f"Throughput for interval ({interval}): ", len(all_prompts) / (time.time() - initial_start_time), "req/s (enabling chunked prefill:", enable_chunked_prefill, ")")
 
-    prompts *= 100
-    start_time = time.time()
-    outputs = llm.generate(prompts, sampling_params)
-    end_time = time.time()
-    print("Throughput: ", len(outputs) / (end_time - start_time), "req/s (enabling chunked prefill:", enable_chunked_prefill, ")")
+    # prompts *= 100
+    # start_time = time.time()
+    # outputs = llm.generate(prompts, sampling_params)
+    # end_time = time.time()
+    # print("Throughput: ", len(outputs) / (end_time - start_time), "req/s (enabling chunked prefill:", enable_chunked_prefill, ")")
     
     # for interval in [1/5, 1/10, 1/20, 1/30, 1/50, 1/100]:
     # # prompts = prompts[0:10]
