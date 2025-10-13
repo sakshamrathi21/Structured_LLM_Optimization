@@ -20,4 +20,4 @@ code/log/*.pt.trace.json
 out_*
 __pycache__/
 *.sqlite
-*.out
+*.out*

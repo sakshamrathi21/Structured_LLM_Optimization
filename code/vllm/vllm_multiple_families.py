@@ -19,25 +19,27 @@ def generate_prefixes(n):
 
 
 def main():
-    model_name = "qwen/qwen2.5-0.5b-instruct"
+    model_name = "lmsys/longchat-13b-16k"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-    prefixes = generate_prefixes(100)
-
+    prefixes = generate_prefixes(10)
     prompts = []
     for prefix in prefixes:
         modified_system_prompt = prefix + " " + system_prompt
         # modified_system_prompt = system_prompt
-        for q in queries:
+        for q in queries*10:
             chat_messages = [
                 {"role": "system", "content": modified_system_prompt},
                 {"role": "user", "content": q},
             ]
-            full_prompt = tokenizer.apply_chat_template(
-                chat_messages,
-                tokenize=False,
-                add_generation_prompt=True,
-            )
+            try:
+                full_prompt = tokenizer.apply_chat_template(
+                    chat_messages,
+                    tokenize=False,
+                    add_generation_prompt=True,
+                )
+            except:
+                full_prompt = modified_system_prompt + " Question: " + q
             prompts.append(full_prompt)
 
     print(f"Generated {len(prompts)} prompts in total.")
@@ -47,7 +49,7 @@ def main():
     enable_chunked_prefill = True
     llm = LLM(
         model=model_name,
-        gpu_memory_utilization=0.75,
+        gpu_memory_utilization=0.90,
         enable_chunked_prefill=enable_chunked_prefill,
         max_num_batched_tokens=32768,
         enable_prefix_caching=True,

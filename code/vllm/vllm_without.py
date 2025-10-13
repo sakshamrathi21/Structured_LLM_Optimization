@@ -9,9 +9,9 @@ from vllm import LLM, SamplingParams
 
 
 def main():
-    # model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-    # model_name = "qwen/qwen2.5-0.5b-instruct"
-    model_name = "meta-llama/Llama-2-7b-chat-hf"
+    model_name = "qwen/qwen2.5-0.5b-instruct"
+    # model_name = "lmsys/longchat-13b-16k"
+    # model_name = "meta-llama/Llama-2-7b-chat-hf"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     system_prompt_halved = system_prompt[0 : len(system_prompt)]
     prompts = []
@@ -37,29 +37,29 @@ def main():
     )
     sampling_params = SamplingParams(temperature=0.7, max_tokens=30)
 
-    prompts *= 100
-    start_time = time.time()
-    outputs = llm.generate(prompts, sampling_params)
-    end_time = time.time()
-    print(
-        "Throughput: ",
-        len(outputs) / (end_time - start_time),
-        "req/s (enabling chunked prefill:",
-        enable_chunked_prefill,
-        ")",
-    )
+    # prompts *= 100
+    # start_time = time.time()
+    # outputs = llm.generate(prompts, sampling_params)
+    # end_time = time.time()
+    # print(
+    #     "Throughput: ",
+    #     len(outputs) / (end_time - start_time),
+    #     "req/s (enabling chunked prefill:",
+    #     enable_chunked_prefill,
+    #     ")",
+    # )
 
-    # for interval in [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]:
-    #     initial_start_time = time.time()
-    #     multiplier = int(interval/10)
-    #     if multiplier == 0:
-    #         multiplier += 1
-    #     all_prompts = prompts * multiplier
-    #     for i in range(0, len(all_prompts), interval):
-    #         start_time = time.time()
-    #         outputs = llm.generate(all_prompts[i:i+interval], sampling_params)
-    #         time.sleep(max(0, 1 - time.time() + start_time))
-    #     print(f"Throughput for interval ({interval}): ", len(all_prompts) / (time.time() - initial_start_time), "req/s (enabling chunked prefill:", enable_chunked_prefill, ")")
+    for interval in [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]:
+        initial_start_time = time.time()
+        multiplier = int(interval)
+        if multiplier == 0:
+            multiplier += 1
+        all_prompts = prompts * multiplier
+        for i in range(0, len(all_prompts), interval):
+            start_time = time.time()
+            outputs = llm.generate(all_prompts[i:i+interval], sampling_params)
+            time.sleep(max(0, 1 - time.time() + start_time))
+        print(f"Throughput for interval ({interval}): ", len(all_prompts) / (time.time() - initial_start_time), "req/s (enabling chunked prefill:", enable_chunked_prefill, ")")
 
 
 if __name__ == "__main__":

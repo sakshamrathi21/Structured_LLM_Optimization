@@ -77,7 +77,7 @@ def get_generation_time(llm, sampling_params, prompts):
 
 def main():
     # set enable_prefix_caching=True to enable APC
-    llm = LLM(model="qwen/qwen2.5-0.5b-instruct", enable_prefix_caching=True)
+    llm = LLM(model="lmsys/longchat-13b-16k", enable_prefix_caching=True)
 
     sampling_params = SamplingParams(temperature=0, max_tokens=100)
 
