@@ -8,12 +8,10 @@
 \vfill
 
 % --- Title ---
-% --- Title ---
 {\Huge\bfseries Structured LLM Optimization}\\[1em]
 
 % --- Subtitle ---
 {\LARGE\itshape Systems for LLMs}\\[2em]
-
 
 \vfill
 
@@ -34,6 +32,14 @@
 {\large Academic Year: 2025--26}
 
 \end{center}
+
+% Draw a border around this page
+\begin{tikzpicture}[remember picture, overlay]
+  \draw[line width=3pt, black]
+    ($(current page.north west) + (1cm,-1cm)$) rectangle
+    ($(current page.south east) + (-1cm,1cm)$);
+\end{tikzpicture}
+
 \newpage
 \pagestyle{plain}
 \setcounter{page}{1}
