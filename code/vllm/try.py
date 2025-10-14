@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 import re
 
 # List of input files
-files = [".out_100", ".out_300", ".out_500", ".out_1000"]
+files = [".out_100", ".out_300", ".out_500", ".out_1000", ".out_1500", ".out_2000", ".out_2500"]
 
 # Prepare a 4x2 grid for 8 plots
-fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(12, 12))
+fig, axes = plt.subplots(nrows=len(files), ncols=2, figsize=(15, 20))
 fig.subplots_adjust(hspace=0.4, wspace=0.3)
 
 for i, file_path in enumerate(files):

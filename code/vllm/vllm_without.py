@@ -33,11 +33,11 @@ def main():
         enable_chunked_prefill=enable_chunked_prefill,
         max_num_batched_tokens=32768,
         enable_prefix_caching=True,
-        max_num_seqs=1000,
+        max_num_seqs=2500,
     )
     sampling_params = SamplingParams(temperature=0.7, max_tokens=30)
 
-    prompts *= 100
+    prompts *= 200
     start_time = time.time()
     outputs = llm.generate(prompts, sampling_params)
     end_time = time.time()
