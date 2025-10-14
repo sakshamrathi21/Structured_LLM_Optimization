@@ -4,7 +4,9 @@
 #include <nvToolsExt.h>   // NVTX for timeline ranges
 
 #define BLOCK_SIZE 16      // threads per block dimension
-#define TILE_SIZE 2048      // host tiling (adjust based on GPU memory)
+#define TILE_SIZE 32768      // host tiling (adjust based on GPU memory)
+
+const int N = TILE_SIZE;
 
 // CUDA kernel with shared memory tiling
 __global__ void matmul_tiled(float *A, float *B, float *C, int n) {
@@ -64,7 +66,7 @@ void copySubMatrixToHost(float *dst, float *src,
 }
 
 int main() {
-    const int N = 8192;  // adjust as needed
+    
     size_t size = N * N * sizeof(float);
 
     // Host memory
@@ -112,7 +114,6 @@ int main() {
                 cudaFree(d_subB);
             }
 
-            // ---- D2H copy ----
             nvtxRangePush("D2H Copy");
             copySubMatrixToHost(h_C, d_subC, i, j, N, TILE_SIZE);
             nvtxRangePop();
@@ -120,8 +121,6 @@ int main() {
             cudaFree(d_subC);
         }
     }
-
-    // Check a few values
     std::cout << "C[0][0] = " << h_C[0] << std::endl;
     std::cout << "C[N-1][N-1] = " << h_C[N*N-1] << std::endl;
 
