@@ -1,20 +1,47 @@
-import re
+import pandas as pd
 import matplotlib.pyplot as plt
+import re
 
-# Read file
-with open("out_infinite", "r") as f:
-    lines = f.readlines()
+# List of input files
+files = [".out_100", ".out_300", ".out_500", ".out_1000"]
 
-numbers = []
-for line in lines:
-    match = re.search(r"Number of outputs in this step:\s+(\d+)", line)
-    if match:
-        numbers.append(int(match.group(1)))
+# Prepare a 4x2 grid for 8 plots
+fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(12, 12))
+fig.subplots_adjust(hspace=0.4, wspace=0.3)
 
-# Plot
-plt.plot(numbers, marker='o')
-plt.xlabel("Step")
-plt.ylabel("Number of outputs")
-plt.title("Outputs per Step")
-plt.grid(True)
-plt.savefig("vllm_batch_outputs_chunked_prefill.png")
+for i, file_path in enumerate(files):
+    # Extract batch size (last number in the filename)
+    match = re.search(r"(\d+)", file_path)
+    batch_size = match.group(1) if match else "?"
+
+    # --- Read data ---
+    data = []
+    with open(file_path, "r") as f:
+        for line in f:
+            if line.strip() and not line.startswith("#"):
+                parts = line.split()
+                if len(parts) == 4:
+                    _, _, smact, smocc = parts
+                    data.append((float(smact), float(smocc)))
+
+    df = pd.DataFrame(data, columns=["SMACT", "SMOCC"])
+
+    # --- Plot SMACT ---
+    ax1 = axes[i, 0]
+    ax1.plot(df["SMACT"], marker='o', linestyle='-', color='b')
+    ax1.set_title(f"Max Batch Size {batch_size}: SM Active (SMACT)")
+    ax1.set_xlabel("Time")
+    ax1.set_ylabel("SMACT")
+    ax1.grid(True)
+
+    # --- Plot SMOCC ---
+    ax2 = axes[i, 1]
+    ax2.plot(df["SMOCC"], marker='o', linestyle='-', color='r')
+    ax2.set_title(f"Max Batch Size {batch_size}: SM Occupancy (SMOCC)")
+    ax2.set_xlabel("Time")
+    ax2.set_ylabel("SMOCC")
+    ax2.grid(True)
+
+plt.tight_layout()
+plt.show()
+plt.savefig("../../results/smact_smocc_batch_sizes.png")
