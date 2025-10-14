@@ -4,7 +4,6 @@ import time
 
 from transformers import AutoTokenizer
 
-from gpu_mem import start_logging, stop_logging
 from system_prompt import queries, system_prompt
 from vllm import LLM, SamplingParams
 
@@ -19,7 +18,7 @@ def generate_prefixes(n):
 
 
 def main():
-    model_name = "lmsys/longchat-13b-16k"
+    model_name = "meta-llama/Llama-2-7b-chat-hf"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     prefixes = generate_prefixes(10)
@@ -27,7 +26,7 @@ def main():
     for prefix in prefixes:
         modified_system_prompt = prefix + " " + system_prompt
         # modified_system_prompt = system_prompt
-        for q in queries*10:
+        for q in queries[:10]:
             chat_messages = [
                 {"role": "system", "content": modified_system_prompt},
                 {"role": "user", "content": q},
