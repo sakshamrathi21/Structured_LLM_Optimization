@@ -29,7 +29,7 @@ for i, file_path in enumerate(files):
     # --- Plot SMACT ---
     ax1 = axes[i, 0]
     ax1.plot(df["SMACT"], marker='o', linestyle='-', color='b')
-    ax1.set_title(f"Max Batch Size {batch_size}: SM Active (SMACT)")
+    ax1.set_title(f"Matrix Size {batch_size}: SM Active (SMACT)")
     ax1.set_xlabel("Time")
     ax1.set_ylabel("SMACT")
     ax1.grid(True)
@@ -37,7 +37,7 @@ for i, file_path in enumerate(files):
     # --- Plot SMOCC ---
     ax2 = axes[i, 1]
     ax2.plot(df["SMOCC"], marker='o', linestyle='-', color='r')
-    ax2.set_title(f"Max Batch Size {batch_size}: SM Occupancy (SMOCC)")
+    ax2.set_title(f"Matrix Size {batch_size}: SM Occupancy (SMOCC)")
     ax2.set_xlabel("Time")
     ax2.set_ylabel("SMOCC")
     ax2.grid(True)
