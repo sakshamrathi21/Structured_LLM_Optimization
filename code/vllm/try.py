@@ -3,17 +3,16 @@ import matplotlib.pyplot as plt
 import re
 
 # List of input files
-files = [".out_100", ".out_300", ".out_500", ".out_1000", ".out_1500", ".out_2000", ".out_2500"]
+files = [".out_1000", ".out_1000_family"]
 
 # Prepare a 4x2 grid for 8 plots
-fig, axes = plt.subplots(nrows=len(files), ncols=2, figsize=(15, 20))
+fig, axes = plt.subplots(nrows=len(files), ncols=2, figsize=(15, 10))
 fig.subplots_adjust(hspace=0.4, wspace=0.3)
 
 for i, file_path in enumerate(files):
     # Extract batch size (last number in the filename)
     match = re.search(r"(\d+)", file_path)
     batch_size = match.group(1) if match else "?"
-
     # --- Read data ---
     data = []
     with open(file_path, "r") as f:
@@ -44,4 +43,4 @@ for i, file_path in enumerate(files):
 
 plt.tight_layout()
 plt.show()
-plt.savefig("../../results/smact_smocc_batch_sizes.png")
+plt.savefig("try.png")

@@ -18,12 +18,12 @@ def generate_prefixes(n):
 
 
 def main():
-    model_name = "meta-llama/Llama-2-7b-chat-hf"
+    model_name = "meta-llama/Llama-3.1-8B-Instruct"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     prefixes = generate_prefixes(10)
     prompts = []
-    for q in queries[:10]:
+    for q in queries:
         for prefix in prefixes:
             modified_system_prompt = prefix + " " + system_prompt
             # modified_system_prompt = system_prompt
@@ -50,7 +50,7 @@ def main():
         model=model_name,
         gpu_memory_utilization=0.90,
         enable_chunked_prefill=enable_chunked_prefill,
-        max_num_batched_tokens=8192,
+        max_num_batched_tokens=32768,
         enable_prefix_caching=True,
         max_num_seqs=1000,
     )
