@@ -23,10 +23,10 @@ def main():
 
     prefixes = generate_prefixes(10)
     prompts = []
-    for prefix in prefixes:
-        modified_system_prompt = prefix + " " + system_prompt
-        # modified_system_prompt = system_prompt
-        for q in queries[:10]:
+    for q in queries[:10]:
+        for prefix in prefixes:
+            modified_system_prompt = prefix + " " + system_prompt
+            # modified_system_prompt = system_prompt
             chat_messages = [
                 {"role": "system", "content": modified_system_prompt},
                 {"role": "user", "content": q},
@@ -50,7 +50,7 @@ def main():
         model=model_name,
         gpu_memory_utilization=0.90,
         enable_chunked_prefill=enable_chunked_prefill,
-        max_num_batched_tokens=32768,
+        max_num_batched_tokens=8192,
         enable_prefix_caching=True,
         max_num_seqs=1000,
     )
