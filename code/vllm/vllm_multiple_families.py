@@ -23,7 +23,7 @@ def main():
 
     prefixes = generate_prefixes(10)
     prompts = []
-    for q in queries:
+    for q in queries[:10]:
         for prefix in prefixes:
             modified_system_prompt = prefix + " " + system_prompt
             # modified_system_prompt = system_prompt
@@ -43,7 +43,7 @@ def main():
 
     print(f"Generated {len(prompts)} prompts in total.")
 
-    random.shuffle(prompts)
+    # random.shuffle(prompts)
 
     enable_chunked_prefill = True
     llm = LLM(
@@ -52,7 +52,7 @@ def main():
         enable_chunked_prefill=enable_chunked_prefill,
         max_num_batched_tokens=32768,
         enable_prefix_caching=True,
-        max_num_seqs=1000,
+        max_num_seqs=20,
     )
 
     sampling_params = SamplingParams(temperature=0.7, max_tokens=30)
