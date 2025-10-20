@@ -68,3 +68,29 @@ DCGMI
 ```bash
 sudo dcgmi dmon -e 1002,1003 -d 10
 ```
+
+
+---
+
+NCU
+
+```bash
+ncu --set full --metrics l1tex__t_sector_hit_rate.pct,lts__t_sectors_hit_rate.pct,lts__t_sectors_miss_rate.pct python vllm_multiple_families.py
+```
+
+---
+
+NV-NSIGHT-CU-CLI
+```bash
+nv-nsight-cu-cli --metrics l2_read_transactions,l2_write_transactions,l2_read_bytes,l2_write_bytes,l2_read_transactions_miss,l2_write_transactions_miss --csv python vllm_multiple_families.py 
+```
+
+
+```bash
+nv-nsight-cu-cli --target-processes all --kernel-name "regex:.*gemm.*|.*flash_attn.*" --launch-skip 200 --launch-count 50 --metrics l1tex__t_sectors_hit.sum,l1tex__t_sectors_miss.sum,lts__t_sectors_hit.sum,lts__t_sectors_miss.sum python vllm_multiple_families.py
+```
+
+
+```bash
+nv-nsight-cu-cli --target-processes all --section MemoryWorkloadAnalysis --launch-skip 200     --launch-count 50 --csv python vllm_multiple_families.py > out.csv
+```
