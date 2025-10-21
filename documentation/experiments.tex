@@ -442,7 +442,11 @@ LongChat 13B & 22.415 req/s& 70.097 req/s\\
     \caption{SM Active and SM Occupancy across different max batch sizes}
 \end{figure}
 
-
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{\RESULTDIR/input_output_speeds_vllm.png}
+    \caption{Input and Output Speeds}
+\end{figure}
 
 
 
@@ -471,5 +475,29 @@ KV Cache: Free & Remaining unused KV cache memory. & 2,672,880 tokens / 32.8445 
 \hline
 \end{tabular}
 \caption{GPU Memory Breakdown and KV Cache Usage}
+\label{tab:gpu_memory_breakdown}
+\end{table}
+
+
+\section{Merging queries belonging to the same family into a single batch}
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Number of Families} & \textbf{Number of queries in each family} & \textbf{Max Batch Size} & \textbf{Ordered by Family ID} & \textbf{Random Permutation} \\
+\hline
+\hline
+10 & 10 & 10 & 12.28 & 11.981 \\
+\hline
+10 & 100 & 100 & 59.601 & 55.704 \\
+\hline
+10 & 100 & 200 & 61.693 & 60.923 \\
+\hline
+100 & 100 & 100 & 42.882 & 39.172 \\
+\hline
+\end{tabular}%
+}
+\caption{Comparison of Throughput (req/sec) when merging queries from the same family into a single batch vs not merging}
 \label{tab:gpu_memory_breakdown}
 \end{table}
