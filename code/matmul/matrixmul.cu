@@ -4,7 +4,7 @@
 #include <nvToolsExt.h>   // NVTX for timeline ranges
 
 #define BLOCK_SIZE 16      // threads per block dimension
-#define TILE_SIZE 32768      // host tiling (adjust based on GPU memory)
+#define TILE_SIZE 8192      // host tiling (adjust based on GPU memory)
 
 const int N = TILE_SIZE;
 
