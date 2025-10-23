@@ -1,0 +1,43 @@
+Throughput Test with 1 families and 20 req/sec: 19.997670921744042
+Throughput Test with 1 families and 50 req/sec: 49.75481810356684
+Throughput Test with 1 families and 100 req/sec: 84.14467341032461
+Throughput Test with 1 families and 200 req/sec: 99.60071059980014
+Throughput Test with 1 families and 500 req/sec: 114.79202498144453
+Throughput Test with 5 families and 20 req/sec: 19.478989021046104
+Throughput Test with 5 families and 50 req/sec: 44.461109143920886
+Throughput Test with 5 families and 100 req/sec: 63.468982827104
+Throughput Test with 5 families and 200 req/sec: 74.78459043436054
+Throughput Test with 5 families and 500 req/sec: 86.28338197143007
+Throughput Test with 10 families and 20 req/sec: 19.420035857325956
+Throughput Test with 10 families and 50 req/sec: 45.09512327827117
+Throughput Test with 10 families and 100 req/sec: 55.73833468850682
+Throughput Test with 10 families and 200 req/sec: 69.48338129006808
+Throughput Test with 10 families and 500 req/sec: 82.71677091136566
+Throughput Test with 100 families and 20 req/sec: 19.343365875641833
+Throughput Test with 100 families and 50 req/sec: 39.09933361880614
+Throughput Test with 100 families and 100 req/sec: 48.77722504999725
+Throughput Test with 100 families and 200 req/sec: 53.64884151594124
+Throughput Test with 100 families and 500 req/sec: 60.435791975277404
+
+With prefix-prefilling:
+Throughput Test with 1 families and 20 req/sec: 19.9978902181574
+Throughput Test with 1 families and 50 req/sec: 49.994673104426774
+Throughput Test with 1 families and 100 req/sec: 87.66746166415061
+Throughput Test with 1 families and 200 req/sec: 99.75875661839424
+Throughput Test with 1 families and 500 req/sec: 115.83134843611617
+Throughput Test with 5 families and 20 req/sec: 19.99772345709889
+Throughput Test with 5 families and 50 req/sec: 49.33183960669119
+Throughput Test with 5 families and 100 req/sec: 66.15353184967846
+Throughput Test with 5 families and 200 req/sec: 76.24928483981853
+Throughput Test with 5 families and 500 req/sec: 87.6297021982739
+Throughput Test with 10 families and 20 req/sec: 19.997858562899843
+Throughput Test with 10 families and 50 req/sec: 49.32132647160426
+Throughput Test with 10 families and 100 req/sec: 62.50523074531355
+Throughput Test with 10 families and 200 req/sec: 74.40027287346784
+Throughput Test with 10 families and 500 req/sec: 85.69630754795881
+Throughput Test with 100 families and 20 req/sec: 19.997733659096358
+Throughput Test with 100 families and 50 req/sec: 42.158322443197605
+Throughput Test with 100 families and 100 req/sec: 53.72117425089027
+Throughput Test with 100 families and 200 req/sec: 59.548867957478684
+Throughput Test with 100 families and 500 req/sec: 68.57564784260798
+

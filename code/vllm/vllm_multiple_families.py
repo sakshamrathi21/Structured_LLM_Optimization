@@ -47,7 +47,7 @@ def main():
 
     # Pair prompts with their families before shuffling
     paired = list(zip(prompts, families))
-    # random.shuffle(paired)
+    random.shuffle(paired)
 
     # Unzip after shuffling
     prompts, families = zip(*paired)
