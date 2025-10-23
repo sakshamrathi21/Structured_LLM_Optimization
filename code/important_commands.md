@@ -92,5 +92,5 @@ nv-nsight-cu-cli --target-processes all --kernel-name "regex:.*gemm.*|.*flash_at
 
 
 ```bash
-nv-nsight-cu-cli --target-processes all --section MemoryWorkloadAnalysis --launch-skip 200     --launch-count 50 --csv python vllm_multiple_families.py > out.csv
+nv-nsight-cu-cli --target-processes all --section MemoryWorkloadAnalysis --launch-skip 200 --launch-count 50 --csv python vllm_multiple_families.py > out.csv
 ```

@@ -20,7 +20,7 @@ def main():
     model_name = "meta-llama/Llama-3.1-8B-Instruct"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-    prefixes = generate_prefixes(100)  # 10 families
+    prefixes = generate_prefixes(10)  # 10 families
     prompts = []
     families = []  
 
@@ -53,9 +53,9 @@ def main():
     prompts, families = zip(*paired)
 
     # Now families[i] tells you which prefix family prompt[i] came from
-    print("\nShuffled family mapping:")
-    for i, fam in enumerate(families):
-        print(f"Prompt {i} → Family {fam}")
+    # print("\nShuffled family mapping:")
+    # for i, fam in enumerate(families):
+    #     print(f"Prompt {i} → Family {fam}")
 
     enable_chunked_prefill = True
     llm = LLM(
