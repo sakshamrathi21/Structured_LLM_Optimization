@@ -64,7 +64,7 @@ def main():
 
     print(f"Generated {len(prompts)} prompts in total.")
     paired = list(zip(prompts, families))
-    # random.shuffle(paired)
+    random.shuffle(paired)
     prompts, families = zip(*paired)
 
     enable_chunked_prefill = True
