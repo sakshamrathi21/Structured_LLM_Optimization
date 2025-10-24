@@ -64,7 +64,7 @@ def main():
 
     print(f"Generated {len(prompts)} prompts in total.")
     paired = list(zip(prompts, families))
-    random.shuffle(paired)
+    # random.shuffle(paired)
     prompts, families = zip(*paired)
 
     enable_chunked_prefill = True
@@ -77,7 +77,7 @@ def main():
         max_num_seqs=1000,
     )
 
-    _ = llm.generate(system_prompts, SamplingParams(temperature=0.7, max_tokens=30))
+    out = llm.generate(system_prompts, SamplingParams(temperature=0.7, max_tokens=30))
     initial_start_time = time.time()
     for i in range(0, len(prompts), req_per_sec):
         start_time = time.time()

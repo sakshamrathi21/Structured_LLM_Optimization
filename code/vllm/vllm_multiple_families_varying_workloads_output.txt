@@ -41,3 +41,6 @@ Throughput Test with 100 families and 100 req/sec: 53.72117425089027
 Throughput Test with 100 families and 200 req/sec: 59.548867957478684
 Throughput Test with 100 families and 500 req/sec: 68.57564784260798
 
+
+
+Throughput Test with 1 families and 20 req/sec: 19.997728605769208
