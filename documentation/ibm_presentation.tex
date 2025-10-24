@@ -261,6 +261,17 @@ KV Cache: Free & 2,672,880 tokens / 32.8445 GiB \\
 \end{frame}
 
 \section{Experiments with Multiple Families}
+
+\begin{frame}{Generation of these families}
+    \begin{itemize}
+        \item Let's say we already have a large system prompt of length 1500 tokens.
+        \item We generate multiple families of requests by appending a unique family identifier to the system prompt.
+        \item For example, for family 1, we append "AA", for family 2, "AB", and so on.
+        \item This ensures that although the families have a substring in common, but their prefixes always differ, and the KV Cache block hashes won't match.
+        \item This in turn implies, that we need to compute and store separate KV Cache blocks for each family.
+    \end{itemize}
+
+\end{frame}
 \begin{frame}{Experiments with Multiple Families}
 \centering
     \includegraphics[width=\textwidth]{../results/throughput_no_prefill.png}
