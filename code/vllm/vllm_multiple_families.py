@@ -1,6 +1,7 @@
 import random
 import string
 import time
+import sys as system
 
 from transformers import AutoTokenizer
 from system_prompt import queries, system_prompt
@@ -19,8 +20,9 @@ def generate_prefixes(n):
 def main():
     model_name = "meta-llama/Llama-3.1-8B-Instruct"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-
-    prefixes = generate_prefixes(10)  # 10 families
+    num_families = int(system.argv[1]) if len(system.argv) > 1 else 10
+    max_num_seqs = int(system.argv[2]) if len(system.argv) > 2 else 100
+    prefixes = generate_prefixes(num_families)  # 10 families
     prompts = []
     families = []  
 
@@ -45,40 +47,40 @@ def main():
 
     print(f"Generated {len(prompts)} prompts in total.")
 
-    # Pair prompts with their families before shuffling
-    paired = list(zip(prompts, families))
-    random.shuffle(paired)
-
-    # Unzip after shuffling
-    prompts, families = zip(*paired)
-
-    # Now families[i] tells you which prefix family prompt[i] came from
-    # print("\nShuffled family mapping:")
-    # for i, fam in enumerate(families):
-    #     print(f"Prompt {i} → Family {fam}")
-
     enable_chunked_prefill = True
     llm = LLM(
         model=model_name,
-        gpu_memory_utilization=0.90,
+        gpu_memory_utilization=0.98,
         enable_chunked_prefill=enable_chunked_prefill,
         max_num_batched_tokens=32768,
         enable_prefix_caching=True,
-        max_num_seqs=100,
+        max_num_seqs=max_num_seqs,
     )
-
+    if max_num_seqs < 100:
+        multiplier = 1000 // len(prompts)
+    elif max_num_seqs < 1000:
+        multiplier = 10000 // len(prompts)
+    else:
+        multiplier = 100000 // len(prompts)
+    prompts = prompts * multiplier
+    families = families * multiplier
+    paired = list(zip(prompts, families))
+    random.shuffle(paired)
+    prompts, families = zip(*paired)
+    prompts = list(prompts)
+    families = list(families)
     sampling_params = SamplingParams(temperature=0.7, max_tokens=30)
-    start_time = time.time()
+    print("Total number of requests to simulate:", len(prompts), "for max_num_seqs =", max_num_seqs)
     outputs = llm.generate(list(prompts), sampling_params)
-    end_time = time.time()
+    print("Simulation completed at time:", time.time())
 
-    print(
-        "\nThroughput:",
-        len(outputs) / (end_time - start_time),
-        "req/s (enabling chunked prefill:",
-        enable_chunked_prefill,
-        ")",
-    )
+    # print(
+    #     "\nThroughput:",
+    #     len(outputs) / (end_time - start_time),
+    #     "req/s (enabling chunked prefill:",
+    #     enable_chunked_prefill,
+    #     ")",
+    # )
 
 if __name__ == "__main__":
     main()
