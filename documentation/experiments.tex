@@ -501,5 +501,18 @@ KV Cache: Free & Remaining unused KV cache memory. & 2,672,880 tokens / 32.8445 
 \end{tabular}%
 }
 \caption{Comparison of Throughput (req/sec) when merging queries from the same family into a single batch vs not merging}
-\label{tab:gpu_memory_breakdown}
+\label{tab:gpu_memory_breakdown_table}
 \end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{\RESULTDIR/throughput_vs_load_\(without_prefix-prefilling\).png}
+    \caption{Throughput vs Load without prefix pre-filling}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{\RESULTDIR/throughput_vs_load_\(with_prefix-prefilling\).png}
+    \caption{Throughput vs Load with prefix pre-filling}
+\end{figure}
+
