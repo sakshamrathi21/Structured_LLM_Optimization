@@ -58,7 +58,7 @@ def main():
     )
     if max_num_seqs < 100:
         multiplier = 1000 // len(prompts)
-    elif max_num_seqs < 1000:
+    elif max_num_seqs <= 1000:
         multiplier = 10000 // len(prompts)
     else:
         multiplier = 100000 // len(prompts)

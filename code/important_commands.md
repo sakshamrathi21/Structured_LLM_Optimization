@@ -66,7 +66,7 @@ nvcc -ccbin=/usr/bin/gcc-11 -std=c++17 -o matmul matrixmul.cu -lcudart -lstdc++ 
 DCGMI
 
 ```bash
-sudo dcgmi dmon -e 1002,1003 -d 10
+sudo dcgmi dmon -e 1002,1003,1004 -d 10
 ```
 
 
