@@ -1,69 +1,54 @@
-import re
+import pandas as pd
 import matplotlib.pyplot as plt
-from collections import defaultdict
+import re
 
-# --- CONFIG ---
-filename = ".out"  # replace with your file name
+files = [".out_1_100", ".out_1_500", ".out_1_700", ".out_10_100", ".out_10_500", ".out_10_700"]
 
-# --- REGEX PATTERNS ---
-request_pattern = re.compile(r"Total number of requests to simulate: (\d+) for max_num_seqs = (\d+)")
-start_pattern = re.compile(r"Simulation started at time: ([\d.]+)")
-end_pattern = re.compile(r"Simulation completed at time: ([\d.]+)")
-family_pattern = re.compile(r"num_families\s*=\s*(\d+)")  # optional, if mentioned
+fig, axes = plt.subplots(nrows=len(files), ncols=3, figsize=(20,20))
+fig.subplots_adjust(hspace=0.4, wspace=0.3)
 
-# --- PARSE FILE ---
-data = defaultdict(list)
-current_family = 1  # default
+for i, file_path in enumerate(files):
+    # Extract batch size (last number in the filename)
+    match = re.search(r"(\d+)", file_path)
+    family_size = match.group(1) if match else "?"
+    batch_size = re.search(r"_(\d+)$", file_path).group(1) if re.search(r"_(\d+)$", file_path) else "?"
 
-with open(filename, "r") as f:
-    lines = f.readlines()
+    data = []
+    with open(file_path, "r") as f:
+        for line in f:
+            if line.strip() and not line.startswith("#"):
+                parts = line.split()
+                if len(parts) >= 5 and len(parts) <= 7:
+                    smact = parts[2]
+                    smocc = parts[3]
+                    tenso = parts[4]
+                    try:
+                        data.append((float(smact), float(smocc), float(tenso)))
+                    except ValueError:
+                        continue
 
-i = 0
-while i < len(lines):
-    line = lines[i]
+    df = pd.DataFrame(data, columns=["SMACT", "SMOCC", "TENSO"])
 
-    # detect family number if specified in text
-    family_match = family_pattern.search(line)
-    if family_match:
-        current_family = int(family_match.group(1))
+    ax1 = axes[i, 0]
+    ax1.plot(df["SMACT"], marker='o', linestyle='-', color='b')
+    ax1.set_title(f"Family Size {family_size}, Max Batch Size {batch_size}: SM Active (SMACT)")
+    ax1.set_xlabel("Time")
+    ax1.set_ylabel("SMACT")
+    ax1.grid(True)
 
-    # detect start of a block
-    req_match = request_pattern.search(line)
-    if req_match:
-        total_requests = int(req_match.group(1))
-        max_num_seqs = int(req_match.group(2))
+    ax2 = axes[i, 1]
+    ax2.plot(df["SMOCC"], marker='o', linestyle='-', color='r')
+    ax2.set_title(f"Family Size {family_size}, Max Batch Size {batch_size}: SM Occupancy (SMOCC)")
+    ax2.set_xlabel("Time")
+    ax2.set_ylabel("SMOCC")
+    ax2.grid(True)
 
-        # expect next two lines for start and end times
-        start_match = start_pattern.search(lines[i + 1])
-        end_match = end_pattern.search(lines[i + 2])
-
-        if start_match and end_match:
-            start_time = float(start_match.group(1))
-            end_time = float(end_match.group(1))
-            duration = end_time - start_time
-            throughput = total_requests / duration
-            data[current_family].append((max_num_seqs, throughput))
-
-        i += 3
-    else:
-        i += 1
-
-# --- SORT DATA ---
-for fam in data:
-    data[fam].sort(key=lambda x: x[0])
-
-# --- PLOT ---
-plt.figure(figsize=(8, 5))
-for fam, values in sorted(data.items()):
-    xs = [v[0] for v in values]
-    ys = [v[1] for v in values]
-    plt.plot(xs, ys, marker="o", label=f"num_families = {fam}")
-
-plt.xlabel("Max batch size (number of requests)")
-plt.ylabel("Throughput (requests/sec)")
-plt.title("Throughput vs max batch size")
-plt.legend()
-plt.grid(True)
+    ax3 = axes[i, 2]
+    ax3.plot(df["TENSO"], marker='o', linestyle='-', color='g')
+    ax3.set_title(f"Family Size {family_size}, Max Batch Size {batch_size}: Tensor Utilization (TENSO)")
+    ax3.set_xlabel("Time")
+    ax3.set_ylabel("TENSO")
+    ax3.grid(True)  
 plt.tight_layout()
 plt.show()
-plt.savefig("../../results/throughput_vs_max_batch_size_vllm_multiple_families.png")
+plt.savefig("../../results/smact_smocc_tenso_different_family_batches.png")
