@@ -24,8 +24,9 @@
 \newcommand{\ul}{\underline}
 \newcounter{units}
 \setbeamercovered{dynamic}
-\logo{\includegraphics[width=0.5in,keepaspectratio]{iitb_logo.png}}
-
+\logo{\includegraphics[width=0.5in,keepaspectratio]{\FIGDIR/iitb_logo.png}}
+\newcommand{\FIGDIR}{../figures} 
+\newcommand{\RESULTDIR}{../../results} 
 \mode<presentation>{
     \usetheme[right,currentsection,hideothersubsections]{UTD}
     \useoutertheme{sidebar}
@@ -96,7 +97,7 @@ Engines leveraging prefix caching (e.g., SGLang) should perform far better than 
     \begin{columns}[T, totalwidth=\textwidth]
         \begin{column}{0.4\textwidth}
             \centering
-            \includegraphics[width=\textwidth]{../results/throughput_vs_qps.png}
+            \includegraphics[width=\textwidth]{\RESULTDIR/throughput_vs_qps.png}
             \vspace{0.3em}
             \captionof{figure}{Throughput comparison across varying workloads}
         \end{column}
@@ -166,7 +167,7 @@ Engines leveraging prefix caching (e.g., SGLang) should perform far better than 
 \begin{columns}[T, totalwidth=\textwidth]
     \begin{column}{0.6\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{figures/llm_timelines_20.png}
+        \includegraphics[width=\textwidth]{\FIGDIR/llm_timelines_20.png}
         \captionof{figure}{20 Requests/sec – No chunked prefill – vLLM V0}
     \end{column}
     \begin{column}{0.4\textwidth}
@@ -185,7 +186,7 @@ Engines leveraging prefix caching (e.g., SGLang) should perform far better than 
 \begin{columns}[T, totalwidth=\textwidth]
     \begin{column}{0.6\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{../results/throughput_comparison_vllm.png}
+        \includegraphics[width=\textwidth]{\RESULTDIR/throughput_comparison_vllm.png}
         \captionof{figure}{Throughput vs Load}
     \end{column}
     \begin{column}{0.4\textwidth}
@@ -210,7 +211,7 @@ Understand compute vs memory utilization and bottlenecks.
 \end{block}
 \vspace{1cm}
 \centering
-\includegraphics[width=\textwidth]{../results/nsys_metrics_llm_inference.png}
+\includegraphics[width=\textwidth]{\RESULTDIR/nsys_metrics_llm_inference.png}
 \captionof{figure}{NSYS Metrics Snapshot}
 \end{frame}
 
@@ -274,46 +275,46 @@ KV Cache: Free & 2,672,880 tokens / 32.8445 GiB \\
 \end{frame}
 \begin{frame}{Experiments with Multiple Families}
 \centering
-    \includegraphics[width=0.8\textwidth]{../results/throughput_no_prefill.png}
+    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_no_prefill.png}
     \captionof{figure}{Throughput vs Load without prefix pre-filling}
 \end{frame}
 
 \begin{frame}{Experiments with Multiple Families}
 \centering
-    \includegraphics[width=0.8\textwidth]{../results/throughput_with_prefill.png}
+    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_with_prefill.png}
     \captionof{figure}{Throughput vs Load with prefix pre-filling}
 \end{frame}
 
 
 \begin{frame}{Experiments with Multiple Families}
 \centering
-    \includegraphics[width=0.8\textwidth]{../results/throughput_with_prefill_ordered.png}
+    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_with_prefill_ordered.png}
     \captionof{figure}{Throughput vs Load with prefix pre-filling with ordered family IDs}
 \end{frame}
 
 \begin{frame}{Experiments with Multiple Families}
 \centering
-    \includegraphics[width=0.8\textwidth]{../results/throughput_comparison_across_methods_family_1.png}
+    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_1.png}
     \captionof{figure}{Throughput vs Load for 1 family}
 \end{frame}
 
 
 \begin{frame}{Experiments with Multiple Families}
 \centering
-    \includegraphics[width=0.8\textwidth]{../results/throughput_comparison_across_methods_family_5.png}
+    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_5.png}
     \captionof{figure}{Throughput vs Load for 5 families}
 \end{frame}
 
 
 \begin{frame}{Experiments with Multiple Families}
 \centering
-    \includegraphics[width=0.8\textwidth]{../results/throughput_comparison_across_methods_family_10.png}
+    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_10.png}
     \captionof{figure}{Throughput vs Load for 10 families}
 \end{frame}
 
 \begin{frame}{Experiments with Multiple Families}
 \centering
-    \includegraphics[width=0.8\textwidth]{../results/throughput_comparison_across_methods_family_100.png}
+    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_100.png}
     \captionof{figure}{Throughput vs Load for 100 families}
 \end{frame}
 
