@@ -1,32 +1,33 @@
-python vllm_multiple_families.py 1 10
+python vllm_multiple_families.py 10 10 1
 sleep 2
-python vllm_multiple_families.py 1 50
+python vllm_multiple_families.py 10 10 0
 sleep 2
-python vllm_multiple_families.py 1 100
+python vllm_multiple_families.py 10 100 1
 sleep 2
-python vllm_multiple_families.py 1 200
+python vllm_multiple_families.py 10 100 0
 sleep 2
-python vllm_multiple_families.py 1 500
+python vllm_multiple_families.py 10 200 1
 sleep 2
-python vllm_multiple_families.py 1 1000
+python vllm_multiple_families.py 10 200 0
 sleep 2
-python vllm_multiple_families.py 1 2500
+python vllm_multiple_families.py 100 100 1
 sleep 2
-python vllm_multiple_families.py 1 5000
+python vllm_multiple_families.py 100 100 0
 sleep 2
-python vllm_multiple_families.py 10 10
+
+python sglang_multiple_families.py 10 10 1
 sleep 2
-python vllm_multiple_families.py 10 50
+python sglang_multiple_families.py 10 10 0
 sleep 2
-python vllm_multiple_families.py 10 100
+python sglang_multiple_families.py 10 100 1
 sleep 2
-python vllm_multiple_families.py 10 200
+python sglang_multiple_families.py 10 100 0
 sleep 2
-python vllm_multiple_families.py 10 500
+python sglang_multiple_families.py 10 200 1
 sleep 2
-python vllm_multiple_families.py 10 1000
+python sglang_multiple_families.py 10 200 0
 sleep 2
-python vllm_multiple_families.py 10 2500
+python sglang_multiple_families.py 100 100 1
 sleep 2
-python vllm_multiple_families.py 10 5000
+python sglang_multiple_families.py 100 100 0
 sleep 2

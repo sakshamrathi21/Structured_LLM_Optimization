@@ -22,6 +22,7 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     num_families = int(system.argv[1]) if len(system.argv) > 1 else 10
     max_num_seqs = int(system.argv[2]) if len(system.argv) > 2 else 100
+    whether_random = int(system.argv[3]) if len(system.argv) > 3 else 1
     prefixes = generate_prefixes(num_families)  # 10 families
     prompts = []
     families = []  
@@ -56,31 +57,19 @@ def main():
         enable_prefix_caching=True,
         max_num_seqs=max_num_seqs,
     )
-    if max_num_seqs < 100:
-        multiplier = 1000 // len(prompts)
-    elif max_num_seqs <= 1000:
-        multiplier = 10000 // len(prompts)
-    else:
-        multiplier = 100000 // len(prompts)
-    prompts = prompts * multiplier
-    families = families * multiplier
     paired = list(zip(prompts, families))
-    random.shuffle(paired)
+    if whether_random:
+        random.shuffle(paired)
     prompts, families = zip(*paired)
     prompts = list(prompts)
     families = list(families)
     sampling_params = SamplingParams(temperature=0.7, max_tokens=30)
     print("Total number of requests to simulate:", len(prompts), "for max_num_seqs =", max_num_seqs)
+    initial_time = time.time()
+    print("Simulation started at time:", initial_time)
     outputs = llm.generate(list(prompts), sampling_params)
     print("Simulation completed at time:", time.time())
-
-    # print(
-    #     "\nThroughput:",
-    #     len(outputs) / (end_time - start_time),
-    #     "req/s (enabling chunked prefill:",
-    #     enable_chunked_prefill,
-    #     ")",
-    # )
+    print("Throughput of vLLM:", len(outputs) / (time.time() - initial_time), "req/s", "for number of families =", num_families, "and max_num_seqs =", max_num_seqs, "whether random =", whether_random)
 
 if __name__ == "__main__":
     main()
