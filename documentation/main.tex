@@ -27,6 +27,7 @@
 \usepackage{paralist} 
 \usepackage{subcaption}   
 \usepackage{tikz}
+\usepackage{booktabs}
 \usetikzlibrary{calc,shadows.blur} 
 \usepackage{graphicx}
 \usepackage{setspace}
@@ -107,7 +108,11 @@
 \begin{document}
 
 
+
 \include{front_page}
+
+\listoftables
+\listoffigures
 \include{background}
 \include{flash_attention}
 \include{vllm}
@@ -118,8 +123,7 @@
 \include{transformer_math}
 \include{fast_tree}
 
-\listoftables
-\listoffigures
+
 
 \bibliographystyle{plainnat}
 \bibliography{references}
