@@ -568,3 +568,22 @@ KV Cache: Free & Remaining unused KV cache memory. & 2,672,880 tokens / 32.8445 
     \includegraphics[width=\textwidth]{\RESULTDIR/smact_smocc_tenso_different_family_batches.png}
     \caption{SM Activity, SM Occupancy and Tensor Core Utilization for different family sizes and max batch sizes}
 \end{figure}
+
+
+\section{Comparison of vLLM with SGLANG}
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Number of Families} & \textbf{Batch Size} & \textbf{vLLM (Random)} & \textbf{vLLM (Family Ordered)} & \textbf{SGLANG (Random)} & \textbf{SGLANG (Family Ordered)} \\ 
+\hline
+10 & 10 & 15.0942 & 15.5041 & 13.3730 & 13.8388 \\ 
+\hline
+20 & 100 & 51.1423 & 54.7801 & 57.5661 & 62.3397 \\ 
+\hline
+50 & 50 & 40.5825 & 44.5922 & 30.2049 & 37.0809 \\ 
+\hline
+\end{tabular}
+\caption{Throughput comparison (in req/s) between vLLM and SGLANG for different configurations.}
+\label{tab:throughput_comparison}
+\end{table}
