@@ -573,17 +573,20 @@ KV Cache: Free & Remaining unused KV cache memory. & 2,672,880 tokens / 32.8445 
 \section{Comparison of vLLM with SGLANG}
 \begin{table}[h!]
 \centering
-\begin{tabular}{|c|c|c|c|c|c|}
-\hline
-\textbf{Number of Families} & \textbf{Batch Size} & \textbf{vLLM (Random)} & \textbf{vLLM (Family Ordered)} & \textbf{SGLANG (Random)} & \textbf{SGLANG (Family Ordered)} \\ 
-\hline
-10 & 10 & 15.0942 & 15.5041 & 13.3730 & 13.8388 \\ 
-\hline
-20 & 100 & 51.1423 & 54.7801 & 57.5661 & 62.3397 \\ 
-\hline
-50 & 50 & 40.5825 & 44.5922 & 30.2049 & 37.0809 \\ 
-\hline
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{0.9}
+
+\begin{tabular}{cccccc}
+\toprule
+\textbf{Number of Families} & \textbf{Batch Size} & \textbf{vLLM} & \textbf{vLLM (Family Ordered)} & \textbf{SGLANG} & \textbf{SGLANG (Family Ordered)} \\
+\midrule
+10 & 10  & 15.0942 & 15.5041 & 13.3730 & 13.8388 \\
+20 & 100 & 51.1423 & 54.7801 & 57.5661 & 62.3397 \\
+50 & 50  & 40.5825 & 44.5922 & 30.2049 & 37.0809 \\
+\bottomrule
 \end{tabular}
-\caption{Throughput comparison (in req/s) between vLLM and SGLANG for different configurations.}
+
+\caption{Throughput comparison (in req/s).}
 \label{tab:throughput_comparison}
 \end{table}
