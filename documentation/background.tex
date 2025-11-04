@@ -46,8 +46,6 @@ Masked attention is used in autoregressive language models to prevent the model 
     \caption{Architecture of a Large Language Model (\citet{3})}
 \end{figure}
 
-
-\section{Inferencing}
 \section{LLM Inferencing}
 
 Large Language Model (LLM) inferencing refers to the process of using a trained model to generate predictions (such as text completions, answers, translations, etc.) given some input. Unlike training, where parameters are updated, inferencing only runs the trained model forward to produce outputs.  
@@ -98,7 +96,7 @@ Large Language Model (LLM) inferencing refers to the process of using a trained 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.7\textwidth]{\FIGDIR/llm-inference-n-serving.drawio.png.png}
-    \caption{Architecture of a Large Language Model (\citet{3})}
+    \caption{Architecture of an Inference Engine (\citet{3})}
 \end{figure}
 
 An \textbf{inference engine} is the software and systems layer that manages the execution of large language model (LLM) inference on hardware resources. While the model architecture and parameters define the computation, inference engines ensure that requests are executed efficiently, reliably, and at scale. 
