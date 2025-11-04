@@ -1,14 +1,14 @@
 \chapter{Background}
 Language models (LMs) are statistical models that predict the next word in a sequence given the previous words. They basically give us a probability distribution over words based on the context provided by the preceeding words. They enable machines to understand and generate human language. They can be used for a lot of tasks like answering questions, text summarization, translation, code generation and more.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{\FIGDIR/recursive-token-generation.DxoklRFR_Z1SHbzz.png}
     \caption{Adopted from \citet{llm_generate}}
 \end{figure}
 
 \section{Stages in the Model Creation Pipeline}
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{\FIGDIR/sys.png}
     \caption{Adopted from \citet{USENIX_article}}
@@ -40,11 +40,49 @@ Attention is the core mechanism of transformer models. It allows the model to se
 Masked attention is used in autoregressive language models to prevent the model from ``looking ahead'' at future tokens during training. This masking enforces causality by ensuring that each token can only attend to itself and preceding tokens. Multi-head attention extends this concept by computing multiple attention functions in parallel. Each head captures different aspects of relationships—such as syntactic dependencies, semantic similarity, or positional cues. The outputs of all heads are concatenated and linearly transformed, providing a richer, more expressive representation of the input.
 
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{\FIGDIR/arch.png}
     \caption{Architecture of a Large Language Model (\citet{3})}
 \end{figure}
+
+\section{Transformer Based Large Langauge Models}
+The task of language modeling is to model the probability of a list of tokens $(x_1, \dots,x_n)$. Since language has a natural sequential ordering, it is common to factorize the joint probability over the whole sequence as the product of conditional probabilities (a.k.a. autoregressive decomposition):
+\[
+P(x) = P(x_1) \cdot P(x_2 | x_1) \dots P(x_n | x_1, \dots x_{n - 1})
+\]
+
+Transformers have become the de facto standard architecture for modeling the probability above at a large scale. The most important component of a Transformer-based language model is its self-attention layers. For an input hidden state sequence $(x_1, \dots,x_n) \in \mathbb{R}^{n\times d}$, a self-attention layer first applies linear transformations on each position $i$ to get the query, key, and value vectors:
+
+\[
+q_i = W_Q x_i, \quad k_i = W_K x_i, \quad v_i = W_V x_i
+\]
+
+Then, the self-attention layer computes the attention score $a_{ij}$ by multiplying the query vector at one position with all the key vectors before it and compute the output $o_i$ as the weighted average over the value vectors:
+\[
+a_{ij} = \frac{exp(q_i^Tk_j/\sqrt{d})}{\sum_{t=1}^{i} exp(q_i^Tk_t/\sqrt{d})}, \quad o_i = \sum_{j=1}^{i} a_{ij} v_j
+\]
+
+Besides the above computation, all other components in the Transformer model, including the embedding layer, feed-forward layer, layer normalization, residual connection, output logit computation, and the query, key, and value transformation, are all applied independently position-wise in a form of $y_i = f(x_i)$.
+
+
+\begin{itemize}
+    \item \textbf{Query (Q):} A representation of the current token, used to score its relevance against all past tokens. During decoding, we only compute the query for the token currently being processed.
+    \item \textbf{Key (K):} Keys act like labels for tokens in the sequence. They are used to match queries and determine which past tokens are relevant.
+    \item \textbf{Value (V):} Values are the actual token representations. Once relevance scores are computed (using Q and K), the corresponding values are aggregated to produce the output representation.
+\end{itemize}
+
+
+\subsection{Autoregressive Generation}
+A request to an LLM service provides a list of input prompt tokens $(x_1, \dots,x_n)$,and the LLM service generates a list of output tokens $(x_{n + 1}, \dots,x_{n + T})$. Due to the decomposition, the LLM can only sample and generate new tokens one by one, and the generation process of each new token depends on all the previous tokens in that sequence, specifically their key and value vectors. In this sequential generation process, the key and value vectors of existing tokens are often cached for generating future tokens, known as KV cache. Note that the KV cache of one token depends on all its previous tokens. This means that the KV cache of the same token appearing at different positions in a sequence will be different. 
+
+Given a request prompt, the generation computation in the LLM service can be decomposed into two phases:
+
+\textbf{The prompt phase} takes the whole user prompt $(x_1, \dots,x_n)$
+as input and computes the probability of the first new token $P(x_{n + 1} | x_1,\dots,x_n)$. During this process, also generates the key vectors $k_1,\dots ,k_n$ and value vectors $v_1,\dots ,v_n$. Since prompt tokens $x_1, \dots,x_n$ are all known, the computation of the prompt phase can be parallelized using matrix-
+matrix multiplication operations. Therefore, this phase can efficiently use the parallelism inherent in GPUs.
+
+\textbf{The autoregressive generation phase} generates the remaining new tokens sequentially. At iteration $t$ the model takes one token $x_{n+t}$ as input and computes the probability $P(x_{n + t + 1} | x_1,\dots,x_{n + t})$ with the key vectors $k_1,\dots ,k_{n + t}$ and value vectors $v_1,\dots ,v_{n + t}$. Note that the key and value vectors at positions 1 to $n + t - 1$ are cached at previous iterations, only the new key and value vector $k_{n + t}$ and $v_{n + t}$ are computed at this iteration. This phase completes either when the sequence reaches a maximum length (specified by users or limited by LLMs) or when an end-of-sequence ($<$eos$>$) token is emitted. The computation at different iterations cannot be parallelized due to the data dependency and often uses matrix-vector multiplication, which is less efficient. As a result, this phase severely underutilizes GPU computation and becomes memory-bound, being responsible for most portion of the latency of a single request.
 
 \section{LLM Inferencing}
 
@@ -93,7 +131,7 @@ Large Language Model (LLM) inferencing refers to the process of using a trained 
 
 \section{Inference Engines}
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{\FIGDIR/llm-inference-n-serving.drawio.png.png}
     \caption{Architecture of an Inference Engine (\citet{3})}
@@ -141,7 +179,7 @@ In short, \emph{prefill is parallel and one-time}, while \emph{decode is sequent
 
 
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{\FIGDIR/pd.png}
     \caption{Prefill vs Decode}
@@ -163,19 +201,4 @@ The performance of LLM inference is typically measured using two key metrics:
     \item Measures the responsiveness of the system.
     \item \textbf{Time to first token (TTFT):} Corresponds to the prefill phase, i.e., the delay before the first output token is produced.
     \item \textbf{Time between tokens:} Corresponds to the decode phase, i.e., the per-token delay during sequential generation.
-\end{itemize}
-
-\section{KV Caching}
-
-\begin{itemize}
-    \item \textbf{Query (Q):} A representation of the current token, used to score its relevance against all past tokens. During decoding, we only compute the query for the token currently being processed.
-    \item \textbf{Key (K):} Keys act like labels for tokens in the sequence. They are used to match queries and determine which past tokens are relevant.
-    \item \textbf{Value (V):} Values are the actual token representations. Once relevance scores are computed (using Q and K), the corresponding values are aggregated to produce the output representation.
-\end{itemize}
-
-In causal self-attention, the attention for the current token depends on the keys (K) and values (V) of all past tokens.  
-
-\begin{itemize}
-    \item \textbf{Without caching:} K and V for all previous tokens are recomputed at every decoding step, causing redundant work.
-    \item \textbf{With caching:} K and V are generated once during prefill/decoding and stored. At each new step, only the K and V for the latest token are computed, while past values are reused.
 \end{itemize}
