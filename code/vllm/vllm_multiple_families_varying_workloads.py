@@ -22,6 +22,8 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     num_families = int(system.argv[1]) if len(system.argv) > 1 else 10
     req_per_sec = int(system.argv[2]) if len(system.argv) > 2 else 20
+    max_batch_size = int(system.argv[3]) if len(system.argv) > 3 else 100
+    randomness = int(system.argv[4]) if len(system.argv) > 4 else 0
     prefixes = generate_prefixes(num_families)
     prompts = []
     families = []  
@@ -64,7 +66,13 @@ def main():
 
     print(f"Generated {len(prompts)} prompts in total.")
     paired = list(zip(prompts, families))
-    random.shuffle(paired)
+    if randomness == 2:
+        random.shuffle(paired)
+    elif randomness == 1:
+        # every 50 sized chunk should remain as it is, but shuffle the chunks
+        chunked = [paired[i:i+50] for i in range(0, len(paired), 50)]
+        random.shuffle(chunked)
+        paired = [item for chunk in chunked for item in chunk]
     prompts, families = zip(*paired)
 
     enable_chunked_prefill = True
@@ -74,7 +82,7 @@ def main():
         enable_chunked_prefill=enable_chunked_prefill,
         max_num_batched_tokens=32768,
         enable_prefix_caching=True,
-        max_num_seqs=1000,
+        max_num_seqs=max_batch_size,
     )
 
     out = llm.generate(system_prompts, SamplingParams(temperature=0.7, max_tokens=30))
@@ -93,7 +101,7 @@ def main():
         ")",
     )
     with open("vllm_multiple_families_varying_workloads_output.txt", "a") as f:
-        f.write(f"Throughput Test with {num_families} families and {req_per_sec} req/sec: {throughput}\n")
+        f.write(f"Throughput Test with {num_families} families, {req_per_sec} req/sec and max_batch_size of {max_batch_size} (randomness: {randomness}): {throughput}\n")
 
 if __name__ == "__main__":
     main()

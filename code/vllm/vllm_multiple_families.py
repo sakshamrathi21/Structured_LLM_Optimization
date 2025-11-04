@@ -18,7 +18,8 @@ def generate_prefixes(n):
 
 
 def main():
-    model_name = "meta-llama/Llama-3.1-8B-Instruct"
+    # model_name = "meta-llama/Llama-3.1-8B-Instruct"
+    model_name = "Qwen/Qwen3-8B"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     num_families = int(system.argv[1]) if len(system.argv) > 1 else 10
     max_num_seqs = int(system.argv[2]) if len(system.argv) > 2 else 100
