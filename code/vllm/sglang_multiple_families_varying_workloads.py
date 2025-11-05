@@ -83,7 +83,7 @@ def main():
         max_running_requests=max_batch_size,
     )
     sampling_params = {"temperature": 0.7, "max_new_tokens": 30}
-    out = llm.generate(list(system_prompts), sampling_params)
+    # out = llm.generate(list(system_prompts), sampling_params)
     initial_start_time = time.time()
     for i in range(0, len(prompts), req_per_sec):
         start_time = time.time()

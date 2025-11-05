@@ -1,0 +1,144 @@
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 20 (randomness: 0): 23.705546455617817
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 20 (randomness: 0) for SGLANG: 20.95901909785418
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 20 (randomness: 1): 23.187094916564185
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 20 (randomness: 1) for SGLANG: 19.534493323660254
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 20 (randomness: 2): 22.19955087011142
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 20 (randomness: 2) for SGLANG: 22.187793841984526
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 50 (randomness: 0): 47.78007575361284
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 50 (randomness: 0) for SGLANG: 40.178542262990746
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 50 (randomness: 1): 48.3040378983932
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 50 (randomness: 1) for SGLANG: 36.361746767996635
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 50 (randomness: 2): 45.46673220599403
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 50 (randomness: 2) for SGLANG: 42.55503372769575
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 100 (randomness: 0): 47.856932701576326
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 100 (randomness: 0) for SGLANG: 39.93233929833607
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 100 (randomness: 1): 48.43864763138842
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 100 (randomness: 1) for SGLANG: 38.56735759177936
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 100 (randomness: 2): 45.273234552510885
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 100 (randomness: 2) for SGLANG: 41.919926191096756
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 500 (randomness: 0): 48.34313048320943
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 500 (randomness: 0) for SGLANG: 40.074152254728084
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 500 (randomness: 1): 48.26045020468761
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 500 (randomness: 1) for SGLANG: 37.39310394900328
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 500 (randomness: 2): 45.34449273320142
+Throughput Test with 10 families, 50 req/sec and max_batch_size of 500 (randomness: 2) for SGLANG: 43.25789441381288
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 20 (randomness: 0): 26.97177971160267
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 20 (randomness: 0) for SGLANG: 23.10035606722593
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 20 (randomness: 1): 26.583876674558265
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 20 (randomness: 1) for SGLANG: 20.873224126043997
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 20 (randomness: 2): 25.425681996001
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 20 (randomness: 2) for SGLANG: 25.41338056866164
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 50 (randomness: 0): 51.312934180834986
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 50 (randomness: 0) for SGLANG: 40.41630634858403
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 50 (randomness: 1): 50.2977400803113
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 50 (randomness: 1) for SGLANG: 42.57056978932455
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 50 (randomness: 2): 45.52120421318242
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 50 (randomness: 2) for SGLANG: 47.08372647846358
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 100 (randomness: 0): 70.7041734842054
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 100 (randomness: 0) for SGLANG: 50.89154208930238
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 100 (randomness: 1): 59.70415419124385
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 100 (randomness: 1) for SGLANG: 41.08554804613931
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 100 (randomness: 2): 57.10348080801804
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 100 (randomness: 2) for SGLANG: 54.57583021562982
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 500 (randomness: 0): 70.8165165442255
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 500 (randomness: 0) for SGLANG: 50.376932429083695
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 500 (randomness: 1): 59.43064103089641
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 500 (randomness: 1) for SGLANG: 44.61314426871726
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 500 (randomness: 2): 57.01079152101923
+Throughput Test with 10 families, 100 req/sec and max_batch_size of 500 (randomness: 2) for SGLANG: 54.1903536327089
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 20 (randomness: 0): 28.331545763082943
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 20 (randomness: 0) for SGLANG: 25.583515231355396
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 20 (randomness: 1): 28.035422842961083
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 20 (randomness: 1) for SGLANG: 22.753692127915198
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 20 (randomness: 2): 26.470256452981886
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 20 (randomness: 2) for SGLANG: 26.346884154293683
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 50 (randomness: 0): 57.70205800577665
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 50 (randomness: 0) for SGLANG: 48.59301921968917
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 50 (randomness: 1): 52.60262702483566
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 50 (randomness: 1) for SGLANG: 45.8691583151443
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 50 (randomness: 2): 48.6100548532938
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 50 (randomness: 2) for SGLANG: 51.9125074021635
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 100 (randomness: 0): 81.90270285300879
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 100 (randomness: 0) for SGLANG: 64.75861382113756
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 100 (randomness: 1): 63.03409644222587
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 100 (randomness: 1) for SGLANG: 52.06493961382656
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 100 (randomness: 2): 60.9654776752833
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 100 (randomness: 2) for SGLANG: 67.67820282053559
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 500 (randomness: 0): 89.77619949026054
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 500 (randomness: 0) for SGLANG: 66.43285916898263
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 500 (randomness: 1): 71.36514156029611
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 500 (randomness: 1) for SGLANG: 49.116037180018935
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 500 (randomness: 2): 69.43674533003237
+Throughput Test with 10 families, 200 req/sec and max_batch_size of 500 (randomness: 2) for SGLANG: 73.38782728189659
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 20 (randomness: 0): 23.079612802746613
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 20 (randomness: 0) for SGLANG: 20.151753082774345
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 20 (randomness: 1): 22.40656801927235
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 20 (randomness: 1) for SGLANG: 17.225133089981146
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 20 (randomness: 2): 20.91667176990981
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 20 (randomness: 2) for SGLANG: 4.787659391511236
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 50 (randomness: 0): 47.04856752935827
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 50 (randomness: 0) for SGLANG: 38.58866971937288
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 50 (randomness: 1): 45.539760195992486
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 50 (randomness: 1) for SGLANG: 32.61804506143905
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 50 (randomness: 2): 39.20064705277937
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 50 (randomness: 2) for SGLANG: 5.032501665846391
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 100 (randomness: 0): 46.993903064807384
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 100 (randomness: 0) for SGLANG: 39.20989226674735
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 100 (randomness: 1): 45.39377283833124
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 100 (randomness: 1) for SGLANG: 32.14278878225297
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 100 (randomness: 2): 38.771255979029824
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 100 (randomness: 2) for SGLANG: 5.028444287583699
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 500 (randomness: 0): 47.084788665926354
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 500 (randomness: 0) for SGLANG: 38.86181821422006
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 500 (randomness: 1): 45.52724586626966
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 500 (randomness: 1) for SGLANG: 32.30765598391492
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 500 (randomness: 2): 39.022968078557795
+Throughput Test with 100 families, 50 req/sec and max_batch_size of 500 (randomness: 2) for SGLANG: 4.989574390433671
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 20 (randomness: 0): 26.58614138659155
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 20 (randomness: 0) for SGLANG: 22.677337932747026
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 20 (randomness: 1): 25.495824998963798
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 20 (randomness: 1) for SGLANG: 17.592164270021538
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 20 (randomness: 2): 23.72047738290946
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 20 (randomness: 2) for SGLANG: 4.858139419153084
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 50 (randomness: 0): 50.488729180482046
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 50 (randomness: 0) for SGLANG: 38.817596895112
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 50 (randomness: 1): 45.579209050850615
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 50 (randomness: 1) for SGLANG: 35.004751058141174
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 50 (randomness: 2): 38.993153176795225
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 50 (randomness: 2) for SGLANG: 4.992797237682609
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 100 (randomness: 0): 65.70775565855162
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 100 (randomness: 0) for SGLANG: 48.13858253635992
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 100 (randomness: 1): 52.94519580512873
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 100 (randomness: 1) for SGLANG: 30.28446487049253
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 100 (randomness: 2): 48.27513458518166
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 100 (randomness: 2) for SGLANG: 5.03130714902578
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 500 (randomness: 0): 65.85709449635378
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 500 (randomness: 0) for SGLANG: 47.313121812953625
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 500 (randomness: 1): 52.40909562129652
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 500 (randomness: 1) for SGLANG: 30.528865199760133
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 500 (randomness: 2): 48.53974946358871
+Throughput Test with 100 families, 100 req/sec and max_batch_size of 500 (randomness: 2) for SGLANG: 5.048033855200653
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 20 (randomness: 0): 26.598492960872473
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 20 (randomness: 0) for SGLANG: 24.255774665940795
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 20 (randomness: 1): 25.42879797911946
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 20 (randomness: 1) for SGLANG: 18.0496263052062
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 20 (randomness: 2): 23.913106366396832
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 20 (randomness: 2) for SGLANG: 4.901826225537643
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 50 (randomness: 0): 49.72145196207748
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 50 (randomness: 0) for SGLANG: 43.260703536238836
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 50 (randomness: 1): 44.638355079918774
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 50 (randomness: 1) for SGLANG: 38.2203336043187
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 50 (randomness: 2): 38.89266617838056
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 50 (randomness: 2) for SGLANG: 5.017376477739834
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 100 (randomness: 0): 61.99791756491108
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 100 (randomness: 0) for SGLANG: 54.141892102875
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 100 (randomness: 1): 51.601422723548836
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 100 (randomness: 1) for SGLANG: 32.779477068062256
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 100 (randomness: 2): 47.54603044903697
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 100 (randomness: 2) for SGLANG: 5.071137318222209
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 500 (randomness: 0): 61.37647486900687
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 500 (randomness: 0) for SGLANG: 43.11663576176319
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 500 (randomness: 1): 56.88523565128194
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 500 (randomness: 1) for SGLANG: 29.643636008581023
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 500 (randomness: 2): 53.40236054531078
+Throughput Test with 100 families, 200 req/sec and max_batch_size of 500 (randomness: 2) for SGLANG: 5.070531052314547

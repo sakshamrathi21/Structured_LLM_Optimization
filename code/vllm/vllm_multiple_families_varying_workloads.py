@@ -85,7 +85,7 @@ def main():
         max_num_seqs=max_batch_size,
     )
 
-    out = llm.generate(system_prompts, SamplingParams(temperature=0.7, max_tokens=30))
+    # out = llm.generate(system_prompts, SamplingParams(temperature=0.7, max_tokens=30))
     initial_start_time = time.time()
     for i in range(0, len(prompts), req_per_sec):
         start_time = time.time()

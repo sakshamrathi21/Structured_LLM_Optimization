@@ -142,3 +142,13 @@ Throughput Test with 100 families, 200 req/sec and max_batch_size of 20 (randomn
 Throughput Test with 100 families, 200 req/sec and max_batch_size of 50 (randomness: 1): 45.29973892144683
 Throughput Test with 100 families, 200 req/sec and max_batch_size of 100 (randomness: 1): 52.92405871055827
 Throughput Test with 100 families, 200 req/sec and max_batch_size of 500 (randomness: 1): 59.310134551422976
+
+
+
+
+
+
+
+
+
+
