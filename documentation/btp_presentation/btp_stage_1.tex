@@ -51,6 +51,45 @@
 	\tableofcontents
 \end{frame}
 
+\section{Background}
+
+\begin{frame}{Inference Engines}
+    \begin{columns}[T, totalwidth=\textwidth]
+        \begin{column}{0.4\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{\FIGDIR/arch.png}
+            \vspace{0.3em}
+            \captionof{figure}{Architecture of a LLM}
+            \centering
+            \includegraphics[width=\textwidth]{\FIGDIR/llm-inference-n-serving.drawio.png.png}
+            \vspace{0.3em}
+            \captionof{figure}{Architecture of an Inference Engine}
+        \end{column}
+        \begin{column}{0.6\textwidth}
+            \begin{itemize}
+                \item Systems layer that manages the execution of large language model (LLM) inference on hardware resources. \pause
+                \item Multiple user requests are grouped into a single batch to maximize GPU utilization and reduce per-request overhead. \pause
+                \item Memory Storage: Cache key-value pairs, reuse memory buffers, and apply quiantization or weight-sharing. \pause
+                \item Offloading: Portions of the model state or intermediate activations can be offloaded to CPU when not needed actively.
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Prefill vs Decode}
+\centering
+\includegraphics[width=0.5\textwidth]{\FIGDIR/pd.png}
+\vspace{0.3em}
+\captionof{figure}{Prefill vs Decode}
+
+\begin{itemize}
+    \item \textbf{Prefill:} The input/prompt is ingested in parallel. All tokens are processed together to build the key-value (KV) cache, enabling the generation of the first output token. \pause
+    \item \textbf{Decode:} Subsequent tokens are generated auto-regressively. Each new token is computed sequentially using the KV cache from earlier steps.
+\end{itemize}
+\end{frame}
+
+\section{Related Work}
+
 \section{Workload Picked}
 
 \begin{frame}{Workload Setup}
