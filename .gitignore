@@ -5,6 +5,7 @@
 *.aux
 *.fdb_latexmk
 *.synctex.gz
+*.synctex*
 *.toc
 *.bcf
 *.run.xml

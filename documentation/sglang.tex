@@ -10,12 +10,12 @@ The emergence of few-shot learning, self-consistency, skeleton-of-thought, tree-
 
 
 \section{Programming Model}
+
 \textbf{Language primitives:} SGLang provides primitives for controlling prompt state, generation, and parallelism. Here are the primitives: ``gen'' calls a model to generate and stores the results in a variable with the name specified in its first argument. It supports a ``regex'' argument to constrain the output to follow a grammar defined by a regular expression (e.g., a JSON schema). ``select'' calls a model to choose the highest probability option from a list.  The operator ``+='' or  ``extend'' appends a string to the prompt. The operator ``[variable\_name]'' fetches the results of a generation. ``fork'' creates parallel forks of the prompt state. ``join'' rejoins the prompt state. ``image'' and ``video'' take in image and video inputs.
 
-An example:
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{\FIGDIR/sglang_model.png}
+    \includegraphics[width=0.8\textwidth]{\FIGDIR/sglang_model.png}
     \caption{SGLANG Frontend Language Model}
 \end{figure}
 
@@ -32,7 +32,7 @@ In the batch-processing setting the requests are sorted by matched prefix length
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{\FIGDIR/sglang_radix_tree.png}
+    \includegraphics[width=\textwidth]{\FIGDIR/sglang_radix_tree.png}
     \caption{SGLANG Radix Tree Example}
 \end{figure}
 
