@@ -1,1 +1,41 @@
 \chapter{SGLang}
+SGLANG is a system for efficient execution of complex language model programs. SGLang consists of a frontend language and a runtime. The frontend simplifies programming with primitives for generation and parallelism control. The runtime accelerates execution with novel optimizations like RadixAttention for KV cache reuse and compressed finite state machines for faster structured output decoding.
+
+\section{LM Programs}
+The emergence of few-shot learning, self-consistency, skeleton-of-thought, tree-of-thought and various other patterns signifies a shift in our interaction with LLMs, moving from simple chatting to a more sophisticated form of programmatic usage of LLMs, which means using a program to schedule and control the generation processes of LLMs. These programs are referred to as LM (Language Model) programs. There are two common properties of LM programs: 
+\begin{itemize}
+    \item LM programs typically contain multiple LLM calls interspersed with control flow. This is needed to complete complex tasks and improve overall quality.
+    \item LM programs receive structured inputs and produce structured outputs. This is needed to enable the composition of LM programs and to integrate LM programs into existing software systems.
+\end{itemize}
+
+
+\section{Programming Model}
+
+\textbf{Language primitives:} SGLang provides primitives for controlling prompt state, generation, and parallelism. Here are the primitives: ``gen'' calls a model to generate and stores the results in a variable with the name specified in its first argument. It supports a ``regex'' argument to constrain the output to follow a grammar defined by a regular expression (e.g., a JSON schema). ``select'' calls a model to choose the highest probability option from a list.  The operator ``+='' or  ``extend'' appends a string to the prompt. The operator ``[variable\_name]'' fetches the results of a generation. ``fork'' creates parallel forks of the prompt state. ``join'' rejoins the prompt state. ``image'' and ``video'' take in image and video inputs.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{\FIGDIR/sglang_model.png}
+    \caption{SGLANG Frontend Language Model}
+\end{figure}
+
+
+
+\section{RadixAttention}
+A radix tree is a data structure that serves as a space-efficient alternative to a classical trie (prefix tree). Unlike typical trees, the edges of a radix tree can be labeled not just with single elements but also with sequences of elements of varying lengths, significantly enhancing efficiency. In SGLANG, a radix tree is utilized to manage a mapping between sequences of tokens, and their corresponding KV cache tensors. These KV cache tensors are stored in a non-contiguous, paged layout, where the size of each page is equivalent to one token. Because GPU memory is quickly filled by the KV cahce, a simple LRU eviction policy is introduced that evicts the least recently used leaf first. By evicting leaves first, we enable the re-use of their common ancestors until those ancestors become leaves and are also evicted. 
+
+In the continuous batching setting, we cannot evict nodes used by the currently running batch. Each node maintains a reference counter indicating how many running requests are using it. A node is evictable if its reference counter is zero.
+
+The cache hit rate is defined as $\frac{\texttt{number of cached prompt tokens}}{\texttt{number of prompt tokens}}$. If the request scheduler frequently switches between different, unrelated requests, it can lead to cache thrashing and a low hit rate.
+
+In the batch-processing setting the requests are sorted by matched prefix length and prioritize requests with longer matched prefixes instead of using a first-come, first-served schedule. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{\FIGDIR/sglang_radix_tree.png}
+    \caption{SGLANG Radix Tree Example}
+\end{figure}
+
+
+\section{Compressed Finite State Machine}
+In LM programs, users often want to constrain the model's output to follow specific formats, such as JSON schemas. Existing systems support this by converting a regular expression into a finite state machine (FSM). During decoding, they maintain the current FSM state, retrieve allowed tokens from the next states, and set the probability of invalid tokens to zero, decoding token by token. They can only decode one token at a time because the lack of integration between the FSM and the model runner in existing systems prevents multi-token processing, resulting in slow decoding. SGLang overcomes this limitation by creating a fast constrained decoding runtime with a compressed FSM. This runtime analyzes the FSM and compresses adjacent singular-transition edges in the FSM into single edges.

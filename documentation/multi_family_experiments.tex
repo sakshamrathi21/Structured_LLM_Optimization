@@ -1,0 +1,127 @@
+\chapter{Experiments - Multiple Family of Requests}
+\section{Families of Requests}
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c||p{4cm}|p{4cm}|}
+\hline
+\textbf{Model Chosen} & \textbf{10 families, each with 1000 queries} & \textbf{1 family with 10000 requests} \\
+\hline
+\hline
+Qwen 0.5B & 294.228 req/s &  308.750 req/s\\
+\hline
+Llama 7B & 43.923 req/s&  124.347 req/s\\
+\hline
+LongChat 13B & 22.415 req/s& 70.097 req/s\\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Merging queries belonging to the same family into a single batch}
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Number of Families} & \textbf{Number of queries in each family} & \textbf{Max Batch Size} & \textbf{Ordered by Family ID} & \textbf{Random Permutation} \\
+\hline
+\hline
+10 & 10 & 10 & 12.28 & 11.981 \\
+\hline
+10 & 100 & 100 & 59.601 & 55.704 \\
+\hline
+10 & 100 & 200 & 61.693 & 60.923 \\
+\hline
+100 & 100 & 100 & 42.882 & 39.172 \\
+\hline
+\end{tabular}%
+}
+\caption{Comparison of Throughput (req/sec) when merging queries from the same family into a single batch vs not merging}
+\label{tab:gpu_memory_breakdown_table}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{\RESULTDIR/throughput_no_prefill.png}
+    \caption{Throughput vs Load without prefix pre-filling}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{\RESULTDIR/throughput_with_prefill.png}
+    \caption{Throughput vs Load with prefix pre-filling}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{\RESULTDIR/throughput_with_prefill_ordered.png}
+    \caption{Throughput vs Load with prefix pre-filling with ordered family IDs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_1.png}
+    \caption{Throughput vs Load for 1 family}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_5.png}
+    \caption{Throughput vs Load for 5 families}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_10.png}
+    \caption{Throughput vs Load for 10 families}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_100.png}
+    \caption{Throughput vs Load for 100 families}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{\RESULTDIR/throughput_vs_max_batch_size_vllm_multiple_families.png}
+    \caption{Throughput vs Max Batch Size for multiple families}
+\end{figure}
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{\RESULTDIR/smact_smocc_tenso_family_sizes_batch_size_500.png}
+    \caption{SM Activity, SM Occupancy and Tensor Core Utilization for different family sizes at max batch size 500}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{\RESULTDIR/smact_smocc_tenso_different_family_batches.png}
+    \caption{SM Activity, SM Occupancy and Tensor Core Utilization for different family sizes and max batch sizes}
+\end{figure}
+
+
+\section{Comparison of vLLM with SGLANG}
+\begin{table}[h!]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{0.9}
+
+\begin{tabular}{cccccc}
+\toprule
+\textbf{Number of Families} & \textbf{Batch Size} & \textbf{vLLM} & \textbf{vLLM (Family Ordered)} & \textbf{SGLANG} & \textbf{SGLANG (Family Ordered)} \\
+\midrule
+10 & 10  & 15.0942 & 15.5041 & 13.3730 & 13.8388 \\
+20 & 100 & 51.1423 & 54.7801 & 57.5661 & 62.3397 \\
+50 & 50  & 40.5825 & 44.5922 & 30.2049 & 37.0809 \\
+\bottomrule
+\end{tabular}
+
+\caption{Throughput comparison (in req/s).}
+\label{tab:throughput_comparison}
+\end{table}

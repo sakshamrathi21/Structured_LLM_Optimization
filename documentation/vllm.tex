@@ -1,11 +1,14 @@
 \chapter{vLLM}
 vLLM an LLM serving system that achieves (1) near-zero waste in KV cache memory and (2) flexible sharing of KV cache within and across requests to further reduce memory usage. It also proposes PagedAttention, an attention algorithm inspired by the classical virtual memory and paging techniques in operating systems.
 
-\begin{figure}[H]
+
+\begin{wrapfigure}{r}{0.35\textwidth}
     \centering
-    \includegraphics[width=0.3\textwidth]{\FIGDIR/memory_layout.png}
+    \vspace{-10pt}
+    \includegraphics[width=\linewidth]{\FIGDIR/memory_layout.png}
     \caption{Memory layout when serving an LLM with 13B parameters on NVIDIA A100}
-\end{figure}
+    \vspace{-10pt}
+\end{wrapfigure}
 
 Approximately 65\% of the memory is allocated for the model weights, which remain static during serving. Close to 30\% of the memory is used to store the dynamic states of the requests. For Transformers, these states consist of the key and value tensors associated with the attention mechanism. The remaining small percentage of memory is used for other data, including activations - the ephemeral tensors created when evaluating the LLM. Since the model weights are constant and the activations only occupy a small fraction of the GPU memory, the way the KV cache is managed is critical in determining the maximum batch size. 
 
@@ -21,11 +24,12 @@ Unlike the tensors in the traditional deep learning workloads, the KV cache has 
 
 
 \section{vLLM}
-\begin{figure}[H]
+\begin{wrapfigure}{r}{0.6\textwidth}
     \centering
-    \includegraphics[width=0.7\textwidth]{\FIGDIR/vllm_system_overview.png}
-    \caption{vLLM system overview.}
-\end{figure}
+    \vspace{-10pt}
+    \includegraphics[width=\linewidth]{\FIGDIR/vllm_system_overview.png}
+    \caption{vLLM system overview}
+\end{wrapfigure}
 
 vLLM adopts a centralized scheduler to coordinate the execution of distributed GPU workers. The KV cache manager effectively manages the KV cache in a paged fashion, enabled by PagedAttention. Specifically, the KV cache manager manages the physical KV cache memory on the GPU workers through the instructions sent by the centralized scheduler.
 
@@ -49,11 +53,6 @@ In vLLM's case, evicted blocks are copiedto the CPU memory. vLLM includes a CPU 
 
 \subsubsection{Recomputation}
 In this case, we simply recompute the KV cache when the preempted sequences are rescheduled. The performances of swapping and recomputation depend on the bandwidth between CPU RAM and GPU memory and the computation power of the GPU. 
-
-
-
-
-
 
 
 \section{Automatic Prefix Caching in vLLM}

@@ -1,20 +1,26 @@
 \chapter{FastTree}
 \section{Introduction}
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+    \centering
+    \vspace{-10pt}
+    \includegraphics[width=\linewidth]{\FIGDIR/kv_cache_sharing_through_radix_tree.png}
+    \caption{KV cache sharing through Radix Tree }
+\end{wrapfigure}
+
+
 Existing LLM serving systems use a radix tree to organize the global key-value (KV) cache, facilitating cache reuse across different queries and thus reducing unnecessary memory use. Despite this, these systems still rely on conventional computation patterns for attention operations, resulting in redundant memory loads and GPU tensor core underutilization.
 
 FastTree introduces GPU kernels tailored for efficiently processing queries that share contexts through the radix tree.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{\FIGDIR/kv_cache_sharing_through_radix_tree.png}
-    \caption{KV cache sharing through Radix Tree }
-\end{figure}
 
-\begin{figure}[H]
+\begin{wrapfigure}{r}{0.5\textwidth}
     \centering
-    \includegraphics[width=0.5\textwidth]{\FIGDIR/computation_pattern_existing_system.png}
+    \vspace{-10pt}
+    \includegraphics[width=\linewidth]{\FIGDIR/computation_pattern_existing_system.png}
     \caption{Computation pattern of existing systems}
-\end{figure}
+\end{wrapfigure}
+
 
 
 However, although optimizing the memory layouts with a radix tree, existing systems still utilize the conventional attention kernels which concatenate the KV cache for each query and dispatch its computation into an individual GPU thread block. It requires redundantly loading the shared KV cache from slow global memory for every query and cannot meet the minimum shape requirements for tensor cores without padding.
@@ -23,15 +29,17 @@ However, although optimizing the memory layouts with a radix tree, existing syst
 With a given radix tree of the KV cache
 at runtime, we can generate enormous grouping plans by changing the shared contexts used for query aggregation, as the different queries can share varied prefixes. Moreover, the plan selection can significantly affect the execution performance of the attention kernel, as different plans can introduce distinct overheads, including wasted shared memory and computation due to tile padding and IO cost due to increased intermediate results.
 
+\clearpage
 
 \section{Tree Structure Adaptive Runtime Optimization}
 
-
-\begin{figure}[H]
+\begin{wrapfigure}{r}{0.5\textwidth}
     \centering
-    \includegraphics[width=0.5\textwidth]{\FIGDIR/two_context_queries_grouping_plan.png}
+    \vspace{-10pt}
+    \includegraphics[width=\linewidth]{\FIGDIR/two_context_queries_grouping_plan.png}
     \caption{Illustration of two context-queries grouping plans}
-\end{figure}
+\end{wrapfigure}
+
 
 Different grouping plans change the computation-batching and memory-sharing patterns, which affects the performance of the final attention kernel significantly. Moreover, even with the same tree topology, the performance of the same plan can vary in different cases. For example, in the case shown in (d), the queries associated with B1 and B2 are both 8, while the kernel requires a tile size of 16 to utilize the memory and computing resources fully. Hence, for plan 2, the GPU kernel has to rely on input padding to meet the hardware requirements for all groups, while plan 1 can avoid this for the long-context A1 group. As a result, plan 2 introduces much more wasted computation, making its performance worse than plan 1. In contrast, in another case shown in (e), where M=N=128, both plans can fully utilize the shared memory and tensor cores. However, as plan 1 separates A1 from B1 and B2, there will be more intermediate results stored on the slow global memory and requires more sequential reduction steps in the subsequent GPU kernel.
 
@@ -43,15 +51,16 @@ Formally, given a KV cache tree $T = (V,E)$ at runtime, where $V$ represents the
 s.t. $f(e) \in \{0,1\}, \forall e \in E$ where $VT(T,f(E))$ transforms the original tree $T$ into a virtual tree based on the binary edge assignment f(E).
 
 
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{\FIGDIR/fast_tree_algorithm.png}
-    \caption{Greedy Algorithm}
-\end{figure}
-
-
 \subsection*{Cost due to padding}
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+    \centering
+    \vspace{-10pt}
+    \includegraphics[width=\linewidth]{\FIGDIR/fast_tree_algorithm.png}
+    \caption{Greedy Algorithm}
+\end{wrapfigure}
+
+
 Padding introduces two primary sources of performance overhead. First, it leads to inefficient utilization of shared memory, which could otherwise be used to cache additional aggregated queries for improved data reuse and reduced global memory access. Second, padding results in redundant computations that do not contribute to the final output. To estimate the overhead due to padding at the query dimension, we define its cost function by combining the increased memory loading and floating-point operations:
 
 \begin{equation}
@@ -78,8 +87,6 @@ C_P(n_Q, len) = \alpha \cdot C_{P,q}(n_Q, len)
 where $\alpha$ and $\beta$ are two empirical coefficients.
 
 \subsection*{Cost due to intermediate results}
-
-
 Besides padding, splitting the KV matrices at the context dimension (i.e., assigning $0$ to the edge) can introduce more intermediate results and cause additional overhead. This is because the attention computation requires reducing all elements across the context dimension. After context splitting, different groups are processed by separate thread blocks, so the intermediate partial reduction results should be stored in global memory, which causes extra memory transaction overhead and brings more sequential reduction steps in the next stage to compute the final results.
 
 

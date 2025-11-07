@@ -1,0 +1,260 @@
+\chapter{Experiments - Single Family of Requests}
+
+\section{Throughput and Latency Measurements across different techniques}
+Here is the experiment setup:
+\begin{itemize}
+    \item Model: \texttt{TinyLlama/TinyLlama-1.1B-Chat-v1.0}
+    \item System Prompt: Roughly 1500 tokens (adopted from Ostep MLFQ schedulung chapter)
+    \item Queries: 100 queries, each of length 10-20 tokens
+    \item Max Output Length: 80 tokens
+    \item Techniques Compared: vLLM (with and without automatic prompt caching), SGLang, swiftLLM
+\end{itemize}
+
+Here is how we generate the load:
+
+\begin{algorithm}[H]
+\caption{Workload Generation at Target QPS}
+\KwIn{LLM model \texttt{llm}, list of \texttt{prompts}, parameters \texttt{sampling\_params}, target QPS \texttt{qps}}
+\KwOut{Latencies of requests}
+
+Initialize empty list \texttt{latencies} \;
+Set \texttt{interval} $\gets 1 / \texttt{qps}$ \;
+Set \texttt{start\_time} $\gets$ current time \;
+Set index $i \gets 0$ \;
+Initialize empty \texttt{backlog} \;
+Set \texttt{next\_time} $\gets$ current time \;
+
+\While{$i <$ length(\texttt{prompts})}{
+    Set \texttt{now} $\gets$ current time \;
+    Compute \texttt{intervals\_passed} $\gets \lfloor (now - next\_time) / interval \rfloor + 1$ \;
+
+    \tcp{By the time we reached here, a few intervals might have passed, so we add that many prompts to the backload}
+    \For{$k = 1$ \KwTo \texttt{intervals\_passed}}{
+        \If{$i <$ length(\texttt{prompts})}{
+            Append \texttt{prompts[i]} to \texttt{backlog} \;
+            Increment $i$ \;
+        }
+    }
+    
+    \If{\texttt{backlog} is not empty}{
+        Set \texttt{batch\_start} $\gets$ current time \;
+        Call \texttt{llm.generate(backlog, sampling\_params)} \;
+        Set \texttt{batch\_latency} $\gets$ current time $-$ \texttt{batch\_start} \;
+        \tcp{All the requests in the backloag have the same latency because they were processed in a batch}
+        \ForEach{request in \texttt{backlog}}{
+            Append \texttt{batch\_latency} to \texttt{latencies} \;
+        }
+        Clear \texttt{backlog} \;
+    }
+
+    Update \texttt{next\_time} $\gets$ \texttt{next\_time} $+$ \texttt{intervals\_passed} $\times$ \texttt{interval} \;
+    \tcp{If we are ahead of the schedule, we sleep until the next request time}
+    Set \texttt{sleep\_time} $\gets \max(0, next\_time - \texttt{current time})$ \;
+    \texttt{sleep(sleep\_time)} \;
+}
+\Return (\texttt{latencies}) \;
+\end{algorithm}
+
+\vspace{5pt}
+
+We primarily measure the following metrics:
+\begin{itemize}
+    \item \textbf{Throughput (QPS)}: Total number of requests / Total time taken
+    \item \textbf{Average Latency (s)}: Average time taken per request, basically the time a user will have to wait
+    \item \textbf{P95 Latency (s)}: 95th percentile latency across all requests, this helps us understand the tail latency, which in turn blocks the next batch of requests
+\end{itemize}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/throughput_vs_qps.png}
+    \caption{Throughput}
+
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/avg_latency_vs_qps.png}
+    \caption{Average Latency}
+
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/p95_latency_vs_qps.png}
+    \caption{P95 Latency}
+\end{figure}
+
+
+\section{LLM Request Timelines}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\FIGDIR/llm_timelines_20.png}
+    \caption{20 Requests per second}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\FIGDIR/llm_timelines_25.png}
+    \caption{25 Requests per second}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\FIGDIR/llm_timelines_infinite.png}
+    \caption{All requests at once}
+\end{figure}
+
+
+    
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/llm_with_gpu_metrics.png}
+    \caption{Request Timeline with GPU Metrics}
+\end{figure}
+
+
+
+\subsection{Chunked Prefill Enabled}
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/llm_timelines_100_chunked_prefill.png}
+    \caption{Chunked Prefill Enabled - 100 Requests per second}
+\end{figure}
+
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/llm_timelines_infinite_chunked_prefill.png}
+    \caption{Chunked Prefill Enabled - All requests at once}
+\end{figure}
+    
+
+\clearpage
+
+
+
+\section{Maximum Throughput with vLLM}
+All requests sent together
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/vllm_batch_outputs_chunked_prefill.png}
+    \caption{Number of batch outputs - chunked prefill enabled}
+\end{figure}
+
+Total time taken: 3.84s (100 requests)
+
+
+Throughput Observed: 26.04 QPS
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/vllm_batch_outputs.png}
+    \caption{Number of batch outputs - chunked prefill disabled}
+\end{figure}
+
+Total time taken: 4.97s (100 requests)
+
+
+Throughput Observed: 20.12 QPS
+
+\section{Nsight Systems GPU Metrics}
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|c|p{8cm}|}
+\hline
+\textbf{Metric} & \textbf{Description} \\ \hline
+GPC Clock Frequency & GPU core clock (Graphics Processing Cluster). Determines SM execution speed. \\ \hline
+SYS Clock Frequency & System clock domain of the GPU, affecting memory controllers, PCIe, and copy engines. \\ \hline
+GR Active & Fraction of time the graphics engine is active (rendering or compute dispatch). \\ \hline
+Sync Compute In Flight & Number of synchronous compute kernels currently executing (blocking). \\ \hline
+Async Compute In Flight & Number of asynchronous compute kernels currently executing in parallel (non-blocking). \\ \hline
+SM Active & Fraction of time at least one warp is active on any Streaming Multiprocessor (SM). \\ \hline
+SM Issue Instructions & Fraction of cycles where SMs issued at least one instruction. Indicates pipeline utilization. \\ \hline
+Tensor Active Instructions & Fraction of executed instructions that used Tensor Cores (e.g., matrix multiply). \\ \hline
+SM Warp Occupancy & Ratio of active warps to the maximum possible per SM. Measures parallel utilization. \\ \hline
+DRAM Bandwidth & Achieved global memory bandwidth (GB/s). Indicates memory throughput and potential bottlenecks. \\ \hline
+PCIe RX/TX Throughput & Host-to-Device (RX) and Device-to-Host (TX) data transfer rates over PCIe. \\ \hline
+PCIe Read/Write BAR1 Requests & CPU requests to GPU memory aperture (BAR1). Reads = CPU fetching from GPU, Writes = CPU writing to GPU. \\ \hline
+\end{tabular}
+\caption{Nsight Systems GPU Metrics}
+\label{tab:nsys_metrics}
+\end{table}
+
+
+\clearpage
+
+\section{Throughput vs Load Comparison For vLLM}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/throughput_comparison_vllm.png}
+    \caption{Throughput vs Load}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/throughput_vs_load_vllm_prefix_caching.png}
+    \caption{Throughput vs Load for different models for heavy workloads}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Compute Utilization across various max batch sizes}
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{\RESULTDIR/smact_smocc_batch_sizes.png}
+    \caption{SM Active and SM Occupancy across different max batch sizes}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{\RESULTDIR/batch_decomposition.png}
+    \caption{Times spent across different batch decompositions}
+\end{figure}
+
+
+
+
+
+\section{GPU Memory Breakdown}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{6cm}|p{3cm}|}
+\hline
+\textbf{Component} & \textbf{Meaning} & \textbf{Memory Occupied} \\
+\hline
+Weights & Model parameters of the neural network. Static during inference. & 0.93 GiB \\
+\hline
+Peak Activation & Temporary tensors generated during forward pass. Depends on batch size and sequence length. & 4.07 GiB \\
+\hline
+Non-Torch & GPU memory used outside PyTorch tensors (framework/library overhead, buffers). & 0.02 GiB \\
+\hline
+CUDA Graph & Memory reserved for CUDA Graphs to optimize kernel execution and reduce CPU-GPU overhead. & 0.41 GiB \\
+\hline
+KV Cache: Intersection (Prefix) & Cached attention keys/values shared across requests (common prefix). & 1,280 tokens / 0.0157 GiB \\
+\hline
+KV Cache: Extras for Requests & Cached attention keys/values unique for each request. & 640 tokens (10 requests × 64 tokens) / 0.0078 GiB \\
+\hline
+KV Cache: Free & Remaining unused KV cache memory. & 2,672,880 tokens / 32.8445 GiB \\
+\hline
+\end{tabular}
+\caption{GPU Memory Breakdown and KV Cache Usage}
+\label{tab:gpu_memory_breakdown}
+\end{table}
+
+
