@@ -1,4 +1,12 @@
 \chapter{Experiments - Single Family of Requests}
+
+\section{Motivation}
+Large Language Model (LLM) inference workloads increasingly involve multiple users querying over a shared, lengthy context—such as a lecture transcript, a technical manual, or an internal company document. A representative example arises in an Operating Systems lab, where students interact with a “lab helper” assistant. This assistant has access to the full lecture notes and explanations (often spanning thousands of tokens) and answers queries such as “Why does MLFQ need multiple queues?” or “How does the OS handle I/O-bound processes?” Each user's request shares the same large lecture context but differs slightly in the query content.
+
+Similar scenarios are common in enterprise environments, where employees interact with document-based assistants that answer questions from shared internal resources—such as design specifications, policy documents, or research reports. In both settings, the system prompt remains largely constant, while user queries are short and diverse, forming what can be viewed as families of requests with high prefix overlap.
+
+Such workloads stress the efficiency of the inference engine, as redundant computation over the shared prefix can significantly affect both throughput and latency.
+
 \section{Throughput and Latency Measurements across different techniques}
 Here is the experiment setup:
 \begin{itemize}
