@@ -119,3 +119,109 @@ When the least recently used (LRU) block at the head of the free queue is cached
     \item Remove the block ID from the cache and delete its hash entry.
 \end{enumerate}
 
+
+\section{v1 Scheduler}
+The v1 scheduler in vLLM does not differentiate between prefills and decodes. Here is a rough outline of the scheduling algorithm:
+
+
+\noindent\textbf{Algorithm 1: Scheduler::schedule()}\\[-0.5em]
+\begin{algorithmic}[1]
+\Require current state: \(\texttt{running}, \texttt{waiting}, \texttt{kv\_cache\_manager}\), config/state variables
+\Statex Initialize lists:
+\Statex \(\texttt{scheduled\_new\_reqs} \leftarrow []\)
+\Statex \(\texttt{scheduled\_resumed\_reqs} \leftarrow []\)
+\Statex \(\texttt{scheduled\_running\_reqs} \leftarrow []\)
+\Statex \(\texttt{preempted\_reqs} \leftarrow []\)
+\Statex Initialize maps:
+\Statex \(\texttt{req\_to\_new\_blocks} \leftarrow \{\},\quad \texttt{num\_scheduled\_tokens} \leftarrow \{\}\)
+\State \(\texttt{token\_budget} \leftarrow \texttt{self.max\_num\_scheduled\_tokens}\) \Comment{Max number of tokens we can schedule in this round}
+
+\medskip
+\Comment{Schedule RUNNING requests (FCFS with preemption on allocation failure)}
+\State \(\texttt{req\_index} \leftarrow 0\)
+\While{\(\texttt{req\_index} < \text{len}(\texttt{running}) \ \land\ \texttt{token\_budget} > 0\)}
+  \State \(\texttt{request} \leftarrow \texttt{running[req\_index]}\)
+  \State \(\texttt{num\_new\_tokens} \leftarrow
+     \texttt{request.num\_tokens\_with\_spec}
+      + \texttt{request.num\_output\_placeholders}
+      - \texttt{request.num\_computed\_tokens}\)
+  \State \(\texttt{num\_new\_tokens} \leftarrow \min(\texttt{num\_new\_tokens}, \texttt{token\_budget})\)
+  \If{\(\texttt{num\_new\_tokens} = 0\)}
+    \State \(\texttt{req\_index} \leftarrow \texttt{req\_index} + 1\) \Comment{try other requests (not strict FCFS)}
+    \State \textbf{continue}
+  \EndIf
+
+  \Comment{Attempt to allocate KV cache blocks for this chunk (may preempt others)}
+  \Repeat
+    \State \(\texttt{new\_blocks} \leftarrow \texttt{kv\_cache\_manager.allocate\_slots(}\)
+    \Statex \hspace{2em} \(\texttt{request, num\_new\_tokens, num\_lookahead\_tokens)}\)
+    \If{\(\texttt{new\_blocks} = \texttt{None}\)}
+      \Comment{Allocation failed \(\Rightarrow\) preempt a lower-priority request if possible}
+      \State \(\texttt{preempted\_req} \leftarrow \texttt{kv\_cache\_manager.select\_preemptible\_req()}\) \Comment{(selection policy)}
+      \If{\(\texttt{preempted\_req} \neq \texttt{None}\)}
+        \State \(\texttt{kv\_cache\_manager.free(preempted\_req)}\)
+        \State \(\texttt{waiting.prepend\_request(preempted\_req)}\)
+        \If{\(\texttt{preempted\_req} = \texttt{request}\)}
+          \State \(\texttt{can\_schedule} \leftarrow \texttt{false}\)
+          \State \textbf{break}
+        \EndIf
+      \Else
+        \State \(\texttt{can\_schedule} \leftarrow \texttt{false}\)
+      \EndIf
+    \Else
+      \State \(\texttt{can\_schedule} \leftarrow \texttt{true}\)
+    \EndIf
+  \Until{\(\texttt{can\_schedule} = \texttt{true}\)}
+
+  \If{\(\texttt{can\_schedule} = \texttt{true}\)}
+    \State \(\texttt{scheduled\_running\_reqs.append(request)}\)
+    \State \(\texttt{req\_to\_new\_blocks[request.id]} \leftarrow \texttt{new\_blocks}\)
+    \State \(\texttt{num\_scheduled\_tokens[request.id]} \leftarrow \texttt{num\_new\_tokens}\)
+    \State \(\texttt{token\_budget} \leftarrow \texttt{token\_budget} - \texttt{num\_new\_tokens}\)
+    \State \(\texttt{req\_index} \leftarrow \texttt{req\_index} + 1\)
+  \Else
+    \State \textbf{break} \Comment{Could not schedule this running request now}
+  \EndIf
+\EndWhile
+
+\medskip
+\Comment{Schedule WAITING requests (skip only if something was preempted)}
+\State \(\texttt{skipped\_waiting\_requests} \leftarrow \texttt{create\_request\_queue(policy)}\)
+\If{\(\texttt{preempted\_reqs} = []\)}
+  \While{\(\texttt{waiting} \text{ not empty} \land \texttt{token\_budget} > 0\)}
+    \If{\(\text{len}(\texttt{running}) = \texttt{max\_num\_running\_reqs}\)} \State \textbf{break} \EndIf
+    \State \(\texttt{request} \leftarrow \texttt{waiting.peek\_request()}\)
+
+    \Comment{Decide how many new tokens to schedule for this waiting request}
+    \State \(\texttt{num\_new\_tokens} \leftarrow \texttt{request.num\_tokens} - \texttt{request.num\_computed\_tokens}\)
+    \If{\(\lnot \texttt{scheduler\_config.chunked\_prefill\_enabled} \land
+        \texttt{num\_new\_tokens} > \texttt{token\_budget}\)}
+      \State \(\texttt{waiting.pop\_request()}\)
+      \State \(\texttt{skipped\_waiting\_requests.prepend\_request(request)}\)
+      \State \textbf{continue}
+    \EndIf
+
+    \State \(\texttt{num\_new\_tokens} \leftarrow \min(\texttt{num\_new\_tokens}, \texttt{token\_budget})\)
+
+    \Comment{Allocate KV blocks for waiting request (includes already-cached local computed blocks)}
+
+    \Comment{Admit the request: pop from waiting and append to running}
+    \State \(\texttt{request} \leftarrow \texttt{waiting.pop\_request()}\)
+    \State append \(\texttt{request}\) to \(\texttt{running}\)
+    \State \(\texttt{req\_to\_new\_blocks[request.id]} \leftarrow
+           \texttt{kv\_cache\_manager.get\_blocks(request.id)}\)
+    \State \(\texttt{num\_scheduled\_tokens[request.id]} \leftarrow \texttt{num\_new\_tokens}\)
+    \State \(\texttt{token\_budget} \leftarrow \texttt{token\_budget} - \texttt{num\_new\_tokens}\)
+    \State set \(\texttt{request.status} \leftarrow \texttt{RUNNING}\)
+    \State set \(\texttt{request.num\_computed\_tokens} \leftarrow \texttt{request.num\_computed\_tokens}\)
+    \If{\(\texttt{request.num\_cached\_tokens} < 0\)}
+      \State set \(\texttt{request.num\_cached\_tokens} \leftarrow \texttt{request.num\_computed\_tokens}\)
+    \EndIf
+  \EndWhile
+\EndIf
+
+\Comment{Restore skipped waiting requests to the head of waiting queue}
+
+\Comment{Sanity checks and prepare output}
+\State \Return \(\texttt{scheduler\_output}\)
+\end{algorithmic}
