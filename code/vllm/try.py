@@ -23,7 +23,7 @@ for (key, value) in tuple_to_throughput.items():
         "families": families,
         "req_per_sec": req,
         "batch_size": batch,
-        "randomness": rand,
+        "batch_nature": rand,
         "throughput": value
     })
 
@@ -36,7 +36,7 @@ import numpy as np
 # ---------- PLOT: Separate for each number of families ----------
 for families, df_fam in df.groupby("families"):
     plt.figure(figsize=(15, 10))
-    groups = list(df_fam.groupby(["batch_size", "randomness"]))
+    groups = list(df_fam.groupby(["batch_size", "batch_nature"]))
     colors = cm.get_cmap('tab20', len(groups))  # or try 'husl', 'viridis', etc.
 
     for idx, ((batch, rand), group) in enumerate(groups):
@@ -67,7 +67,7 @@ for families, df_fam in df.groupby("families"):
 
 
 plt.figure(figsize=(8,5))
-sns.boxplot(data=df, x="batch_size", y="throughput", hue="randomness")
-plt.title("Throughput Distribution Across Randomness Levels")
+sns.boxplot(data=df, x="batch_size", y="throughput", hue="batch_nature")
+plt.title("Throughput Distribution Across batch_nature Levels")
 plt.show()
 plt.savefig("../../results/throughput_boxplot_batch_size_randomness.png")
