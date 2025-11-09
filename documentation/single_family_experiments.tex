@@ -14,46 +14,51 @@ Here is how we generate the load:
 
 \begin{algorithm}[H]
 \caption{Workload Generation at Target QPS}
-\KwIn{LLM model \texttt{llm}, list of \texttt{prompts}, parameters \texttt{sampling\_params}, target QPS \texttt{qps}}
-\KwOut{Latencies of requests}
+\label{alg:workload_gen}
+\begin{algorithmic}[1]
+\Require LLM model \texttt{llm}, list of \texttt{prompts}, parameters \texttt{sampling\_params}, target QPS \texttt{qps}
+\Ensure Latencies of requests
 
-Initialize empty list \texttt{latencies} \;
-Set \texttt{interval} $\gets 1 / \texttt{qps}$ \;
-Set \texttt{start\_time} $\gets$ current time \;
-Set index $i \gets 0$ \;
-Initialize empty \texttt{backlog} \;
-Set \texttt{next\_time} $\gets$ current time \;
+\State Initialize empty list \texttt{latencies}
+\State $\texttt{interval} \gets 1 / \texttt{qps}$
+\State $\texttt{start\_time} \gets \text{current time}$
+\State $i \gets 0$
+\State Initialize empty \texttt{backlog}
+\State $\texttt{next\_time} \gets \text{current time}$
 
-\While{$i <$ length(\texttt{prompts})}{
-    Set \texttt{now} $\gets$ current time \;
-    Compute \texttt{intervals\_passed} $\gets \lfloor (now - next\_time) / interval \rfloor + 1$ \;
-
-    \tcp{By the time we reached here, a few intervals might have passed, so we add that many prompts to the backload}
-    \For{$k = 1$ \KwTo \texttt{intervals\_passed}}{
-        \If{$i <$ length(\texttt{prompts})}{
-            Append \texttt{prompts[i]} to \texttt{backlog} \;
-            Increment $i$ \;
-        }
-    }
+\While{$i < \text{length}(\texttt{prompts})$}
+    \State $\texttt{now} \gets \text{current time}$
+    \State $\texttt{intervals\_passed} \gets \lfloor (\texttt{now} - \texttt{next\_time}) / \texttt{interval} \rfloor + 1$
     
-    \If{\texttt{backlog} is not empty}{
-        Set \texttt{batch\_start} $\gets$ current time \;
-        Call \texttt{llm.generate(backlog, sampling\_params)} \;
-        Set \texttt{batch\_latency} $\gets$ current time $-$ \texttt{batch\_start} \;
-        \tcp{All the requests in the backloag have the same latency because they were processed in a batch}
-        \ForEach{request in \texttt{backlog}}{
-            Append \texttt{batch\_latency} to \texttt{latencies} \;
-        }
-        Clear \texttt{backlog} \;
-    }
+    \Comment{Add missed prompts to backlog if multiple intervals passed}
+    \For{$k = 1$ \textbf{to} $\texttt{intervals\_passed}$}
+        \If{$i < \text{length}(\texttt{prompts})$}
+            \State Append $\texttt{prompts}[i]$ to \texttt{backlog}
+            \State $i \gets i + 1$
+        \EndIf
+    \EndFor
 
-    Update \texttt{next\_time} $\gets$ \texttt{next\_time} $+$ \texttt{intervals\_passed} $\times$ \texttt{interval} \;
-    \tcp{If we are ahead of the schedule, we sleep until the next request time}
-    Set \texttt{sleep\_time} $\gets \max(0, next\_time - \texttt{current time})$ \;
-    \texttt{sleep(sleep\_time)} \;
-}
-\Return (\texttt{latencies}) \;
+    \If{\texttt{backlog} is not empty}
+        \State $\texttt{batch\_start} \gets \text{current time}$
+        \State $\texttt{llm.generate(backlog, sampling\_params)}$
+        \State $\texttt{batch\_latency} \gets \text{current time} - \texttt{batch\_start}$
+        \Comment{All requests in backlog share the same latency}
+        \ForAll{request in \texttt{backlog}}
+            \State Append $\texttt{batch\_latency}$ to \texttt{latencies}
+        \EndFor
+        \State Clear \texttt{backlog}
+    \EndIf
+
+    \State $\texttt{next\_time} \gets \texttt{next\_time} + \texttt{intervals\_passed} \times \texttt{interval}$
+    \Comment{Sleep if ahead of schedule}
+    \State $\texttt{sleep\_time} \gets \max(0,\, \texttt{next\_time} - \text{current time})$
+    \State $\texttt{sleep(sleep\_time)}$
+\EndWhile
+
+\State \Return \texttt{latencies}
+\end{algorithmic}
 \end{algorithm}
+
 
 \vspace{5pt}
 
@@ -154,30 +159,6 @@ Total time taken: 4.97s (100 requests)
 
 Throughput Observed: 20.12 QPS
 
-\section{Nsight Systems GPU Metrics}
-
-\begin{table}[h]
-\centering
-\renewcommand{\arraystretch}{1.3}
-\begin{tabular}{|c|p{8cm}|}
-\hline
-\textbf{Metric} & \textbf{Description} \\ \hline
-GPC Clock Frequency & GPU core clock (Graphics Processing Cluster). Determines SM execution speed. \\ \hline
-SYS Clock Frequency & System clock domain of the GPU, affecting memory controllers, PCIe, and copy engines. \\ \hline
-GR Active & Fraction of time the graphics engine is active (rendering or compute dispatch). \\ \hline
-Sync Compute In Flight & Number of synchronous compute kernels currently executing (blocking). \\ \hline
-Async Compute In Flight & Number of asynchronous compute kernels currently executing in parallel (non-blocking). \\ \hline
-SM Active & Fraction of time at least one warp is active on any Streaming Multiprocessor (SM). \\ \hline
-SM Issue Instructions & Fraction of cycles where SMs issued at least one instruction. Indicates pipeline utilization. \\ \hline
-Tensor Active Instructions & Fraction of executed instructions that used Tensor Cores (e.g., matrix multiply). \\ \hline
-SM Warp Occupancy & Ratio of active warps to the maximum possible per SM. Measures parallel utilization. \\ \hline
-DRAM Bandwidth & Achieved global memory bandwidth (GB/s). Indicates memory throughput and potential bottlenecks. \\ \hline
-PCIe RX/TX Throughput & Host-to-Device (RX) and Device-to-Host (TX) data transfer rates over PCIe. \\ \hline
-PCIe Read/Write BAR1 Requests & CPU requests to GPU memory aperture (BAR1). Reads = CPU fetching from GPU, Writes = CPU writing to GPU. \\ \hline
-\end{tabular}
-\caption{Nsight Systems GPU Metrics}
-\label{tab:nsys_metrics}
-\end{table}
 
 
 \clearpage

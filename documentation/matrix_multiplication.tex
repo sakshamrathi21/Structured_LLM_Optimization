@@ -1,5 +1,117 @@
 \chapter{Matrix Multiplication Analysis}
 
+\begin{algorithm}[H]
+\caption{Tiled Matrix Multiplication using CUDA with Host-Level Tiling}
+\label{alg:cuda_matmul}
+\begin{algorithmic}[1]
+\Require Matrices $A, B \in \mathbb{R}^{N \times N}$, block size $B_s$, tile size $T_s$
+\Ensure $C = A \times B$
+
+\State Allocate host matrices $h_A, h_B, h_C$
+
+\Comment{Process in tiles at host level}
+\For{$i = 0$ to $N-1$ \textbf{step} $T_s$}
+    \For{$j = 0$ to $N-1$ \textbf{step} $T_s$}
+        \State Allocate device submatrix $d_C$ of size $T_s \times T_s$
+        \State Initialize $d_C \gets 0$
+        \For{$k = 0$ to $N-1$ \textbf{step} $T_s$}
+            \State Allocate $d_A, d_B$ on device ($T_s \times T_s$)
+            \State Copy $T_s \times T_s$ submatrices:
+            \State \hspace{1em} $d_A \gets h_A[i : i+T_s,\, k : k+T_s]$
+            \State \hspace{1em} $d_B \gets h_B[k : k+T_s,\, j : j+T_s]$
+            
+            \State Launch CUDA kernel:
+            \State \hspace{1em} $\text{matmul\_tiled}<<< \lceil T_s/B_s \rceil,\, \lceil T_s/B_s \rceil >>>(d_A, d_B, d_C, T_s)$
+            
+            \State Synchronize device
+            \State Free $d_A, d_B$
+        \EndFor
+        \State Copy $d_C$ back to host:
+        \State \hspace{1em} $h_C[i : i+T_s,\, j : j+T_s] \gets d_C$
+        \State Free $d_C$
+    \EndFor
+\EndFor
+\State \Return $h_C$
+\end{algorithmic}
+\end{algorithm}
+
+The CUDA kernel \texttt{matmul\_tiled} computes the product of two tiles and accumulates the result in the output tile. Each thread block computes a $B_s \times B_s$ submatrix of the output tile.
+
+
+section{Nsight Systems GPU Metrics}
+Nsight Systems (NSYS) is a source of GPU performance metrics.
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|p{11cm}|}
+\hline
+\textbf{Metric} & \textbf{Description} \\ \hline
+GPC Clock Frequency & GPU core clock (Graphics Processing Cluster). Determines SM execution speed. \\ \hline
+SYS Clock Frequency & System clock domain of the GPU, affecting memory controllers, PCIe, and copy engines. \\ \hline
+GR Active & Fraction of time the graphics engine is active (rendering or compute dispatch). \\ \hline
+Sync Compute In Flight & Number of synchronous compute kernels currently executing (blocking). \\ \hline
+Async Compute In Flight & Number of asynchronous compute kernels currently executing in parallel (non-blocking). \\ \hline
+SM Active & Fraction of time at least one warp is active on any Streaming Multiprocessor (SM). \\ \hline
+SM Issue Instructions & Fraction of cycles where SMs issued at least one instruction. Indicates pipeline utilization. \\ \hline
+Tensor Active Instructions & Fraction of executed instructions that used Tensor Cores (e.g., matrix multiply). \\ \hline
+SM Warp Occupancy & Ratio of active warps to the maximum possible per SM. Measures parallel utilization. \\ \hline
+DRAM Bandwidth & Achieved global memory bandwidth (GB/s). Indicates memory throughput and potential bottlenecks. \\ \hline
+PCIe RX/TX Throughput & Host-to-Device (RX) and Device-to-Host (TX) data transfer rates over PCIe. \\ \hline
+PCIe Read/Write BAR1 Requests & CPU requests to GPU memory aperture (BAR1). Reads = CPU fetching from GPU, Writes = CPU writing to GPU. \\ \hline
+\end{tabular}
+\caption{Nsight Systems GPU Metrics}
+\label{tab:nsys_metrics}
+\end{table}
+
+
+Below is an example of NSYS GPU metrics captured during a matrix multiplication run.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{\FIGDIR/nsys_matmul.png}
+    \caption{NSYS GPU Metrics for a matrix multiplication run}
+\end{figure}
+
+
+\begin{itemize}
+    \item As shown below by the NVTX ranges, the matrix multiplication involves various phases: host to device copy, kernel computation, and device to host copy.
+    \item The compute metrics - compute in flight, SM Active, SM Occupancy reach high values during the kernel execution phase, indicating good GPU utilization.
+    \item The PCIE bandwidth metrics spike during the copy phases, showing data transfer activity. 
+\end{itemize}
+
+
+\section{Analysis of GPU Utilization using DCGMI}
+DCGMI - NVIDIA's Data Center GPU Management Interface - also provides insights into GPU performance metrics. 
+
+A few important metrics to consider are (\cite{nvidiadcgmi}):
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c||p{12cm}|}
+\hline
+\textbf{Metric} & \textbf{Description} \\
+\hline
+\hline
+Graphic Engine Activity & The fraction of time any portion of the graphics or compute engines were active. \\
+\hline
+SM Activity & The fraction of time at least one warp was active on a multiprocessor, averaged over all multiprocessors. Note that “active” does not necessarily mean a warp is actively computing. For instance, warps waiting on memory requests are considered active. \\
+\hline
+SM Occupancy & The fraction of resident warps on a multiprocessor, relative to the maximum number of concurrent warps supported on a multiprocessor. The value represents an average over a time interval and is not an instantaneous value. Higher occupancy does not necessarily indicate better GPU usage. \\
+\hline
+Tensor Activity & The fraction of cycles the tensor (HMMA / IMMA) pipe was active. The value represents an average over a time interval and is not an instantaneous value. Higher values indicate higher utilization of the Tensor Cores. \\
+\hline
+Memory BW Utilization & The fraction of cycles where data was sent to or received from device memory. The value represents an average over a time interval and is not an instantaneous value. \\
+\hline
+NVLink Bandwidth & The rate of data transmitted / received over NVLink, not including protocol headers, in bytes per second. \\
+\hline
+PCIe Bandwidth & The rate of data transmitted / received over the PCIe bus, including both protocol headers and data payloads, in bytes per second. \\
+\hline
+\hline
+\end{tabular}
+\end{table}
+
+
+In the figures below, we analyze the GPU utilization metrics (primarily focussed on compute) across different matrix sizes for our tiled matrix multiplication implementation (tile size set equal to the matrix size).
+
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{\RESULTDIR/matmul_compute.png}
