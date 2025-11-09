@@ -1,5 +1,4 @@
 \chapter{Experiments - Single Family of Requests}
-
 \section{Throughput and Latency Measurements across different techniques}
 Here is the experiment setup:
 \begin{itemize}
@@ -10,11 +9,8 @@ Here is the experiment setup:
     \item Techniques Compared: vLLM (with and without automatic prompt caching), SGLang, swiftLLM
 \end{itemize}
 
-Here is how we generate the load:
 
-\begin{algorithm}[H]
-\caption{Workload Generation at Target QPS}
-\label{alg:workload_gen}
+\noindent\textbf{Algorithm: Workload Generation at Target QPS}
 \begin{algorithmic}[1]
 \Require LLM model \texttt{llm}, list of \texttt{prompts}, parameters \texttt{sampling\_params}, target QPS \texttt{qps}
 \Ensure Latencies of requests
@@ -57,7 +53,6 @@ Here is how we generate the load:
 
 \State \Return \texttt{latencies}
 \end{algorithmic}
-\end{algorithm}
 
 
 \vspace{5pt}
@@ -69,17 +64,66 @@ We primarily measure the following metrics:
     \item \textbf{P95 Latency (s)}: 95th percentile latency across all requests, this helps us understand the tail latency, which in turn blocks the next batch of requests
 \end{itemize}
 
-\begin{figure}[p]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{\RESULTDIR/throughput_vs_qps.png}
-    \caption{Throughput}
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]
+        {\RESULTDIR/p95_latency_vs_qps.png}
+        \caption{P95 Latency}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{\RESULTDIR/avg_latency_vs_qps.png}
+        \caption{Average Latency}
+    \end{subfigure}
 
-    \includegraphics[width=0.7\textwidth]{\RESULTDIR/avg_latency_vs_qps.png}
-    \caption{Average Latency}
-
-    \includegraphics[width=0.7\textwidth]{\RESULTDIR/p95_latency_vs_qps.png}
-    \caption{P95 Latency}
+    \vspace{1em} 
+    \begin{subfigure}[b]{0.6\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{\RESULTDIR/throughput_vs_qps.png}
+        \caption{Throughput}
+    \end{subfigure}
+    \caption{Performance metrics across varying QPS.}
 \end{figure}
+
+\begin{itemize}
+    \item The throughput for swiftLLM is really low as compared to vLLM and SGLang, due to ineffective memory management and lack of batching optimizations.
+    \item vLLM v0 did not support automatic prefix caching, leading to higher latencies.
+    \item The throughput numbers flatten out for vLLM and SGLang at higher QPS due to GPU compute saturation.
+    \item Overall, with radix tree based prefix caching, SGLang achieves the best performance across all metrics.
+\end{itemize}
+
+\section{GPU Memory Breakdown}
+
+For the TinyLlama-1.1B model, here is the breakdown of GPU memory usage during inference with vLLM, this helps us understand how much memory is occupied by different components, including the KV cache used for prefix caching.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{8cm}|p{3cm}|}
+\hline
+\textbf{Component} & \textbf{Meaning} & \textbf{Memory Occupied} \\
+\hline
+Weights & Model parameters of the neural network. Static during inference. & 0.93 GiB \\
+\hline
+Peak Activation & Temporary tensors generated during forward pass. Depends on batch size and sequence length. & 4.07 GiB \\
+\hline
+Non-Torch & GPU memory used outside PyTorch tensors (framework/library overhead, buffers). & 0.02 GiB \\
+\hline
+CUDA Graph & Memory reserved for CUDA Graphs to optimize kernel execution and reduce CPU-GPU overhead. & 0.41 GiB \\
+\hline
+KV Cache: Intersection (Prefix) & Cached attention keys/values shared across requests (common prefix). & 1,280 tokens / 0.0157 GiB \\
+\hline
+KV Cache: Extras for Requests & Cached attention keys/values unique for each request. & 640 tokens (10 requests × 64 tokens) / 0.0078 GiB \\
+\hline
+KV Cache: Free & Remaining unused KV cache memory. & 2,672,880 tokens / 32.8445 GiB \\
+\hline
+\end{tabular}
+\caption{GPU Memory Breakdown and KV Cache Usage}
+\label{tab:gpu_memory_breakdown}
+\end{table}
+
 
 
 \section{LLM Request Timelines}
@@ -184,12 +228,6 @@ Throughput Observed: 20.12 QPS
 
 
 
-
-
-
-
-
-
 \section{Compute Utilization across various max batch sizes}
 
 
@@ -208,34 +246,5 @@ Throughput Observed: 20.12 QPS
 \end{figure}
 
 
-
-
-
-\section{GPU Memory Breakdown}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{|p{4cm}|p{6cm}|p{3cm}|}
-\hline
-\textbf{Component} & \textbf{Meaning} & \textbf{Memory Occupied} \\
-\hline
-Weights & Model parameters of the neural network. Static during inference. & 0.93 GiB \\
-\hline
-Peak Activation & Temporary tensors generated during forward pass. Depends on batch size and sequence length. & 4.07 GiB \\
-\hline
-Non-Torch & GPU memory used outside PyTorch tensors (framework/library overhead, buffers). & 0.02 GiB \\
-\hline
-CUDA Graph & Memory reserved for CUDA Graphs to optimize kernel execution and reduce CPU-GPU overhead. & 0.41 GiB \\
-\hline
-KV Cache: Intersection (Prefix) & Cached attention keys/values shared across requests (common prefix). & 1,280 tokens / 0.0157 GiB \\
-\hline
-KV Cache: Extras for Requests & Cached attention keys/values unique for each request. & 640 tokens (10 requests × 64 tokens) / 0.0078 GiB \\
-\hline
-KV Cache: Free & Remaining unused KV cache memory. & 2,672,880 tokens / 32.8445 GiB \\
-\hline
-\end{tabular}
-\caption{GPU Memory Breakdown and KV Cache Usage}
-\label{tab:gpu_memory_breakdown}
-\end{table}
 
 
