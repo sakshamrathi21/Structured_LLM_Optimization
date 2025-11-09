@@ -30,6 +30,8 @@
 \usepackage{tikz}
 \usepackage{booktabs}
 \usetikzlibrary{calc,shadows.blur} 
+\usetikzlibrary{positioning, arrows.meta, shapes, backgrounds}
+\usetikzlibrary{calc, fit, decorations.pathreplacing}
 \usepackage{graphicx}
 \usepackage{setspace}
 \usepackage{xcolor}
@@ -124,8 +126,11 @@
 \include{initial_experiments}
 \include{single_family_experiments}
 \include{multi_family_experiments}
-\include{transformer_math}
 \include{future_steps}
+
+\appendix
+\include{transformer_math}
+\include{code}
 
 \bibliographystyle{abbrvnat}
 \bibliography{references}

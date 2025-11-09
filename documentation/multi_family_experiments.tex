@@ -1,13 +1,60 @@
 \chapter{Experiments - Multiple Family of Requests}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{\RESULTDIR/batch_decomposition.png}
-    \caption{Times spent across different batch decompositions}
+\section{How to generate such a workload?}
+
+From the previous experiments, we already have a large system prompt of around 1500 tokens. Now, we need to perform experiments with multiple families of requests, where each family shares a large prefix in common (the system prompt).
+
+One naive way to generate such a dataset, is to write multiple unique system prompts, each around 1500 tokens. However, for larger number of families, this becomes tedious and time-consuming.
+
+A smart hack to generate multiple families of requests, while still sharing the same system prompt, is to prepend a unique identifier (like "AA", "AB", "AC", etc.) to the existing system prompt. This way, each family has a unique prefix, but the majority of the content (the system prompt) remains the same across all families. Since, we do not care about the response quality in these experiments (for now), this approach is sufficient to simulate multiple families of requests with a large shared prefix.
+
+Also, since the starting identifiers are uniqye for each family, the block hashes will be different, leading to separate KV Cache blocks for each family, despite most of the content being identical.
+
+\begin{figure}[h!]
+\centering
+\resizebox{0.9\textwidth}{!}{%
+\begin{tikzpicture}[
+    family/.style={rectangle, draw=blue!60, fill=blue!10, thick, rounded corners, minimum height=0.8cm, align=center},
+    token/.style={rectangle, draw=gray!50, fill=gray!10, thick, rounded corners, minimum height=0.8cm, align=center},
+    cache/.style={rectangle, draw=red!50, fill=red!10, thick, rounded corners, minimum height=0.8cm, align=center},
+    arrow/.style={->, thick, >=latex},
+    font=\small
+]
+
+\node[token, minimum width=5cm] (sys) {System Prompt (1500 tokens)};
+\node[family, left=1.3cm of sys, minimum width=1cm] (aa) {AA};
+\node[family, below=0.8cm of aa, minimum width=1cm] (ab) {AB};
+\node[family, below=0.8cm of ab, minimum width=1cm] (ac) {AC};
+
+\node[token, right=0.7cm of sys, minimum width=5.5cm, label=above:{Family 1}] (f1) {AA + System Prompt};
+\node[token, below=0.8cm of f1, minimum width=5.5cm, label=above:{Family 2}] (f2) {AB + System Prompt};
+\node[token, below=0.8cm of f2, minimum width=5.5cm, label=above:{Family 3}] (f3) {AC + System Prompt};
+\draw[arrow] (aa.east) -- ++(0.2,0) |- (f1.west);
+\draw[arrow] (sys.east) -- ++(0.2,0) |- (f1.west);
+
+\draw[arrow] (ab.east) -- ++(0.2,0) |- (f2.west);
+\draw[arrow] (sys.east) -- ++(0.2,0) |- (f2.west);
+
+\draw[arrow] (ac.east) -- ++(0.2,0) |- (f3.west);
+\draw[arrow] (sys.east) -- ++(0.2,0) |- (f3.west);
+\node[cache, right=0.9cm of f1, minimum width=2.2cm] (kv1) {KV Cache 1};
+\node[cache, right=0.9cm of f2, minimum width=2.2cm] (kv2) {KV Cache 2};
+\node[cache, right=0.9cm of f3, minimum width=2.2cm] (kv3) {KV Cache 3};
+
+\draw[arrow] (f1.east) -- (kv1.west);
+\draw[arrow] (f2.east) -- (kv2.west);
+\draw[arrow] (f3.east) -- (kv3.west);
+
+\end{tikzpicture}%
+}
+\caption{Generation of families by prepending unique identifiers, resulting in separate KV Cache blocks despite shared system prompt content.}
+\label{fig:family_generation}
 \end{figure}
 
 
-\section{Families of Requests}
+
+\section{Families of Requests across various models}
+In our first experiment, we compare the throughput of handling multiple families of requests versus a single family with the same total number of requests. We use 10 families, each with 1000 requests, and compare it to a single family with 10000 requests. The model chosen for this experiment is Qwen 0.5B, Llama 7B and LongChat 13B. Here are the results:
 \begin{table}[h!]
 \centering
 \begin{tabular}{|c||p{4cm}|p{4cm}|}
@@ -24,7 +71,35 @@ LongChat 13B & 22.415 req/s& 70.097 req/s\\
 \end{tabular}
 \end{table}
 
+
+As we can see, as the model size increases, the throughput degradation when handling multiple families becomes more pronounced. This is likely due to the increased attention computation overhead from having to manage multiple KV Cache blocks for different families, which becomes more significant with larger models.
+
+
+\section{Effect of Batch Decomposition on Inter-Scheduler Latency}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{\RESULTDIR/batch_decomposition.png}
+    \caption{Times spent across different batch decompositions}
+\end{figure}
+
+
+Since, the throughput differences were pretty high, we decided to look into the inter-scheduler latencies for different batch decompositions. We divide a query into 3 components - prefix prefill (prefill of the large shared prefix), prefill (of unique suffix/query) and decode (generation of tokens). We vary the batch decomposition across these 3 components and measure the time spent in each component (basically the difference of time instants between two calls to the scheduler).
+
+As we can see from the above figure, the time spent in prefix prefill is significantly higher than the other two components, which is expected since the prefix is large (around 1500 tokens). Also, the overall time spent is heavily influenced by the number of prefix prefills we have in that batch. It is more or less independent of the number of prefills and decodes.
+
+
+
 \section{Merging queries belonging to the same family into a single batch}
+Through a few more trials and experiments, we found that merging queries from the same family into a single batch (basically making the batch homogeneous with respect to family IDs) leads to significant throughput improvements.
+
+This is likely because of the fact that each family shares a large number of KV Cache blocks, so if multiple queries from the same family fit into a single batch, we will have to load a large number of KV Cache blocks from the HBM into the L2 shared cache. Since, the size of an L2 shared cache is limited, having a heterogeneous batch with queries from different families will lead to cache thrashing and evictions, leading to more HBM loads and lower throughput.
+
+
+However, when we merge queries from the same family into a single batch, we reduce the number of unique KV Cache blocks needed for that batch, leading to better cache utilization and higher throughput.
+
+Naively, we can sort the incoming queries based on their family IDs before forming batches. This way, queries from the same family are more likely to be grouped together in a batch.
 \begin{table}[H]
 \centering
 \resizebox{\textwidth}{!}{%
@@ -47,49 +122,70 @@ LongChat 13B & 22.415 req/s& 70.097 req/s\\
 \label{tab:gpu_memory_breakdown_table}
 \end{table}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{\RESULTDIR/throughput_no_prefill.png}
-    \caption{Throughput vs Load without prefix pre-filling}
-\end{figure}
+For Llama3.1-8B, here are the plots for varying workloads and number of families:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{\RESULTDIR/throughput_with_prefill.png}
-    \caption{Throughput vs Load with prefix pre-filling}
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{\RESULTDIR/throughput_no_prefill.png}
+        \caption{Without prefix pre-filling}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{\RESULTDIR/throughput_with_prefill.png}
+        \caption{With prefix pre-filling}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{\RESULTDIR/throughput_with_prefill_ordered.png}
+        \caption{With prefix pre-filling (ordered family IDs)}
+    \end{subfigure}
+    \caption{Throughput vs Load across different pre-filling strategies}
+    \label{fig:throughput_prefill_comparison}
 \end{figure}
+
+
+Now, as we can see from the second image, where all the system prompts were passed in the model beforehand (prefix pre-filling), which ensured that all the KV Cache blocks were already in the HBM, there was still a significant difference between the throughput numbers across different number of families. This suggests us that the main bottleneck is not caused by the number of computations to generate the KV Cache blocks, rather the memory bandwidth to load these blocks from HBM to L2 cache. Since, the working set size increases with number of families, the memory bandwidth becomes the bottleneck. However, as seen in the third image, when we order the incoming queries based on their family IDs, we get a significant throughput boost, because of better cache locality and reduced cache thrashing. Here are the plots for varying number of families (showing the improvement from ordering by family IDs):
+
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{\RESULTDIR/throughput_with_prefill_ordered.png}
-    \caption{Throughput vs Load with prefix pre-filling with ordered family IDs}
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_1.png}
+        \caption{Throughput vs Load for 1 family}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_5.png}
+        \caption{Throughput vs Load for 5 families}
+    \end{subfigure}
+    
+    \vspace{0.5cm}
+
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_10.png}
+        \caption{Throughput vs Load for 10 families}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_100.png}
+        \caption{Throughput vs Load for 100 families}
+    \end{subfigure}
+
+    \caption{Throughput vs Load across different numbers of families}
+    \label{fig:throughput_comparison_matrix}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_1.png}
-    \caption{Throughput vs Load for 1 family}
-\end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_5.png}
-    \caption{Throughput vs Load for 5 families}
-\end{figure}
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_10.png}
-    \caption{Throughput vs Load for 10 families}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_100.png}
-    \caption{Throughput vs Load for 100 families}
-\end{figure}
-
+\section{Effect of Max Batch Size on Throughput for multiple families}
+All of these experiments are actually run with large number of requests, so that we get the best averaged throughput numbers. However, initially there is a small CPU overhead, to tokenize the requests and prepare them to be passed to the scheduler. This does not allow us to saturate the GPU in the starting phase. If we tokenize and store all the requests beforehand, and then pass them to the scheduler in a loop, we can saturate the GPU even for smaller loads. Here is the effect of varying max batch size on throughput for multiple families of requests in such a scenario:
 
 \begin{figure}[H]
     \centering
@@ -98,22 +194,85 @@ LongChat 13B & 22.415 req/s& 70.097 req/s\\
 \end{figure}
 
 
+\section{Varying all the parameters together}
+So, we primarily have the following parameters:
+\begin{itemize}
+    \item Number of Families
+    \item Workload - requests per second
+    \item Max Batch Size
+    \item The nature of the batch - whether ordered by family IDs or random permutation:
+    \begin{itemize}
+        \item 0: Ordered by family IDs
+        \item 1: We make chunks of size 50 from the sorted list and permute each chunk randomly (allows us to have some level of prefix sharing between consecutive queries)
+        \item 2: Completely random permutation
+    \end{itemize}
+\end{itemize}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{\RESULTDIR/smact_smocc_tenso_family_sizes_batch_size_500.png}
-    \caption{SM Activity, SM Occupancy and Tensor Core Utilization for different family sizes at max batch size 500}
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/throughput_boxplot_batch_size_randomness.png}
+    \caption{Throughput difference across different batch nature levels}
+\end{figure}
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{\RESULTDIR/throughput_vs_req_batch_rand_families_10.png}
+    \caption{Throughput vs Workload by varying other parameters (10 families)}
 \end{figure}
 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{\RESULTDIR/smact_smocc_tenso_different_family_batches.png}
-    \caption{SM Activity, SM Occupancy and Tensor Core Utilization for different family sizes and max batch sizes}
+    \includegraphics[width=\textwidth]{\RESULTDIR/throughput_vs_req_batch_rand_families_100.png}
+    \caption{Throughput vs Workload by varying other parameters (100 families)}
 \end{figure}
 
 
-\section{Comparison of vLLM with SGLANG}
+
+\begin{itemize}
+    \item As we can see, increasing the max batch size generally leads to higher throughput, as it allows better GPU utilization.
+    \item Ordering the batches by family IDs (nature level 0) consistently provides the best throughput, due to improved cache locality and reduced memory bandwidth pressure.
+    \item A batch nature level of 1 is roughly similar to level 2, which suggests that even a small amount of mixing in the batch (basically making the batch heterogeneous with >1 number of families) leads to significant throughput degradation.
+    \item This can be justified by the fact that, all the SMs share an L2 cache of limited size, so even a small increase in the working set size (number of unique KV Cache blocks needed) can lead to cache thrashing and evictions, leading to more HBM loads and lower throughput.
+    \item Often a homogeneous batch of smaller size performs significantly better than a larger heterogeneous batch (for example, check batch sizes of 100 and 500 in the plots above). This essentially suggests, that if we have a heteorogeneous batch of 500, with 5 families inside it, we can possibly divide it into smaller batches of size 100, and achieve a much higher throughput.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.55\textwidth}
+\small
+The above results gave rise to another experiment. Let's say we have a parameter $k$. 
+Now, before passing the requests to the model, we make chunks of size $k$, and permute each chunk randomly 
+(for the above plots a batch nature level of 1 essentially meant a $k$ value of 50). 
+We fix the workload at 500 req/sec, the batch size at 500, and the number of families at 10. 
+The table on right shows how the throughput varies across $k$. Now, as we can see a $k$ value of 499 essentially means that in the first batch we have 499 requests of one family and 1 request of another family, however the throughput is much lower than a $k$ value of 500. This basically signals us that even one request of a different family will cause L2 cache thrashing.
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.4\textwidth}
+\centering
+\captionof{table}{Throughput across different $k$ levels}
+\label{tab:throughput_randomness}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{$k$} & \textbf{Throughput (req/sec)} \\
+\hline
+200  & 89.35  \\
+300  & 87.49  \\
+400  & 86.50  \\
+499  & 88.19  \\
+500  & 112.66 \\
+1000 & 112.41 \\
+\hline
+\end{tabular}
+\end{minipage}
+\end{figure}
+
+
+
+\section{Comparison of vLLM with SGLANG - for multiple families}
+SGLANG suits better for structured multi-turn scenarios, and it has timed KV Cache eviction policy, thus it performs worse as compared to vLLM for such batch-like multi-family scenarios:
 \begin{table}[h!]
 \centering
 \scriptsize
@@ -133,3 +292,39 @@ LongChat 13B & 22.415 req/s& 70.097 req/s\\
 \caption{Throughput comparison (in req/s).}
 \label{tab:throughput_comparison}
 \end{table}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{\RESULTDIR/vllm_vs_sglang_mult_families_facetgrid_throughput_randomness_frameworks.png}
+    \caption{vLLM vs SGLANG - varying parameters}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{\RESULTDIR/vllm_vs_sglang_mult_families_relative_speedup_bar.png}
+    \caption{vLLM vs SGLANG - Relative Speedup across randomness levels}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{\RESULTDIR/vllm_vs_sglang_mult_families_throughput_vs_randomness_batch_500.png}
+    \caption{vLLM vs SGLANG - Throughput levels for a batch size of 500}
+\end{minipage}
+\end{figure}
+
+
+
+\section{GPU Utilization Metrics across different family and batch sizes}
+
+We also analyzed compute utilzation across varying batch sizes and number of families - just to get the confidence that our GPU is being fully utilized. We used 3 metrics - SM Activity, SM Occupancy and Tensor Core Utilization. It turns out that for larger model sizes, the number of warps are lesser (as each warp needs more memory), and thus the overall SM Occupancy numbers are lower.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{\RESULTDIR/smact_smocc_tenso_different_family_batches.png}
+    \caption{SM Activity, SM Occupancy and Tensor Core Utilization for different family sizes and max batch sizes}
+\end{figure}
+
+
