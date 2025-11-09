@@ -11,7 +11,7 @@
 
 Existing LLM serving systems use a radix tree to organize the global key-value (KV) cache, facilitating cache reuse across different queries and thus reducing unnecessary memory use. Despite this, these systems still rely on conventional computation patterns for attention operations, resulting in redundant memory loads and GPU tensor core underutilization.
 
-FastTree introduces GPU kernels tailored for efficiently processing queries that share contexts through the radix tree.
+FastTree (\cite{pan2025fasttree}) introduces GPU kernels tailored for efficiently processing queries that share contexts through the radix tree.
 
 
 \begin{wrapfigure}{r}{0.5\textwidth}

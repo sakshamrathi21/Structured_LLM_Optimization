@@ -5,10 +5,10 @@
 \setlength\headheight{0mm}
 \let\openright=\clearpage
 \usepackage[a4paper,
-            left=20mm,    % left margin
-            right=20mm,   % right margin
-            top=20mm,     % top margin (optional)
-            bottom=25mm   % bottom margin (optional)
+            left=20mm,   
+            right=20mm,  
+            top=20mm,    
+            bottom=25mm   
            ]{geometry}
 
 \usepackage{amsmath}  
@@ -21,7 +21,7 @@
 \usepackage{graphicx}       
 \usepackage{psfrag}         
 \usepackage{fancyvrb}       
-\usepackage[round]{natbib}         
+\usepackage[numbers,sort&compress]{natbib}
 \usepackage{bbding}         
 \usepackage{dcolumn}        
 \usepackage{booktabs}       
@@ -120,20 +120,14 @@
 \include{sglang} 
 \include{fast_tree}
 \include{matrix_multiplication}
-\include{workload_description}
 \include{initial_experiments}
 \include{single_family_experiments}
 \include{multi_family_experiments}
 \include{transformer_math}
 \include{future_steps}
 
-
-
-
-\bibliographystyle{plainnat}
+\bibliographystyle{abbrvnat}
 \bibliography{references}
-
-
 
 \end{document}
 

@@ -1,5 +1,5 @@
 \chapter{SGLang}
-SGLANG is a system for efficient execution of complex language model programs. SGLang consists of a frontend language and a runtime. The frontend simplifies programming with primitives for generation and parallelism control. The runtime accelerates execution with novel optimizations like RadixAttention for KV cache reuse and compressed finite state machines for faster structured output decoding.
+SGLANG (\cite{zheng2024sglangefficientexecutionstructured}) is a system for efficient execution of complex language model programs. SGLang consists of a frontend language and a runtime. The frontend simplifies programming with primitives for generation and parallelism control. The runtime accelerates execution with novel optimizations like RadixAttention for KV cache reuse and compressed finite state machines for faster structured output decoding.
 
 \section{LM Programs}
 The emergence of few-shot learning, self-consistency, skeleton-of-thought, tree-of-thought and various other patterns signifies a shift in our interaction with LLMs, moving from simple chatting to a more sophisticated form of programmatic usage of LLMs, which means using a program to schedule and control the generation processes of LLMs. These programs are referred to as LM (Language Model) programs. There are two common properties of LM programs: 
