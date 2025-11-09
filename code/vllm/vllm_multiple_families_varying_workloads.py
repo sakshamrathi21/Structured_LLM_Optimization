@@ -66,11 +66,8 @@ def main():
 
     print(f"Generated {len(prompts)} prompts in total.")
     paired = list(zip(prompts, families))
-    if randomness == 2:
-        random.shuffle(paired)
-    elif randomness == 1:
-        # every 50 sized chunk should remain as it is, but shuffle the chunks
-        chunked = [paired[i:i+50] for i in range(0, len(paired), 50)]
+    if randomness > 0:
+        chunked = [paired[i:i+randomness] for i in range(0, len(paired), randomness)]
         random.shuffle(chunked)
         paired = [item for chunk in chunked for item in chunk]
     prompts, families = zip(*paired)
