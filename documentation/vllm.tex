@@ -56,7 +56,7 @@ In this case, we simply recompute the KV cache when the preempted sequences are 
 
 
 \section{Automatic Prefix Caching in vLLM}
-Prefix caching kv-cache blocks is a popular optimization in LLM inference to avoid redundant prompt computations. The core idea is simple - we cache the kv-cache blocks of processed requests, and reuse these blocks when a new request comes in with the same prefix as previous requests. Since prefix caching is almost a free lunch and won't change model outputs, it has been widely used by many public endpoints (e.g., OpenAI, Anthropic, etc) and most open source LLM inference frameworks (e.g., SGLang).
+Prefix caching (\cite{vllm_automatic_prefix_caching}) kv-cache blocks is a popular optimization in LLM inference to avoid redundant prompt computations. The core idea is simple - we cache the kv-cache blocks of processed requests, and reuse these blocks when a new request comes in with the same prefix as previous requests. Since prefix caching is almost a free lunch and won't change model outputs, it has been widely used by many public endpoints (e.g., OpenAI, Anthropic, etc) and most open source LLM inference frameworks (e.g., SGLang).
 
 We can build the block hash of hash(tuple[components]), where components are:
 \begin{itemize}
@@ -121,7 +121,7 @@ When the least recently used (LRU) block at the head of the free queue is cached
 
 
 \section{v1 Scheduler}
-The v1 scheduler in vLLM does not differentiate between prefills and decodes. Here is a rough outline of the scheduling algorithm:
+The v1 scheduler (\cite{vllm_v1_scheduler}) in vLLM does not differentiate between prefills and decodes. Here is a rough outline of the scheduling algorithm:
 
 
 \noindent\textbf{Algorithm 1: Scheduler::schedule()}\\[-0.5em]

@@ -127,95 +127,116 @@ KV Cache: Free & Remaining unused KV cache memory. & 2,672,880 tokens / 32.8445 
 
 
 \section{LLM Request Timelines}
-\begin{figure}[h]
+A request timeline shows when each request started (got into the waiting queue of the scheduler), when it's prefill got completed, and when the full output generation completed (token by token). This helps us visualize how well the system is able to batch request together and how the latencies vary across requests.
+
+The following timelines are generated for different request rates (QPS). By default (without chunked prefill enabled), vLLM scheduler (\cite{vllm_chunked_prefill}) prioritizes prefills and doesn't batch prefill and decode to the same batch. This policy optimizes the TTFT (time to thefirst token), but incurs slower ITL (inter token latency) and inefficient GPU utilization.
+
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{\FIGDIR/llm_timelines_20.png}
     \caption{20 Requests per second}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{\FIGDIR/llm_timelines_25.png}
     \caption{25 Requests per second}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{\FIGDIR/llm_timelines_infinite.png}
     \caption{All requests at once}
 \end{figure}
 
-
-    
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{\RESULTDIR/llm_with_gpu_metrics.png}
     \caption{Request Timeline with GPU Metrics}
 \end{figure}
 
 
+As we can see in the plots above, there are stalls in decode stages of a request, because the scheduler prioritizes prefill stages of other requests.
 
 \subsection{Chunked Prefill Enabled}
+Once chunked prefill is enabled, the policy is changed to (\cite{vllm_chunked_prefill}):
+\begin{itemize}
+    \item Prioritize decode requests: It batches all pending decode requests to the batch before scheduling any prefill.
+    \item When there are available token budgets (\texttt{max\_num\_batched\_tokens}), it schedules pending prefills. If the last pending prefill request cannot fit into \texttt{max\_num\_batched\_tokens}, it chunks it.
+\end{itemize}
+
+This policy has two benefits:
+\begin{itemize}
+    \item It improves ITL (inter token latency) and generation decode because decode requests are prioritized.
+    \item It helps achieve better GPU utilization by locating compute-bound (prefill) and memory-bound (decode) requests to the same batch.
+\end{itemize}
 
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.7\textwidth]{\RESULTDIR/llm_timelines_100_chunked_prefill.png}
-    \caption{Chunked Prefill Enabled - 100 Requests per second}
-\end{figure}
+Smaller batch size achieves better ITL because there are fewer prefills interrupting decodes. Higher batch size achieves better TTFT as you can put more prefill to the batch.
 
-
-
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{\RESULTDIR/llm_timelines_infinite_chunked_prefill.png}
     \caption{Chunked Prefill Enabled - All requests at once}
 \end{figure}
-    
-
-\clearpage
-
 
 
 \section{Maximum Throughput with vLLM}
-All requests sent together
+We sent 100 requests all at once to vLLM server, and measured the number of prefills and deocodes for a single batch (batches are generated after every model run). This experiment helped us understand the scheduler algorithm of vLLM in a much better way.
+ 
+When chunked prefill is enabled, we got a throughput of 26.04 QPS. The total time taken was 3.84s for 100 requests.
 
+When chunked prefill is disabled, we got a throughput of 20.12 QPS. The total time taken was 4.97s for 100 requests.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.7\textwidth]{\RESULTDIR/vllm_batch_outputs_chunked_prefill.png}
-    \caption{Number of batch outputs - chunked prefill enabled}
-\end{figure}
-
-Total time taken: 3.84s (100 requests)
-
-
-Throughput Observed: 26.04 QPS
-
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{\RESULTDIR/vllm_batch_outputs.png}
     \caption{Number of batch outputs - chunked prefill disabled}
 \end{figure}
 
-Total time taken: 4.97s (100 requests)
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/vllm_batch_outputs_chunked_prefill.png}
+    \caption{Number of batch outputs - chunked prefill enabled}
+\end{figure}
+
+As we can see from the above plots, when chunked prefill is disabled, we perform all the prefill operations in the start itself (because of large token sizes, and small number of max batched tokens, we can't afford more than one prefill in a single batch). After all the prefills are performed, we move to the decoding stage, where each new request just takes a size of one token, leading to a lot of decode operations in a single batch.
+
+When chunked prefill is enabled, we are able to interleave prefill and decode operations better, leading to improved GPU utilization and throughput.
 
 
-Throughput Observed: 20.12 QPS
-
-
-
-\clearpage
 
 \section{Throughput vs Load Comparison For vLLM}
 
-\begin{figure}[h]
+From now on, we enable automatic prefix caching in vLLM for better performance (switched from vLLM v0 to vLLM v1 engine).
+
+
+In the following experiment, we compare the throughput in three cases: 
+\begin{itemize}
+    \item vLLM with prefix caching and chunked prefill enabled
+    \item vLLM with just chunked prefill enabled
+    \item vLLM with no optimizations
+\end{itemize}
+
+We vary the load (QPS) from 5 to 500, and measure the achieved throughput.
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{\RESULTDIR/throughput_comparison_vllm.png}
     \caption{Throughput vs Load}
 \end{figure}
 
-\begin{figure}[h]
+As we can see from the plot above, with prefix caching enabled, we are able to achieve much higher throughput at higher loads, for example the max we reached was around 235 QPS, whereas without prefix caching, the max we reached was just around 30 QPS.
+
+This is because, our workload has a large common prefix, which no longer needs to be recomputed for every request, leading to significant speedups.
+
+The improvement of chunked prefill for larger loads is negligible.
+
+
+Next, we compared different models (TinyLlama-1.1B, Llama-2-7B) for varying workloads (again with prefix caching and chunked prefill enabled). As we can see, larger models have lower throughput due to higher compute requirements. They have larger number of attention heads and layers, leading to more compute intensive operations.
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{\RESULTDIR/throughput_vs_load_vllm_prefix_caching.png}
     \caption{Throughput vs Load for different models for heavy workloads}
@@ -223,28 +244,12 @@ Throughput Observed: 20.12 QPS
 
 
 
-
-
-
-
-
 \section{Compute Utilization across various max batch sizes}
-
+To get a better idea of how well vLLM utilizes the GPU across differe max batch sizes (number of requests we can fit into a single scheduler batch), we measured two metrics - SM Activity and SM Occupancy through NVIDIA DCGM (\cite{nvidiadcgmi}). As we can see, for smaller models (such as Qwen 0.5B used in this case), the compute utilization stops increasing drastically after a batch size of 1000 requests. Increasing the batch size further doesn't help much, as the model is already able to saturate the GPU compute. However, for larger models, this threshold will be much lower (for example around 100 requests for Llama-2-7B).
 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{\RESULTDIR/smact_smocc_batch_sizes.png}
+    \includegraphics[width=0.9\textwidth]{\RESULTDIR/smact_smocc_batch_sizes.png}
     \caption{SM Active and SM Occupancy across different max batch sizes}
 \end{figure}
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{\RESULTDIR/batch_decomposition.png}
-    \caption{Times spent across different batch decompositions}
-\end{figure}
-
-
-
-
