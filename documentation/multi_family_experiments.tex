@@ -209,6 +209,51 @@ So, we primarily have the following parameters:
 \end{itemize}
 
 \begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1, every node/.style={scale=0.8}]
+    \definecolor{famA}{RGB}{239,83,80}  
+    \definecolor{famB}{RGB}{66,165,245}  
+    \definecolor{famC}{RGB}{102,187,106} 
+    \definecolor{famD}{RGB}{255,202,40} 
+    \tikzstyle{req}=[rectangle, minimum width=0.55cm, minimum height=0.55cm, draw=black]
+    \node[anchor=west] at (0,2.5) {\textbf{(0) Ordered by Family IDs}};
+    \foreach \i/\col in {
+        0/famA,1/famA,2/famA,3/famA,
+        4/famB,5/famB,6/famB,7/famB,
+        8/famC,9/famC,10/famC,11/famC,
+        12/famD,13/famD,14/famD,15/famD}
+        \node[req, fill=\col] at (\i*0.55,1.8) {};
+    \node[anchor=west] at (0,1.0) {\textbf{(1) Chunked Random Permutation (chunk size = 2)}};
+    \foreach \i/\col in {
+        0/famA,1/famA,
+        2/famC,3/famC,
+        4/famD,5/famD,
+        6/famA,7/famA,
+        8/famB,9/famB,
+        10/famD,11/famD,
+        12/famB,13/famB,
+        14/famC,15/famC}
+        \node[req, fill=\col] at (\i*0.55,0.3) {};
+    \foreach \x in {0.27,1.37,...,8.8}
+        \draw[dashed, gray] (\x-0.55,-0.1) rectangle (\x+0.55,0.7);
+    \node[anchor=west] at (0,-0.8) {\textbf{(2) Completely Random Permutation}};
+    \foreach \i/\col in {
+        0/famC,1/famA,2/famD,3/famB,
+        4/famB,5/famD,6/famA,7/famC,
+        8/famD,9/famC,10/famA,11/famB,
+        12/famC,13/famB,14/famD,15/famA}
+        \node[req, fill=\col] at (\i*0.55,-1.5) {};
+    \node[req, fill=famA, label=right:{Family A}] at (9.8,1.8) {};
+    \node[req, fill=famB, label=right:{Family B}] at (9.8,1.1) {};
+    \node[req, fill=famC, label=right:{Family C}] at (9.8,0.4) {};
+    \node[req, fill=famD, label=right:{Family D}] at (9.8,-0.3) {};
+\end{tikzpicture}
+\caption{Visualization of query ordering strategies for 4 families (4 requests each): (0) sorted, (1) chunked random, (2) completely random.}
+\end{figure}
+
+
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{\RESULTDIR/throughput_boxplot_batch_size_randomness.png}
     \caption{Throughput difference across different batch nature levels}
