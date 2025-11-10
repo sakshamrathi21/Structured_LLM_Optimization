@@ -1,5 +1,18 @@
 \chapter{Matrix Multiplication Analysis}
 
+\section{Motivation}
+
+Large Language Model (LLM) inference workloads are dominated by matrix multiplication operations that form the core of attention and feed-forward layers. However, the overall behavior of such workloads on GPUs is influenced by an interplay of compute, memory, and communication characteristics. Before analyzing end-to-end inference pipelines, it is important to develop a clear understanding of how fundamental GPU metrics behave in a controlled and interpretable setting.
+
+To this end, we begin with the tiled matrix multiplication workload—a simplified kernel that captures the essential compute and memory access patterns seen in LLM inference. The goal here is not to optimize matrix multiplication itself, but rather to use it as a microbenchmark to study key GPU metrics, identify relevant performance indicators, and familiarize ourselves with profiling tools that will later be applied to real inference runs.
+
+We employ two primary NVIDIA tools for this study: \textbf{Nsight Systems (NSYS)} and the \textbf{Data Center GPU Management Interface (DCGMI)}. NSYS provides fine-grained timeline traces, kernel-level statistics, and PCIe throughput data, while DCGMI offers continuous runtime counters such as SM activity, tensor utilization, and memory bandwidth usage. Together, these tools allow us to correlate different phases of GPU execution—data transfers, kernel computation, and synchronization—with corresponding hardware metrics.
+
+By first examining matrix multiplication in isolation, we build intuition about how metrics such as SM occupancy, memory bandwidth utilization, and tensor activity reflect GPU efficiency. This understanding serves as a foundation for interpreting the more complex, multi-kernel behavior of LLM inference workloads analyzed later.
+
+\section{Algorithm}
+The CUDA kernel \texttt{matmul\_tiled} computes the product of two tiles and accumulates the result in the output tile. Each thread block computes a $B_s \times B_s$ submatrix of the output tile.
+
 \begin{algorithm}[H]
 \caption{Tiled Matrix Multiplication using CUDA with Host-Level Tiling}
 \label{alg:cuda_matmul}
@@ -35,11 +48,9 @@
 \end{algorithmic}
 \end{algorithm}
 
-The CUDA kernel \texttt{matmul\_tiled} computes the product of two tiles and accumulates the result in the output tile. Each thread block computes a $B_s \times B_s$ submatrix of the output tile.
 
 
-section{Nsight Systems GPU Metrics}
-Nsight Systems (NSYS) is a source of GPU performance metrics.
+\section{Nsight Systems GPU Metrics}
 \begin{table}[h]
 \centering
 \begin{tabular}{|c|p{11cm}|}

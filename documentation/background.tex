@@ -47,7 +47,7 @@ Masked attention is used in autoregressive language models to prevent the model 
 \end{figure}
 
 \section{Transformer Based Large Langauge Models}
-The task of language modeling is to model the probability of a list of tokens $(x_1, \dots,x_n)$. Since language has a natural sequential ordering, it is common to factorize the joint probability over the whole sequence as the product of conditional probabilities (a.k.a. autoregressive decomposition):
+The task of language modeling (\cite{kwon2023efficient}) is to model the probability of a list of tokens $(x_1, \dots,x_n)$. Since language has a natural sequential ordering, it is common to factorize the joint probability over the whole sequence as the product of conditional probabilities (a.k.a. autoregressive decomposition):
 \[
 P(x) = P(x_1) \cdot P(x_2 | x_1) \dots P(x_n | x_1, \dots x_{n - 1})
 \]
@@ -182,7 +182,7 @@ In short, \emph{prefill is parallel and one-time}, while \emph{decode is sequent
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{\FIGDIR/pd.png}
-    \caption{Prefill vs Decode}
+    \caption{Prefill vs Decode (\cite{ibm_sysml})}
 \end{figure}
 
 

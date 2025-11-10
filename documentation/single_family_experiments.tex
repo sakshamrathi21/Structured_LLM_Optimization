@@ -1,13 +1,8 @@
 \chapter{Experiments - Single Family of Requests}
 
-\section{Motivation}
-Large Language Model (LLM) inference workloads increasingly involve multiple users querying over a shared, lengthy context—such as a lecture transcript, a technical manual, or an internal company document. A representative example arises in an Operating Systems lab, where students interact with a “lab helper” assistant. This assistant has access to the full lecture notes and explanations (often spanning thousands of tokens) and answers queries such as “Why does MLFQ need multiple queues?” or “How does the OS handle I/O-bound processes?” Each user's request shares the same large lecture context but differs slightly in the query content.
-
-Similar scenarios are common in enterprise environments, where employees interact with document-based assistants that answer questions from shared internal resources—such as design specifications, policy documents, or research reports. In both settings, the system prompt remains largely constant, while user queries are short and diverse, forming what can be viewed as families of requests with high prefix overlap.
-
-Such workloads stress the efficiency of the inference engine, as redundant computation over the shared prefix can significantly affect both throughput and latency.
-
 \section{Throughput and Latency Measurements across different techniques}
+To systematically understand the performance characteristics of LLM inference engines under such single-family workloads, we begin by quantifying throughput, latency, and GPU resource utilization across representative inference backends.
+
 Here is the experiment setup:
 \begin{itemize}
     \item Model: \texttt{TinyLlama/TinyLlama-1.1B-Chat-v1.0}
@@ -76,21 +71,21 @@ We primarily measure the following metrics:
     \centering
     \begin{subfigure}[b]{0.48\textwidth}
         \centering
-        \includegraphics[width=0.9\textwidth]
+        \includegraphics[width=0.7\textwidth]
         {\RESULTDIR/p95_latency_vs_qps.png}
         \caption{P95 Latency}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.48\textwidth}
         \centering
-        \includegraphics[width=0.9\textwidth]{\RESULTDIR/avg_latency_vs_qps.png}
+        \includegraphics[width=0.7\textwidth]{\RESULTDIR/avg_latency_vs_qps.png}
         \caption{Average Latency}
     \end{subfigure}
 
     \vspace{1em} 
-    \begin{subfigure}[b]{0.6\textwidth}
+    \begin{subfigure}[b]{0.5\textwidth}
         \centering
-        \includegraphics[width=0.9\textwidth]{\RESULTDIR/throughput_vs_qps.png}
+        \includegraphics[width=0.7\textwidth]{\RESULTDIR/throughput_vs_qps.png}
         \caption{Throughput}
     \end{subfigure}
     \caption{Performance metrics across varying QPS.}
@@ -104,6 +99,7 @@ We primarily measure the following metrics:
 \end{itemize}
 
 \section{GPU Memory Breakdown}
+To further understand the memory behavior of these inference workloads, we profile the GPU memory allocation of vLLM during execution, isolating contributions from model weights, activations, and KV cache components.
 
 For the TinyLlama-1.1B model, here is the breakdown of GPU memory usage during inference with vLLM, this helps us understand how much memory is occupied by different components, including the KV cache used for prefix caching.
 
@@ -135,6 +131,8 @@ KV Cache: Free & Remaining unused KV cache memory. & 2,672,880 tokens / 32.8445 
 
 
 \section{LLM Request Timelines}
+While throughput and latency provide aggregate measures, they conceal important scheduling dynamics. We therefore visualize the per-request timelines to analyze how prefill and decode phases are interleaved within vLLM's scheduling policy.
+
 A request timeline shows when each request started (got into the waiting queue of the scheduler), when it's prefill got completed, and when the full output generation completed (token by token). This helps us visualize how well the system is able to batch request together and how the latencies vary across requests.
 
 The following timelines are generated for different request rates (QPS). By default (without chunked prefill enabled), vLLM scheduler (\cite{vllm_chunked_prefill}) prioritizes prefills and doesn't batch prefill and decode to the same batch. This policy optimizes the TTFT (time to thefirst token), but incurs slower ITL (inter token latency) and inefficient GPU utilization.
@@ -168,6 +166,8 @@ The following timelines are generated for different request rates (QPS). By defa
 As we can see in the plots above, there are stalls in decode stages of a request, because the scheduler prioritizes prefill stages of other requests.
 
 \subsection{Chunked Prefill Enabled}
+To mitigate the imbalance between prefill and decode prioritization, vLLM introduced a “chunked prefill” mechanism. We next study how this impacts latency and throughput under the same workload.
+
 Once chunked prefill is enabled, the policy is changed to (\cite{vllm_chunked_prefill}):
 \begin{itemize}
     \item Prioritize decode requests: It batches all pending decode requests to the batch before scheduling any prefill.
@@ -191,6 +191,8 @@ Smaller batch size achieves better ITL because there are fewer prefills interrup
 
 
 \section{Maximum Throughput with vLLM}
+We next quantify the maximum achievable throughput of vLLM under different scheduling policies to validate the observed trends.
+
 We sent 100 requests all at once to vLLM server, and measured the number of prefills and deocodes for a single batch (batches are generated after every model run). This experiment helped us understand the scheduler algorithm of vLLM in a much better way.
  
 When chunked prefill is enabled, we got a throughput of 26.04 QPS. The total time taken was 3.84s for 100 requests.
@@ -216,6 +218,7 @@ When chunked prefill is enabled, we are able to interleave prefill and decode op
 
 
 \section{Throughput vs Load Comparison For vLLM}
+Having established baseline performance, we now compare throughput scalability across different optimization configurations—specifically, prefix caching and chunked prefill.
 
 From now on, we enable automatic prefix caching in vLLM for better performance (switched from vLLM v0 to vLLM v1 engine).
 

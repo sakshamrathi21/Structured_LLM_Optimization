@@ -1,0 +1,34 @@
+\chapter{Introduction}
+The recent surge in the deployment of Large Language Models (LLMs) has transformed a wide spectrum of interactive applications, ranging from conversational agents and enterprise assistants to data analysis tools and reasoning systems. Unlike traditional inference workloads—such as image classification or translation—LLM inference is computationally heavy, memory-intensive, and latency-sensitive. The scale of model parameters, coupled with autoregressive decoding, makes inference efficiency a first-order systems problem.
+
+Modern LLM serving frameworks such as vLLM, and SGLang employ a variety of scheduling and memory-optimization techniques to maximize throughput on shared GPU infrastructure. These systems aim to handle high query loads efficiently while ensuring low latency for user interactions. However, the performance characteristics of these inference systems depend heavily on the structure of the workload—in particular, on how much prefix (context) is shared across different requests.
+
+\section{Motivation}
+In many real-world scenarios, multiple users query the same underlying document or system prompt. For instance, an Operating Systems teaching assistant bot may maintain a large context consisting of lecture notes and example explanations (typically thousands of tokens), while each student poses short, contextually grounded questions such as ``Why does MLFQ need multiple queues?'' or ``How does the OS handle I/O-bound processes?''.
+
+Similarly, enterprise assistants often process hundreds of independent queries over a shared knowledge base or product documentation. In all such cases, the system prompt—representing the long shared context—remains constant, while only the user query varies. These workloads, which we refer to as single-family or shared-prefix inference workloads, are particularly relevant in modern deployments of LLM-based systems.
+
+Despite their prevalence, these workloads expose unique challenges for inference engines:
+(1) Redundant computation of attention over shared prefixes can waste compute resources.
+(2) Memory footprint grows with increasing batch size and KV cache usage.
+(3) Scheduling efficiency becomes critical when balancing prefill (context processing) and decode (generation) phases.
+
+
+\section{Problem Statement}
+Our goal in this study is to systematically analyze the performance behavior of LLM inference workloads characterized by shared prefixes—that is, multiple queries with a common large system prompt but distinct suffixes.
+We seek to answer the following questions:
+\begin{enumerate}
+    \item What metrics are relevant to evaluating such inference workloads—both at the GPU and system level?
+    \item How do modern inference engines (e.g., vLLM, SGLang) handle these workloads internally?
+    \item How do design decisions such as prefix caching, chunked prefill, and request scheduling affect throughput and latency?
+    \item What bottlenecks limit scalability as we increase load or number of concurrent families?
+\end{enumerate}
+
+\section{Brief Overview of the Work Accomplished}
+To systematically understand the performance characteristics of LLM inference under shared-prefix workloads, we began by identifying and understanding the metrics and tools most relevant to such analysis. Since LLM inference is ultimately dominated by matrix-matrix multiplications across large tensor dimensions, we first analyzed tiled matrix multiplication kernels. This step allowed us to isolate and interpret GPU-level metrics such as streaming multiprocessor (SM) occupancy, tensor-core utilization and memory throughput. Through this exercise, we also established a baseline familiarity with profiling tools like Nsight Systems and Data Center GPU Management Interface (DCGMI), which were later used to capture detailed traces of inference workloads.
+
+Building upon this foundation, we constructed a controlled inference workload. The setup involved a long shared system prompt—approximately 1500 tokens in length—representing a large contextual document such as a lecture transcript. Over this prompt, we generated multiple short user queries forming a ``family'' of requests. 
+
+Next, we conducted throughput and latency measurements under controlled load conditions. These experiments quantified the achievable requests-per-second throughput and the end-to-end latency for each request. The results served as a baseline for evaluating how the inference engine scales with concurrent load and how effectively it overlaps prefill and decode phases.
+
+To generalize our findings beyond the single-family setting, we extended our experiments to multi-family workloads, where several distinct prefixes coexist. This allowed us to study the interplay between caching, batching, and scheduling in more heterogeneous scenarios that better resemble real-world deployments. Together, these stages form a detailed methodology for evaluating and understanding LLM inference performance across varying degrees of prefix sharing.

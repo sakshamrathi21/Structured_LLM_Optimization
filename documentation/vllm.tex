@@ -6,11 +6,11 @@ vLLM (\cite{kwon2023efficient}) an LLM serving system that achieves (1) near-zer
     \centering
     \vspace{-10pt}
     \includegraphics[width=\linewidth]{\FIGDIR/memory_layout.png}
-    \caption{Memory layout when serving an LLM with 13B parameters on NVIDIA A100}
+    \caption{Memory layout when serving an LLM with 13B parameters on NVIDIA A100 (\cite{kwon2023efficient})}
     \vspace{-10pt}
 \end{wrapfigure}
 
-Approximately 65\% of the memory is allocated for the model weights, which remain static during serving. Close to 30\% of the memory is used to store the dynamic states of the requests. For Transformers, these states consist of the key and value tensors associated with the attention mechanism. The remaining small percentage of memory is used for other data, including activations - the ephemeral tensors created when evaluating the LLM. Since the model weights are constant and the activations only occupy a small fraction of the GPU memory, the way the KV cache is managed is critical in determining the maximum batch size. 
+Approximately 65\% of the memory (for a 13B LLM model) is allocated for the model weights, which remain static during serving. Close to 30\% of the memory is used to store the dynamic states of the requests. For Transformers, these states consist of the key and value tensors associated with the attention mechanism. The remaining small percentage of memory is used for other data, including activations - the ephemeral tensors created when evaluating the LLM. Since the model weights are constant and the activations only occupy a small fraction of the GPU memory, the way the KV cache is managed is critical in determining the maximum batch size. 
 
 
 Unlike the tensors in the traditional deep learning workloads, the KV cache has unique characteristics: it dynamically grows and shrinks over time as the model generates new tokens, and its lifetime and length are not known a priori. These characteristics make the existing systems' approach significantly inefficient in two ways: First, the existing systems suffer from internal and external memory fragmentation. To store the KV cache of a request in contiguous space, they pre-allocate a contiguous chunk of memory with the request's maximum length (e.g., 2048 tokens). This can result in severe internal fragmentation, since the request's actual length can be much shorter than its maximum length. Besides, external memory fragmentation can also be significant, since the preallocated size can be different for each request. Second, the existing systems cannot exploit the opportunities for memory sharing. LLM services often use advanced decoding algorithms, such as parallel sampling and beam search, that generate multiple outputs per request. In these scenarios, the request consists of multiple sequences that can partially share their KV cache. However, memory sharing is not possible in the existing systems because the KV cache of the sequences is stored in separate contiguous spaces.
@@ -28,7 +28,7 @@ Unlike the tensors in the traditional deep learning workloads, the KV cache has 
     \centering
     \vspace{-10pt}
     \includegraphics[width=\linewidth]{\FIGDIR/vllm_system_overview.png}
-    \caption{vLLM system overview}
+    \caption{vLLM system overview (\cite{kwon2023efficient})}
 \end{wrapfigure}
 
 vLLM adopts a centralized scheduler to coordinate the execution of distributed GPU workers. The KV cache manager effectively manages the KV cache in a paged fashion, enabled by PagedAttention. Specifically, the KV cache manager manages the physical KV cache memory on the GPU workers through the instructions sent by the centralized scheduler.
@@ -56,72 +56,105 @@ In this case, we simply recompute the KV cache when the preempted sequences are 
 
 
 \section{Automatic Prefix Caching in vLLM}
-Prefix caching (\cite{vllm_automatic_prefix_caching}) kv-cache blocks is a popular optimization in LLM inference to avoid redundant prompt computations. The core idea is simple - we cache the kv-cache blocks of processed requests, and reuse these blocks when a new request comes in with the same prefix as previous requests. Since prefix caching is almost a free lunch and won't change model outputs, it has been widely used by many public endpoints (e.g., OpenAI, Anthropic, etc) and most open source LLM inference frameworks (e.g., SGLang).
 
-We can build the block hash of hash(tuple[components]), where components are:
+Prefix caching~\cite{vllm_automatic_prefix_caching} is a key optimization in LLM inference that avoids redundant computation by reusing previously computed \texttt{KVCacheBlocks}.  
+When a new request shares a prefix with an earlier one, the system reuses the cached blocks instead of reprocessing the same tokens—resulting in large speedups without changing model outputs.  
+This idea is widely adopted by production systems such as OpenAI and Anthropic, and implemented in open-source frameworks like vLLM and SGLang.
+
+\subsection{Overview}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.8cm,>=stealth,thick]
+    \node[draw, rounded corners, fill=blue!10, text width=4cm, align=center] (req1) {Request A: \\ \texttt{[System, Hello, How, are, you]}};
+    \node[draw, rounded corners, fill=green!10, text width=4cm, align=center, right=3.5cm of req1] (req2) {Request B: \\ \texttt{[System, Hello, How, is, GPT]}};
+
+    \node[draw, circle, below=1cm of req1] (blk1) {B1};
+    \node[draw, circle, right=1cm of blk1] (blk2) {B2};
+    \node[draw, circle, right=1cm of blk2] (blk3) {B3};
+    \node[draw, circle, below=1cm of blk3, fill=yellow!20] (blk4) {B4};
+    \node[draw, circle, right=1cm of blk4, fill=yellow!20] (blk5) {B5};
+
+    \draw[->] (req1) -- (blk1);
+    \draw[->] (req1) -- (blk2);
+    \draw[->] (req1) -- (blk3);
+    \draw[->] (req2) -- (blk1);
+    \draw[->] (req2) -- (blk2);
+    \draw[->] (req2) -- (blk3);
+    \draw[->] (req2) -- (blk4);
+    \draw[->] (req2) -- (blk5);
+
+    \node[below=0.2cm of blk5, align=center, text width=8cm] {\small Blocks B1–B3 are reused from cache (shared prefix), while B4–B5 are newly computed.};
+\end{tikzpicture}
+\caption{Illustration of prefix caching: shared prefixes reuse cached KV blocks.}
+\end{figure}
+
+Each cached block is identified by a unique hash computed from:
 \begin{itemize}
-    \item Parent hash value: The hash value of the parent hash block.
-    \item Block tokens: A tuple of tokens in this block. The reason to include the exact tokens is to reduce potential hash value collision.
-    \item Extra hashes: Other values required to make this block unique, such as LoRA IDs, multi-modality input hashes, and cache salts to isolate caches in multi-tenant environments.
+    \item \textbf{Parent hash:} hash of the preceding block.
+    \item \textbf{Block tokens:} tuple of token IDs in this block (minimizes hash collisions).
+    \item \textbf{Extra fields:} LoRA IDs, multi-modality hashes, or tenant-specific salts.
 \end{itemize}
 
-There are two design points to highlight:
-\begin{itemize}
-    \item All KVCacheBlocks are allocated when initializing the KV cache manager to be a block pool. This avoids Python object creation overheads and can easily track all blocks all the time.
-    \item Doubly linked list pointers are introduced directly in the KVCacheBlock, so that a free queue can be constructed directly. 
-\end{itemize}
+\subsection{System Architecture}
 
-\subsection{Components}
+The KV cache manager maintains several internal structures:
 
 \begin{itemize}
-    \item \textbf{Block Pool:} A list of \texttt{KVCacheBlock} instances.
-    \item \textbf{Free Block Queue:} Stores only the pointers of head and tail blocks for efficient manipulation.
-    \item \textbf{Cache Blocks:} Mapping from hash keys to block IDs.
-    \item \textbf{Request Blocks:} Mapping from request IDs to allocated block IDs.
+    \item \textbf{Block Pool:} Pre-allocated list of \texttt{KVCacheBlock} instances to avoid dynamic object creation.
+    \item \textbf{Free Block Queue:} A doubly linked list that tracks available blocks.
+    \item \textbf{Cache Map:} Hash table mapping block hashes to block IDs.
+    \item \textbf{Request Map:} Tracks which blocks belong to each active request.
 \end{itemize}
 
-\subsection{Operations}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.3cm and 1.3cm,
+    every node/.style={draw, rounded corners, align=center, minimum width=2cm, minimum height=1cm}
+]
+    \node[fill=blue!10] (pool) {Block Pool};
+    \node[fill=green!10, right=of pool] (freeq) {Free Block Queue};
+    \node[fill=orange!10, above right=of freeq] (cache) {Cache Map};
+    \node[fill=yellow!10, below right=of freeq] (reqmap) {Request Map};
 
-\subsubsection{Block Allocation}
-When the scheduler schedules a new request:
+    \draw[->, thick] (pool) -- node[above]{alloc/free} (freeq);
+    \draw[<->, thick] (freeq) -- node[above]{reuse/evict} (cache);
+    \draw[<->, thick] (cache) -- node[right]{lookup} (reqmap);
+\end{tikzpicture}
+\caption{Internal organization of the KV cache manager.}
+\end{figure}
+
+\subsection{Core Operations}
+
+\paragraph{1. Block Allocation}
+When the scheduler processes a new request:
 \begin{enumerate}
-    \item Calls \texttt{kv\_cache\_manager.get\_computed\_blocks()} to obtain the sequence of precomputed blocks using prompt token hashes.
-    \item Calls \texttt{kv\_cache\_manager.allocate\_slots()}, which:
-    \begin{enumerate}
-        \item Computes the number of required blocks and exits if insufficient blocks are available.
-        \item ``Touches'' the computed blocks, incrementing their reference count and removing them from the free queue to avoid eviction.
-        \item Allocates new blocks from the free queue head. If the head block is cached, it is evicted.
-        \item If a block becomes full, it is immediately added to the cache for reuse within the same batch.
-    \end{enumerate}
+    \item It queries precomputed blocks via \texttt{get\_computed\_blocks()} using prefix hashes.
+    \item For each block:
+    \begin{itemize}
+        \item Increment its reference count and remove it from the free queue.
+        \item Allocate new blocks as needed from the free queue head.
+        \item If allocation exceeds available capacity, evict the least recently used (LRU) blocks.
+    \end{itemize}
 \end{enumerate}
 
-
-When scheduling a running request:
-\begin{enumerate}
-    \item The scheduler again calls \texttt{allocate\_slots()}.
-    \item New blocks are allocated from the free queue head, evicting cached blocks if necessary.
-    \item Token IDs are appended to both existing and new blocks. Full blocks are added to the cache.
-\end{enumerate}
-
-\subsubsection{Free Operation}
-
-When a request completes:
+\paragraph{2. Free Operation}
+After a request completes:
 \begin{itemize}
-    \item All blocks with reference count $=0$ are freed.
-    \item Freed blocks are appended to the \emph{tail} of the free queue in reverse order, since later blocks hash more tokens and are less likely to be reused.
+    \item All blocks with zero references are appended to the tail of the free queue (in reverse order).
+    \item Later blocks, which encode more tokens, are less likely to be reused soon.
 \end{itemize}
 
-\subsubsection{Eviction (LRU Policy)}
-
-When the least recently used (LRU) block at the head of the free queue is cached:
+\paragraph{3. Eviction Policy}
+When the head of the free queue holds a cached block:
 \begin{enumerate}
-    \item Pop the block from the head of the queue.
-    \item Remove the block ID from the cache and delete its hash entry.
+    \item Remove it from both the queue and cache map.
+    \item Delete the hash entry to maintain cache consistency.
 \end{enumerate}
-
 
 \section{v1 Scheduler}
-The v1 scheduler (\cite{vllm_v1_scheduler}) in vLLM does not differentiate between prefills and decodes. Here is a rough outline of the scheduling algorithm:
+The v1 scheduler in vLLM follows a unified scheduling policy that treats both prefill and decode phases identically. In each round, it starts with a fixed token budget and first tries to advance all currently running requests in a roughly first-come-first-serve manner. For each request, it determines how many tokens can be processed, and attempts to allocate KV cache blocks through the cache manager. If allocation fails due to limited memory, the scheduler preempts lower-priority requests—freeing their KV blocks—to make room for higher-priority ones. Once all running requests are handled (or the token budget is exhausted), the scheduler admits waiting requests if capacity remains, moving them into the running queue and allocating KV cache space. This process continues iteratively each round, ensuring that GPU resources are efficiently utilized while managing KV cache pressure through controlled preemption and reuse. Here is a rough outline of the scheduling algorithm:
 
 
 \noindent\textbf{Algorithm 1: Scheduler::schedule()}\\[-0.5em]

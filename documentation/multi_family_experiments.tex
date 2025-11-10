@@ -1,5 +1,8 @@
 \chapter{Experiments - Multiple Family of Requests}
 
+\section{Introduction}
+While the previous chapter focused on workloads where all queries share a single long prefix, real-world applications often involve heterogeneous families of requests—each with its own distinct context or document. For instance, in an enterprise setting, different teams might query separate knowledge bases, or in an educational setup, multiple courses could simultaneously host LLM-based assistants trained on different lecture materials. These scenarios represent a multi-family inference workload, where each family maintains an independent prefix but shares the same model and hardware resources.
+
 \section{How to generate such a workload?}
 
 From the previous experiments, we already have a large system prompt of around 1500 tokens. Now, we need to perform experiments with multiple families of requests, where each family shares a large prefix in common (the system prompt).
@@ -76,7 +79,7 @@ As we can see, as the model size increases, the throughput degradation when hand
 
 
 \section{Effect of Batch Decomposition on Inter-Scheduler Latency}
-
+The observed throughput differences raise questions about why multi-family scenarios degrade performance so sharply. To better understand the internal scheduling behavior, we decompose the inference process into its constituent stages—prefix prefill, unique prefill, and decode—and examine their individual contributions to end-to-end latency.
 
 \begin{figure}[H]
     \centering
@@ -84,8 +87,7 @@ As we can see, as the model size increases, the throughput degradation when hand
     \caption{Times spent across different batch decompositions}
 \end{figure}
 
-
-Since, the throughput differences were pretty high, we decided to look into the inter-scheduler latencies for different batch decompositions. We divide a query into 3 components - prefix prefill (prefill of the large shared prefix), prefill (of unique suffix/query) and decode (generation of tokens). We vary the batch decomposition across these 3 components and measure the time spent in each component (basically the difference of time instants between two calls to the scheduler).
+We divide a query into 3 components - prefix prefill (prefill of the large shared prefix), prefill (of unique suffix/query) and decode (generation of tokens). We vary the batch decomposition across these 3 components and measure the time spent in each component (basically the difference of time instants between two calls to the scheduler).
 
 As we can see from the above figure, the time spent in prefix prefill is significantly higher than the other two components, which is expected since the prefix is large (around 1500 tokens). Also, the overall time spent is heavily influenced by the number of prefix prefills we have in that batch. It is more or less independent of the number of prefills and decodes.
 
@@ -195,7 +197,7 @@ All of these experiments are actually run with large number of requests, so that
 
 
 \section{Varying all the parameters together}
-So, we primarily have the following parameters:
+So far, we have analyzed the influence of batch size and family composition independently. However, in practice, these factors interact—along with workload intensity—to determine overall performance. We therefore conduct a comprehensive study varying all parameters jointly to capture the combined dynamics of multi-family inference. So, we primarily have the following parameters:
 \begin{itemize}
     \item Number of Families
     \item Workload - requests per second
