@@ -1,5 +1,5 @@
 \chapter{Initial Experiments}
-
+\label{ch:initial_experiments}
 \section{System Prompt in Cache Experiment}
 
 The basic application which we want to cater is inferencing in cases where the system prompt is common across multiple queries. And therefore, we want to utilize caching by already filling the KV-Cache with the system prompt, and then putting user queries on the top of it.
@@ -163,10 +163,10 @@ Now we go over each of the rows, and further analyze the values:
     \item \texttt{aten::\_flash\_attention\_forward} = The forward pass of flash attention 
 \end{enumerate}
 
-
 \subsection{Profiling across pipeline stages}
 
-\begin{table}[h]
+\begin{wraptable}{r}{0.45\textwidth}
+\vspace{-10pt}
 \centering
 \begin{tabular}{|l|c|}
 \hline
@@ -181,7 +181,8 @@ Decode tokens & 0.0002 \\
 \hline
 \end{tabular}
 \caption{Profiling results for various pipeline stages}
-\end{table}
+\vspace{-10pt}
+\end{wraptable}
 
 The profiling breakdown indicates that the \textit{system forward pass} (KV cache population) dominates the total time cost, accounting for nearly half of the total latency. Tokenization and decoding operations are negligible in comparison. The initial token generation is slower (0.0390\,s) due to context initialization, while subsequent tokens average only 0.0148\,s, reflecting stable autoregressive inference. Overall, computation-heavy attention and matrix operations during KV cache fill remain the primary bottlenecks.
 
@@ -189,12 +190,8 @@ The profiling breakdown indicates that the \textit{system forward pass} (KV cach
 
 \section{Batch of Requests} 
 
-We measure the total time taken to process a batch of requests by varying the batch size.
-
-\noindent
-\textbf{Total number of queries:} 24
-
-\begin{table}[h]
+\begin{wraptable}{r}{0.45\textwidth}
+\vspace{-10pt}
 \centering
 \begin{tabular}{|l|c|}
 \hline
@@ -210,8 +207,9 @@ NEO & 0.55 \\
 \hline
 \end{tabular}
 \caption{Time taken to process a batch of requests using different techniques}
-\end{table}
+\vspace{-10pt}
+\end{wraptable}
 
+We measure the total time taken to process a batch of requests by varying the batch size. Batching significantly improves throughput for the \texttt{Transformers} baseline, with performance saturating beyond a batch size of three. However, systems optimized for dynamic batching and KV cache reuse — such as \texttt{vLLM}, \texttt{SGLang}, and \texttt{NEO} — outperform the standard transformer pipeline by over an order of magnitude. Notably, \texttt{SGLang (run\_batch)} achieves the lowest latency (0.40\,s), suggesting the heavy benefit which we get from prefix caching. The results emphasize the critical role of request-level parallelism and KV cache sharing in scaling inference workloads efficiently.
 
-Batching significantly improves throughput for the \texttt{Transformers} baseline, with performance saturating beyond a batch size of three. However, systems optimized for dynamic batching and KV cache reuse — such as \texttt{vLLM}, \texttt{SGLang}, and \texttt{NEO} — outperform the standard transformer pipeline by over an order of magnitude. Notably, \texttt{SGLang (run\_batch)} achieves the lowest latency (0.40\,s), suggesting the heavy benefit which we get from prefix caching. The results emphasize the critical role of request-level parallelism and KV cache sharing in scaling inference workloads efficiently.
 

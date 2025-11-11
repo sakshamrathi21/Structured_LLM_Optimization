@@ -1,5 +1,5 @@
 \chapter{Experiments - Multiple Family of Requests}
-
+\label{ch:multi_family_experiments}
 \section{Introduction}
 While the previous chapter focused on workloads where all queries share a single long prefix, real-world applications often involve heterogeneous families of requests—each with its own distinct context or document. For instance, in an enterprise setting, different teams might query separate knowledge bases, or in an educational setup, multiple courses could simultaneously host LLM-based assistants trained on different lecture materials. These scenarios represent a multi-family inference workload, where each family maintains an independent prefix but shares the same model and hardware resources.
 

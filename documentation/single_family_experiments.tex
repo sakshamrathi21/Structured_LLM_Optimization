@@ -1,15 +1,15 @@
 \chapter{Experiments - Single Family of Requests}
-
+\label{ch:single_family_experiments}
 \section{Throughput and Latency Measurements across different techniques}
 To systematically understand the performance characteristics of LLM inference engines under such single-family workloads, we begin by quantifying throughput, latency, and GPU resource utilization across representative inference backends.
 
 Here is the experiment setup:
 \begin{itemize}
     \item Model: \texttt{TinyLlama/TinyLlama-1.1B-Chat-v1.0}
-    \item System Prompt: Roughly 1500 tokens (adopted from OSTEP MLFQ scheduling chapter)
+    \item System Prompt: Roughly 1500 tokens (adopted from OSTEP MLFQ scheduling chapter \cite{ArpaciDusseau23-Book})
     \item Queries: 100 queries, each of length 10-20 tokens
     \item Max Output Length: 80 tokens
-    \item Techniques Compared: vLLM, SGLang, swiftLLM \footnote{SwiftLLM is a smaller version of vLLM, the codebase spans just 2000 lines, and is quite simpler and easier to understand}
+    \item Techniques Compared: vLLM, SGLang, swiftLLM \footnote{SwiftLLM is a smaller version of vLLM, the codebase spans just 2000 lines, and is quite simpler and easier to understand \cite{swiftllm}}
 \end{itemize}
 
 

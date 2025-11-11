@@ -1,4 +1,5 @@
 \chapter{Future Steps}
+\label{ch:future_steps}
 We outline below several directions for future work that we plan to pursue in the coming months:
 \begin{itemize}
 \item \textbf{Improved Scheduler:} Experiments across multiple families indicate that a larger batch size is not always optimal—especially when the batch is heterogeneous. A potential improvement is to design a scheduler that takes into account factors such as the L2 cache size, the working set size of the current batch, the number and size of KV Cache blocks being targeted, and dynamically decides whether forming smaller, more homogeneous batches can outperform larger, mixed ones.
