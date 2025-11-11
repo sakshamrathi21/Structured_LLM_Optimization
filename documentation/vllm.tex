@@ -1,16 +1,16 @@
 \chapter{vLLM}
-vLLM (\cite{kwon2023efficient}) an LLM serving system that achieves (1) near-zero waste in KV cache memory and (2) flexible sharing of KV cache within and across requests to further reduce memory usage. It also proposes PagedAttention, an attention algorithm inspired by the classical virtual memory and paging techniques in operating systems.
+vLLM \cite{kwon2023efficient} an LLM serving system that achieves (1) near-zero waste in KV cache memory and (2) flexible sharing of KV cache within and across requests to further reduce memory usage. It also proposes PagedAttention, an attention algorithm inspired by the classical virtual memory and paging techniques in operating systems.
 
 
 \begin{wrapfigure}{r}{0.35\textwidth}
     \centering
     \vspace{-10pt}
     \includegraphics[width=\linewidth]{\FIGDIR/memory_layout.png}
-    \caption{Memory layout when serving an LLM with 13B parameters on NVIDIA A100 (\cite{kwon2023efficient})}
+    \caption{Memory layout when serving an LLM with 13B parameters on NVIDIA A100 \cite{kwon2023efficient}}
     \vspace{-10pt}
 \end{wrapfigure}
 
-Approximately 65\% of the memory (for a 13B LLM model) is allocated for the model weights, which remain static during serving. Close to 30\% of the memory is used to store the dynamic states of the requests. For Transformers, these states consist of the key and value tensors associated with the attention mechanism. The remaining small percentage of memory is used for other data, including activations - the ephemeral tensors created when evaluating the LLM. Since the model weights are constant and the activations only occupy a small fraction of the GPU memory, the way the KV cache is managed is critical in determining the maximum batch size. 
+Approximately 65\% of the memory (for a 13B LLM model) is allocated for the model weights, which remain static during serving. Close to 30\% of the memory is used to store the dynamic states of the requests. For Transformers, these states consist of the key and value tensors associated with the attention mechanism. The remaining small percentage of memory is used for other data, including activations - the ephemeral tensors created when performing inference on the LLM. Since the model weights are constant and the activations only occupy a small fraction of the GPU memory, the way the KV cache is managed is critical in determining the maximum batch size. 
 
 
 Unlike the tensors in the traditional deep learning workloads, the KV cache has unique characteristics: it dynamically grows and shrinks over time as the model generates new tokens, and its lifetime and length are not known a priori. These characteristics make the existing systems' approach significantly inefficient in two ways: First, the existing systems suffer from internal and external memory fragmentation. To store the KV cache of a request in contiguous space, they pre-allocate a contiguous chunk of memory with the request's maximum length (e.g., 2048 tokens). This can result in severe internal fragmentation, since the request's actual length can be much shorter than its maximum length. Besides, external memory fragmentation can also be significant, since the preallocated size can be different for each request. Second, the existing systems cannot exploit the opportunities for memory sharing. LLM services often use advanced decoding algorithms, such as parallel sampling and beam search, that generate multiple outputs per request. In these scenarios, the request consists of multiple sequences that can partially share their KV cache. However, memory sharing is not possible in the existing systems because the KV cache of the sequences is stored in separate contiguous spaces.
@@ -28,7 +28,7 @@ Unlike the tensors in the traditional deep learning workloads, the KV cache has 
     \centering
     \vspace{-10pt}
     \includegraphics[width=\linewidth]{\FIGDIR/vllm_system_overview.png}
-    \caption{vLLM system overview (\cite{kwon2023efficient})}
+    \caption{vLLM system overview \cite{kwon2023efficient}}
 \end{wrapfigure}
 
 vLLM adopts a centralized scheduler to coordinate the execution of distributed GPU workers. The KV cache manager effectively manages the KV cache in a paged fashion, enabled by PagedAttention. Specifically, the KV cache manager manages the physical KV cache memory on the GPU workers through the instructions sent by the centralized scheduler.
@@ -38,7 +38,7 @@ PagedAttention partitions the KV cache of each sequence into KV blocks. Each blo
 
 \subsection{KV Cache Manager}
 A request's KV cache is represented as a series of logical KV blocks, filled from left to right as new tokens and their KV cache are generated. The last KV block's unfilled positions are reserved for future generations. On GPU workers, a block engine allocates a contiguous chunk of GPU DRAM and divides it into physical KV blocks (this is also done on CPU RAM for swapping). The KV block manager also
-maintains block tables—the mapping between logical and physical KV blocks of each request. Each block table entry records the corresponding physical blocks of a logical block and the number of filled positions. Separating logical and physical KV blocks allows vLLM to dynamically grow the KV cache memory without reserving it for all positions in advance, which eliminates most memory waste in existing systems.
+maintains block tables—the mapping between logical and physical KV blocks of each request. Each block table entry records the corresponding physical blocks of a logical block and the number of filled positions. Separating logical and physical KV blocks allows vLLM to dynamically grow the KV cache memory without reserving it for all positions in advance, which eliminates most memory waste of the existing systems.
 
 \subsection{Parallel Sampling}
 In parallel sampling, one request includes multiple samples sharing the same input prompt, allowing the KV cache of the prompt to be shared as well. Since both outputs share the same prompt, space is reserved only for one copy of the prompt's state at the prompt phase; the logical blocks for the prompts of both sequences are mapped to the same physical blocks. Since a single physical block can be mapped to multiple logical blocks, a reference count is introduced for each physical block. At the generation phase, the two outputs sample different output tokens and need separate storage for KV cache. vLLM implements a copy-on-write mechanism at the block granularity for the physical blocks that need modification by multiple sequences. Unlike parallel decoding, beam search facilities sharing not only the initial prompt blocks but also other blocks across different candidates, and the sharing patterns dynamically change as the decoding process advances.
@@ -57,7 +57,7 @@ In this case, we simply recompute the KV cache when the preempted sequences are 
 
 \section{Automatic Prefix Caching in vLLM}
 
-Prefix caching~\cite{vllm_automatic_prefix_caching} is a key optimization in LLM inference that avoids redundant computation by reusing previously computed \texttt{KVCacheBlocks}.  
+Prefix caching\cite{vllm_automatic_prefix_caching} is a key optimization in LLM inference that avoids redundant computation by reusing previously computed \texttt{KVCacheBlocks}.  
 When a new request shares a prefix with an earlier one, the system reuses the cached blocks instead of reprocessing the same tokens—resulting in large speedups without changing model outputs.  
 This idea is widely adopted by production systems such as OpenAI and Anthropic, and implemented in open-source frameworks like vLLM and SGLang.
 

@@ -22,7 +22,7 @@ Combining all the non-embedding FLOPs terms gets us
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.7\textwidth]{\FIGDIR/tflops.png}
-    \caption{FLOPs Calculation Breakdown (from \cite{casson2023transformerflops})}
+    \caption{FLOPs Calculation Breakdown \cite{casson2023transformerflops}}
 \end{figure}
 
 
@@ -45,10 +45,10 @@ C_{forward}
 \]
 
 \subsection{Efficiency Calculation}
-We ran inference on TinyLlama-1.1B-Chat using a single Nvidia RTX6000 Ada GPU. Based on the docs from Nvidia (\cite{adalovelacertx6000}), the theoretical peak performance for FP16 is 1457 TFLOPs.
+We ran inference on TinyLlama-1.1B-Chat using a single Nvidia RTX6000 Ada GPU. Based on the docs from Nvidia \cite{adalovelacertx6000}, the theoretical peak performance for FP16 is 1457 TFLOPs.
 
 \subsection{Efficiency Calculation}
-We ran inference on TinyLlama-1.1B-Chat using a single NVIDIA RTX6000 Ada GPU. Based on the docs from NVIDIA (\cite{adalovelacertx6000}), the theoretical peak performance for FP16 is 1457 TFLOPs.
+We ran inference on TinyLlama-1.1B-Chat using a single NVIDIA RTX6000 Ada GPU. Based on the docs from NVIDIA \cite{adalovelacertx6000}, the theoretical peak performance for FP16 is 1457 TFLOPs.
 
 So, the time taken for a forward pass of $n_{ctx} = 2048$ tokens should be:
 \[

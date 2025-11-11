@@ -9,9 +9,9 @@ In many real-world scenarios, multiple users query the same underlying document 
 Similarly, enterprise assistants often process hundreds of independent queries over a shared knowledge base or product documentation. In all such cases, the system prompt—representing the long shared context—remains constant, while only the user query varies. These workloads, which we refer to as single-family or shared-prefix inference workloads, are particularly relevant in modern deployments of LLM-based systems.
 
 Despite their prevalence, these workloads expose unique challenges for inference engines:
-(1) Redundant computation of attention over shared prefixes can waste compute resources.
-(2) Memory footprint grows with increasing batch size and KV cache usage.
-(3) Scheduling efficiency becomes critical when balancing prefill (context processing) and decode (generation) phases.
+(1) Redundant computation of attention over shared prefixes can waste compute resources
+(2) Memory footprint grows with increasing batch size and KV cache usage
+(3) Scheduling efficiency becomes critical when balancing prefill (context processing) and decode (generation) phases
 
 
 \section{Problem Statement}
@@ -25,7 +25,7 @@ We seek to answer the following questions:
 \end{enumerate}
 
 \section{Brief Overview of the Work Accomplished}
-To systematically understand the performance characteristics of LLM inference under shared-prefix workloads, we began by identifying and understanding the metrics and tools most relevant to such analysis. Since LLM inference is ultimately dominated by matrix-matrix multiplications across large tensor dimensions, we first analyzed tiled matrix multiplication kernels. This step allowed us to isolate and interpret GPU-level metrics such as streaming multiprocessor (SM) occupancy, tensor-core utilization and memory throughput. Through this exercise, we also established a baseline familiarity with profiling tools like Nsight Systems and Data Center GPU Management Interface (DCGMI), which were later used to capture detailed traces of inference workloads.
+To systematically understand the performance characteristics of LLM inference under shared-prefix workloads, we began by identifying and understanding the metrics and tools most relevant to such analysis. Since LLM inference is ultimately dominated by matrix-matrix multiplications across large tensor dimensions, we first analyzed tiled matrix multiplication kernels. This step allowed us to isolate and interpret GPU-level metrics such as streaming multiprocessor (SM) occupancy, tensor-core utilization and memory throughput. Through this exercise, we also established a baseline familiarity with profiling tools like Nsight Systems and Data Center GPU Management Interface (DCGMI), which were later used to capture traces of inference workloads.
 
 Building upon this foundation, we constructed a controlled inference workload. The setup involved a long shared system prompt—approximately 1500 tokens in length—representing a large contextual document such as a lecture transcript. Over this prompt, we generated multiple short user queries forming a ``family'' of requests. 
 

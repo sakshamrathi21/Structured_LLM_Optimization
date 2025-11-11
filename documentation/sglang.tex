@@ -1,5 +1,5 @@
 \chapter{SGLang}
-SGLANG (\cite{zheng2024sglangefficientexecutionstructured}) is a system for efficient execution of complex language model programs. SGLang consists of a frontend language and a runtime. The frontend simplifies programming with primitives for generation and parallelism control. The runtime accelerates execution with novel optimizations like RadixAttention for KV cache reuse and compressed finite state machines for faster structured output decoding.
+SGLANG \cite{zheng2024sglangefficientexecutionstructured} is a system for efficient execution of complex language model programs. SGLang consists of a frontend language and a runtime. The frontend simplifies programming with primitives for generation and parallelism control. The runtime accelerates execution with novel optimizations like RadixAttention for KV cache reuse and compressed finite state machines for faster structured output decoding.
 
 \section{LM Programs}
 The emergence of few-shot learning, self-consistency, skeleton-of-thought, tree-of-thought and various other patterns signifies a shift in our interaction with LLMs, moving from simple chatting to a more sophisticated form of programmatic usage of LLMs, which means using a program to schedule and control the generation processes of LLMs. These programs are referred to as LM (Language Model) programs. There are two common properties of LM programs: 
@@ -16,7 +16,7 @@ The emergence of few-shot learning, self-consistency, skeleton-of-thought, tree-
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{\FIGDIR/sglang_model.png}
-    \caption{SGLANG Frontend Language Model (\cite{zheng2024sglangefficientexecutionstructured})}
+    \caption{SGLANG Frontend Language Model \cite{zheng2024sglangefficientexecutionstructured}}
 \end{figure}
 
 
@@ -33,7 +33,7 @@ In the batch-processing setting the requests are sorted by matched prefix length
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{\FIGDIR/sglang_radix_tree.png}
-    \caption{SGLANG Radix Tree Example (\cite{zheng2024sglangefficientexecutionstructured})}
+    \caption{SGLANG Radix Tree Example \cite{zheng2024sglangefficientexecutionstructured}}
 \end{figure}
 
 
@@ -49,12 +49,12 @@ Existing systems still use conventional attention kernels that concatenate the K
     \centering
     \vspace{-10pt}
     \includegraphics[width=\linewidth]{\FIGDIR/kv_cache_sharing_through_radix_tree.png}
-    \caption{KV cache sharing through Radix Tree (\cite{pan2025fasttree})}
+    \caption{KV cache sharing through Radix Tree \cite{pan2025fasttree}}
 \end{wrapfigure}
 
-FastTree (\cite{pan2025fasttree}) introduces GPU kernels specifically designed to process queries that share common prefixes within a radix tree structure. By adapting the computation to the tree topology at runtime, FastTree eliminates redundant memory operations and improves throughput.
+FastTree \cite{pan2025fasttree} introduces GPU kernels specifically designed to process queries that share common prefixes within a radix tree structure. By adapting the computation to the tree topology at runtime, FastTree eliminates redundant memory operations and improves throughput.
 
-\textbf{Tree-structure Adaptive Runtime Optimization.}
+\textbf{Tree-structure Adaptive Runtime Optimization:}
 Different ways of grouping queries—based on how prefixes are merged—can lead to drastically different computation patterns and memory-sharing behavior. Even with identical tree topologies, certain grouping plans might waste computation due to tile padding or cause additional global memory transactions when intermediate results must be written out. FastTree formulates this as an optimization problem: given a KV cache tree $T=(V,E)$, it searches for an edge assignment function $f:E\rightarrow\{0,1\}$ that minimizes the end-to-end latency of the GPU attention kernel, balancing the trade-off between computation reuse and intermediate data cost.  
 
 Padding overhead arises when the number of queries or context tokens fails to meet the tensor core tile size, wasting both shared memory and FLOPs. This is modeled through cost functions $C_{P,q}$ and $C_{P,c}$, which estimate padding-induced inefficiency at the query and context dimensions respectively. Similarly, splitting the KV matrices introduces intermediate reduction overheads, modeled as $\text{SplitKV\_Cost}$, capturing both padding and extra memory I/O cost. FastTree employs a greedy runtime algorithm (Fig.~\ref{fig:fasttree_alg}) that evaluates these costs per grouping plan and dynamically selects the most efficient configuration.
@@ -63,11 +63,11 @@ Padding overhead arises when the number of queries or context tokens fails to me
     \centering
     \vspace{-10pt}
     \includegraphics[width=\linewidth]{\FIGDIR/fast_tree_algorithm.png}
-    \caption{Greedy runtime optimization algorithm (\cite{pan2025fasttree})}
+    \caption{Greedy runtime optimization algorithm \cite{pan2025fasttree}}
     \label{fig:fasttree_alg}
 \end{wrapfigure}
 
-\textbf{Efficient Attention Kernel Design.}
+\textbf{Efficient Attention Kernel Design:}
 After determining the optimal grouping plan, FastTree performs the attention computation tile-by-tile within each group. It parallelizes the tiles of the query (Q) matrix across thread blocks, while iterating over key (K) and value (V) tiles sequentially within each block due to inter-tile dependencies. By caching QKV tiles in shared memory and applying an online softmax, FastTree minimizes global memory transactions. Furthermore, aggregating multiple queries enables the transformation of GEMV into GEMM operations, thereby unlocking high tensor core utilization on modern GPUs.
 
 Overall, FastTree demonstrates that by coupling radix tree–based KV cache organization with adaptive runtime planning and GPU-aware attention kernels, significant reductions in redundant computation and memory access can be achieved, leading to markedly higher throughput and lower latency for shared-context inference workloads.

@@ -9,13 +9,13 @@ From the previous experiments, we already have a large system prompt of around 1
 
 One naive way to generate such a dataset, is to write multiple unique system prompts, each around 1500 tokens. However, for larger number of families, this becomes tedious and time-consuming.
 
-A smart hack to generate multiple families of requests, while still sharing the same system prompt, is to prepend a unique identifier (like "AA", "AB", "AC", etc.) to the existing system prompt. This way, each family has a unique prefix, but the majority of the content (the system prompt) remains the same across all families. Since, we do not care about the response quality in these experiments (for now), this approach is sufficient to simulate multiple families of requests with a large shared prefix.
+A smart hack (Fig.~\ref{fig:family_generation}) to generate multiple families of requests, while still sharing the same system prompt, is to prepend a unique identifier (like ``AA'', ``AB'', ``AC'', etc.) to the existing system prompt. This way, each family has a unique prefix, but the majority of the content (the system prompt) remains the same across all families. Since, we do not care about the response quality in these experiments (for now), this approach is sufficient to simulate multiple families of requests with a large shared prefix.
 
-Also, since the starting identifiers are uniqye for each family, the block hashes will be different, leading to separate KV Cache blocks for each family, despite most of the content being identical.
+Also, since the starting identifiers are unique for each family, the block hashes will be different, leading to separate KV Cache blocks for each family, despite most of the content being identical.
 
 \begin{figure}[h!]
 \centering
-\resizebox{0.9\textwidth}{!}{%
+\resizebox{0.9\textwidth}{!}{
 \begin{tikzpicture}[
     family/.style={rectangle, draw=blue!60, fill=blue!10, thick, rounded corners, minimum height=0.8cm, align=center},
     token/.style={rectangle, draw=gray!50, fill=gray!10, thick, rounded corners, minimum height=0.8cm, align=center},
@@ -57,10 +57,10 @@ Also, since the starting identifiers are uniqye for each family, the block hashe
 
 
 \section{Families of Requests across various models}
-In our first experiment, we compare the throughput of handling multiple families of requests versus a single family with the same total number of requests. We use 10 families, each with 1000 requests, and compare it to a single family with 10000 requests. The model chosen for this experiment is Qwen 0.5B, Llama 7B and LongChat 13B. Here are the results:
+In our first experiment, we compare the throughput of handling multiple families of requests versus a single family with the same total number of requests. We use 10 families, each with 1000 requests, and compare it to a single family with 10000 requests. The models chosen for this experiment are Qwen 0.5B, Llama 7B and LongChat 13B. Here are the results:
 \begin{table}[h!]
 \centering
-\begin{tabular}{|c||p{4cm}|p{4cm}|}
+\begin{tabular}{|c||c|c|}
 \hline
 \textbf{Model Chosen} & \textbf{10 families, each with 1000 queries} & \textbf{1 family with 10000 requests} \\
 \hline
@@ -83,17 +83,13 @@ The observed throughput differences raise questions about why multi-family scena
 
 We divide a query into 3 components - prefix prefill (prefill of the large shared prefix), prefill (of unique suffix/query) and decode (generation of tokens). We vary the batch decomposition across these 3 components and measure the time spent in each component (basically the difference of time instants between two calls to the scheduler).
 
-As we can see from the figure, the time spent in prefix prefill is significantly higher than the other two components, which is expected since the prefix is large (around 1500 tokens). Also, the overall time spent is heavily influenced by the number of prefix prefills we have in that batch. It is more or less independent of the number of prefills and decodes.
+As we can see from the figure, the time spent in prefix prefill is significantly higher than the other two components, which is expected since the prefix is large (around 1500 tokens). Also, the overall time spent is heavily influenced by the number of prefix prefills we have in that batch. It is more or less independent of the number of suffix prefills and decodes.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{\RESULTDIR/batch_decomposition.png}
     \caption{Times spent across different batch decompositions}
 \end{figure}
-
-
-
-
 
 \section{Merging queries belonging to the same family into a single batch}
 Through a few more trials and experiments, we found that merging queries from the same family into a single batch (basically making the batch homogeneous with respect to family IDs) leads to significant throughput improvements.
@@ -145,7 +141,7 @@ For Llama3.1-8B, here are the plots for varying workloads and number of families
     \begin{subfigure}[b]{0.32\textwidth}
         \centering
         \includegraphics[width=\textwidth]{\RESULTDIR/throughput_with_prefill_ordered.png}
-        \caption{With prefix pre-filling (ordered family IDs)}
+        \caption{Ordered by family IDs}
     \end{subfigure}
     \caption{Throughput vs Load across different pre-filling strategies}
     \label{fig:throughput_prefill_comparison}
@@ -202,10 +198,7 @@ Now, as we can see from the second image, where all the system prompts were pass
 
 All of these experiments are actually run with large number of requests, so that we get the best averaged throughput numbers. However, initially there is a small CPU overhead, to tokenize the requests and prepare them to be passed to the scheduler. This does not allow us to saturate the GPU in the starting phase. If we tokenize and store all the requests beforehand, and then pass them to the scheduler in a loop, we can saturate the GPU even for smaller loads. 
 
-
-
 \section{Varying all the parameters together}
-
 So far, we have analyzed the influence of batch size and family composition independently. However, in practice, these factors interact—along with workload intensity—to determine overall performance. We therefore conduct a comprehensive study varying all parameters jointly to capture the combined dynamics of multi-family inference. So, we primarily have the following parameters:
 \begin{itemize}
     \item Number of Families
@@ -289,16 +282,15 @@ So far, we have analyzed the influence of batch size and family composition inde
 
 \begin{itemize}
     \item As we can see, increasing the max batch size generally leads to higher throughput, as it allows better GPU utilization.
-    \item Ordering the batches by family IDs (nature level 0) consistently provides the best throughput, due to improved cache locality and reduced memory bandwidth pressure.
+    \item Ordering the batches by family IDs (batch nature level 0) consistently provides the best throughput, due to improved cache locality and reduced memory bandwidth pressure.
     \item A batch nature level of 1 is roughly similar to level 2, which suggests that even a small amount of mixing in the batch (basically making the batch heterogeneous with >1 number of families) leads to significant throughput degradation.
-    \item This can be justified by the fact that, all the SMs share an L2 cache of limited size, so even a small increase in the working set size (number of unique KV Cache blocks needed) can lead to cache thrashing and evictions, leading to more HBM loads and lower throughput.
+    \item This can be justified by the fact that, all the SMs share an L2 cache of limited size, so even a small increase in the working set size (number of unique KV cache blocks needed) can lead to cache thrashing and evictions, leading to more HBM loads and lower throughput.
     \item Often a homogeneous batch of smaller size performs significantly better than a larger heterogeneous batch (for example, check batch sizes of 100 and 500 in the plots above). This essentially suggests, that if we have a heteorogeneous batch of 500, with 5 families inside it, we can possibly divide it into smaller batches of size 100, and achieve a much higher throughput.
 \end{itemize}
 
 \begin{figure}[H]
 \centering
 \begin{minipage}[t]{0.55\textwidth}
-\small
 The above results gave rise to another experiment. Let's say we have a parameter $k$. 
 Now, before passing the requests to the model, we make chunks of size $k$, and permute each chunk randomly 
 (for the above plots a batch nature level of 1 essentially meant a $k$ value of 50). 
@@ -375,7 +367,7 @@ SGLANG suits better for structured multi-turn scenarios, and it has timed KV Cac
 
 \section{GPU Utilization Metrics across different family and batch sizes}
 
-We also analyzed compute utilzation across varying batch sizes and number of families - just to get the confidence that our GPU is being fully utilized. We used 3 metrics - SM Activity, SM Occupancy and Tensor Core Utilization. It turns out that for larger model sizes, the number of warps are lesser (as each warp needs more memory), and thus the overall SM Occupancy numbers are lower.
+We also analyzed compute utilzation across varying batch sizes and number of families - just to get the confidence that our GPU is being fully utilized. We used 3 metrics - SM Activity, SM Occupancy and Tensor Core Utilization. It turns out that for larger model sizes, the number of warps are lesser (as each warp needs more memory), and thus the overall SM Occupancy numbers are much lower.
 
 \begin{figure}[H]
     \centering

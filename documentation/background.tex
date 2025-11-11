@@ -1,22 +1,21 @@
 \chapter{Background}
-Language models (LMs) are statistical models that predict the next word in a sequence given the previous words. They basically give us a probability distribution over words based on the context provided by the preceeding words. They enable machines to understand and generate human language. They can be used for a lot of tasks like answering questions, text summarization, translation, code generation and more.
 
-\begin{figure}[H]
+\begin{wrapfigure}{r}{0.5\textwidth}
     \centering
-    \includegraphics[width=0.7\textwidth]{\FIGDIR/recursive-token-generation.DxoklRFR_Z1SHbzz.png}
-    \caption{Adopted from \citet{llm_generate}}
-\end{figure}
+    \vspace{-10pt}
+    \includegraphics[width=0.8\linewidth]{\FIGDIR/recursive-token-generation.DxoklRFR_Z1SHbzz.png}
+    \caption{LM Model \cite{llm_generate}}
+\end{wrapfigure}
+To ground the previous discussion, this section provides the necessary technical background. We begin with the fundamentals of language modeling and transformer architectures, then describe the inference process, optimizations in modern inference engines, and key performance metrics relevant to our study.
+
+Language models (LMs) are statistical models that predict the next word in a sequence given the previous words. They basically give us a probability distribution over words based on the context provided by the preceeding words. They enable machines to understand and generate human language. They can be used for a lot of tasks like answering questions, text summarization, translation, code generation and more.
 
 \section{Stages in the Model Creation Pipeline}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{\FIGDIR/sys.png}
-    \caption{Adopted from \citet{USENIX_article}}
+    \includegraphics[width=0.5\textwidth]{\FIGDIR/sys.png}
+    \caption{Stages in the Model Creation Pipeline \cite{USENIX_article}}
 \end{figure}
-
-
-
-
 
 \begin{itemize}
     \item \textbf{Data Preparation:} The initial stage involves gathering and preprocessing the training data, which can be categorized into two parts: (1) pretraining data, consisting of extensive unlabeled corpora obtained from public or private sources and curated through processes like detoxification and deduplication; (2) alignment data, comprising a smaller set of high-quality labeled corpora used to align the model with specific tasks. This data is typically acquired through expensive human annotation or labeling. Besides, all the data must be tokenized to ensure compatibility with the model's input.
@@ -43,11 +42,11 @@ Masked attention is used in autoregressive language models to prevent the model 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{\FIGDIR/arch.png}
-    \caption{Architecture of a Large Language Model (\citet{3})}
+    \caption{Architecture of a Large Language Model \cite{llm_generate}}
 \end{figure}
 
 \section{Transformer Based Large Langauge Models}
-The task of language modeling (\cite{kwon2023efficient}) is to model the probability of a list of tokens $(x_1, \dots,x_n)$. Since language has a natural sequential ordering, it is common to factorize the joint probability over the whole sequence as the product of conditional probabilities (a.k.a. autoregressive decomposition):
+The task of language modeling \cite{kwon2023efficient} is to model the probability of a list of tokens $(x_1, \dots,x_n)$. Since language has a natural sequential ordering, it is common to factorize the joint probability over the whole sequence as the product of conditional probabilities (a.k.a. autoregressive decomposition):
 \[
 P(x) = P(x_1) \cdot P(x_2 | x_1) \dots P(x_n | x_1, \dots x_{n - 1})
 \]
@@ -80,9 +79,15 @@ Given a request prompt, the generation computation in the LLM service can be dec
 
 \textbf{The prompt phase} takes the whole user prompt $(x_1, \dots,x_n)$
 as input and computes the probability of the first new token $P(x_{n + 1} | x_1,\dots,x_n)$. During this process, also generates the key vectors $k_1,\dots ,k_n$ and value vectors $v_1,\dots ,v_n$. Since prompt tokens $x_1, \dots,x_n$ are all known, the computation of the prompt phase can be parallelized using matrix-
-matrix multiplication operations. Therefore, this phase can efficiently use the parallelism inherent in GPUs.
+matrix multiplication operations. Therefore, this phase can efficiently use the parallelism inherent in GPUs. This phase is also known as the \textbf{prefill} phase.
 
-\textbf{The autoregressive generation phase} generates the remaining new tokens sequentially. At iteration $t$ the model takes one token $x_{n+t}$ as input and computes the probability $P(x_{n + t + 1} | x_1,\dots,x_{n + t})$ with the key vectors $k_1,\dots ,k_{n + t}$ and value vectors $v_1,\dots ,v_{n + t}$. Note that the key and value vectors at positions 1 to $n + t - 1$ are cached at previous iterations, only the new key and value vector $k_{n + t}$ and $v_{n + t}$ are computed at this iteration. This phase completes either when the sequence reaches a maximum length (specified by users or limited by LLMs) or when an end-of-sequence ($<$eos$>$) token is emitted. The computation at different iterations cannot be parallelized due to the data dependency and often uses matrix-vector multiplication, which is less efficient. As a result, this phase severely underutilizes GPU computation and becomes memory-bound, being responsible for most portion of the latency of a single request.
+\textbf{The autoregressive generation phase} generates the remaining new tokens sequentially. At iteration $t$ the model takes one token $x_{n+t}$ as input and computes the probability $P(x_{n + t + 1} | x_1,\dots,x_{n + t})$ with the key vectors $k_1,\dots ,k_{n + t}$ and value vectors $v_1,\dots ,v_{n + t}$. Note that the key and value vectors at positions 1 to $n + t - 1$ are cached at previous iterations, only the new key and value vector $k_{n + t}$ and $v_{n + t}$ are computed at this iteration. This phase completes either when the sequence reaches a maximum length (specified by users or limited by LLMs) or when an end-of-sequence ($<$eos$>$) token is emitted. The computation at different iterations cannot be parallelized due to the data dependency and often uses matrix-vector multiplication, which is less efficient. As a result, this phase severely underutilizes GPU computation and becomes memory-bound, being responsible for most portion of the latency of a single request. This phase is also known as the \textbf{decode} phase.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{\FIGDIR/pd.png}
+    \caption{Prefill vs Decode \cite{ibm_sysml}}
+\end{figure}
 
 \section{LLM Inferencing}
 
@@ -133,8 +138,8 @@ Large Language Model (LLM) inferencing refers to the process of using a trained 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{\FIGDIR/llm-inference-n-serving.drawio.png.png}
-    \caption{Architecture of an Inference Engine (\citet{3})}
+    \includegraphics[width=0.8\textwidth]{\FIGDIR/llm-inference-n-serving.drawio.png.png}
+    \caption{Architecture of an Inference Engine \cite{llm_generate}}
 \end{figure}
 
 An \textbf{inference engine} is the software and systems layer that manages the execution of large language model (LLM) inference on hardware resources. While the model architecture and parameters define the computation, inference engines ensure that requests are executed efficiently, reliably, and at scale. 
@@ -165,34 +170,13 @@ An \textbf{inference engine} is the software and systems layer that manages the 
 \end{itemize}
 
 
-\section{Prefill vs Decode}
-
-LLM inference consists of two phases:
-
-\begin{itemize}
-    \item \textbf{Prefill:} The input/prompt is ingested in parallel. All tokens are processed together to build the key-value (KV) cache, enabling the generation of the first output token.
-    \item \textbf{Decode:} Subsequent tokens are generated auto-regressively. Each new token is computed sequentially using the KV cache from earlier steps.
-\end{itemize}
-
-\noindent
-In short, \emph{prefill is parallel and one-time}, while \emph{decode is sequential and repeated}.
-
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{\FIGDIR/pd.png}
-    \caption{Prefill vs Decode (\cite{ibm_sysml})}
-\end{figure}
-
-
 \section{Metrics}
 
 The performance of LLM inference is typically measured using two key metrics:
 
 \subsection{Throughput}
 \begin{itemize}
-    \item Defined as the number of tokens processed per second.
+    \item Defined as the number of tokens processed or the number of requests completed per second.
     \item Reflects system efficiency and GPU utilization across multiple requests.
 \end{itemize}
 
