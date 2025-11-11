@@ -175,3 +175,12 @@ Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomn
 
 
 
+Throughput Test with 2 families, 500 req/sec and max_batch_size of 500 (randomness: 499): 107.64629570106126
+Throughput Test with 2 families, 500 req/sec and max_batch_size of 500 (randomness: 500): 116.56915819527758
+Throughput Test with 10 families, 499 req/sec and max_batch_size of 499 (randomness: 499): 90.21839938649052
+Throughput Test with 10 families, 499 req/sec and max_batch_size of 499 (randomness: 499): 89.84596143738113
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500): 115.4514854537185
+Throughput Test with 10 families, 499 req/sec and max_batch_size of 499 (randomness: 0): 89.57215351312628
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 0): 93.19962806222193
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 0): 114.34389295256156
+Throughput Test with 10 families, 499 req/sec and max_batch_size of 499 (randomness: 0): 116.76633789071947

@@ -29,7 +29,7 @@ def main():
     families = []  
     current_load = (num_families * len(queries)) / req_per_sec
     multiplier = max(1, 10/current_load)
-    multiplier = int(multiplier)
+    multiplier = int(multiplier) + 1
     system_prompts = []
     for prefix in prefixes:
         chat_messages = [
@@ -46,7 +46,9 @@ def main():
         system_prompts.append(full_prompt)
     
     for prefix in prefixes: 
+        cnt = 0
         for q in queries*multiplier:
+            cnt += 1
             modified_system_prompt = prefix + " " + system_prompt
             chat_messages = [
                 {"role": "system", "content": modified_system_prompt},
@@ -63,6 +65,8 @@ def main():
 
             prompts.append(full_prompt)
             families.append(prefix)
+            if cnt >= 499:
+                break
 
     print(f"Generated {len(prompts)} prompts in total.")
     paired = list(zip(prompts, families))
@@ -82,8 +86,11 @@ def main():
         max_num_seqs=max_batch_size,
     )
 
+    # prompts = prompts[0:(int(len(prompts)/req_per_sec)*req_per_sec)]
     # out = llm.generate(system_prompts, SamplingParams(temperature=0.7, max_tokens=30))
     initial_start_time = time.time()
+    modified_prompts = []
+    # for i in range()
     for i in range(0, len(prompts), req_per_sec):
         start_time = time.time()
         outputs = llm.generate(prompts[i:i+req_per_sec], SamplingParams(temperature=0.7, max_tokens=30))
