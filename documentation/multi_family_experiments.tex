@@ -227,6 +227,8 @@ So far, we have analyzed the influence of batch size and family composition inde
         8/famC,9/famC,10/famC,11/famC,
         12/famD,13/famD,14/famD,15/famD}
         \node[req, fill=\col] at (\i*0.55,1.8) {};
+    \foreach \x in {0.27,2.47,4.67,6.87}
+        \draw[dashed, gray, thick] (\x-0.55,1.45) rectangle (\x+1.65,2.15);
     \node[anchor=west] at (0,1.0) {\textbf{(1) Chunked Random Permutation (chunk size = 2)}};
     \foreach \i/\col in {
         0/famA,1/famA,
@@ -238,8 +240,8 @@ So far, we have analyzed the influence of batch size and family composition inde
         12/famB,13/famB,
         14/famC,15/famC}
         \node[req, fill=\col] at (\i*0.55,0.3) {};
-    \foreach \x in {0.27,1.37,...,8.8}
-        \draw[dashed, gray] (\x-0.55,-0.1) rectangle (\x+0.55,0.7);
+    \foreach \x in {0.27,2.47,4.67,6.87}
+        \draw[dashed, gray, thick] (\x-0.55,-0.05) rectangle (\x+1.65,0.65);
     \node[anchor=west] at (0,-0.8) {\textbf{(2) Completely Random Permutation}};
     \foreach \i/\col in {
         0/famC,1/famA,2/famD,3/famB,
@@ -247,13 +249,16 @@ So far, we have analyzed the influence of batch size and family composition inde
         8/famD,9/famC,10/famA,11/famB,
         12/famC,13/famB,14/famD,15/famA}
         \node[req, fill=\col] at (\i*0.55,-1.5) {};
+    \foreach \x in {0.27,2.47,4.67,6.87}
+        \draw[dashed, gray, thick] (\x-0.55,-1.85) rectangle (\x+1.65,-1.15);
     \node[req, fill=famA, label=right:{Family A}] at (9.8,1.8) {};
     \node[req, fill=famB, label=right:{Family B}] at (9.8,1.1) {};
     \node[req, fill=famC, label=right:{Family C}] at (9.8,0.4) {};
     \node[req, fill=famD, label=right:{Family D}] at (9.8,-0.3) {};
 \end{tikzpicture}
-\caption{Visualization of query ordering strategies for 4 families (4 requests each): (0) sorted, (1) chunked random, (2) completely random.}
+\caption{Visualization of query ordering strategies for 4 families (4 requests each): (0) sorted, (1) chunked random, (2) completely random. Each dashed box represents a batch of 4 requests.}
 \end{figure}
+
 
 
 
