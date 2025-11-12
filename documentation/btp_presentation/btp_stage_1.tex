@@ -39,7 +39,7 @@
 }
 
 \usebeamercolor[fg]{author in sidebar}
-\title[{Systems for LLMs}]{\sc Benchmarking and Performance Analysis of LLM Inferencing Systems}
+\title[{Systems for LLMs}]{\sc Profiling and Optimizing LLM Inference at Scale}
 \author[\ul{Saksham Rathi}]{{\textbf{Saksham Rathi}}}
 \institute[UTD]{\sc\small Bachelor's Thesis Project - Stage 1\\ Under Prof. Mythili Vutukuru}
 \date[UCI]{Indian Institute of Technology Bombay \\ Autumn 2025-26}
@@ -51,7 +51,35 @@
 	\tableofcontents
 \end{frame}
 
+\section{Introduction}
+\begin{frame}{Motivation}
+    \begin{itemize}
+        \item In many real-world scenarios, multiple users query the same underlying document or system prompt.\pause
+        \item For instance, an Operating Systems teaching assistant bot may maintain a large context consisting of lecture notes and example explanations, while each student poses short, contextually grounded questions.\pause
+        \item Similarly, enterprise assistants often process hundreds of independent queries over a shared knowledge base or product documentation.\pause
+        \item Redundant computation of attention over shared prefixes can waste compute resources. \pause
+        \item Memory footprint grows with increasing batch size and KV cache usage.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Problem Statement}
+    \begin{itemize}
+        \item Our goal was to analyze the performance behavior of LLM inference workloads characterized by shared prefixes. \pause
+        \item What metrics are relevant to evaluating such inference workloads - at the GPU level? \pause
+        \item How do modern inference engines handle these workloads? \pause
+        \item How do prefix caching, chunked prefill, and request scheduling affect the overall throughput? \pause
+        \item What are the bottlenecks that limit scalability for larger number of concurrent families?
+    \end{itemize}
+\end{frame}
+
 \section{Background}
+
+\begin{frame}{Prefill vs Decode}
+\begin{itemize}
+    \item \textbf{Prefill:} Takes the whole user prompt as input and computes the probability of the first new token. Generate key and value vectors. Can be parallelized because all the tokens are known. \pause
+    \item \textbf{Decode:} Generates the remaining new tokens sequentially. Stops when the maximum length is reached, or when an end-of-sequence token is emitted. Autoregressive in nature.
+\end{itemize}
+\end{frame}
 
 \begin{frame}{Inference Engines}
     \begin{columns}[T, totalwidth=\textwidth]
@@ -69,34 +97,51 @@
             \begin{itemize}
                 \item Systems layer that manages the execution of large language model (LLM) inference on hardware resources. \pause
                 \item Multiple user requests are grouped into a single batch to maximize GPU utilization and reduce per-request overhead. \pause
-                \item Memory Storage: Cache key-value pairs, reuse memory buffers, and apply quiantization or weight-sharing. \pause
+                \item Memory Storage: Cache key-value pairs, reuse memory buffers, and apply quantization or weight-sharing. \pause
                 \item Offloading: Portions of the model state or intermediate activations can be offloaded to CPU when not needed actively.
             \end{itemize}
         \end{column}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Prefill vs Decode}
-\centering
-\includegraphics[width=0.5\textwidth]{\FIGDIR/pd.png}
-\vspace{0.3em}
-\captionof{figure}{Prefill vs Decode}
 
-\begin{itemize}
-    \item \textbf{Prefill:} The input/prompt is ingested in parallel. All tokens are processed together to build the key-value (KV) cache, enabling the generation of the first output token. \pause
-    \item \textbf{Decode:} Subsequent tokens are generated auto-regressively. Each new token is computed sequentially using the KV cache from earlier steps.
-\end{itemize}
+
+\section{Prior Work}
+
+\begin{frame}{vLLM}
+    \begin{itemize}
+        \item vLLM adopts a centralized scheduler to coordinate the execution of distributed GPU workers. \pause
+        \item PagedAttention partitions the KV cache of each sequence into KV blocks. Removes internal and external fragmentation. \pause
+        \item Allows blocks to be shared when multiple samples share the same input prompt, or during beam search. Implements copy-on-write mechanism at the block granularity for the physical blocks that need modification by multiple sequences. \pause
+        \item Evicted blocks are copied to the CPU memory.  \pause
+        \item Each cached block is identified by the block hash - which comprises of the parent block hash, block tokens, and some extra fields.
+    \end{itemize}
 \end{frame}
 
-\section{Related Work}
+\begin{frame}{FastTree}
+    \begin{columns}[T, totalwidth=\textwidth]
+        \begin{column}{0.4\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{\FIGDIR/kv_cache_sharing_through_radix_tree.png}
+            \vspace{0.3em}
+            \captionof{figure}{KV Cache Sharing through RadixTree}
+        \end{column}
+        \begin{column}{0.6\textwidth}
+            \begin{itemize}
+                \item Introduces GPU kernels specifically designed to process queries that share common prefixes within a radix tree structure. \pause
+                \item Gives an optimal edge assignment based on two types of losses - (1) Tile Padding (2) Maintaining Intermediate results \pause
+                \item Merges queries with the same prefix into a single kernel - (1) Decreases global memory transactions (2) Converts GEMV to GEMM operations
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
 
-\section{Workload Picked}
-
+\section{Experiments - Single Family}
 \begin{frame}{Workload Setup}
 \begin{itemize}
-    \item \textbf{Goal:} Evaluate inference performance of LLMs under short queries with large shared context.
-    \item \textbf{Model:} Qwen 0.5B, Tiny Llama 1.1B, served using vLLM/SGLang/Transformers.
-    \item \textbf{Hardware:} NVIDIA RTX6000 48GB GPU.
+    \item \textbf{Goal:} Evaluate inference performance of LLMs under short queries with large shared context. \pause
+    \item \textbf{Model:} Qwen 0.5B, Tiny Llama 1.1B, served using vLLM/SGLang/Transformers. \pause
+    \item \textbf{Hardware:} NVIDIA RTX6000 48GB GPU. \pause
     \item \textbf{Metrics:} Throughput (req/s), latency, GPU utilization.
 \end{itemize}
 
@@ -118,14 +163,12 @@ Batch Size & Adaptive \\
 \end{table}
 \end{frame}
 
-
-\section{Batch of Requests through Various Engines}
 \begin{frame}{Experiment Setup: Engine Comparison}
 \begin{itemize}
-    \item Compare inference engines: \textbf{Transformers}, \textbf{vLLM}, \textbf{SGLang}, \textbf{NEO}.
-    \item Batch of 24 requests, each sharing the same system prompt.
-    \item Each request: $\sim$20 input tokens $\rightarrow$ $\sim$40 generated tokens.
-    \item Measure \textbf{total time taken} to process the batch.
+    \item Compare inference engines: \textbf{Transformers}, \textbf{vLLM}, \textbf{SGLang}, \textbf{NEO}. \pause
+    \item Batch of 24 requests, each sharing the same system prompt. \pause
+    \item Each request: $\sim$20 input tokens $\rightarrow$ $\sim$40 generated tokens. \pause
+    \item Measure \textbf{total time taken} to process the batch. \pause
 \end{itemize}
 
 \begin{block}{Hypothesis}
@@ -159,23 +202,19 @@ Engines leveraging prefix caching (e.g., SGLang) should perform far better than 
             vLLM (no system prompt pre-filling) & 0.45 \\
             SGLang (fork) & 1.03 \\
             SGLang (run\_batch) & 0.40 \\
-            NEO & 0.55 \\
             \hline
             \end{tabular}
             \caption{Measuring the time taken to process a batch of 24 requests using different techniques}
             \end{table}
-    
         \end{column}
     \end{columns}
 \end{frame}
 
 
-\section{LLM Request Timelines}
-
 \begin{frame}{Experiment Setup: Request Timelines}
 \begin{itemize}
-    \item Aim: Measure time spent in \textbf{prefill} vs \textbf{decode} stages for 20 req/sec workload (sending a new request after every 0.05 seconds).
-    \item Using vLLM V0 engine without chunked prefill.
+    \item Aim: Measure time spent in \textbf{prefill} vs \textbf{decode} stages for 20 req/sec workload (sending a new request after every 0.05 seconds). \pause
+    \item Using vLLM V0 engine without chunked prefill. \pause
     \item Tool: Custom logging of per-request timestamps.
 \end{itemize}
 \begin{figure}[h!]
@@ -212,15 +251,13 @@ Engines leveraging prefix caching (e.g., SGLang) should perform far better than 
     \end{column}
     \begin{column}{0.4\textwidth}
         \begin{itemize}
-            \item Prefill dominates runtime due to large prompt.
-            \item Prefill and decode cannot overlap here.
+            \item Prefill dominates runtime due to large prompt. \pause
+            \item Prefill and decode cannot overlap here. \pause
             \item Low TTFT but high total latency.
         \end{itemize}
     \end{column}
 \end{columns}
 \end{frame}
-
-\section{Throughput vs Load for vLLM}
 
 \begin{frame}{Results: Throughput vs Load for vLLM}
 \begin{columns}[T, totalwidth=\textwidth]
@@ -231,10 +268,10 @@ Engines leveraging prefix caching (e.g., SGLang) should perform far better than 
     \end{column}
     \begin{column}{0.4\textwidth}
         \begin{itemize}
-            \item Varying the input load, and comparing different modes.
-            \item Chunked prefill: limited benefit for small queries.
-            \item Prefix caching: major boost to throughput.
-            \item Batch tuning further improves efficiency.
+            \item Varying the input load, and comparing different modes. \pause
+            \item Chunked prefill: limited benefit for small queries. \pause
+            \item Prefix caching: major boost to throughput. \pause
+            \item Batch tuning further improves efficiency. \pause
         \end{itemize}
     \end{column}
 \end{columns}
@@ -243,146 +280,257 @@ Engines leveraging prefix caching (e.g., SGLang) should perform far better than 
 \end{block}
 \end{frame}
 
-\section{NSYS Measurements}
+\section{Metrics}
+\begin{frame}{Key GPU Metrics}
+    \begin{itemize}
+        \item We employ two primary NVIDIA tools for this study: Nsight Systems (\textbf{NSYS}) and the Data Center GPU Management Interface (\textbf{DCGMI}). \pause
+        \item \textbf{SM Activity:} The fraction of time at least one warp was active on a multiprocessor, averaged over all multiprocessors. \pause
+        \item \textbf{SM Occupancy:} The fraction of resident warps on a multiprocessor, relative to the maximum number of concurrent warps supported on a multiprocessor.
+        \item \textbf{Tensor Core Utilization:} The fraction of cycles the tensor pipe was active.
+    \end{itemize}
+\end{frame}
 
-\begin{frame}{Results: NSYS Measurements}
-\begin{block}{Goal}
-Understand compute vs memory utilization and bottlenecks.
-\end{block}
-\vspace{1cm}
+\begin{frame}{NSYS Run on Matrix Multiplication}
+    \begin{itemize}
+        \item Various Phases: Host to device copy, kernel computation, and device to host copy.
+        \item Compute metrics reach high values during kernel execution phase.
+    \end{itemize}
 \centering
-\includegraphics[width=\textwidth]{\RESULTDIR/nsys_metrics_llm_inference.png}
+\includegraphics[width=0.8\textwidth]{\FIGDIR/nsys_matmul.png}
 \captionof{figure}{NSYS Metrics Snapshot}
 \end{frame}
 
-\begin{frame}{Observation: NSYS Profiling}
+
+\section{Experiments - Multiple Families}
+
+\begin{frame}{Generation of such a workload}
+    
+
+\begin{figure}[h!]
+\centering
+\resizebox{0.9\textwidth}{!}{
+\begin{tikzpicture}[
+    family/.style={rectangle, draw=blue!60, fill=blue!10, thick, rounded corners, minimum height=0.8cm, align=center},
+    token/.style={rectangle, draw=gray!50, fill=gray!10, thick, rounded corners, minimum height=0.8cm, align=center},
+    cache/.style={rectangle, draw=red!50, fill=red!10, thick, rounded corners, minimum height=0.8cm, align=center},
+    arrow/.style={->, thick, >=latex},
+    font=\small
+]
+
+\node[token, minimum width=5cm] (sys) {System Prompt (1500 tokens)};
+\node[family, left=1.3cm of sys, minimum width=1cm] (aa) {AA};
+\node[family, below=0.8cm of aa, minimum width=1cm] (ab) {AB};
+\node[family, below=0.8cm of ab, minimum width=1cm] (ac) {AC};
+
+\node[token, right=0.7cm of sys, minimum width=5.5cm, label=above:{Family 1}] (f1) {AA + System Prompt};
+\node[token, below=0.8cm of f1, minimum width=5.5cm, label=above:{Family 2}] (f2) {AB + System Prompt};
+\node[token, below=0.8cm of f2, minimum width=5.5cm, label=above:{Family 3}] (f3) {AC + System Prompt};
+\draw[arrow] (aa.east) -- ++(0.2,0) |- (f1.west);
+\draw[arrow] (sys.east) -- ++(0.2,0) |- (f1.west);
+
+\draw[arrow] (ab.east) -- ++(0.2,0) |- (f2.west);
+\draw[arrow] (sys.east) -- ++(0.2,0) |- (f2.west);
+
+\draw[arrow] (ac.east) -- ++(0.2,0) |- (f3.west);
+\draw[arrow] (sys.east) -- ++(0.2,0) |- (f3.west);
+\node[cache, right=0.9cm of f1, minimum width=2.2cm] (kv1) {KV Cache 1};
+\node[cache, right=0.9cm of f2, minimum width=2.2cm] (kv2) {KV Cache 2};
+\node[cache, right=0.9cm of f3, minimum width=2.2cm] (kv3) {KV Cache 3};
+
+\draw[arrow] (f1.east) -- (kv1.west);
+\draw[arrow] (f2.east) -- (kv2.west);
+\draw[arrow] (f3.east) -- (kv3.west);
+
+\end{tikzpicture}%
+}
+\caption{Multiple Families' Workload Generation}
+\label{fig:family_generation}
+\end{figure}
 \begin{itemize}
-    \item Compute: SM Active and Warp occupancy.
-    \item Memory: vLLM books full GPU memory upfront.
-    \item vLLM scheduler stats show the actual KV Cache Usage.
-    \item PCIe Bandwidth low → small workloads, minimal CPU transfer.
-\end{itemize}
+        \item What we have already - a large system prompt of around 1500 tokens. \pause
+        \item A Naive Way - Write down multiple such system prompts, and 100 queries based on each one of them. \pause
+        \item A Better Way - Add unique identifiers (``AA'', ``AB'') to the existing system prompt. \pause
+        \item Different block hashes $\rightarrow$ separate KV Cache blocks for each family.
+    \end{itemize}
 \end{frame}
 
-\section{GPU Memory Breakdown}
-
-\begin{frame}{GPU Memory Breakdown}
-    \begin{table}[h!]
+\begin{frame}{Effect of different Models}
+    
+\begin{table}[h!]
+\scriptsize
 \centering
-\begin{tabular}{|c|p{4cm}|}
+\begin{tabular}{|c||c|c|}
 \hline
-\textbf{Component} & \textbf{Memory Occupied} \\
+\textbf{Model Chosen} & \textbf{10 families, each with 1000 queries} & \textbf{1 family with 10000 requests} \\
 \hline
-Weights  & 0.93 GiB \\
 \hline
-Peak Activation  & 4.07 GiB \\
+Qwen 0.5B & 294.228 req/s &  308.750 req/s\\
 \hline
-Non-Torch  & 0.02 GiB \\
+Llama 7B & 43.923 req/s&  124.347 req/s\\
 \hline
-CUDA Graph & 0.41 GiB \\
-\hline
-KV Cache: Intersection (Prefix)  & 1,280 tokens / 0.0157 GiB \\
-\hline
-KV Cache: Extras for Requests  & 640 tokens (10 requests × 64 tokens) / 0.0078 GiB \\
-\hline
-KV Cache: Free & 2,672,880 tokens / 32.8445 GiB \\
+LongChat 13B & 22.415 req/s& 70.097 req/s\\
 \hline
 \end{tabular}
-\caption{GPU Memory Breakdown and KV Cache Usage}
-\label{tab:gpu_memory_breakdown}
+\caption{Throughput with multiple families across various models}
 \end{table}
-\end{frame}
 
-\begin{frame}{Observation: Memory Profiling}
 \begin{itemize}
-    \item KV Cache footprint is tiny — prefix reuse highly memory-efficient.
-    \item Most GPU memory remains free → headroom for larger batches.
-    \item Suggests potential for multi-family prefix caching in future work.
-\end{itemize}
-\end{frame}
-
-\section{Experiments with Multiple Families}
-
-\begin{frame}{Generation of these families}
-    \begin{itemize}
-        \item Let's say we already have a large system prompt of length 1500 tokens.
-        \item We generate multiple families of requests by prepending a unique family identifier to the system prompt.
-        \item For example, for family 1, we prepend "AA", for family 2, "AB", and so on.
-        \item This ensures that although the families have a large substring in common, but their prefixes always differ, and the KV Cache block hashes won't match.
-        \item This in turn implies, that we need to compute and store separate KV Cache blocks for each family.
+        \item As the model size increases, the throughput degradation becomes more pronounced. \pause
+        \item Primarily because of - (1) Increased attention computation overhead (2) Increase in the working set size - more transactions with global memory.
     \end{itemize}
-
 \end{frame}
-\begin{frame}{Experiments with Multiple Families}
+
+\begin{frame}{Same Family $\rightarrow$ Single Batch}
+    
+    \begin{table}[H]
 \centering
-    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_no_prefill.png}
-    \captionof{figure}{Throughput vs Load without prefix pre-filling}
-\end{frame}
-
-\begin{frame}{Experiments with Multiple Families}
-\centering
-    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_with_prefill.png}
-    \captionof{figure}{Throughput vs Load with prefix pre-filling}
-\end{frame}
-
-
-\begin{frame}{Experiments with Multiple Families}
-\centering
-    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_with_prefill_ordered.png}
-    \captionof{figure}{Throughput vs Load with prefix pre-filling with ordered family IDs}
-\end{frame}
-
-\begin{frame}{Experiments with Multiple Families}
-\centering
-    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_1.png}
-    \captionof{figure}{Throughput vs Load for 1 family}
-\end{frame}
-
-
-\begin{frame}{Experiments with Multiple Families}
-\centering
-    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_5.png}
-    \captionof{figure}{Throughput vs Load for 5 families}
-\end{frame}
-
-
-\begin{frame}{Experiments with Multiple Families}
-\centering
-    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_10.png}
-    \captionof{figure}{Throughput vs Load for 10 families}
-\end{frame}
-
-\begin{frame}{Experiments with Multiple Families}
-\centering
-    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_comparison_across_methods_family_100.png}
-    \captionof{figure}{Throughput vs Load for 100 families}
-\end{frame}
-
-
-\section{Broader Goal}
-
-\begin{frame}{Broader Goal: Motivation}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Number of Families} & \textbf{Number of queries in each family} & \textbf{Max Batch Size} & \textbf{Ordered by Family ID} & \textbf{Random Permutation} \\
+\hline
+\hline
+10 & 10 & 10 & 12.28 & 11.981 \\
+\hline
+10 & 100 & 100 & 59.601 & 55.704 \\
+\hline
+10 & 100 & 200 & 61.693 & 60.923 \\
+\hline
+100 & 100 & 100 & 42.882 & 39.172 \\
+\hline
+\end{tabular}%
+}
+\caption{Comparison of Throughput (req/sec) when merging queries from the same family into a single batch vs not merging}
+\label{tab:gpu_memory_breakdown_table}
+\end{table}
 \begin{itemize}
-    \item \textbf{Without prefix sharing:} batch limited by model context length (e.g., 32,768 tokens for a small Qwen model $\rightarrow$ 1500 tokens $\times$ 20 requests).
-    \item \textbf{With prefix sharing:} utilization-limited, not context-limited. As the number of concurrent requests grows, per-request latency increases, and beyond a point, overall throughput would start declining.
-    \begin{block}{Next Step}
-    Design a scheduler for families of such requests. At each scheduling step, we must decide whether to prefill a shared prefix or decode tokens for an existing request.
-    \end{block}
-    \item Explore KV cache offloading to CPU for extended workloads.
-\end{itemize}
+        \item An insight: merging queries from the same family into a single batch leads to significant throughput improvements. \pause
+        \item Primarily because of limited L2 cache size - can't fit KV Caches of multiple families. Leads to more HBM loads and lower throughput. \pause
+        \item Merging same family queries into a single batch effectively reduces the unique KV Cache blocks needed for that batch.
+    \end{itemize}
 \end{frame}
 
-\begin{frame}{Future Directions: Quality vs Performance}
-\begin{itemize}
-    \item Strategy 1: Pass full system prompt each time.
-    \item Strategy 2: Fine-tune for families of similar requests.
-    \item Study trade-offs:
+\begin{frame}{Prior Prompt Prefilling - to compare decode performance}
+    \begin{columns}[T, totalwidth=\textwidth]
+        \begin{column}{0.3\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{\RESULTDIR/throughput_no_prefill.png}
+        \captionof{figure}{Without prefix pre-filling}
+        \end{column}
+        \begin{column}{0.3\textwidth}
+                \centering
+            \includegraphics[width=\textwidth]{\RESULTDIR/throughput_with_prefill.png}
+        \captionof{figure}{With prefix pre-filling}
+        \end{column}
+        \begin{column}{0.3\textwidth}
+                \centering
+            \includegraphics[width=\textwidth]{\RESULTDIR/throughput_with_prefill_ordered.png}
+        \captionof{figure}{Ordered by family IDs}
+        \end{column}
+    \end{columns}
     \begin{itemize}
-        \item \textbf{Performance:} latency, throughput, memory use.
-        \item \textbf{Quality:} output accuracy, coherence.
+        \item The second image - all system prompts passed in the model beforehand - KV Caches already residing in the HBM. But still, a significant difference between the throughput numbers across different number of families. \pause
+        \item Computation of KV Cache Blocks - not the main bottleneck.
+        \item Rather, the memory bandwidth to load these blocks from HBM to L2 cache.
+        \item Ordering the requests by family ID $\rightarrow$ better cache locality, reduced cache thrashing.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Varying Multiple Parameters Together}
+    \begin{itemize}
+    \item Number of Families
+    \item Workload - requests per second
+    \item Max Batch Size
+    \item The nature of the batch - whether ordered by family IDs or random permutation:
+    \begin{itemize}
+        \item 0: Ordered by family IDs
+        \item 1: We make chunks of size 50 from the sorted list and permute each chunk randomly (allows us to have some level of prefix sharing between consecutive queries)
+        \item 2: Completely random permutation
     \end{itemize}
 \end{itemize}
+
+\begin{figure}[H]
+\centering
+\resizebox{0.7\textwidth}{!}{
+\begin{tikzpicture}[scale=1, every node/.style={scale=0.8}]
+    \definecolor{famA}{RGB}{239,83,80}  
+    \definecolor{famB}{RGB}{66,165,245}  
+    \definecolor{famC}{RGB}{102,187,106} 
+    \definecolor{famD}{RGB}{255,202,40} 
+    \tikzstyle{req}=[rectangle, minimum width=0.55cm, minimum height=0.55cm, draw=black]
+    \node[anchor=west] at (0,2.5) {\textbf{(0) Ordered by Family IDs}};
+    \foreach \i/\col in {
+        0/famA,1/famA,2/famA,3/famA,
+        4/famB,5/famB,6/famB,7/famB,
+        8/famC,9/famC,10/famC,11/famC,
+        12/famD,13/famD,14/famD,15/famD}
+        \node[req, fill=\col] at (\i*0.55,1.8) {};
+    \foreach \x in {0.27,2.47,4.67,6.87}
+        \draw[dashed, gray, thick] (\x-0.55,1.45) rectangle (\x+1.65,2.15);
+    \node[anchor=west] at (0,1.0) {\textbf{(1) Chunked Random Permutation (chunk size = 2)}};
+    \foreach \i/\col in {
+        0/famA,1/famA,
+        2/famC,3/famC,
+        4/famD,5/famD,
+        6/famA,7/famA,
+        8/famB,9/famB,
+        10/famD,11/famD,
+        12/famB,13/famB,
+        14/famC,15/famC}
+        \node[req, fill=\col] at (\i*0.55,0.3) {};
+    \foreach \x in {0.27,2.47,4.67,6.87}
+        \draw[dashed, gray, thick] (\x-0.55,-0.05) rectangle (\x+1.65,0.65);
+    \node[anchor=west] at (0,-0.8) {\textbf{(2) Completely Random Permutation}};
+    \foreach \i/\col in {
+        0/famC,1/famA,2/famD,3/famB,
+        4/famB,5/famD,6/famA,7/famC,
+        8/famD,9/famC,10/famA,11/famB,
+        12/famC,13/famB,14/famD,15/famA}
+        \node[req, fill=\col] at (\i*0.55,-1.5) {};
+    \foreach \x in {0.27,2.47,4.67,6.87}
+        \draw[dashed, gray, thick] (\x-0.55,-1.85) rectangle (\x+1.65,-1.15);
+    \node[req, fill=famA, label=right:{Family A}] at (9.8,1.8) {};
+    \node[req, fill=famB, label=right:{Family B}] at (9.8,1.1) {};
+    \node[req, fill=famC, label=right:{Family C}] at (9.8,0.4) {};
+    \node[req, fill=famD, label=right:{Family D}] at (9.8,-0.3) {};
+\end{tikzpicture}}
+\end{figure}
 \end{frame}
+
+\begin{frame}{Varying Multiple Parameters Together}
+\begin{columns}[T, totalwidth=\textwidth]
+    \begin{column}{0.6\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{\RESULTDIR/throughput_vs_req_batch_rand_families_10.png}
+        \captionof{figure}{Throughput vs Workload by varying other parameters (10 families)}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+        \begin{itemize}
+            \item Increase in batch size $\rightarrow$ higher throughput. \pause
+            \item A batch nature level of 1 is roughly similar to level 2 $\rightarrow$ even a small amount of mixing leads to significant degradation. \pause
+            \item A homogeneous batch of smaller size at times performs siginificantly better than a larger heterogeneous batch.
+        \end{itemize}
+    \end{column}
+\end{columns}
+\end{frame}
+
+
+\section{Future Steps}
+
+\begin{frame}{Future Steps}
+\begin{itemize}
+    \item \textbf{Improved Scheduler:} Design a scheduler that takes into account factors such as L2 cache size, the working set size of the current batch, the number and size of the KV cache blocks being targeted, and dynamically decides whether forming smaller homogeneous batches can outperform larger, mixed ones. \pause
+    \item \textbf{SM Level Optimization:} To increase the per-SM L1 cache hit rate, it is desirable to schedule requests from the same family on nearby (or the same ) SMs. One possible approach is to assign each attention kernel an identifier associated derived from its family ID and preferentially schedule it on an SM already hosting requests from that family.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Future Steps}
+\begin{itemize}
+    \item \textbf{KV Cache Offloading:} As the number of families grows, the GPU's HBM may eventually become insufficient to hold all KV Cache blocks. Design an efficient eviction policy, ideally guided by the degree of prefix sharing among the currently scheduled batches. \pause
+    \item \textbf{Response Quality:} Another promising direction is to improve response quality for requests sharing a large common context. One approach is to fine-tune the model specifically for such shared contexts and compare its performance with that of a baseline model that receives the shared context as part of a system prompt.
+\end{itemize}
+\end{frame}
+
 
 \section{}
 \begin{frame}

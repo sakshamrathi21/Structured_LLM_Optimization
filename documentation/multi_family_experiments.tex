@@ -72,6 +72,7 @@ Llama 7B & 43.923 req/s&  124.347 req/s\\
 LongChat 13B & 22.415 req/s& 70.097 req/s\\
 \hline
 \end{tabular}
+\caption{Throughput with multiple families across various models}
 \end{table}
 
 
@@ -288,9 +289,9 @@ So far, we have analyzed the influence of batch size and family composition inde
 \begin{itemize}
     \item As we can see, increasing the max batch size generally leads to higher throughput, as it allows better GPU utilization.
     \item Ordering the batches by family IDs (batch nature level 0) consistently provides the best throughput, due to improved cache locality and reduced memory bandwidth pressure.
-    \item A batch nature level of 1 is roughly similar to level 2, which suggests that even a small amount of mixing in the batch (basically making the batch heterogeneous with >1 number of families) leads to significant throughput degradation.
+    \item A batch nature level of 1 is roughly similar to level 2, which suggests that even a small amount of mixing in the batch (basically making the batch heterogeneous with $>1$ number of families) leads to significant throughput degradation.
     \item This can be justified by the fact that, all the SMs share an L2 cache of limited size, so even a small increase in the working set size (number of unique KV cache blocks needed) can lead to cache thrashing and evictions, leading to more HBM loads and lower throughput.
-    \item Often a homogeneous batch of smaller size performs significantly better than a larger heterogeneous batch (for example, check batch sizes of 100 and 500 in the plots above). This essentially suggests, that if we have a heteorogeneous batch of 500, with 5 families inside it, we can possibly divide it into smaller batches of size 100, and achieve a much higher throughput.
+    \item Often a homogeneous batch of smaller size performs significantly better than a larger heterogeneous batch (for example, check batch sizes of 100 and 500 in the plots above). This essentially suggests, that if we have a heterogeneous batch of 500, with 5 families inside it, we can possibly divide it into smaller batches of size 100, and achieve a much higher throughput.
 \end{itemize}
 
 \begin{figure}[H]

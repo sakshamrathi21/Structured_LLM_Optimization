@@ -20,7 +20,9 @@
 \usepackage{bm}             
 \usepackage{graphicx}       
 \usepackage{psfrag}         
-\usepackage{fancyvrb}       
+\usepackage{fancyvrb}  
+\usepackage{fancyhdr}
+\pagestyle{fancy}     
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{bbding}         
 \usepackage{dcolumn}        
@@ -58,6 +60,12 @@
 \newcommand{\FIGDIR}{./figures} 
 \newcommand{\RESULTDIR}{../results}  
 
+
+\fancyhead[L]{\textbf{Your Left Header Text}}
+\fancyhead[R]{\textbf{Your Right Header Text}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
 
 \theoremstyle{plain}
 \newtheorem{veta}{Theorem}
