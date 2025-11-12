@@ -4,7 +4,7 @@ import time
 import sys as system
 
 from transformers import AutoTokenizer
-from system_prompt import queries, system_prompt
+from system_prompt import queries, system_prompt as sys_prompt
 from vllm import LLM, SamplingParams
 
 
@@ -29,8 +29,11 @@ def main():
     families = []  
     current_load = (num_families * len(queries)) / req_per_sec
     multiplier = max(1, 10/current_load)
-    multiplier = int(multiplier) + 1
+    multiplier = int(multiplier)
     system_prompts = []
+    m_sys_prompt = sys_prompt
+    m_sys_prompt = m_sys_prompt[0:int(len(m_sys_prompt)/1)]
+    system_prompt = m_sys_prompt
     for prefix in prefixes:
         chat_messages = [
             {"role": "system", "content": prefix + " " + system_prompt},
@@ -65,8 +68,8 @@ def main():
 
             prompts.append(full_prompt)
             families.append(prefix)
-            if cnt >= 499:
-                break
+            # if cnt >= 499:
+            #     break
 
     print(f"Generated {len(prompts)} prompts in total.")
     paired = list(zip(prompts, families))
