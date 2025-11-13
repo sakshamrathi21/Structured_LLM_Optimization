@@ -54,21 +54,21 @@
 \section{Introduction}
 \begin{frame}{Motivation}
     \begin{itemize}
-        \item In many real-world scenarios, multiple users query the same underlying document or system prompt.\pause
-        \item For instance, an Operating Systems teaching assistant bot may maintain a large context consisting of lecture notes and example explanations, while each student poses short, contextually grounded questions.\pause
-        \item Similarly, enterprise assistants often process hundreds of independent queries over a shared knowledge base or product documentation.\pause
-        \item Redundant computation of attention over shared prefixes can waste compute resources. \pause
-        \item Memory footprint grows with increasing batch size and KV cache usage.
+        \item In many real-world settings, multiple users query the same underlying document or system prompt. \pause
+        \item For example, an Operating Systems teaching assistant bot may maintain a large shared context of lecture notes and examples, while each student asks short, context-specific questions. \pause
+        \item Similarly, enterprise assistants handle hundreds of independent queries over a shared knowledge base or product documentation. \pause
+        \item Recomputing attention over identical prefixes leads to redundant computation and wasted GPU cycles. \pause
+        \item Additionally, memory usage grows rapidly with batch size and KV cache accumulation.
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Problem Statement}
     \begin{itemize}
-        \item Our goal was to analyze the performance behavior of LLM inference workloads characterized by shared prefixes. \pause
-        \item What metrics are relevant to evaluating such inference workloads - at the GPU level? \pause
-        \item How do modern inference engines handle these workloads? \pause
-        \item How do prefix caching, chunked prefill, and request scheduling affect the overall throughput? \pause
-        \item What are the bottlenecks that limit scalability for larger number of concurrent families?
+        \item Our goal is to characterize and analyze the performance of LLM inference workloads with shared prefixes. \pause
+        \item What are the key GPU-level metrics for evaluating such workloads? \pause
+        \item How do modern inference engines optimize for shared-prefix execution? \pause
+        \item How do mechanisms like prefix caching, chunked prefill, and request scheduling impact throughput and latency? \pause
+        \item What bottlenecks limit scalability as the number of concurrent prefix families increases?
     \end{itemize}
 \end{frame}
 
@@ -140,7 +140,7 @@
 \begin{frame}{Workload Setup}
 \begin{itemize}
     \item \textbf{Goal:} Evaluate inference performance of LLMs under short queries with large shared context. \pause
-    \item \textbf{Model:} Qwen 0.5B, Tiny Llama 1.1B, served using vLLM/SGLang/Transformers. \pause
+    \item \textbf{Models:} Qwen 0.5B, Tiny Llama 1.1B, Llama 3.1 8B, served using vLLM/SGLang/Transformers. \pause
     \item \textbf{Hardware:} NVIDIA RTX6000 48GB GPU. \pause
     \item \textbf{Metrics:} Throughput (req/s), latency, GPU utilization.
 \end{itemize}
@@ -165,7 +165,7 @@ Batch Size & Adaptive \\
 
 \begin{frame}{Experiment Setup: Engine Comparison}
 \begin{itemize}
-    \item Compare inference engines: \textbf{Transformers}, \textbf{vLLM}, \textbf{SGLang}, \textbf{NEO}. \pause
+    \item Compare inference engines: \textbf{Transformers}, \textbf{vLLM}, \textbf{SGLang}. \pause
     \item Batch of 24 requests, each sharing the same system prompt. \pause
     \item Each request: $\sim$20 input tokens $\rightarrow$ $\sim$40 generated tokens. \pause
     \item Measure \textbf{total time taken} to process the batch. \pause
@@ -303,7 +303,7 @@ Engines leveraging prefix caching (e.g., SGLang) should perform far better than 
 
 \section{Experiments - Multiple Families}
 
-\begin{frame}{Generation of such a workload}
+\begin{frame}{Multiple Families - Generation of such a workload}
     
 
 \begin{figure}[h!]
@@ -515,12 +515,42 @@ LongChat 13B & 22.415 req/s& 70.097 req/s\\
 \end{frame}
 
 
+\begin{frame}{Varying Chunk Size while Permuting}
+\begin{columns}[T, totalwidth=\textwidth]
+    \begin{column}{0.5\textwidth}
+        \centering
+        \captionof{table}{Throughput across different $k$ levels}
+        \label{tab:throughput_randomness}
+        \begin{tabular}{|c|c|}
+        \hline
+        \textbf{$k$} & \textbf{Throughput (req/sec)} \\
+        \hline
+        200  & 89.35  \\
+        300  & 87.49  \\
+        400  & 86.50  \\
+        499  & 88.19  \\
+        500  & 112.66 \\
+        1000 & 112.41 \\
+        \hline
+\end{tabular}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+        \begin{itemize}
+            \item Before passing the requests to the model, we make chunks of size $k$, and permute each chunk randomly. \pause
+            \item A $k$ value of 499 essentially means that in the first batch we have 499 requests of one family and 1 request of another family\pause
+            \item However the throughput is much lower than a $k$ value of 500. \pause
+            \item Even one request of a different family will cause L2 cache thrashing.
+        \end{itemize}
+    \end{column}
+\end{columns}
+\end{frame}
+
 \section{Future Steps}
 
 \begin{frame}{Future Steps}
 \begin{itemize}
     \item \textbf{Improved Scheduler:} Design a scheduler that takes into account factors such as L2 cache size, the working set size of the current batch, the number and size of the KV cache blocks being targeted, and dynamically decides whether forming smaller homogeneous batches can outperform larger, mixed ones. \pause
-    \item \textbf{SM Level Optimization:} To increase the per-SM L1 cache hit rate, it is desirable to schedule requests from the same family on nearby (or the same ) SMs. One possible approach is to assign each attention kernel an identifier associated derived from its family ID and preferentially schedule it on an SM already hosting requests from that family.
+    \item \textbf{SM Level Optimization:} To increase the per-SM L1 cache hit rate, it is desirable to schedule requests from the same family on nearby (or the same) SMs. One possible approach is to assign each attention kernel an identifier associated derived from its family ID and preferentially schedule it on an SM already hosting requests from that family.
 \end{itemize}
 \end{frame}
 
