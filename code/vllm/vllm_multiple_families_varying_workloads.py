@@ -30,9 +30,10 @@ def main():
     current_load = (num_families * len(queries)) / req_per_sec
     multiplier = max(1, 10/current_load)
     multiplier = int(multiplier)
+    multiplier = 20
     system_prompts = []
     m_sys_prompt = sys_prompt
-    m_sys_prompt = m_sys_prompt[0:int(len(m_sys_prompt)/1)]
+    m_sys_prompt = m_sys_prompt[0:int(len(m_sys_prompt)/50)]
     system_prompt = m_sys_prompt
     for prefix in prefixes:
         chat_messages = [
