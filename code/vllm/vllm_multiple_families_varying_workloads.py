@@ -19,6 +19,7 @@ def generate_prefixes(n):
 
 def main():
     model_name = "meta-llama/Llama-3.1-8B-Instruct"
+    # model_name = "qwen/qwen2.5-0.5b-instruct"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     num_families = int(system.argv[1]) if len(system.argv) > 1 else 10
     req_per_sec = int(system.argv[2]) if len(system.argv) > 2 else 20
@@ -30,10 +31,10 @@ def main():
     current_load = (num_families * len(queries)) / req_per_sec
     multiplier = max(1, 10/current_load)
     multiplier = int(multiplier)
-    multiplier = 20
+    # multiplier = 20
     system_prompts = []
     m_sys_prompt = sys_prompt
-    m_sys_prompt = m_sys_prompt[0:int(len(m_sys_prompt)/50)]
+    m_sys_prompt = m_sys_prompt[0:int(len(m_sys_prompt)/1)]
     system_prompt = m_sys_prompt
     for prefix in prefixes:
         chat_messages = [
