@@ -273,7 +273,7 @@ So far, we have analyzed the influence of batch size and family composition inde
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{\RESULTDIR/throughput_vs_req_batch_rand_families_10.png}
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/throughput_vs_req_batch_rand_families_10.png}
     \caption{Throughput vs Workload by varying other parameters (10 families)}
 \end{figure}
 
@@ -323,6 +323,15 @@ The table on right shows how the throughput varies across $k$. Now, as we can se
 \end{minipage}
 \end{figure}
 
+NCU (NVIDIA's Nsight Compute CLI) provides the option to measure the L2 cache hit rate, but it reports this metric separately for each kernel launched by the engine. Since vLLM launches thousands of kernels, collecting and aggregating this metric becomes impractical. To support our findings, we instead use another relevant metric, ``DRAMA'', which measures the fraction of cycles during which data is transferred to or from device memory.
+As shown in Figure \ref{fig:mult_fam_drama}, there is a clear difference between the two settings: for $k = 500$, the average DRAMA value is 0.18, while for $k = 499$ it increases to 0.22.
+
+\begin{figure}[H]
+    \centering
+\includegraphics[width=\textwidth]{\RESULTDIR/mult_fam_drama.png}
+\caption{Comparison for $k = 500$ and $k = 499$}
+\label{fig:mult_fam_drama}
+\end{figure}
 
 
 \section{Comparison of vLLM with SGLANG - for multiple families}
