@@ -285,7 +285,7 @@ Engines leveraging prefix caching (e.g., SGLang) should perform far better than 
     \begin{itemize}
         \item We employ two primary NVIDIA tools for this study: Nsight Systems (\textbf{NSYS}) and the Data Center GPU Management Interface (\textbf{DCGMI}). \pause
         \item \textbf{SM Activity:} The fraction of time at least one warp was active on a multiprocessor, averaged over all multiprocessors. \pause
-        \item \textbf{SM Occupancy:} The fraction of resident warps on a multiprocessor, relative to the maximum number of concurrent warps supported on a multiprocessor.
+        \item \textbf{SM Occupancy:} The fraction of resident warps on a multiprocessor, relative to the maximum number of concurrent warps supported on a multiprocessor. \pause
         \item \textbf{Tensor Core Utilization:} The fraction of cycles the tensor pipe was active.
     \end{itemize}
 \end{frame}
@@ -430,8 +430,8 @@ LongChat 13B & 22.415 req/s& 70.097 req/s\\
     \end{columns}
     \begin{itemize}
         \item The second image - all system prompts passed in the model beforehand - KV Caches already residing in the HBM. But still, a significant difference between the throughput numbers across different number of families. \pause
-        \item Computation of KV Cache Blocks - not the main bottleneck.
-        \item Rather, the memory bandwidth to load these blocks from HBM to L2 cache.
+        \item Computation of KV Cache Blocks - not the main bottleneck. \pause
+        \item Rather, the memory bandwidth to load these blocks from HBM to L2 cache. \pause
         \item Ordering the requests by family ID $\rightarrow$ better cache locality, reduced cache thrashing.
     \end{itemize}
 \end{frame}
@@ -543,6 +543,17 @@ LongChat 13B & 22.415 req/s& 70.097 req/s\\
         \end{itemize}
     \end{column}
 \end{columns}
+\end{frame}
+
+\begin{frame}{DRAM Bandwidth Utilization - for Multiple Families}
+    \centering
+\includegraphics[width=0.8\textwidth]{\RESULTDIR/mult_fam_drama.png}
+\captionof{figure}{Comparison for $k = 500$ and $k = 499$}
+\begin{itemize}
+    \item L2 cache hit/miss rates $\rightarrow$ difficult to capture, as there are thousands of kernels forked. \pause
+    \item DRAMA - fraction of cycles where data was sent to or received from device memory.\pause
+    \item Average DRAMA for $k = 500 \rightarrow 0.18$ ; Average DRAMA for $k = 499 \rightarrow 0.22$.
+\end{itemize}
 \end{frame}
 
 \section{Future Steps}
