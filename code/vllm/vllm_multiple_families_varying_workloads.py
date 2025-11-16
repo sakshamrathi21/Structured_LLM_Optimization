@@ -18,12 +18,12 @@ def generate_prefixes(n):
 
 
 def main():
-    model_name = "meta-llama/Llama-3.1-8B-Instruct"
-    # model_name = "qwen/qwen2.5-0.5b-instruct"
+    # model_name = "meta-llama/Llama-3.1-8B-Instruct"
+    model_name = "qwen/qwen2.5-0.5b-instruct"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     num_families = int(system.argv[1]) if len(system.argv) > 1 else 10
-    req_per_sec = int(system.argv[2]) if len(system.argv) > 2 else 20
-    max_batch_size = int(system.argv[3]) if len(system.argv) > 3 else 100
+    req_per_sec = int(system.argv[2]) if len(system.argv) > 2 else 500
+    max_batch_size = int(system.argv[3]) if len(system.argv) > 3 else 500
     randomness = int(system.argv[4]) if len(system.argv) > 4 else 0
     prefixes = generate_prefixes(num_families)
     prompts = []
@@ -31,7 +31,7 @@ def main():
     current_load = (num_families * len(queries)) / req_per_sec
     multiplier = max(1, 10/current_load)
     multiplier = int(multiplier)
-    # multiplier = 20
+    multiplier = 50
     system_prompts = []
     m_sys_prompt = sys_prompt
     m_sys_prompt = m_sys_prompt[0:int(len(m_sys_prompt)/1)]

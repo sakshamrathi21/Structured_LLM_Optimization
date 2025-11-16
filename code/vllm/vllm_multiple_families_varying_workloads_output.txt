@@ -227,3 +227,24 @@ Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomn
 Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 100): 88.04560551037713
 Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500): 113.49645902101186
 Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 1): 84.04939638211007
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 0): 231.82792588473308
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 10): 265.1476287968092
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 499): 230.75184924794652
+
+
+
+
+For smaller model (0.5B):
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 0): 229.9784158474336
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 1): 239.6477055131355
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 5): 242.26446875348606
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 10): 234.933520139406
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 25): 239.24475169255075
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 50): 239.92920832621368
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 100): 235.1622785366414
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 200): 235.43285744773496
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250): 229.84418387565836
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 400): 231.21689720073147
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 499): 230.49517284118772
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500): 229.3429832466092
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 1000): 232.85571444266597
