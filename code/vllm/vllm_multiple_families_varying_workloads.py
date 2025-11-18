@@ -21,7 +21,7 @@ def main():
     # model_name = "meta-llama/Llama-3.1-8B-Instruct"
     model_name = "qwen/qwen2.5-0.5b-instruct"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    num_families = int(system.argv[1]) if len(system.argv) > 1 else 10
+    num_families = int(system.argv[1]) if len(system.argv) > 1 else 1
     req_per_sec = int(system.argv[2]) if len(system.argv) > 2 else 500
     max_batch_size = int(system.argv[3]) if len(system.argv) > 3 else 500
     randomness = int(system.argv[4]) if len(system.argv) > 4 else 0

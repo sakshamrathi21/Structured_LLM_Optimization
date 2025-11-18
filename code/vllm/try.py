@@ -1,59 +1,73 @@
+import re
 import pandas as pd
 import matplotlib.pyplot as plt
-import re
+import seaborn as sns
 
-files = [".out_good", ".out_bad"]
+# ---------- READ AND PARSE ----------
+data = []
+pattern = re.compile(
+    r"Throughput Test with (\d+) families, (\d+) req/sec and max_batch_size of (\d+) \(randomness: (\d+)\): ([\d\.]+)"
+)
 
-fig, axes = plt.subplots(nrows=len(files), ncols=4, figsize=(20, 10))
-fig.subplots_adjust(hspace=0.4, wspace=0.3)
+tuple_to_throughput = {}
 
-for i, file_path in enumerate(files):
-    match = re.search(r"(\d+)", file_path)
-    batch_size = match.group(1) if match else "?"
-    data = []
-    with open(file_path, "r") as f:
-        for line in f:
-            if line.strip() and not line.startswith("#"):
-                parts = line.split()
-                if len(parts) >= 4 and len(parts) <= 7:
-                    smact = parts[2]
-                    smocc = parts[3]
-                    tenso = parts[4]
-                    drama = parts[5]
-                    try:
-                        data.append((float(smact), float(smocc), float(tenso), float(drama)))
-                    except ValueError:
-                        continue
+with open("vllm_multiple_families_varying_workloads_output.txt") as f:
+    for line in f:
+        m = pattern.search(line)
+        if m:
+            families, req, batch, rand, value = m.groups()
+            tuple_to_throughput[(int(families), int(req), int(batch), int(rand))] = float(value)
+for (key, value) in tuple_to_throughput.items():
+    families, req, batch, rand = key
+    data.append({
+        "families": families,
+        "req_per_sec": req,
+        "batch_size": batch,
+        "randomness": rand,
+        "throughput": value
+    })
 
-    df = pd.DataFrame(data, columns=["SMACT", "SMOCC", "TENSO", "DRAMA"])
+df = pd.DataFrame(data)
 
-    ax1 = axes[i, 0]
-    ax1.plot(df["SMACT"], marker='o', linestyle='-', color='b')
-    ax1.set_title(f"SM Active (SMACT)")
-    ax1.set_xlabel("Time")
-    ax1.set_ylabel("SMACT")
-    ax1.grid(True)
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import numpy as np
 
-    ax2 = axes[i, 1]
-    ax2.plot(df["SMOCC"], marker='o', linestyle='-', color='r')
-    ax2.set_title(f"SM Occupancy (SMOCC)")
-    ax2.set_xlabel("Time")
-    ax2.set_ylabel("SMOCC")
-    ax2.grid(True)
+# ---------- PLOT: Separate for each number of families ----------
+for families, df_fam in df.groupby("families"):
+    plt.figure(figsize=(15, 10))
+    groups = list(df_fam.groupby(["batch_size", "randomness"]))
+    colors = cm.get_cmap('tab20', len(groups))  # or try 'husl', 'viridis', etc.
 
-    ax3 = axes[i, 2]
-    ax3.plot(df["TENSO"], marker='o', linestyle='-', color='g')
-    ax3.set_title(f"Tensor Utilization (TENSO)")
-    ax3.set_xlabel("Time")
-    ax3.set_ylabel("TENSO")
-    ax3.grid(True)  
+    for idx, ((batch, rand), group) in enumerate(groups):
+        group = group.sort_values("req_per_sec")
+        plt.plot(
+            group["req_per_sec"],
+            group["throughput"],
+            marker="o",
+            color=colors(idx),
+            label=f"Batch={batch}, Rand={rand}"
+        )
 
-    ax4 = axes[i, 3]
-    ax4.plot(df["DRAMA"], marker='o', linestyle='-', color='m')
-    ax4.set_title(f"DRAM Accesses (DRAMA)")
-    ax4.set_xlabel("Time")
-    ax4.set_ylabel("DRAMA")
-    ax4.grid(True)
-    print(f"Average DRAM accesses for {file_path}: {df['DRAMA'].mean()}")
-plt.tight_layout()
-plt.savefig("../../results/mult_fam_drama.png")
+    plt.xlabel("Requests per Second")
+    plt.ylabel("Throughput")
+    plt.title(f"Throughput vs Requests per Second (Families = {families})")
+    plt.grid(True)
+
+    # ---- Legend outside plot ----
+    # ---- Legend outside plot ----
+    plt.legend(
+        bbox_to_anchor=(1.05, 1),
+        loc='upper left',
+        borderaxespad=0.,
+        fontsize=18,
+        markerscale=1.8
+    )
+
+
+    plt.tight_layout(rect=[0, 0, 1, 1])   # instead of 0.8
+  # leave room for legend
+    plt.show()
+    plt.savefig(f"../../results/throughput_vs_req_batch_rand_families_{families}.png")
+
+

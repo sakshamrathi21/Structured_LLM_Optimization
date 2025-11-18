@@ -9,9 +9,9 @@ from vllm import LLM, SamplingParams
 
 
 def main():
-    # model_name = "qwen/qwen2.5-0.5b-instruct"
+    model_name = "qwen/qwen2.5-0.5b-instruct"
     # model_name = "lmsys/longchat-13b-16k"
-    model_name = "meta-llama/Llama-3.1-8B-Instruct"
+    # model_name = "meta-llama/Llama-3.1-8B-Instruct"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     system_prompt_halved = system_prompt[0 : len(system_prompt)]
     prompts = []
@@ -33,11 +33,11 @@ def main():
         enable_chunked_prefill=enable_chunked_prefill,
         max_num_batched_tokens=32768,
         enable_prefix_caching=True,
-        max_num_seqs=1000,
+        max_num_seqs=3000,
     )
     sampling_params = SamplingParams(temperature=0.7, max_tokens=30)
 
-    prompts *= 10
+    prompts *= 300
     start_time = time.time()
     outputs = llm.generate(prompts, sampling_params)
     end_time = time.time()
