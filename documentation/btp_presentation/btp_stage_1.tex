@@ -64,7 +64,7 @@
 
 \begin{frame}{Problem Statement}
     \begin{itemize}
-        \item Characterize LLM inference performance with shared prefixes \pause
+        \item \textbf{Goal:} Characterize LLM inference performance with shared prefixes \pause
         \item Identify key GPU-level performance metrics \pause
         \item Examine shared-prefix optimizations in inference engines \pause
         \item Study effects of prefix caching, chunked prefill, scheduling \pause
@@ -149,6 +149,15 @@
 \end{itemize}
 \end{frame}
 
+
+\begin{frame}{What's Missing?}
+\begin{itemize}
+    \item Current focus is primarily on small-request patterns with RadixTree-style structures\pause
+    \item Missing discussion of ``family'' workloads — multiple requests sharing a large prefix\pause
+    \item Missing analysis of working-set size and L2 hit rate, with too much emphasis on HBM bandwidth
+\end{itemize}
+\end{frame}
+
 \section{Experiments - Single Family}
 \begin{frame}{Workload Setup}
 \begin{itemize}
@@ -166,61 +175,14 @@
 \textbf{Parameter} & \textbf{Value/Range} \\
 \hline
 System Prompt Length & $\approx$1500 tokens (shared across requests) \\
-Query Rate & 5–700 req/sec \\
-Query Length & 10–20 tokens \\
-Output Length & 30–50 tokens \\
+Query Rate & 5-700 req/sec \\
+Query Length & 10-20 tokens \\
+Output Length & 30-50 tokens \\
 Batch Size & Adaptive \\
 \hline
 \end{tabular}
 \caption{Workload Characteristics}
 \end{table}
-\end{frame}
-
-\begin{frame}{Experiment Setup: Engine Comparison}
-\begin{itemize}
-    \item Compare inference engines: \textbf{Transformers}, \textbf{vLLM}, \textbf{SGLang}. \pause
-    \item Batch of 24 requests, each sharing the same system prompt. \pause
-    \item Each request: $\sim$20 input tokens $\rightarrow$ $\sim$40 generated tokens. \pause
-    \item Measure \textbf{total time taken} to process the batch. \pause
-\end{itemize}
-
-\begin{block}{Hypothesis}
-Engines leveraging prefix caching (e.g., SGLang) should perform far better than naive batching in Transformers.
-\end{block}
-\end{frame}
-
-\begin{frame}{Batch of requests through various Engines}
-    \begin{columns}[T, totalwidth=\textwidth]
-        \begin{column}{0.5\textwidth}
-            \centering
-            \includegraphics[width=\textwidth]{\RESULTDIR/throughput_vs_qps.png}
-            \vspace{0.3em}
-            \captionof{figure}{Throughput comparison across varying workloads}
-        \end{column}
-        \begin{column}{0.5\textwidth}
-            \begin{itemize}
-                \item \textbf{SwiftLLM:} lightweight vLLM clone ($\sim$2000 LOC), but doesn't perform that well.
-                \item \textbf{SGLang:} achieves best performance via radix-tree prefix sharing.
-            \end{itemize}
-            \begin{table}[h]
-            \centering
-            \scriptsize
-            \begin{tabular}{|l|c|}
-            \hline
-            \textbf{Technique Used} & \textbf{Time (s)} \\
-            \hline
-            Transformers (batch = 1) & 30.21 \\
-            Transformers (batch = 2) & 19.51 \\
-            Transformers (batch = 3) & 18.64 \\
-            vLLM & 0.45 \\
-            SGLang (fork) & 1.03 \\
-            SGLang (run\_batch) & 0.40 \\
-            \hline
-            \end{tabular}
-            \caption{Batch of 24 requests}
-            \end{table}
-        \end{column}
-    \end{columns}
 \end{frame}
 
 
@@ -260,7 +222,7 @@ Engines leveraging prefix caching (e.g., SGLang) should perform far better than 
     \begin{column}{0.6\textwidth}
         \centering
         \includegraphics[width=\textwidth]{\FIGDIR/llm_timelines_20.png}
-        \captionof{figure}{20 Requests/sec – No chunked prefill – vLLM V0}
+        \captionof{figure}{20 Requests/sec - No chunked prefill - vLLM V0}
     \end{column}
     \begin{column}{0.4\textwidth}
         \begin{itemize}
@@ -270,6 +232,20 @@ Engines leveraging prefix caching (e.g., SGLang) should perform far better than 
         \end{itemize}
     \end{column}
 \end{columns}
+\end{frame}
+
+
+\begin{frame}{Results: LLM Request Timelines - Chunked Prefill Enabled}
+\begin{figure}
+        \centering
+    \includegraphics[width=\textwidth]{\RESULTDIR/llm_timelines_chunked_prefill.png}
+    \captionof{figure}{Chunked prefill enabled - vLLM V0}
+\end{figure}
+\begin{itemize}
+    \item Prioritizes decodes over prefills \pause
+    \item Improves inter-token latency \pause
+    \item Better GPU utilization - colocating compute-bound prefills with memory-bound decodes
+\end{itemize}
 \end{frame}
 
 \begin{frame}{Results: Throughput vs Load for vLLM}
@@ -295,12 +271,16 @@ Engines leveraging prefix caching (e.g., SGLang) should perform far better than 
 
 \section{Metrics}
 \begin{frame}{Key GPU Metrics}
-    \begin{itemize}
+\begin{itemize}
     \item Tools: \textbf{Nsight Systems (NSYS)} and \textbf{DCGMI}\pause
     \item \textbf{SM Activity:} \% time with at least one active warp\pause
     \item \textbf{SM Occupancy:} resident warps / max warps\pause
     \item \textbf{Tensor Core Utilization:} \% cycles tensor pipe active
 \end{itemize}
+\begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{\FIGDIR/compute_bottleneck.png}
+    \end{figure}
 \end{frame}
 
 \begin{frame}{NSYS Run on Matrix Multiplication}
@@ -316,7 +296,7 @@ Engines leveraging prefix caching (e.g., SGLang) should perform far better than 
 
 \section{Experiments - Multiple Families}
 
-\begin{frame}{Multiple Families - Generation of such a workload}
+\begin{frame}{Multiple Families}
     
 
 \begin{figure}[h!]
@@ -356,14 +336,11 @@ Engines leveraging prefix caching (e.g., SGLang) should perform far better than 
 
 \end{tikzpicture}%
 }
-\caption{Multiple Families' Workload Generation}
+\caption{Multiple Families' Workload}
 \label{fig:family_generation}
 \end{figure}
 \begin{itemize}
-        \item What we have already - a large system prompt of around 1500 tokens. \pause
-        \item A Naive Way - Write down multiple such system prompts, and 100 queries based on each one of them. \pause
-        \item A Better Way - Add unique identifiers (``AA'', ``AB'') to the existing system prompt. \pause
-        \item Different block hashes $\rightarrow$ separate KV Cache blocks for each family.
+        \item Multiple such families - each with a unique system prompt, and a few queries based on it
     \end{itemize}
 \end{frame}
 
@@ -394,8 +371,47 @@ LongChat 13B & 22.415 req/s& 70.097 req/s\\
 \end{frame}
 
 \begin{frame}{Same Family $\rightarrow$ Single Batch}
+
+\begin{figure}[H]
+\centering
+\resizebox{0.7\textwidth}{!}{
+\begin{tikzpicture}[scale=1, every node/.style={scale=0.8}]
+    \definecolor{famA}{RGB}{239,83,80}
+    \definecolor{famB}{RGB}{66,165,245}
+    \definecolor{famC}{RGB}{102,187,106}
+    \definecolor{famD}{RGB}{255,202,40}
+
+    \tikzstyle{req}=[rectangle, minimum width=0.55cm, minimum height=0.55cm, draw=black]
+    \node[anchor=west] at (0,1.1) {\textbf{What we have initially}};
+    \foreach \i/\col in {
+        0/famC,1/famA,2/famD,3/famB,
+        4/famB,5/famD,6/famA,7/famC,
+        8/famD,9/famC,10/famA,11/famB,
+        12/famC,13/famB,14/famD,15/famA}
+        \node[req, fill=\col] at (\i*0.55,0.5) {};
+    \foreach \x in {0.27,2.47,4.67,6.87}
+        \draw[dashed, gray, thick] (\x-0.55,0.25) rectangle (\x+1.65,0.85);
+
+    \node[anchor=west] at (0,-0.2) {\textbf{Ordered by Family IDs}};
+    \foreach \i/\col in {
+        0/famA,1/famA,2/famA,3/famA,
+        4/famB,5/famB,6/famB,7/famB,
+        8/famC,9/famC,10/famC,11/famC,
+        12/famD,13/famD,14/famD,15/famD}
+        \node[req, fill=\col] at (\i*0.55,-0.8) {};
+    \foreach \x in {0.27,2.47,4.67,6.87}
+        \draw[dashed, gray, thick] (\x-0.55,-1.05) rectangle (\x+1.65,-0.55);
+
+    \node[req, fill=famA, label=right:{Family A}] at (9.8,0.8) {};
+    \node[req, fill=famB, label=right:{Family B}] at (9.8,0.2) {};
+    \node[req, fill=famC, label=right:{Family C}] at (9.8,-0.4) {};
+    \node[req, fill=famD, label=right:{Family D}] at (9.8,-1.0) {};
+
+\end{tikzpicture}}
+\end{figure}
+
     
-    \begin{table}[H]
+\begin{table}[H]
 \centering
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{|c|c|c|c|c|}
@@ -416,11 +432,6 @@ LongChat 13B & 22.415 req/s& 70.097 req/s\\
 \caption{Comparison of Throughput (req/sec) when merging queries from the same family into a single batch vs not merging}
 \label{tab:gpu_memory_breakdown_table}
 \end{table}
-\begin{itemize}
-    \item Merging same-family queries into one batch boosts throughput\pause
-    \item Reason: L2 cache is too small to hold KV caches of many families $\rightarrow$ more HBM loads\pause
-    \item Grouping same-family queries reduces unique KV blocks per batch
-\end{itemize}
 
 \end{frame}
 
@@ -519,16 +530,16 @@ LongChat 13B & 22.415 req/s& 70.097 req/s\\
 
 \begin{frame}{Varying Everything Together}
 \begin{columns}[T, totalwidth=\textwidth]
-    \begin{column}{0.6\textwidth}
+    \begin{column}{0.7\textwidth}
         \centering
         \includegraphics[width=\textwidth]{\RESULTDIR/throughput_vs_req_batch_rand_families_10.png}
         \captionof{figure}{Throughput vs Workload by varying other parameters (10 families)}
     \end{column}
-    \begin{column}{0.4\textwidth}
+    \begin{column}{0.3\textwidth}
         \begin{itemize}
-            \item Increase in batch size $\rightarrow$ higher throughput. \pause
-            \item A batch nature level of 1 is roughly similar to level 2 $\rightarrow$ even a small amount of mixing leads to significant degradation. \pause
-            \item A homogeneous batch of smaller size at times performs siginificantly better than a larger heterogeneous batch.
+            \item Larger batch size $\rightarrow$ higher throughput. \pause
+            \item Batch nature 1 $\approx$ 2 $\rightarrow$ even mild mixing severely degrades performance. \pause
+            \item Small homogeneous batches can outperform larger heterogeneous ones.
         \end{itemize}
     \end{column}
 \end{columns}
@@ -601,21 +612,21 @@ LongChat 13B & 22.415 req/s& 70.097 req/s\\
 \end{frame}
 
 
-\begin{frame}{Future Steps - KV Cache Offloading}
+\begin{frame}{Future Steps}
 \begin{itemize}
-    \item HBM may become insufficient as families grow
-    \item Need an efficient KV eviction/offload strategy
-    \item Eviction guided by prefix-sharing intensity
-\end{itemize}
-\end{frame}
+    \item \textbf{KV Cache Offloading:}
+    \begin{itemize}
+        \item HBM may become insufficient as families grow.
+        \item Need efficient KV eviction/offload strategies.
+        \item Eviction guided by prefix-sharing intensity.
+    \end{itemize}\pause
 
-
-
-\begin{frame}{Future Steps - Response Quality}
-\begin{itemize}
-    \item Improve response quality for shared-context workloads
-    \item Fine-tune on shared contexts
-    \item Compare against baseline using system-prompt injection
+    \item \textbf{Response Quality:}
+    \begin{itemize}
+        \item Improve quality for shared-context workloads.
+        \item Fine-tune on shared contexts.
+        \item Compare against baselines using system-prompt injection.
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -624,5 +635,106 @@ LongChat 13B & 22.415 req/s& 70.097 req/s\\
 \begin{frame}
     \Huge{\centerline{\bf Thank You}}
 \end{frame}
+
+\section{Appendix}
+\begin{frame}{Experiment Setup: Engine Comparison}
+\begin{itemize}
+    \item Compare inference engines: \textbf{Transformers}, \textbf{vLLM}, \textbf{SGLang}. \pause
+    \item Batch of 24 requests, each sharing the same system prompt. \pause
+    \item Each request: $\sim$20 input tokens $\rightarrow$ $\sim$40 generated tokens. \pause
+    \item Measure \textbf{total time taken} to process the batch. \pause
+\end{itemize}
+
+\begin{block}{Hypothesis}
+Engines leveraging prefix caching (e.g., SGLang) should perform far better than naive batching in Transformers.
+\end{block}
+\end{frame}
+
+\begin{frame}{Batch of requests through various Engines}
+    \begin{columns}[T, totalwidth=\textwidth]
+        \begin{column}{0.5\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{\RESULTDIR/throughput_vs_qps.png}
+            \vspace{0.3em}
+            \captionof{figure}{Throughput comparison across varying workloads}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item \textbf{SwiftLLM:} lightweight vLLM clone ($\sim$2000 LOC), but doesn't perform that well.
+                \item \textbf{SGLang:} achieves best performance via radix-tree prefix sharing.
+            \end{itemize}
+            \begin{table}[h]
+            \centering
+            \scriptsize
+            \begin{tabular}{|l|c|}
+            \hline
+            \textbf{Technique Used} & \textbf{Time (s)} \\
+            \hline
+            Transformers (batch = 1) & 30.21 \\
+            Transformers (batch = 2) & 19.51 \\
+            Transformers (batch = 3) & 18.64 \\
+            vLLM & 0.45 \\
+            SGLang (fork) & 1.03 \\
+            SGLang (run\_batch) & 0.40 \\
+            \hline
+            \end{tabular}
+            \caption{Batch of 24 requests}
+            \end{table}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+\begin{frame}{Multiple Families - Generation of such a workload}
+    
+
+\begin{figure}[h!]
+\centering
+\resizebox{0.9\textwidth}{!}{
+\begin{tikzpicture}[
+    family/.style={rectangle, draw=blue!60, fill=blue!10, thick, rounded corners, minimum height=0.8cm, align=center},
+    token/.style={rectangle, draw=gray!50, fill=gray!10, thick, rounded corners, minimum height=0.8cm, align=center},
+    cache/.style={rectangle, draw=red!50, fill=red!10, thick, rounded corners, minimum height=0.8cm, align=center},
+    arrow/.style={->, thick, >=latex},
+    font=\small
+]
+
+\node[token, minimum width=5cm] (sys) {System Prompt (1500 tokens)};
+\node[family, left=1.3cm of sys, minimum width=1cm] (aa) {AA};
+\node[family, below=0.8cm of aa, minimum width=1cm] (ab) {AB};
+\node[family, below=0.8cm of ab, minimum width=1cm] (ac) {AC};
+
+\node[token, right=0.7cm of sys, minimum width=5.5cm, label=above:{Family 1}] (f1) {AA + System Prompt};
+\node[token, below=0.8cm of f1, minimum width=5.5cm, label=above:{Family 2}] (f2) {AB + System Prompt};
+\node[token, below=0.8cm of f2, minimum width=5.5cm, label=above:{Family 3}] (f3) {AC + System Prompt};
+\draw[arrow] (aa.east) -- ++(0.2,0) |- (f1.west);
+\draw[arrow] (sys.east) -- ++(0.2,0) |- (f1.west);
+
+\draw[arrow] (ab.east) -- ++(0.2,0) |- (f2.west);
+\draw[arrow] (sys.east) -- ++(0.2,0) |- (f2.west);
+
+\draw[arrow] (ac.east) -- ++(0.2,0) |- (f3.west);
+\draw[arrow] (sys.east) -- ++(0.2,0) |- (f3.west);
+\node[cache, right=0.9cm of f1, minimum width=2.2cm] (kv1) {KV Cache 1};
+\node[cache, right=0.9cm of f2, minimum width=2.2cm] (kv2) {KV Cache 2};
+\node[cache, right=0.9cm of f3, minimum width=2.2cm] (kv3) {KV Cache 3};
+
+\draw[arrow] (f1.east) -- (kv1.west);
+\draw[arrow] (f2.east) -- (kv2.west);
+\draw[arrow] (f3.east) -- (kv3.west);
+
+\end{tikzpicture}%
+}
+\caption{Multiple Families' Workload Generation}
+\end{figure}
+\begin{itemize}
+        \item What we have already - a large system prompt of around 1500 tokens. \pause
+        \item A Naive Way - Write down multiple such system prompts, and 100 queries based on each one of them. \pause
+        \item A Better Way - Add unique identifiers (``AA'', ``AB'') to the existing system prompt. \pause
+        \item Different block hashes $\rightarrow$ separate KV Cache blocks for each family.
+    \end{itemize}
+\end{frame}
+
+
 
 \end{document}
