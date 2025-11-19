@@ -189,7 +189,7 @@ Batch Size & Adaptive \\
 \begin{frame}{Experiment Setup: Request Timelines}
 \begin{itemize}
     \item Aim: Measure time spent in \textbf{prefill} vs \textbf{decode} stages for 20 req/sec workload (sending a new request after every 0.05 seconds). \pause
-    \item Using vLLM V0 engine without chunked prefill. \pause
+    \item Using vLLM V0 engine with(out) chunked prefill. \pause
     \item Tool: Custom logging of per-request timestamps.
 \end{itemize}
 \begin{figure}[h!]
@@ -529,20 +529,27 @@ LongChat 13B & 22.415 req/s& 70.097 req/s\\
 \end{frame}
 
 \begin{frame}{Varying Everything Together}
-\begin{columns}[T, totalwidth=\textwidth]
-    \begin{column}{0.7\textwidth}
+% \begin{columns}[T, totalwidth=\textwidth]
+    \begin{figure}
         \centering
         \includegraphics[width=\textwidth]{\RESULTDIR/throughput_vs_req_batch_rand_families_10.png}
         \captionof{figure}{Throughput vs Workload by varying other parameters (10 families)}
-    \end{column}
-    \begin{column}{0.3\textwidth}
-        \begin{itemize}
-            \item Larger batch size $\rightarrow$ higher throughput. \pause
-            \item Batch nature 1 $\approx$ 2 $\rightarrow$ even mild mixing severely degrades performance. \pause
-            \item Small homogeneous batches can outperform larger heterogeneous ones.
-        \end{itemize}
-    \end{column}
-\end{columns}
+    \end{figure}
+    % \begin{column}{0.7\textwidth}
+        
+    % \end{column}
+    % \begin{column}{0.3\textwidth}
+   
+    % \end{column}
+% \end{columns}
+\end{frame}
+
+\begin{frame}{Varying Everything Together}
+    \begin{itemize}
+    \item Larger batch size $\rightarrow$ higher throughput. \pause
+    \item Batch nature 1 $\approx$ 2 $\rightarrow$ even mild mixing severely degrades performance. \pause
+    \item Small homogeneous batches can outperform larger heterogeneous ones.
+\end{itemize}
 \end{frame}
 
 
