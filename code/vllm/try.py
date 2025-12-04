@@ -1,73 +1,122 @@
-import re
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+#!/usr/bin/env python3
+"""
+parse_throughput.py
 
-# ---------- READ AND PARSE ----------
-data = []
-pattern = re.compile(
-    r"Throughput Test with (\d+) families, (\d+) req/sec and max_batch_size of (\d+) \(randomness: (\d+)\): ([\d\.]+)"
+Parse throughput lines from a text file and produce a table with columns:
+    Qwen-0.5B (r250), Qwen-0.5B (r500), Llama-8B (r250), Llama-8B (r500)
+
+Usage:
+    python parse_throughput.py path/to/throughput.txt
+    python parse_throughput.py path/to/throughput.txt --out-dir ./results --round 6
+"""
+from pathlib import Path
+import re
+import argparse
+import pandas as pd
+import sys
+
+PATTERN = re.compile(
+    r'\(randomness:\s*(\d+)\)\s*\(len factor:\s*([0-9]*\.?[0-9]+)\)\s*\(model_name:\s*([^\)]+)\)\s*:\s*([0-9]+(?:\.[0-9]+)?)',
+    re.IGNORECASE
 )
 
-tuple_to_throughput = {}
+DESIRED_COLS = [
+    'Qwen-0.5B (r250)',
+    'Qwen-0.5B (r500)',
+    'Llama-8B (r250)',
+    'Llama-8B (r500)'
+]
 
-with open("vllm_multiple_families_varying_workloads_output.txt") as f:
-    for line in f:
-        m = pattern.search(line)
-        if m:
-            families, req, batch, rand, value = m.groups()
-            tuple_to_throughput[(int(families), int(req), int(batch), int(rand))] = float(value)
-for (key, value) in tuple_to_throughput.items():
-    families, req, batch, rand = key
-    data.append({
-        "families": families,
-        "req_per_sec": req,
-        "batch_size": batch,
-        "randomness": rand,
-        "throughput": value
-    })
+def short_model_name(full: str) -> str:
+    s = full.lower()
+    if 'qwen' in s:
+        return 'Qwen-0.5B'
+    if 'llama' in s:
+        return 'Llama-8B'
+    # fallback: last token
+    return full.split('/')[-1].strip()
 
-df = pd.DataFrame(data)
+def parse_file(path: Path):
+    text = path.read_text(encoding='utf-8')
+    rows = []
+    for m in PATTERN.finditer(text):
+        randomness = int(m.group(1))
+        sys_length = float(m.group(2))*1300
+        model_name = m.group(3).strip()
+        value = float(m.group(4))
+        rows.append({
+            'model_name': model_name,
+            'randomness': randomness,
+            'sys_length': sys_length,
+            'throughput': value
+        })
+    return rows
 
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import numpy as np
+def build_table(rows):
+    if not rows:
+        raise SystemExit("No matching lines found in the input file (check formatting).")
+    df = pd.DataFrame(rows)
+    df['model_short'] = df['model_name'].apply(short_model_name)
+    df['col'] = df.apply(lambda r: f"{r['model_short']} (r{r['randomness']})", axis=1)
 
-# ---------- PLOT: Separate for each number of families ----------
-for families, df_fam in df.groupby("families"):
-    plt.figure(figsize=(15, 10))
-    groups = list(df_fam.groupby(["batch_size", "randomness"]))
-    colors = cm.get_cmap('tab20', len(groups))  # or try 'husl', 'viridis', etc.
+    df_wide = df.pivot_table(index='sys_length', columns='col', values='throughput', aggfunc='first')
 
-    for idx, ((batch, rand), group) in enumerate(groups):
-        group = group.sort_values("req_per_sec")
-        plt.plot(
-            group["req_per_sec"],
-            group["throughput"],
-            marker="o",
-            color=colors(idx),
-            label=f"Batch={batch}, Rand={rand}"
-        )
+    # Ensure desired columns exist (fill with NaN if missing)
+    for c in DESIRED_COLS:
+        if c not in df_wide.columns:
+            df_wide[c] = pd.NA
 
-    plt.xlabel("Requests per Second")
-    plt.ylabel("Throughput")
-    plt.title(f"Throughput vs Requests per Second (Families = {families})")
-    plt.grid(True)
+    df_wide = df_wide[DESIRED_COLS]
+    df_wide = df_wide.sort_index()
+    return df_wide
 
-    # ---- Legend outside plot ----
-    # ---- Legend outside plot ----
-    plt.legend(
-        bbox_to_anchor=(1.05, 1),
-        loc='upper left',
-        borderaxespad=0.,
-        fontsize=18,
-        markerscale=1.8
-    )
+def main():
+    parser = argparse.ArgumentParser(description="Parse throughput log into a 4-column table.")
+    # parser.add_argument('input', type=Path, help="Input text file with throughput lines.")
+    parser.add_argument('--out-dir', type=Path, default=Path('.'), help="Directory to write outputs.")
+    parser.add_argument('--csv', default='throughput_table.csv', help="CSV filename (in out-dir).")
+    parser.add_argument('--md', default='throughput_table.md', help="Markdown filename (in out-dir).")
+    parser.add_argument('--round', type=int, default=6, help="Decimal places to round numeric outputs.")
+    args = parser.parse_args()
 
+    # if not args.input.exists():
+    #     print(f"Error: input file '{args.input}' not found.", file=sys.stderr)
+    #     sys.exit(2)
 
-    plt.tight_layout(rect=[0, 0, 1, 1])   # instead of 0.8
-  # leave room for legend
-    plt.show()
-    plt.savefig(f"../../results/throughput_vs_req_batch_rand_families_{families}.png")
+    rows = parse_file(Path("/home/saksham/CS492/code/vllm/vllm_multiple_families_varying_workloads_output.txt"))
+    df_wide = build_table(rows)
 
+    # Round numeric values for presentation (leave NaN as-is)
+    try:
+        df_out = df_wide.astype(float).round(args.round)
+    except Exception:
+        df_out = df_wide.copy()
 
+    args.out_dir.mkdir(parents=True, exist_ok=True)
+    out_csv = args.out_dir / args.csv
+    out_md = args.out_dir / args.md
+
+    df_out.to_csv(out_csv, index_label='sys_length')
+
+    # Create markdown table
+    try:
+        md_table = df_out.reset_index().to_markdown(index=False)
+    except Exception:
+        # fallback simple markdown
+        header = ['sys_length'] + list(df_out.columns)
+        lines = ['| ' + ' | '.join(header) + ' |', '| ' + ' | '.join(['---']*len(header)) + ' |']
+        for idx, row in df_out.reset_index().iterrows():
+            vals = [str(row['sys_length'])] + [("" if pd.isna(row[c]) else str(row[c])) for c in df_out.columns]
+            lines.append('| ' + ' | '.join(vals) + ' |')
+        md_table = '\n'.join(lines)
+
+    md_content = "# Throughput Table\n\n" + md_table + "\n"
+    out_md.write_text(md_content, encoding='utf-8')
+
+    print(f"Wrote CSV -> {out_csv.resolve()}")
+    print(f"Wrote MD  -> {out_md.resolve()}")
+    print("\nPreview:\n")
+    print(df_out)
+
+if __name__ == '__main__':
+    main()

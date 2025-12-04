@@ -18,23 +18,27 @@ def generate_prefixes(n):
 
 
 def main():
-    # model_name = "meta-llama/Llama-3.1-8B-Instruct"
-    model_name = "qwen/qwen2.5-0.5b-instruct"
+    model_name = "meta-llama/Llama-3.1-8B-Instruct"
+    # model_name = "qwen/qwen2.5-0.5b-instruct"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     num_families = int(system.argv[1]) if len(system.argv) > 1 else 1
     req_per_sec = int(system.argv[2]) if len(system.argv) > 2 else 500
     max_batch_size = int(system.argv[3]) if len(system.argv) > 3 else 500
     randomness = int(system.argv[4]) if len(system.argv) > 4 else 0
+    len_factor = float(system.argv[5]) if len(system.argv) > 5 else 1.0
     prefixes = generate_prefixes(num_families)
     prompts = []
     families = []  
     current_load = (num_families * len(queries)) / req_per_sec
     multiplier = max(1, 10/current_load)
     multiplier = int(multiplier)
-    multiplier = 50
+    multiplier = 10
     system_prompts = []
     m_sys_prompt = sys_prompt
-    m_sys_prompt = m_sys_prompt[0:int(len(m_sys_prompt)/1)]
+    if len_factor > 1.0:
+        m_sys_prompt *= int(len_factor)
+    else:
+        m_sys_prompt = m_sys_prompt[0:int(len(m_sys_prompt)*len_factor)]
     system_prompt = m_sys_prompt
     for prefix in prefixes:
         chat_messages = [
@@ -110,7 +114,7 @@ def main():
         ")",
     )
     with open("vllm_multiple_families_varying_workloads_output.txt", "a") as f:
-        f.write(f"Throughput Test with {num_families} families, {req_per_sec} req/sec and max_batch_size of {max_batch_size} (randomness: {randomness}): {throughput}\n")
+        f.write(f"Throughput Test with {num_families} families, {req_per_sec} req/sec and max_batch_size of {max_batch_size} (randomness: {randomness}) (len factor: {len_factor}) (model_name: {model_name}): {throughput}\n")
 
 if __name__ == "__main__":
     main()

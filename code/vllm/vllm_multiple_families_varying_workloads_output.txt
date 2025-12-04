@@ -146,3 +146,50 @@ Throughput Test with 100 families, 200 req/sec and max_batch_size of 500 (random
 
 
 
+
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 0.01) (model_name: qwen/qwen2.5-0.5b-instruct): 499.94229505923175
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 0.1) (model_name: qwen/qwen2.5-0.5b-instruct): 499.9437335873985
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 0.2) (model_name: qwen/qwen2.5-0.5b-instruct): 476.5433699499807
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 0.5) (model_name: qwen/qwen2.5-0.5b-instruct): 331.75482791876954
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 0.8) (model_name: qwen/qwen2.5-0.5b-instruct): 265.4879820864682
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 1.0) (model_name: qwen/qwen2.5-0.5b-instruct): 235.5386308986877
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 2.0) (model_name: qwen/qwen2.5-0.5b-instruct): 170.787668367629
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 3.0) (model_name: qwen/qwen2.5-0.5b-instruct): 126.52617891053718
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 4.0) (model_name: qwen/qwen2.5-0.5b-instruct): 101.92508880788697
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 5.0) (model_name: qwen/qwen2.5-0.5b-instruct): 80.94990597126278
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 10.0) (model_name: qwen/qwen2.5-0.5b-instruct): 37.87636710793662
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 0.01) (model_name: qwen/qwen2.5-0.5b-instruct): 499.94359056848606
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 0.1) (model_name: qwen/qwen2.5-0.5b-instruct): 499.9454617390588
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 0.2) (model_name: qwen/qwen2.5-0.5b-instruct): 465.5590110440708
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 0.5) (model_name: qwen/qwen2.5-0.5b-instruct): 335.68301079273914
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 0.8) (model_name: qwen/qwen2.5-0.5b-instruct): 297.00686436217234
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 1.0) (model_name: qwen/qwen2.5-0.5b-instruct): 238.34113997419203
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 2.0) (model_name: qwen/qwen2.5-0.5b-instruct): 176.7640354768954
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 3.0) (model_name: qwen/qwen2.5-0.5b-instruct): 128.9722313146419
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 4.0) (model_name: qwen/qwen2.5-0.5b-instruct): 101.2463602622365
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 5.0) (model_name: qwen/qwen2.5-0.5b-instruct): 79.45258853484916
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 10.0) (model_name: qwen/qwen2.5-0.5b-instruct): 37.86504237396449
+
+
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 0.01) (model_name: meta-llama/Llama-3.1-8B-Instruct): 140.87854068928138
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 0.1) (model_name: meta-llama/Llama-3.1-8B-Instruct): 123.74648570258431
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 0.2) (model_name: meta-llama/Llama-3.1-8B-Instruct): 126.72672360914947
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 0.5) (model_name: meta-llama/Llama-3.1-8B-Instruct): 104.53853297791778
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 0.8) (model_name: meta-llama/Llama-3.1-8B-Instruct): 96.41730969945027
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct): 87.52969671632812
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 2.0) (model_name: meta-llama/Llama-3.1-8B-Instruct): 71.21455588478459
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 3.0) (model_name: meta-llama/Llama-3.1-8B-Instruct): 56.864566113497695
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 4.0) (model_name: meta-llama/Llama-3.1-8B-Instruct): 48.123599063968605
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 5.0) (model_name: meta-llama/Llama-3.1-8B-Instruct): 43.32100451888886
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 250) (len factor: 10.0) (model_name: meta-llama/Llama-3.1-8B-Instruct): 25.641867109094775
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 0.01) (model_name: meta-llama/Llama-3.1-8B-Instruct): 132.8694037306904
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 0.1) (model_name: meta-llama/Llama-3.1-8B-Instruct): 120.84867387744812
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 0.2) (model_name: meta-llama/Llama-3.1-8B-Instruct): 134.3667702013493
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 0.5) (model_name: meta-llama/Llama-3.1-8B-Instruct): 117.21394475893113
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 0.8) (model_name: meta-llama/Llama-3.1-8B-Instruct): 117.28511986566687
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct): 112.54014059999344
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 2.0) (model_name: meta-llama/Llama-3.1-8B-Instruct): 103.7312510666214
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 3.0) (model_name: meta-llama/Llama-3.1-8B-Instruct): 91.76295999779785
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 4.0) (model_name: meta-llama/Llama-3.1-8B-Instruct): 80.15021974789042
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 5.0) (model_name: meta-llama/Llama-3.1-8B-Instruct): 72.10464642582656
+Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 500) (len factor: 10.0) (model_name: meta-llama/Llama-3.1-8B-Instruct): 39.26431672390694
