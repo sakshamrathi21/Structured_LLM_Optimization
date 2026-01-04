@@ -89,3 +89,79 @@
 - [Alpaca](https://huggingface.co/datasets/tatsu-lab/alpaca), [ShareGPT](https://huggingface.co/collections/bunnycore/sharegpt-datasets)
 - Baselines: FasterTransformer, vLLM
 - Metrics: p95 user-perceived latency
+
+
+## LoongServe
+- For long contexts
+- Datasets: [ShareGPT](https://huggingface.co/collections/bunnycore/sharegpt-datasets), [L-Eval](https://github.com/OpenLMLab/LEval), [LV-Eval](https://github.com/infinigence/LVEval)
+- Baselines: vLLM, DeepSpeed-MII, LightLLM, DistServe
+- Poisson request arrival pattern
+- Metrics: Per-token Latency, Input Latency, Output Latency
+
+![loongserve_1.png](loongserve_1.png)
+
+
+## PrefillOnly
+- Self Created Dataset
+
+![prefillonly_1.png](prefillonly_1.png)
+
+- Poisson request arrival pattern
+- Baselines: different vLLM modes
+- Mean Latency vs QPS
+
+
+
+## SarathiServe
+- Datasets: [openchat_sharegpt4](https://huggingface.co/datasets/openchat/openchat_sharegpt4_dataset), [arxiv_summarization](https://huggingface.co/datasets/ccdv/arxiv-summarization)
+- Baselines: vLLM, ORCA
+- Metrics: max capacity, TBT, TTFT
+
+
+## PodAttention
+- Metrics: TTFT, TBT, Execution Latency
+- Baselines: vLLM, SarathiServe
+- Datasets - Internal Enterprise Workload, [arxiv_summarization](https://huggingface.co/datasets/ccdv/arxiv-summarization)
+
+
+![podattention_1.png](podattention_1.png) 
+
+
+## Lluminix
+- Poisson and Gamma Request Arrival Patterns
+- Datasets - [ShareGPT](https://huggingface.co/collections/bunnycore/sharegpt-datasets), [BurstGPT](https://github.com/HPMLL/BurstGPT), self-created dataset
+
+![lluminix_1.png](lluminix_1.png)
+
+- Metrics: end to end latency, prefill and decode
+- Baselines: INFaaS++
+
+
+## ORCA
+- Comparison with FasterTransformer
+
+- Self created dataset
+
+![orca_1.png](orca_1.png)
+
+- Metrics: execution time, norm latency
+
+
+## DynamicBatching
+- Comparison with vLLM
+- Dataset didn't mention
+
+
+## DistServe
+- [ShareGPT](https://huggingface.co/collections/bunnycore/sharegpt-datasets), [HumanEval](https://huggingface.co/datasets/openai/openai_humaneval), [LongBench](https://github.com/THUDM/LongBench)
+- Metric: SLO Attainment
+- vLLM and DeepSpeed-MI
+
+
+
+
+
+
+
+
+
