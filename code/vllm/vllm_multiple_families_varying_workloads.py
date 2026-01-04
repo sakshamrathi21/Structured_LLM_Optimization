@@ -21,11 +21,11 @@ def main():
     model_name = "meta-llama/Llama-3.1-8B-Instruct"
     # model_name = "qwen/qwen2.5-0.5b-instruct"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    num_families = int(system.argv[1]) if len(system.argv) > 1 else 1
-    req_per_sec = int(system.argv[2]) if len(system.argv) > 2 else 500
+    num_families = int(system.argv[1]) if len(system.argv) > 1 else 2
+    req_per_sec = int(system.argv[2]) if len(system.argv) > 2 else 200
     max_batch_size = int(system.argv[3]) if len(system.argv) > 3 else 500
-    randomness = int(system.argv[4]) if len(system.argv) > 4 else 0
-    len_factor = float(system.argv[5]) if len(system.argv) > 5 else 1.0
+    randomness = int(system.argv[4]) if len(system.argv) > 4 else 1
+    len_factor = float(system.argv[5]) if len(system.argv) > 5 else 1
     prefixes = generate_prefixes(num_families)
     prompts = []
     families = []  
@@ -56,7 +56,7 @@ def main():
     
     for prefix in prefixes: 
         cnt = 0
-        for q in queries*multiplier:
+        for q in (queries*multiplier):
             cnt += 1
             modified_system_prompt = prefix + " " + system_prompt
             chat_messages = [
@@ -74,8 +74,6 @@ def main():
 
             prompts.append(full_prompt)
             families.append(prefix)
-            # if cnt >= 499:
-            #     break
 
     print(f"Generated {len(prompts)} prompts in total.")
     paired = list(zip(prompts, families))
@@ -95,17 +93,16 @@ def main():
         max_num_seqs=max_batch_size,
     )
 
-    # prompts = prompts[0:(int(len(prompts)/req_per_sec)*req_per_sec)]
-    # out = llm.generate(system_prompts, SamplingParams(temperature=0.7, max_tokens=30))
     initial_start_time = time.time()
-    modified_prompts = []
-    # for i in range()
-    for i in range(0, len(prompts), req_per_sec):
-        start_time = time.time()
-        outputs = llm.generate(prompts[i:i+req_per_sec], SamplingParams(temperature=0.7, max_tokens=30))
-        time.sleep(max(0, 1 - time.time() + start_time))
+    prompts = list(prompts)
+    llm.generate(prompts, SamplingParams(temperature=0.7, max_tokens=50))
+    # for i in range(0, len(prompts), req_per_sec):
+    #     start_time = time.time()
+    #     outputs = llm.generate(prompts[i:i+req_per_sec], SamplingParams(temperature=0.7, max_tokens=30))
+    #     time.sleep(max(0, 1 - time.time() + start_time))
     end_time = time.time()
     throughput = len(prompts) / (end_time - initial_start_time)
+    print(time.time(), "Completed all requests.")
     print(
         "Throughput: ",
         throughput,
