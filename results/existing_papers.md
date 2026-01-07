@@ -2,7 +2,7 @@
 
 ## BatchLLM
 - Does not mention about any specific datasets, self-created
-- Compares only with vLLM and other attention kernels
+- Compares only with vLLM (its different modes), SGLANG and other attention kernels
 
 ![batchllm_1.png](batchllm_1.png)
 ![batchllm_2.png](batchllm_2.png)
@@ -17,7 +17,7 @@
 - TTFT and Memory Stage Overhead
 - A relevant dataset: [LongBench](https://github.com/THUDM/LongBench)
 - They highlight - reduced TTFT, but end-to-end latency roughly the same for larger number of output tokens
-- Use just simple KV Caching as the baseline comparison point
+- Uses just simple KV Caching as the baseline comparison point
 
 ![prompt_cache_1.png](prompt_cache_1.png)
 
