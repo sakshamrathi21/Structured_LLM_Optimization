@@ -2,7 +2,7 @@
 
 ## BatchLLM
 - Does not mention about any specific datasets, self-created
-- Compares only with vLLM and other attention kernels
+- Compares only with vLLM (its different modes), SGLANG and other attention kernels
 
 ![batchllm_1.png](batchllm_1.png)
 ![batchllm_2.png](batchllm_2.png)
