@@ -425,7 +425,37 @@ R2 is selected since it has maximum prefix overlap with the working set.
 
 
 \section{Throughput Numbers}
+\begin{frame}{Workload Setup}
+    \begin{itemize}
+        \item Two families (each of system prompt of length 1300 tokens)
+        \item 2500 queries of each family - total 5000 queries
+        \item All randomly shuffled
+        \item L2 Cache size = 96 MB (RTX 6000)
+        \item Each family's system prompt's KVCache roughly takes 180 MB
+        \item We measure end-to-end throughput (including the time taken to add/process requests)
+    \end{itemize} 
+\end{frame}
 
+\begin{frame}{Throughput}
+\begin{table}[h!]
+\centering
+\scriptsize
+\begin{tabular}{|p{2.5cm}|c|p{4cm}|}
+\hline
+\textbf{Scheduler} & \textbf{Throughput (req/sec)} & \textbf{Comments} \\
+\hline
+    First Come First Serve & 45.49 & vLLM Baseline \\
+    First Come First Serve - Family Ordered & 64.97 & User orders the requests by their families ; theoretical maximum which a user can get from vLLM through client side changes \\
+    Greedy First Come First Serve & 2.04 & Due to very small batch size \\
+    Family ID Based & 86.72 & The fastest which we can achieve ; although through demanding additional information from the user \\
+    Radix Tree Based & 53.06 & Inefficient design ; too much CPU overhead ; consumes a lot of time in between scheduler iterations \\
+    Chunked Hash Tree Based & 77.44 & A much more efficient design ; quite less overhead ; no extra information needed from the user \\
+\hline
+\end{tabular}
+\caption{Workload Characteristics}
+\end{table}
+
+\end{frame}
 
 \section{}
 \begin{frame}
