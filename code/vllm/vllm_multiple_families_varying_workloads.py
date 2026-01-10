@@ -3,6 +3,7 @@ import string
 import time
 import sys as system
 import argparse
+import argparse
 
 from transformers import AutoTokenizer
 from system_prompt import queries, system_prompt as sys_prompt
@@ -45,6 +46,7 @@ def main():
     current_load = (num_families * len(queries)) / req_per_sec
     multiplier = max(1, 10/current_load)
     multiplier = int(multiplier)
+    multiplier = args.multiplier
     multiplier = args.multiplier
     system_prompts = []
     m_sys_prompt = sys_prompt
@@ -105,10 +107,18 @@ def main():
         enable_prefix_caching=True,
         max_num_seqs=max_batch_size,
         scheduling_policy=args.policy,
+        scheduling_policy=args.policy,
     )
 
     initial_start_time = time.time()
     prompts = list(prompts)
+    if not req_per_sec:
+        llm.generate(prompts, SamplingParams(temperature=0.7, max_tokens=args.max_new_tokens))
+    else:
+        for i in range(0, len(prompts), req_per_sec):
+            start_time = time.time()
+            llm.generate(prompts[i:i+req_per_sec], SamplingParams(temperature=0.7, max_tokens=args.max_new_tokens))
+            time.sleep(max(0, 1 - time.time() + start_time))
     if not req_per_sec:
         llm.generate(prompts, SamplingParams(temperature=0.7, max_tokens=args.max_new_tokens))
     else:
