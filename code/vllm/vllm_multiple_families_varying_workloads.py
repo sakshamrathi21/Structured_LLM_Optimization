@@ -1,8 +1,6 @@
 import random
 import string
 import time
-import sys as system
-import argparse
 import argparse
 
 from transformers import AutoTokenizer
@@ -20,10 +18,11 @@ def generate_prefixes(n):
 
 
 def main():
-    model_name = "meta-llama/Llama-3.1-8B-Instruct"
-    # model_name = "qwen/qwen2.5-0.5b-instruct"
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
     parser = argparse.ArgumentParser()
+    parser.add_argument("--model_name", type=str, default="meta-llama/Llama-3.1-8B-Instruct", choices=[
+        "meta-llama/Llama-3.1-8B-Instruct",
+        "qwen/qwen2.5-0.5b-instruct",
+    ])
     parser.add_argument("--num_families", type=int, default=2)
     parser.add_argument("--req_per_sec", type=int, default=None)
     parser.add_argument("--max_batch_size", type=int, default=500)
@@ -40,13 +39,13 @@ def main():
     max_batch_size = args.max_batch_size
     randomness = args.randomness
     len_factor = args.len_factor
+    model_name = args.model_name
+
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+
     prefixes = generate_prefixes(num_families)
     prompts = []
     families = []  
-    current_load = (num_families * len(queries)) / req_per_sec
-    multiplier = max(1, 10/current_load)
-    multiplier = int(multiplier)
-    multiplier = args.multiplier
     multiplier = args.multiplier
     system_prompts = []
     m_sys_prompt = sys_prompt
@@ -107,18 +106,10 @@ def main():
         enable_prefix_caching=True,
         max_num_seqs=max_batch_size,
         scheduling_policy=args.policy,
-        scheduling_policy=args.policy,
     )
 
     initial_start_time = time.time()
     prompts = list(prompts)
-    if not req_per_sec:
-        llm.generate(prompts, SamplingParams(temperature=0.7, max_tokens=args.max_new_tokens))
-    else:
-        for i in range(0, len(prompts), req_per_sec):
-            start_time = time.time()
-            llm.generate(prompts[i:i+req_per_sec], SamplingParams(temperature=0.7, max_tokens=args.max_new_tokens))
-            time.sleep(max(0, 1 - time.time() + start_time))
     if not req_per_sec:
         llm.generate(prompts, SamplingParams(temperature=0.7, max_tokens=args.max_new_tokens))
     else:
