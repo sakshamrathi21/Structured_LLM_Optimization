@@ -1,0 +1,560 @@
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: Copyright contributors to the vLLM project
+
+from __future__ import annotations
+
+import heapq
+from abc import ABC, abstractmethod
+from collections import deque
+from collections.abc import Iterable, Iterator
+from enum import Enum
+import time
+
+from vllm.v1.request import Request
+from vllm.v1.core.sched.radix_tree import TokenRadixTree, SyncRadixTreeClient, ChunkedHashTree
+
+
+class SchedulingPolicy(Enum):
+    """Enum for scheduling policies."""
+    FCFS = "fcfs"
+    PRIORITY = "priority"
+    RADIX_COST = "radix_cost"
+    FAMILY_LOAD = "family_load"
+    GREEDY_L2 = "greedy_l2"
+
+
+class RequestQueue(ABC):
+    """Abstract base class for request queues."""
+
+    @abstractmethod
+    def add_request(self, request: Request) -> None:
+        """Add a request to the queue according to the policy."""
+        pass
+
+    @abstractmethod
+    def pop_request(self) -> Request:
+        """Pop a request from the queue according to the policy."""
+        pass
+
+    @abstractmethod
+    def peek_request(self) -> Request:
+        """Peek at the request at the front of the queue without removing it."""
+        pass
+
+    @abstractmethod
+    def prepend_request(self, request: Request) -> None:
+        """Prepend a request to the front of the queue."""
+        pass
+
+    @abstractmethod
+    def prepend_requests(self, requests: RequestQueue) -> None:
+        """Prepend all requests from another queue to the front of this
+        queue."""
+        pass
+
+    @abstractmethod
+    def remove_request(self, request: Request) -> None:
+        """Remove a specific request from the queue."""
+        pass
+
+    @abstractmethod
+    def remove_requests(self, requests: Iterable[Request]) -> None:
+        """Remove multiple specific requests from the queue."""
+        pass
+
+    @abstractmethod
+    def __bool__(self) -> bool:
+        """Check if queue has any requests."""
+        pass
+
+    @abstractmethod
+    def __len__(self) -> int:
+        """Get number of requests in queue."""
+        pass
+
+    @abstractmethod
+    def __iter__(self) -> Iterator[Request]:
+        """Iterate over the queue according to the policy."""
+        pass
+
+    @abstractmethod
+    def __reversed__(self) -> Iterator[Request]:
+        """Iterate over the queue in reverse order."""
+        pass
+
+    def free_request(self, request: Request) -> None:
+        pass
+
+    def should_add_more_to_batch(self, **kwargs) -> bool:
+        """Check if more requests can be added to the current batch."""
+        return True
+
+
+class FCFSRequestQueue(deque[Request], RequestQueue):
+    """A first-come-first-served queue that supports deque operations."""
+
+    def add_request(self, request: Request) -> None:
+        """Add a request to the queue according to FCFS policy."""
+        self.append(request)
+
+    def pop_request(self) -> Request:
+        """Pop a request from the queue according to FCFS policy."""
+        return self.popleft()
+
+    def peek_request(self) -> Request:
+        """Peek at the next request in the queue without removing it."""
+        if not self:
+            raise IndexError("peek from an empty queue")
+        return self[0]
+
+    def prepend_request(self, request: Request) -> None:
+        """Prepend a request to the front of the queue."""
+        self.appendleft(request)
+
+    def prepend_requests(self, requests: RequestQueue) -> None:
+        """Prepend all requests from another queue to the front of this
+        queue."""
+        self.extendleft(reversed(requests))
+
+    def remove_request(self, request: Request) -> None:
+        """Remove a specific request from the queue."""
+        self.remove(request)
+        return request
+
+    def remove_requests(self, requests: Iterable[Request]) -> None:
+        """Remove multiple specific requests from the queue."""
+        requests_to_remove = set(requests)
+        filtered_requests = [
+            req for req in self if req not in requests_to_remove
+        ]
+        # deque does not support in-place filtering, so we need to clear
+        # and extend
+        self.clear()
+        self.extend(filtered_requests)
+
+    def __bool__(self) -> bool:
+        """Check if queue has any requests."""
+        return len(self) > 0
+
+    def __len__(self) -> int:
+        """Get number of requests in queue."""
+        return super().__len__()
+
+    def __iter__(self) -> Iterator[Request]:
+        """Iterate over the queue according to FCFS policy."""
+        return super().__iter__()
+
+    def __reversed__(self) -> Iterator[Request]:
+        """Iterate over the queue in reverse order."""
+        return super().__reversed__()
+
+
+class PriorityRequestQueue(RequestQueue):
+    """
+    A priority queue that supports heap operations.
+
+    Requests with a smaller value of `priority` are processed first.
+    If multiple requests have the same priority, the one with the earlier
+    `arrival_time` is processed first.
+    """
+
+    def __init__(self) -> None:
+        self._heap: list[tuple[int, float, Request]] = []
+
+    def add_request(self, request: Request) -> None:
+        """Add a request to the queue according to priority policy."""
+        heapq.heappush(self._heap,
+                       (request.priority, request.arrival_time, request))
+
+    def pop_request(self) -> Request:
+        """Pop a request from the queue according to priority policy."""
+        if not self._heap:
+            raise IndexError("pop from empty heap")
+        _, _, request = heapq.heappop(self._heap)
+        return request
+
+    def peek_request(self) -> Request:
+        """Peek at the next request in the queue without removing it."""
+        if not self._heap:
+            raise IndexError("peek from empty heap")
+        _, _, request = self._heap[0]
+        return request
+
+    def prepend_request(self, request: Request) -> None:
+        """Add a request to the queue according to priority policy.
+        
+        Note: In a priority queue, there is no concept of prepending to the 
+        front. Requests are ordered by (priority, arrival_time)."""
+        self.add_request(request)
+
+    def prepend_requests(self, requests: RequestQueue) -> None:
+        """Add all requests from another queue according to priority policy.
+        
+        Note: In a priority queue, there is no concept of prepending to the 
+        front. Requests are ordered by (priority, arrival_time)."""
+        for request in requests:
+            self.add_request(request)
+
+    def remove_request(self, request: Request) -> None:
+        """Remove a specific request from the queue."""
+        self._heap = [(p, t, r) for p, t, r in self._heap if r != request]
+        heapq.heapify(self._heap)
+
+    def remove_requests(self, requests: Iterable[Request]) -> None:
+        """Remove multiple specific requests from the queue."""
+        requests_to_remove = set(requests)
+        self._heap = [(p, t, r) for p, t, r in self._heap
+                      if r not in requests_to_remove]
+        heapq.heapify(self._heap)
+
+    def __bool__(self) -> bool:
+        """Check if queue has any requests."""
+        return bool(self._heap)
+
+    def __len__(self) -> int:
+        """Get number of requests in queue."""
+        return len(self._heap)
+
+    def __iter__(self) -> Iterator[Request]:
+        """Iterate over the queue according to priority policy."""
+        heap_copy = self._heap[:]
+        while heap_copy:
+            _, _, request = heapq.heappop(heap_copy)
+            yield request
+
+    def __reversed__(self) -> Iterator[Request]:
+        """Iterate over the queue in reverse priority order."""
+        return reversed(list(self))
+
+
+class RadixCostRequestQueue(RequestQueue):
+    
+    def __init__(self):
+        # self._radix = TokenRadixTree()
+        self._radix = ChunkedHashTree()
+        self._pending_requests: dict[str, Request] = {}
+
+    def add_request(self, request: Request) -> None:
+        # start_time = time.time()
+        self._radix.insert(request.request_id, request.all_token_ids)
+        self._pending_requests[request.request_id] = request
+        # end_time = time.time()
+        # print(f"Time to add request {request.request_id} to RadixCostRequestQueue: {end_time - start_time} seconds")
+        # self._radix.dump()
+        # print(f"Added request {request.request_id} to RadixCostRequestQueue")
+
+    def pop_request(self) -> Request:
+        req_id, cost = self._radix.find_best_request()
+        if req_id is None:
+            raise IndexError("pop from empty radix queue")
+        request = self._pending_requests.pop(req_id)
+        self._radix.activate_request(req_id)
+        # print(f"Popped request {request.request_id} with {cost} from RadixCostRequestQueue")
+        return request
+
+    def peek_request(self) -> Request:
+        # start_time = time.time()
+        req_id, _ = self._radix.find_best_request()
+        # print(f"Peeking request {req_id} from RadixCostRequestQueue")
+        if req_id is None:
+            raise IndexError("peek from empty radix queue")
+        # end_time = time.time()
+        # print(f"Time to peek request {req_id} from RadixCostRequestQueue: {end_time - start_time} seconds")
+        return self._pending_requests[req_id]
+
+    def prepend_request(self, request: Request) -> None:
+        self.add_request(request)
+    
+    def prepend_requests(self, requests: RequestQueue) -> None:
+        for request in requests:
+            self.add_request(request)
+    
+    def remove_request(self, request: Request) -> None:
+        # print(f"Removing request {request.request_id} from RadixCostRequestQueue")
+        if request.request_id in self._pending_requests:
+            self._radix.remove(request.request_id)
+            del self._pending_requests[request.request_id]
+
+    def remove_requests(self, requests: Iterable[Request]) -> None:
+        for request in requests:
+            self.remove_request(request)
+    
+    def __bool__(self) -> bool:
+        return bool(self._pending_requests)
+
+    def __len__(self) -> int:
+        return len(self._pending_requests)
+    
+    def __iter__(self) -> Iterator[Request]:
+        for req_id in self._pending_requests:
+            yield self._pending_requests[req_id]
+    
+    def __reversed__(self) -> Iterator[Request]:
+        for req_id in reversed(list(self._pending_requests.keys())):
+            yield self._pending_requests[req_id]
+            
+    def free_request(self, request: Request) -> None:
+        # print(f"Freeing request {request.request_id} from RadixCostRequestQueue")
+        self._radix.finish_request(request.request_id)
+
+    def should_add_more_to_batch(self, **kwargs) -> bool:
+        current_batch_size = kwargs.get("current_batch_size", 0)
+        if current_batch_size == 0:
+            return True
+        _, cost = self._radix.find_best_request()
+        # print("current batch size", current_batch_size, "cost to add", cost)
+        # return True
+        if cost <= 1:
+            return True
+        return False
+    
+class FamilyLoadRequestQueue(RequestQueue):
+    def __init__(self):
+        self.family_requests: dict[int, deque[Request]] = {}
+        self.last_served_family: int = 0
+
+    def add_request(self, request: Request) -> None:
+        start_time = time.time()
+        family_id = request.all_token_ids[26]
+        # print(request.request_id, request.all_token_ids[:30], "Added to family", family_id)
+        if family_id not in self.family_requests:
+            self.family_requests[family_id] = deque()
+        self.family_requests[family_id].append(request)
+        end_time = time.time()
+        print(f"Time to add request {request.request_id} to FamilyLoadRequestQueue: {end_time - start_time} seconds")
+
+    def pop_request(self) -> Request:
+        if self.last_served_family not in self.family_requests or not self.family_requests[self.last_served_family]:
+            available_families = [fid for fid in self.family_requests if self.family_requests[fid]]
+            self.last_served_family = min(available_families)
+        request = self.family_requests[self.last_served_family].popleft()
+        return request
+
+    def peek_request(self) -> Request:
+        start_time = time.time()
+        if self.last_served_family not in self.family_requests or not self.family_requests[self.last_served_family]:
+            available_families = [fid for fid in self.family_requests if self.family_requests[fid]]
+            self.last_served_family = min(available_families)
+        end_time = time.time()
+        print(f"Time to peek request from FamilyLoadRequestQueue: {end_time - start_time} seconds")
+        return self.family_requests[self.last_served_family][0]
+
+    def prepend_request(self, request: Request) -> None:
+        family_id = request.all_token_ids[26]
+        # print(request.request_id, request.all_token_ids[:30], "Prepended to family", family_id)
+        if family_id not in self.family_requests:
+            self.family_requests[family_id] = deque()
+        self.family_requests[family_id].appendleft(request)
+    
+    def prepend_requests(self, requests: RequestQueue) -> None:
+        for request in requests:
+            self.prepend_request(request)
+    
+    def remove_request(self, request: Request) -> None:
+        family_id = request.all_token_ids[3]
+        if family_id in self.family_requests:
+            self.family_requests[family_id].remove(request)
+    
+    def remove_requests(self, requests: Iterable[Request]) -> None:
+        for request in requests:
+            self.remove_request(request)
+    
+    def __bool__(self) -> bool:
+        return any(self.family_requests[fid] for fid in self.family_requests)
+    
+    def __len__(self) -> int:
+        return sum(len(self.family_requests[fid]) for fid in self.family_requests)
+
+    def __iter__(self) -> Iterator[Request]:
+        for fid in sorted(self.family_requests.keys()):
+            for request in self.family_requests[fid]:
+                yield request
+
+    def __reversed__(self) -> Iterator[Request]:
+        for fid in sorted(self.family_requests.keys(), reverse=True):
+            for request in reversed(self.family_requests[fid]):
+                yield request
+
+    def should_add_more_to_batch(self, **kwargs) -> bool:
+        current_batch_size = kwargs.get("current_batch_size", 0)
+        if current_batch_size == 0:
+            return True
+        if self.last_served_family not in self.family_requests or not self.family_requests[self.last_served_family]:
+            return False
+        return True
+
+
+class GreedyRequestQueue(RequestQueue):
+    """
+    Strategy: Pick requests in FCFC order, until our working set size increases beyond a point.
+    """
+
+    def __init__(self):
+        self._queue = FCFSRequestQueue()
+        self._working_set: set[Request] = set()
+
+    def add_request(self, request: Request) -> None:
+        self._queue.add_request(request)
+
+    def pop_request(self) -> Request:
+        request = self._queue.pop_request()
+        self._working_set.add(request)
+        return request
+    
+    def peek_request(self) -> Request:
+        return self._queue.peek_request()
+    
+    def prepend_request(self, request: Request) -> None:
+        self._queue.prepend_request(request)
+
+    def prepend_requests(self, requests: RequestQueue) -> None:
+        self._queue.prepend_requests(requests)
+
+    def remove_request(self, request: Request) -> None:
+        self._queue.remove_request(request)
+        self._working_set.discard(request)
+
+    def remove_requests(self, requests: Iterable[Request]) -> None:
+        self._queue.remove_requests(requests)
+        for request in requests:
+            self._working_set.discard(request)
+
+    def __bool__(self) -> bool:
+        return bool(self._queue)
+    
+    def __len__(self) -> int:
+        return len(self._queue)
+    
+    def __iter__(self) -> Iterator[Request]:
+        return iter(self._queue)
+    
+    def __reversed__(self) -> Iterator[Request]:
+        return reversed(self._queue)
+    
+    def free_request(self, request: Request) -> None:
+        self._working_set.discard(request)
+
+    def should_add_more_to_batch(self, **kwargs) -> bool:
+        current_batch_size = kwargs.get("current_batch_size", 0)
+        if current_batch_size == 0:
+            return True
+        # we iterate over the working set, to find the request with max overlap
+        max_overlap = 0
+        for req in self._working_set:
+            # we need to find the longest prefix match between req and the next request
+            overlap_count = 0
+            for t1, t2 in zip(req.all_token_ids, self.peek_request().all_token_ids):
+                if t1 == t2:
+                    overlap_count += 1
+                else:
+                    break
+            max_overlap = max(max_overlap, overlap_count)
+        tokens_not_in_working_set = len(self.peek_request().all_token_ids) - max_overlap
+        if tokens_not_in_working_set < 50:
+            return True
+        return False
+
+
+class RadixCostRequestQueue_SeparateProcess(RequestQueue):
+    """
+    Request queue using the multiprocess radix tree.
+    All methods are synchronous - compatible with existing code.
+    """
+    
+    def __init__(self):
+        self._radix = SyncRadixTreeClient()
+        self._radix.start()
+        self._pending_requests: Dict[str, 'Request'] = {}
+    
+    def add_request(self, request: 'Request') -> None:
+        self._radix.insert(request.request_id, request.all_token_ids)
+        self._pending_requests[request.request_id] = request
+    
+    def pop_request(self) -> 'Request':
+        req_id, cost = self._radix.get_best_request()
+        if req_id is None:
+            raise IndexError("pop from empty radix queue")
+        request = self._pending_requests.pop(req_id)
+        self._radix.activate_request(req_id)
+        return request
+    
+    def peek_request(self) -> 'Request':
+        """Synchronous peek - uses cached best request."""
+        req_id, _ = self._radix.get_best_request()
+        while req_id is None:
+            req_id, _ = self._radix.get_best_request()
+        if req_id is None:
+            raise IndexError("peek from empty radix queue")
+        return self._pending_requests[req_id]
+    
+    def prepend_request(self, request: 'Request') -> None:
+        self.add_request(request)
+    
+    def prepend_requests(self, requests: 'RequestQueue') -> None:
+        for request in requests:
+            self.add_request(request)
+    
+    def remove_request(self, request: 'Request') -> None:
+        if request.request_id in self._pending_requests:
+            self._radix.remove(request.request_id)
+            del self._pending_requests[request.request_id]
+    
+    def remove_requests(self, requests: Iterable['Request']) -> None:
+        for request in requests:
+            self.remove_request(request)
+    
+    def __bool__(self) -> bool:
+        return bool(self._pending_requests)
+    
+    def __len__(self) -> int:
+        return len(self._pending_requests)
+    
+    def __iter__(self) -> Iterator['Request']:
+        for req_id in self._pending_requests:
+            yield self._pending_requests[req_id]
+    
+    def __reversed__(self) -> Iterator['Request']:
+        for req_id in reversed(list(self._pending_requests.keys())):
+            yield self._pending_requests[req_id]
+    
+    def free_request(self, request: 'Request') -> None:
+        self._radix.finish_request(request.request_id)
+    
+    def should_add_more_to_batch(self, **kwargs) -> bool:
+        """Synchronous check using cached best request."""
+        current_batch_size = kwargs.get("current_batch_size", 0)
+        if current_batch_size == 0:
+            return True
+        req_id, cost = self._radix.get_best_request()
+        req = self._pending_requests.get(req_id, None)
+        print(f"Next request in RadixCostRequestQueue_SeparateProcess is {req_id} with cost {cost}, current batch size {current_batch_size}, family id {req.all_token_ids[26] if req else 'N/A'}")
+        if cost < 50:
+            return True
+        return False
+    
+    def shutdown(self):
+        """Cleanup method to shutdown the worker process."""
+        self._radix.shutdown()
+    
+    def __del__(self):
+        """Ensure cleanup on deletion."""
+        try:
+            self.shutdown()
+        except:
+            pass
+
+
+def create_request_queue(policy: SchedulingPolicy) -> RequestQueue:
+    """Create request queue based on scheduling policy."""
+    if policy == SchedulingPolicy.PRIORITY:
+        return PriorityRequestQueue()
+    elif policy == SchedulingPolicy.FCFS:
+        return FCFSRequestQueue()
+    elif policy == SchedulingPolicy.RADIX_COST:
+        return RadixCostRequestQueue()
+    elif policy == SchedulingPolicy.FAMILY_LOAD:
+        return FamilyLoadRequestQueue()
+    elif policy == SchedulingPolicy.GREEDY_L2:
+        return GreedyRequestQueue()
+    else:
+        raise ValueError(f"Unknown scheduling policy: {policy}")
