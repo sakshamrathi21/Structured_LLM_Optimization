@@ -2,6 +2,7 @@ import random
 import string
 import time
 import sys as system
+import argparse
 
 from transformers import AutoTokenizer
 from system_prompt import queries, system_prompt as sys_prompt
@@ -21,18 +22,30 @@ def main():
     model_name = "meta-llama/Llama-3.1-8B-Instruct"
     # model_name = "qwen/qwen2.5-0.5b-instruct"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    num_families = int(system.argv[1]) if len(system.argv) > 1 else 2
-    req_per_sec = int(system.argv[2]) if len(system.argv) > 2 else 200
-    max_batch_size = int(system.argv[3]) if len(system.argv) > 3 else 500
-    randomness = int(system.argv[4]) if len(system.argv) > 4 else 1
-    len_factor = float(system.argv[5]) if len(system.argv) > 5 else 1
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--num_families", type=int, default=2)
+    parser.add_argument("--req_per_sec", type=int, default=None)
+    parser.add_argument("--max_batch_size", type=int, default=500)
+    parser.add_argument("--randomness", type=int, default=1)
+    parser.add_argument("--len_factor", type=float, default=1.0)
+    parser.add_argument("--policy", type=str, default="fcfs", choices=["fcfs", "priority", "radix_cost", "family_load", "greedy_l2"])
+    parser.add_argument("--multiplier", type=int, default=10)
+    parser.add_argument("--max_new_tokens", type=int, default=50)
+    parser.add_argument("--write_output", action="store_true", help="Whether to write output to a file.")
+    args = parser.parse_args()
+
+    num_families = args.num_families
+    req_per_sec = args.req_per_sec
+    max_batch_size = args.max_batch_size
+    randomness = args.randomness
+    len_factor = args.len_factor
     prefixes = generate_prefixes(num_families)
     prompts = []
     families = []  
     current_load = (num_families * len(queries)) / req_per_sec
     multiplier = max(1, 10/current_load)
     multiplier = int(multiplier)
-    multiplier = 10
+    multiplier = args.multiplier
     system_prompts = []
     m_sys_prompt = sys_prompt
     if len_factor > 1.0:
@@ -91,15 +104,18 @@ def main():
         max_num_batched_tokens=32768,
         enable_prefix_caching=True,
         max_num_seqs=max_batch_size,
+        scheduling_policy=args.policy,
     )
 
     initial_start_time = time.time()
     prompts = list(prompts)
-    llm.generate(prompts, SamplingParams(temperature=0.7, max_tokens=50))
-    # for i in range(0, len(prompts), req_per_sec):
-    #     start_time = time.time()
-    #     outputs = llm.generate(prompts[i:i+req_per_sec], SamplingParams(temperature=0.7, max_tokens=30))
-    #     time.sleep(max(0, 1 - time.time() + start_time))
+    if not req_per_sec:
+        llm.generate(prompts, SamplingParams(temperature=0.7, max_tokens=args.max_new_tokens))
+    else:
+        for i in range(0, len(prompts), req_per_sec):
+            start_time = time.time()
+            llm.generate(prompts[i:i+req_per_sec], SamplingParams(temperature=0.7, max_tokens=args.max_new_tokens))
+            time.sleep(max(0, 1 - time.time() + start_time))
     end_time = time.time()
     throughput = len(prompts) / (end_time - initial_start_time)
     print(time.time(), "Completed all requests.")
@@ -110,8 +126,9 @@ def main():
         enable_chunked_prefill,
         ")",
     )
-    with open("vllm_multiple_families_varying_workloads_output.txt", "a") as f:
-        f.write(f"Throughput Test with {num_families} families, {req_per_sec} req/sec and max_batch_size of {max_batch_size} (randomness: {randomness}) (len factor: {len_factor}) (model_name: {model_name}): {throughput}\n")
+    if args.write_output:
+        with open("vllm_multiple_families_varying_workloads_output.txt", "a") as f:
+            f.write(f"Throughput Test with {num_families} families, {req_per_sec} req/sec and max_batch_size of {max_batch_size} (randomness: {randomness}) (len factor: {len_factor}) (model_name: {model_name}) (policy: {args.policy}) (max_new_tokens: {args.max_new_tokens}) (num_prompts: {len(prompts)}): {throughput}\n")
 
 if __name__ == "__main__":
     main()
