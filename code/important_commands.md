@@ -31,3 +31,12 @@ NCU
 ```bash
 nv-nsight-cu-cli --target-processes all --section MemoryWorkloadAnalysis --launch-skip 200 --launch-count 50 --csv python vllm_multiple_families.py > out.csv
 ```
+
+--
+
+cp for vllm local backup
+
+
+```bash
+cp -r /home/saksham/CS492/code/sglang/.venv/lib/python3.12/site-packages/vllm/v1/core/sched /home/saksham/CS492/code/vllm/vllm_local_backup/vllm/v1/core/
+```
