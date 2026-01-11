@@ -3,9 +3,12 @@ import string
 import time
 import argparse
 
+from typing import get_args
+
 from transformers import AutoTokenizer
 from system_prompt import queries, system_prompt as sys_prompt
 from vllm import LLM, SamplingParams
+from vllm.config.scheduler import SchedulerPolicy
 
 
 def generate_prefixes(n):
@@ -28,7 +31,7 @@ def main():
     parser.add_argument("--max_batch_size", type=int, default=500)
     parser.add_argument("--randomness", type=int, default=1)
     parser.add_argument("--len_factor", type=float, default=1.0)
-    parser.add_argument("--policy", type=str, default="fcfs", choices=["fcfs", "priority", "radix_cost", "family_load", "greedy_l2"])
+    parser.add_argument("--policy", type=str, default="fcfs", choices=list(get_args(SchedulerPolicy)))
     parser.add_argument("--multiplier", type=int, default=10)
     parser.add_argument("--max_new_tokens", type=int, default=50)
     parser.add_argument("--write_output", action="store_true", help="Whether to write output to a file.")

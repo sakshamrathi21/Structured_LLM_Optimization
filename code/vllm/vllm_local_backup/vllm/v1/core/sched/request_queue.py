@@ -9,6 +9,7 @@ from collections import deque
 from collections.abc import Iterable, Iterator
 from enum import Enum
 import time
+import math
 
 from vllm.v1.request import Request
 from vllm.v1.core.sched.radix_tree import TokenRadixTree, SyncRadixTreeClient, ChunkedHashTree
@@ -21,6 +22,7 @@ class SchedulingPolicy(Enum):
     RADIX_COST = "radix_cost"
     FAMILY_LOAD = "family_load"
     GREEDY_L2 = "greedy_l2"
+    DYNAMIC_BATCHING = "dynamic_batching"
 
 
 class RequestQueue(ABC):
@@ -464,7 +466,7 @@ class RadixCostRequestQueue_SeparateProcess(RequestQueue):
     def __init__(self):
         self._radix = SyncRadixTreeClient()
         self._radix.start()
-        self._pending_requests: Dict[str, 'Request'] = {}
+        self._pending_requests: dict[str, 'Request'] = {}
     
     def add_request(self, request: 'Request') -> None:
         self._radix.insert(request.request_id, request.all_token_ids)
@@ -544,6 +546,28 @@ class RadixCostRequestQueue_SeparateProcess(RequestQueue):
             pass
 
 
+class DynamicBatchingRequestQueue(FCFSRequestQueue):
+    MEMORY_FACTOR = 0.95
+    BATCH_SIZE_LOWER = 100
+    BATCH_SIZE_UPPER = 1000
+    def should_add_more_to_batch(self, **kwargs) -> bool:
+        current_batch_size = kwargs.get("current_batch_size", 0)
+        if current_batch_size == 0:
+            return True
+        num_total_gpu_blocks = kwargs.get("num_total_gpu_blocks", 0)
+        num_total_free_gpu_blocks = kwargs.get("num_total_free_gpu_blocks", 0)
+        used_blocks = num_total_gpu_blocks - num_total_free_gpu_blocks
+        blocks_per_seq = used_blocks / current_batch_size
+        new_max_num_seqs = math.floor(num_total_gpu_blocks * self.MEMORY_FACTOR / blocks_per_seq)
+        new_max_num_seqs = max(new_max_num_seqs, current_batch_size)
+        new_max_num_seqs = min(max(new_max_num_seqs, self.BATCH_SIZE_LOWER), self.BATCH_SIZE_UPPER)
+        # print(current_batch_size, num_total_free_gpu_blocks, num_total_gpu_blocks, new_max_num_seqs)
+        if current_batch_size >= new_max_num_seqs:
+            return False
+        return True
+
+
+
 def create_request_queue(policy: SchedulingPolicy) -> RequestQueue:
     """Create request queue based on scheduling policy."""
     if policy == SchedulingPolicy.PRIORITY:
@@ -556,5 +580,7 @@ def create_request_queue(policy: SchedulingPolicy) -> RequestQueue:
         return FamilyLoadRequestQueue()
     elif policy == SchedulingPolicy.GREEDY_L2:
         return GreedyRequestQueue()
+    elif policy == SchedulingPolicy.DYNAMIC_BATCHING:
+        return DynamicBatchingRequestQueue()
     else:
         raise ValueError(f"Unknown scheduling policy: {policy}")

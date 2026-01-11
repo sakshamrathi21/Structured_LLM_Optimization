@@ -126,6 +126,8 @@ class Scheduler(SchedulerInterface):
             self.policy = SchedulingPolicy.FAMILY_LOAD
         elif self.scheduler_config.policy == "greedy_l2":
             self.policy = SchedulingPolicy.GREEDY_L2
+        elif self.scheduler_config.policy == "dynamic_batching":
+            self.policy = SchedulingPolicy.DYNAMIC_BATCHING
         else:
             raise ValueError(
                 f"Unknown scheduling policy: {self.scheduler_config.policy}")
@@ -352,7 +354,7 @@ class Scheduler(SchedulerInterface):
         # Next, schedule the WAITING requests.
         if not preempted_reqs: # [COMMENT] Schedule waiting requests, only if nothing was preempted
             while self.waiting and token_budget > 0:
-                if not self.waiting.should_add_more_to_batch(current_batch_size=len(self.running)):
+                if not self.waiting.should_add_more_to_batch(current_batch_size=len(self.running), num_total_gpu_blocks = self.cache_config.num_gpu_blocks, num_total_free_gpu_blocks = self.kv_cache_manager.block_pool.get_num_free_blocks()):
                     break
                 if len(self.running) == self.max_num_running_reqs:
                     break
