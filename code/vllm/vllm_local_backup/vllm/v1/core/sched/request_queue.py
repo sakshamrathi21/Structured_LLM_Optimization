@@ -316,14 +316,14 @@ class FamilyLoadRequestQueue(RequestQueue):
         self.last_served_family: int = 0
 
     def add_request(self, request: Request) -> None:
-        start_time = time.time()
+        # start_time = time.time()
         family_id = request.all_token_ids[26]
         # print(request.request_id, request.all_token_ids[:30], "Added to family", family_id)
         if family_id not in self.family_requests:
             self.family_requests[family_id] = deque()
         self.family_requests[family_id].append(request)
-        end_time = time.time()
-        print(f"Time to add request {request.request_id} to FamilyLoadRequestQueue: {end_time - start_time} seconds")
+        # end_time = time.time()
+        # print(f"Time to add request {request.request_id} to FamilyLoadRequestQueue: {end_time - start_time} seconds")
 
     def pop_request(self) -> Request:
         if self.last_served_family not in self.family_requests or not self.family_requests[self.last_served_family]:
@@ -333,12 +333,12 @@ class FamilyLoadRequestQueue(RequestQueue):
         return request
 
     def peek_request(self) -> Request:
-        start_time = time.time()
+        # start_time = time.time()
         if self.last_served_family not in self.family_requests or not self.family_requests[self.last_served_family]:
             available_families = [fid for fid in self.family_requests if self.family_requests[fid]]
             self.last_served_family = min(available_families)
-        end_time = time.time()
-        print(f"Time to peek request from FamilyLoadRequestQueue: {end_time - start_time} seconds")
+        # end_time = time.time()
+        # print(f"Time to peek request from FamilyLoadRequestQueue: {end_time - start_time} seconds")
         return self.family_requests[self.last_served_family][0]
 
     def prepend_request(self, request: Request) -> None:
@@ -547,6 +547,7 @@ class RadixCostRequestQueue_SeparateProcess(RequestQueue):
 
 
 class DynamicBatchingRequestQueue(FCFSRequestQueue):
+    # source: https://github.com/KevinLee1110/dynamic-batching
     MEMORY_FACTOR = 0.95
     BATCH_SIZE_LOWER = 100
     BATCH_SIZE_UPPER = 1000

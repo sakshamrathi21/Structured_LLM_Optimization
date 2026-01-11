@@ -454,12 +454,57 @@ R2 is selected since it has maximum prefix overlap with the working set.
 
 
 
-\begin{frame}{BucketServe}
-    
+\begin{frame}{BucketServe - Bucket-Based Dynamic Batching}
+    \begin{itemize}
+        \item Real-world workloads exhibit \textbf{highly heterogeneous sequence lengths}
+        \item Naive batching mixes short and long requests, causing:
+        \begin{itemize}
+            \item Excessive padding
+            \item GPU memory waste
+            \item Lower effective throughput
+        \end{itemize}
+        \item Key idea: \textbf{group requests by sequence length} before batching
+        \item Enables tighter memory bounds and more predictable batch sizing
+    \end{itemize}
 \end{frame}
 
-\begin{frame}{BatchLLM}
-    
+\begin{frame}{BucketServe: Design}
+    \begin{itemize}
+        \item Incoming requests are assigned to \textbf{length-homogeneous buckets}
+        \item Each bucket covers a sequence length interval:
+        \[
+            [L_b, U_b)
+        \]
+        \item Buckets reduce padding by minimizing ($S$ is the sequence length):
+        \[
+            S_{\max} - S_{\mathrm{avg}}
+        \]
+        \item Dynamic batching is applied \textbf{within each bucket}
+        \item Batch size is adjusted based on:
+        \begin{itemize}
+            \item GPU memory availability
+            \item Maximum sequence length in the bucket
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+\begin{frame}{BucketServe : Memory Safety}
+    \begin{itemize}
+        \item Bucket boundaries are adjusted online based on workload distribution
+        \item Buckets are:
+        \begin{itemize}
+            \item \textbf{Split} when length variance is high
+            \item \textbf{Merged} under low load to reduce scheduling overhead
+        \end{itemize}
+        \item For each bucket, compute a memory-safe batch size:
+        \[
+            N_{\max} =
+            \max \left\{
+            N \;\middle|\;
+            \sum_{i=1}^{N} S_i \le M_{\text{safe}}
+            \right\}
+        \]
+        \item Not too relevant for our workload, because the query sizes are roughly similar, and system prompt is anyway shared, so the expected throughput is quite similar to that of vLLM baseline
+    \end{itemize}
 \end{frame}
 
 \section{Throughput Numbers}
@@ -498,6 +543,46 @@ R2 is selected since it has maximum prefix overlap with the working set.
     Radix Tree Based & 53.06 & Inefficient design ; too much CPU overhead ; consumes a lot of time in between scheduler iterations \\
     Chunked Hash Tree Based & 77.44 & A much more efficient design ; quite less overhead ; no extra information needed from the user \\
     Dynamic Batching & 46.98 & Max batch size set to 1000 \\
+\hline
+\end{tabular}
+\caption{Throughput Across Different Scheduler Designs}
+\end{table}
+
+\end{frame}
+
+
+\begin{frame}{Throughput (for max new tokens = 100)}
+\begin{table}[h!]
+\centering
+\scriptsize
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Scheduler} & \textbf{Throughput (req/sec)} \\
+\hline
+    First Come First Serve & 20.84 \\
+    First Come First Serve - Family Ordered & 33.94 \\
+    Family ID Based & 42.73  \\
+    Chunked Hash Tree Based & 43.20  \\
+\hline
+\end{tabular}
+\caption{Throughput Across Different Scheduler Designs}
+\end{table}
+
+\end{frame}
+
+
+\begin{frame}{Throughput (for max new tokens = 200)}
+\begin{table}[h!]
+\centering
+\scriptsize
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Scheduler} & \textbf{Throughput (req/sec)} \\
+\hline
+    First Come First Serve & 10.67 \\
+    First Come First Serve - Family Ordered & 18.78 \\
+    Family ID Based & 21.14 \\
+    Chunked Hash Tree Based & 21.34  \\
 \hline
 \end{tabular}
 \caption{Throughput Across Different Scheduler Designs}

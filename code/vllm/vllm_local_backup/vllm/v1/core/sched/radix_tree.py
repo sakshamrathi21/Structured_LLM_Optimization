@@ -485,7 +485,7 @@ class ChunkedHashTree:
         Returns: number of tokens
         """
         if request_id in self.request_tokens:
-            raise ValueError(f"Request {request_id} already exists")
+            return
         
         # Compute hashes for all cumulative prefixes
         hashes = self._compute_hashes(token_ids)
