@@ -423,6 +423,44 @@ R2 is selected since it has maximum prefix overlap with the working set.
 
 \subsection{Already Existing Schedulers}
 
+\begin{frame}{Dynamic Batching}
+    \begin{itemize}
+        \item Static batching uses a fixed maximum batch size
+        \item Dynamic batching adapts batch size based on \textbf{runtime GPU memory state}
+        \item Memory usage is dominated by KV cache allocation
+        \item Larger batches improve throughput but increase memory pressure
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Dynamic Batching - Memory-Aware Control}
+    \begin{itemize}
+        \item Let $B$ be the current batch size
+        \item Measure used GPU blocks and estimate blocks per sequence:
+        \[
+            \text{blocks\_per\_seq} = \frac{\text{used GPU blocks}}{B}
+        \]
+        \item Compute the memory-safe maximum batch size:
+        \[
+            B_{\max} =
+            \left\lfloor
+            \frac{\text{total GPU blocks} \times \alpha}
+                 {\text{blocks\_per\_seq}}
+            \right\rfloor
+        \]
+        \item $\alpha$ is a safety factor (e.g., $\alpha = 0.95$)
+        \item Stop adding requests when $B \ge B_{\max}$
+    \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{BucketServe}
+    
+\end{frame}
+
+\begin{frame}{BatchLLM}
+    
+\end{frame}
 
 \section{Throughput Numbers}
 \begin{frame}{Workload Setup}
@@ -430,10 +468,19 @@ R2 is selected since it has maximum prefix overlap with the working set.
         \item Two families (each of system prompt of length 1300 tokens)
         \item 2500 queries of each family - total 5000 queries
         \item All randomly shuffled
-        \item L2 Cache size = 96 MB (RTX 6000)
-        \item Each family's system prompt's KVCache roughly takes 180 MB
+        \item L2 Cache size = 96 MB (RTX 6000 Ada Generation)
+        \item Each family's system prompt's KVCache roughly takes 180 MB (model: Llama3.1-8B)
         \item We measure end-to-end throughput (including the time taken to add/process requests)
+        \item We generate 50 new tokens for each request
     \end{itemize} 
+\end{frame}
+
+\begin{frame}{Why just 50 new tokens?}
+    \begin{itemize}
+        \item LLMs hardly answer in 1-2 sentences, so less than 50 (like somewhere around 10-20) does not make much sense
+        \item The scheduler changes help increasing L2 purity, even during decodes, so larger number of output tokens show better throughput improvement
+        \item Having 200 new tokens for a shared prefix of length 1300 tokens reduces the amount of overlap between two queries
+    \end{itemize}
 \end{frame}
 
 \begin{frame}{Throughput}
@@ -450,9 +497,10 @@ R2 is selected since it has maximum prefix overlap with the working set.
     Family ID Based & 86.72 & The fastest which we can achieve ; although through demanding additional information from the user \\
     Radix Tree Based & 53.06 & Inefficient design ; too much CPU overhead ; consumes a lot of time in between scheduler iterations \\
     Chunked Hash Tree Based & 77.44 & A much more efficient design ; quite less overhead ; no extra information needed from the user \\
+    Dynamic Batching & 46.98 & Max batch size set to 1000 \\
 \hline
 \end{tabular}
-\caption{Workload Characteristics}
+\caption{Throughput Across Different Scheduler Designs}
 \end{table}
 
 \end{frame}
