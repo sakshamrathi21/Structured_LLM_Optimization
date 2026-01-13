@@ -334,22 +334,20 @@ class CoreEngineActorManager:
             "No nodes with resources found in Ray cluster.")
         assert dp_master_ip_key in nodes[0], (
             "The DP master node (ip: %s) is missing or dead", dp_master_ip)
-        device_str = current_platform.ray_device_key
         for node_resources in nodes:
-            if device_str not in node_resources:
+            if "GPU" not in node_resources:
                 continue
             # For now, each DP rank can only be assigned to one node
             # TODO(rui): support allocating a single DP rank
             # to multiple nodes
-            available_engine_count = int(
-                node_resources[device_str]) // world_size
+            available_engine_count = int(node_resources["GPU"]) // world_size
             if dp_master_ip_key in node_resources:
                 assert available_engine_count >= local_engine_count, (
                     "Not enough resources to allocate DP ranks "
                     f"on DP master node {dp_master_ip}")
                 for i in range(local_engine_count):
                     bundles = [{
-                        device_str: 1.0,
+                        "GPU": 1.0,
                         "node:" + dp_master_ip: 0.001
                     }] * world_size + [{
                         "CPU": 1.0
@@ -365,7 +363,7 @@ class CoreEngineActorManager:
                 for i in range(available_engine_count):
                     if len(placement_groups) == num_pg_to_create:
                         break
-                    bundles = [{device_str: 1.0}] * world_size + [{"CPU": 1.0}]
+                    bundles = [{"GPU": 1.0}] * world_size + [{"CPU": 1.0}]
                     pg = ray.util.placement_group(
                         name=f"dp_rank_{len(placement_groups)}",
                         strategy="STRICT_PACK",
@@ -417,18 +415,17 @@ class CoreEngineActorManager:
         local_dp_ranks = []
         num_pg_created = 0
 
-        device_str = current_platform.ray_device_key
         for node in nodes:
             if num_pg_created >= num_pg_to_create:
                 break
 
             node_ip = node.node_ip
             node_id = node.node_id
-            available_gpus = int(available_resources[node_id][device_str])
+            available_gpus = int(available_resources[node_id]["GPU"])
 
             # Get total GPUs on this node from the node's resources
             # Ray stores node resources with node ID as key
-            total_gpus = int(total_resources[node_id][device_str])
+            total_gpus = int(total_resources[node_id]["GPU"])
 
             # Calculate used GPUs and used engines on this node
             used_gpus = max(0, total_gpus - available_gpus)
@@ -447,13 +444,13 @@ class CoreEngineActorManager:
                 # Create bundles with node constraint for master node
                 if node_ip == dp_master_ip:
                     bundles = [{
-                        device_str: 1.0,
+                        "GPU": 1.0,
                         "node:" + dp_master_ip: 0.001
                     }] * world_size + [{
                         "CPU": 1.0
                     }]
                 else:
-                    bundles = [{device_str: 1.0}] * world_size + [{"CPU": 1.0}]
+                    bundles = [{"GPU": 1.0}] * world_size + [{"CPU": 1.0}]
 
                 pg = ray.util.placement_group(
                     name=f"dp_rank_{rank}",

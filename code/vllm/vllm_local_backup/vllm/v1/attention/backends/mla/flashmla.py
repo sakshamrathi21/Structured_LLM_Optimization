@@ -12,6 +12,7 @@ from vllm.attention.ops.flashmla import (flash_mla_with_kvcache,
                                          is_flashmla_supported)
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
+from vllm.platforms.cuda import CudaPlatform
 from vllm.v1.attention.backends.mla.common import (MLACommonBackend,
                                                    MLACommonDecodeMetadata,
                                                    MLACommonImpl,
@@ -27,7 +28,7 @@ class FlashMLABackend(MLACommonBackend):
 
     @staticmethod
     def get_name() -> str:
-        return "FLASHMLA"
+        return "FLASHMLA_VLLM_V1"
 
     @staticmethod
     def get_metadata_cls() -> type["FlashMLAMetadata"]:
@@ -155,8 +156,18 @@ class FlashMLAImpl(MLACommonImpl[FlashMLAMetadata]):
                          logits_soft_cap, attn_type,
                          kv_sharing_target_layer_name, **mla_args)
 
-        is_supported, reason = is_flashmla_supported()
-        assert is_supported, reason
+        assert is_flashmla_supported(), \
+            "FlashMLA is not supported on this device"
+
+        # disallow FlashMLA on NVIDIA Blackwell (SM 10.0+) GPUs
+        # context:
+        # https://github.com/deepseek-ai/FlashMLA/issues/83
+        # https://github.com/vllm-project/vllm/issues/24513
+        if CudaPlatform.has_device_capability(100):
+            raise NotImplementedError(
+                "FlashMLA is temporarily disabled on Blackwell (SM 10.0). "
+                "Please use CUTLASS_MLA or TRITON_MLA instead. "
+                "Example: `export VLLM_ATTENTION_BACKEND=CUTLASS_MLA`")
 
         unsupported_features = [alibi_slopes, sliding_window, logits_soft_cap]
         if any(unsupported_features):

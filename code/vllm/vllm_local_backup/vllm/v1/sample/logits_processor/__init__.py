@@ -243,7 +243,7 @@ class AdapterLogitsProcessor(LogitsProcessor):
     def _new_state(
         self,
         params: SamplingParams,
-        prompt_ids: Optional[list[int]],
+        prompt_ids: list[int],
         output_ids: list[int],
     ) -> Optional[partial[torch.Tensor]]:
         """Return state representation for new request

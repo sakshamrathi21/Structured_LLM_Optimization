@@ -8,6 +8,7 @@ import torch
 
 from vllm.attention.backends.abstract import (AttentionBackend, AttentionImpl,
                                               AttentionLayer, AttentionType)
+from vllm.attention.backends.utils import CommonAttentionState
 from vllm.config import VllmConfig
 from vllm.logger import init_logger
 from vllm.utils import cdiv, next_power_of_2
@@ -86,7 +87,7 @@ class PallasAttentionBackend(AttentionBackend):
 
     @staticmethod
     def get_name() -> str:
-        return "PALLAS"
+        return "PALLAS_VLLM_V1"
 
     @staticmethod
     def get_impl_cls() -> type["PallasAttentionBackendImpl"]:
@@ -95,6 +96,10 @@ class PallasAttentionBackend(AttentionBackend):
     @staticmethod
     def get_metadata_cls() -> type["PallasMetadata"]:
         return PallasMetadata
+
+    @staticmethod
+    def get_state_cls() -> type["CommonAttentionState"]:
+        return CommonAttentionState
 
     @staticmethod
     def get_kv_cache_shape(

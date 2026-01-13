@@ -7,12 +7,11 @@ from typing import Optional
 import torch
 
 from vllm.attention.backends.abstract import AttentionBackend
+from vllm.attention.backends.utils import PAD_SLOT_ID
 from vllm.config import VllmConfig
 from vllm.v1.attention.backends.mamba_attn import (
     BaseMambaAttentionMetadataBuilder)
-from vllm.v1.attention.backends.utils import (PAD_SLOT_ID,
-                                              CommonAttentionMetadata,
-                                              compute_causal_conv1d_metadata,
+from vllm.v1.attention.backends.utils import (CommonAttentionMetadata,
                                               split_decodes_and_prefills)
 from vllm.v1.kv_cache_interface import AttentionSpec
 
@@ -132,8 +131,9 @@ class Mamba2AttentionMetadata:
 
     # The following attributes are for triton implementation of causal_conv1d
     nums_dict: Optional[dict] = None
-    batch_ptr: Optional[torch.Tensor] = None
-    token_chunk_offset_ptr: Optional[torch.Tensor] = None
+    cu_seqlen: Optional[int] = None
+    batch_ptr: Optional[torch.tensor] = None
+    token_chunk_offset_ptr: Optional[torch.tensor] = None
 
 
 class Mamba2AttentionMetadataBuilder(
@@ -160,9 +160,6 @@ class Mamba2AttentionMetadataBuilder(
         # currently we really only support the FlashAttention backend
         has_initial_states_p = None
         prep_initial_states = False
-
-        # for causal_conv1d
-        nums_dict, batch_ptr, token_chunk_offset_ptr = None, None, None
 
         state_indices_tensor = common_attn_metadata.block_table_tensor[:, 0]
 
@@ -201,9 +198,6 @@ class Mamba2AttentionMetadataBuilder(
                         query_start_loc_p, self.chunk_size,
                         num_prefill_tokens))
 
-            nums_dict, batch_ptr, token_chunk_offset_ptr = \
-                compute_causal_conv1d_metadata(query_start_loc_p)
-
         elif num_decodes <= self.decode_cudagraph_max_bs:
             # Pad state tensor for CUDA graph
             num_input_tokens = self.vllm_config.pad_for_cudagraph(num_decodes)
@@ -226,8 +220,5 @@ class Mamba2AttentionMetadataBuilder(
             chunk_indices_p=chunk_indices_p,
             chunk_offsets_p=chunk_offsets_p,
             state_indices_tensor=state_indices_tensor,
-            nums_dict=nums_dict,
-            batch_ptr=batch_ptr,
-            token_chunk_offset_ptr=token_chunk_offset_ptr,
         )
         return attn_metadata

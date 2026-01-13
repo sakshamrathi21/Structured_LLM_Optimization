@@ -51,6 +51,8 @@ class RayDistributedExecutor(RayDistributedExecutorV0, Executor):
 
         # KV connector setup
         self.has_connector = self.vllm_config.kv_transfer_config is not None
+        self.kv_output_aggregator = KVOutputAggregator(
+            self.parallel_config.world_size)
 
     @property
     def max_concurrent_batches(self) -> int:
@@ -64,13 +66,11 @@ class RayDistributedExecutor(RayDistributedExecutorV0, Executor):
     def execute_model(
         self,
         scheduler_output: SchedulerOutput,
-        non_block: bool = False,
     ) -> Union[ModelRunnerOutput, Future[ModelRunnerOutput]]:
         """Execute the model on the Ray workers.
 
         Args:
             scheduler_output: The scheduler output to execute.
-            non_block: If True, the method will return a Future.
 
         Returns:
             The model runner output.
@@ -84,7 +84,7 @@ class RayDistributedExecutor(RayDistributedExecutorV0, Executor):
         if not self.has_connector:
             # Get output only from a single worker (output_rank)
             # When PP is not used, we block here until the result is available.
-            if not non_block:
+            if self.max_concurrent_batches == 1:
                 return refs[0].get()
 
             # When PP is used, we return a FutureWrapper immediately so that
@@ -92,7 +92,7 @@ class RayDistributedExecutor(RayDistributedExecutorV0, Executor):
             return FutureWrapper(refs)
 
         # Get output from all workers when connector is present
-        if not non_block:
+        if self.max_concurrent_batches == 1:
             # Block and get results from all workers
             outputs = [ref.get() for ref in refs]
             return self.kv_output_aggregator.aggregate(outputs)
@@ -106,3 +106,4 @@ class RayDistributedExecutor(RayDistributedExecutorV0, Executor):
         if reconfig_request.new_data_parallel_rank == \
         ReconfigureRankType.SHUTDOWN_CURRENT_RANK:
             self.shutdown()
+        return

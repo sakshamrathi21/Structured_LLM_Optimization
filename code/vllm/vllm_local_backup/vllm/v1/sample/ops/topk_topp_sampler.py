@@ -29,12 +29,15 @@ class TopKTopPSampler(nn.Module):
     Implementations may update the logits tensor in-place.
     """
 
-    def __init__(self, logprobs_mode: LogprobsMode = "raw_logprobs") -> None:
+    def __init__(
+            self,
+            logprobs_mode: LogprobsMode = LogprobsMode.RAW_LOGPROBS) -> None:
         super().__init__()
         self.logprobs_mode = logprobs_mode
         # flashinfer optimization does not apply if intermediate
         # logprobs/logits after top_k/top_p need to be returned
-        if logprobs_mode not in ("processed_logits", "processed_logprobs"
+        if logprobs_mode not in (LogprobsMode.PROCESSED_LOGITS,
+                                 LogprobsMode.PROCESSED_LOGPROBS
                                  ) and current_platform.is_cuda():
             if is_flashinfer_available:
                 flashinfer_version = flashinfer.__version__
@@ -68,8 +71,6 @@ class TopKTopPSampler(nn.Module):
                     "native implementation of top-p & top-k sampling. For the "
                     "best performance, please install FlashInfer.")
                 self.forward = self.forward_native
-        elif current_platform.is_cpu():
-            self.forward = self.forward_cpu
         else:
             self.forward = self.forward_native
 
@@ -89,9 +90,9 @@ class TopKTopPSampler(nn.Module):
         """
         logits = self.apply_top_k_top_p(logits, k, p)
         logits_to_return = None
-        if self.logprobs_mode == "processed_logits":
+        if self.logprobs_mode == LogprobsMode.PROCESSED_LOGITS:
             logits_to_return = logits
-        elif self.logprobs_mode == "processed_logprobs":
+        elif self.logprobs_mode == LogprobsMode.PROCESSED_LOGPROBS:
             logits_to_return = logits.log_softmax(dim=-1, dtype=torch.float32)
         probs = logits.softmax(dim=-1, dtype=torch.float32)
         return random_sample(probs, generators), logits_to_return
@@ -109,56 +110,17 @@ class TopKTopPSampler(nn.Module):
         # CPU-GPU synchronization while `flashinfer_sample` does.
         if (k is None and p is None) or generators:
             if generators:
-                logger.debug_once("FlashInfer 0.2.3+ does not support "
-                                  "per-request generators. Falling back to "
-                                  "PyTorch-native implementation.")
+                logger.warning_once("FlashInfer 0.2.3+ does not support "
+                                    "per-request generators. Falling back to "
+                                    "PyTorch-native implementation.")
             return self.forward_native(logits, generators, k, p)
         assert self.logprobs_mode not in (
-            "processed_logits", "processed_logprobs"
+            LogprobsMode.PROCESSED_LOGITS, LogprobsMode.PROCESSED_LOGPROBS
         ), "FlashInfer does not support returning logits/logprobs"
         # flashinfer sampling functions expect contiguous logits.
         # In flex_attn/triton_attn fp32 inference, logits can be non-contiguous
         # because of slicing operation in logits_processor.
         return flashinfer_sample(logits.contiguous(), k, p, generators), None
-
-    def forward_cpu(
-        self,
-        logits: torch.Tensor,
-        generators: dict[int, torch.Generator],
-        k: Optional[torch.Tensor],
-        p: Optional[torch.Tensor],
-    ) -> tuple[torch.Tensor, Optional[torch.Tensor]]:
-        """
-        PyTorch-native implementation of top-k and top-p sampling for CPU.
-
-        The logits tensor may be updated in-place.
-        """
-        logits = self.apply_top_k_top_p(logits, k, p)
-        logits_to_return = None
-        if self.logprobs_mode == "processed_logits":
-            logits_to_return = logits
-        elif self.logprobs_mode == "processed_logprobs":
-            logits_to_return = logits.log_softmax(dim=-1, dtype=torch.float32)
-
-        # Note: this is a workaround for
-        # https://github.com/pytorch/pytorch/pull/151218
-        @torch.compile(dynamic=True)
-        def compiled_random_sample(logits: torch.Tensor) -> torch.Tensor:
-            probs = logits.softmax(dim=-1, dtype=torch.float32)
-            q = torch.empty_like(probs)
-            q.exponential_()
-            return probs.div(q).argmax(dim=-1).view(-1)
-
-        if len(generators) != logits.shape[0]:
-            return compiled_random_sample(logits), logits_to_return
-        else:
-            probs = logits.softmax(dim=-1, dtype=torch.float32)
-            q = torch.empty_like(probs)
-            q.exponential_()
-            for i, generator in generators.items():
-                q[i].exponential_(generator=generator)
-
-            return probs.div_(q).argmax(dim=-1).view(-1), logits_to_return
 
 
 def apply_top_k_top_p(

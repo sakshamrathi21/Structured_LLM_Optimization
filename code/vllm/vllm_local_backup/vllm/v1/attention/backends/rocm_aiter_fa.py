@@ -232,7 +232,7 @@ class AiterFlashAttentionMetadata:
 
 class AiterFlashAttentionMetadataBuilder(
         AttentionMetadataBuilder[AiterFlashAttentionMetadata]):
-    cudagraph_support = AttentionCGSupport.UNIFORM_SINGLE_TOKEN_DECODE
+    cudagraph_support = AttentionCGSupport.ALWAYS
 
     def __init__(self, kv_cache_spec: AttentionSpec, layer_names: list[str],
                  vllm_config: VllmConfig, device: torch.device):
@@ -340,7 +340,7 @@ class AiterFlashAttentionBackend(AttentionBackend):
 
     @staticmethod
     def get_name() -> str:
-        return "FLASH_ATTN"
+        return "FLASH_ATTN_VLLM_V1"
 
     @staticmethod
     def get_impl_cls() -> type["AiterFlashAttentionImpl"]:
@@ -479,8 +479,8 @@ class AiterFlashAttentionImpl(AttentionImpl):
             )
 
         if self.kv_cache_dtype.startswith("fp8"):
-            key_cache = key_cache.view(current_platform.fp8_dtype())
-            value_cache = value_cache.view(current_platform.fp8_dtype())
+            key_cache = key_cache.view(torch.float8_e4m3fnuz)
+            value_cache = value_cache.view(torch.float8_e4m3fnuz)
 
         if not attn_metadata.use_cascade:
             cu_seqlens_q = attn_metadata.query_start_loc

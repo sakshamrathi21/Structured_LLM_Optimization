@@ -24,7 +24,7 @@ class TritonMLABackend(MLACommonBackend):
 
     @staticmethod
     def get_name() -> str:
-        return "TRITON_MLA"
+        return "TRITON_MLA_VLLM_V1"
 
     @staticmethod
     def get_impl_cls() -> type["TritonMLAImpl"]:
@@ -32,7 +32,6 @@ class TritonMLABackend(MLACommonBackend):
 
 
 class TritonMLAImpl(MLACommonImpl[MLACommonMetadata]):
-    can_return_lse_for_decode: bool = True
 
     def __init__(
             self,
@@ -140,20 +139,19 @@ class TritonMLAImpl(MLACommonImpl[MLACommonMetadata]):
 
         assert isinstance(q, torch.Tensor)
         B = q.shape[0]
-        q_num_heads = q.shape[1]
         o = torch.zeros(B,
-                        q_num_heads,
+                        self.num_heads,
                         self.kv_lora_rank,
                         dtype=q.dtype,
                         device=q.device)
-        lse = torch.zeros(B, q_num_heads, dtype=q.dtype, device=q.device)
+
         num_kv_splits = 4  # TODO: heuristic
 
         # TODO(lucas) Allocate ahead of time
         attn_logits = torch.empty(
             (
                 B,
-                q_num_heads,
+                self.num_heads,
                 num_kv_splits,
                 # NOTE(lucas) idk why the +1 is here but sglang has it so we
                 # just mirror that
@@ -169,9 +167,9 @@ class TritonMLAImpl(MLACommonImpl[MLACommonMetadata]):
         PAGE_SIZE = kv_c_and_k_pe_cache.size(1)
 
         # Run MQA
-        decode_attention_fwd(q, kv_c_and_k_pe_cache, kv_c_cache, o, lse,
+        decode_attention_fwd(q, kv_c_and_k_pe_cache, kv_c_cache, o,
                              attn_metadata.decode.block_table,
                              attn_metadata.decode.seq_lens, attn_logits,
                              num_kv_splits, self.scale, PAGE_SIZE)
 
-        return o, lse
+        return o, None

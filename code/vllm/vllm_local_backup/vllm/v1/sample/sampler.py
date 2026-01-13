@@ -60,7 +60,8 @@ class Sampler(nn.Module):
     9. Return the final `SamplerOutput`.
     """
 
-    def __init__(self, logprobs_mode: LogprobsMode = "raw_logprobs"):
+    def __init__(self,
+                 logprobs_mode: LogprobsMode = LogprobsMode.RAW_LOGPROBS):
         super().__init__()
         self.topk_topp_sampler = TopKTopPSampler(logprobs_mode)
         self.pin_memory = is_pin_memory_available()
@@ -77,9 +78,9 @@ class Sampler(nn.Module):
         # is used for sampling (after penalties and temperature scaling).
         num_logprobs = sampling_metadata.max_num_logprobs
         if num_logprobs is not None:
-            if self.logprobs_mode == "raw_logprobs":
+            if self.logprobs_mode == LogprobsMode.RAW_LOGPROBS:
                 raw_logprobs = self.compute_logprobs(logits)
-            elif self.logprobs_mode == "raw_logits":
+            elif self.logprobs_mode == LogprobsMode.RAW_LOGITS:
                 raw_logprobs = logits.clone()
 
         # Use float32 for the logits.
@@ -128,12 +129,8 @@ class Sampler(nn.Module):
         self,
         logits: torch.Tensor,
         temp: torch.Tensor,
-        all_random: bool,
     ) -> torch.Tensor:
         # Use in-place division to avoid creating a new tensor.
-        # Avoid division by zero if there are greedy requests.
-        if not all_random:
-            temp = torch.where(temp < _SAMPLING_EPS, 1.0, temp)
         return logits.div_(temp.unsqueeze(dim=1))
 
     def greedy_sample(self, logits: torch.Tensor) -> torch.Tensor:
@@ -159,17 +156,16 @@ class Sampler(nn.Module):
             if sampling_metadata.all_greedy:
                 processed_logprobs = None
                 if sampling_metadata.max_num_logprobs is not None:
-                    if self.logprobs_mode == "processed_logits":
+                    if self.logprobs_mode == LogprobsMode.PROCESSED_LOGITS:
                         processed_logprobs = logits
-                    elif self.logprobs_mode == "processed_logprobs":
+                    elif self.logprobs_mode == LogprobsMode.PROCESSED_LOGPROBS:
                         processed_logprobs = self.compute_logprobs(logits)
                 return greedy_sampled, processed_logprobs
 
         assert sampling_metadata.temperature is not None
 
         # Apply temperature.
-        logits = self.apply_temperature(logits, sampling_metadata.temperature,
-                                        sampling_metadata.all_random)
+        logits = self.apply_temperature(logits, sampling_metadata.temperature)
 
         # Apply logits processors that only apply to random sampling
         # (argmax invariant)

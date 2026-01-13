@@ -1,18 +1,15 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
-import time
 from collections.abc import Mapping
 from copy import copy
 from typing import Any, Callable, Optional, Union
 
-import torch.nn as nn
 from typing_extensions import TypeVar
 
 import vllm.envs as envs
 from vllm.config import ParallelConfig, VllmConfig
 from vllm.distributed import stateless_destroy_torch_distributed_process_group
-from vllm.distributed.parallel_state import get_dp_group
 from vllm.engine.arg_utils import EngineArgs
 from vllm.inputs import PromptType
 from vllm.logger import init_logger
@@ -23,8 +20,8 @@ from vllm.pooling_params import PoolingParams
 from vllm.sampling_params import SamplingParams
 from vllm.tasks import SupportedTask
 from vllm.tracing import init_tracer
-from vllm.transformers_utils.tokenizer import (AnyTokenizer,
-                                               init_tokenizer_from_configs)
+from vllm.transformers_utils.tokenizer_group import (
+    TokenizerGroup, init_tokenizer_from_configs)
 from vllm.usage.usage_lib import UsageContext
 from vllm.utils import Device
 from vllm.v1.engine.core_client import EngineCoreClient
@@ -32,10 +29,10 @@ from vllm.v1.engine.output_processor import OutputProcessor
 from vllm.v1.engine.parallel_sampling import ParentRequest
 from vllm.v1.engine.processor import Processor
 from vllm.v1.executor.abstract import Executor
-from vllm.v1.metrics.loggers import StatLoggerFactory, StatLoggerManager
+from vllm.v1.metrics.loggers import (PrometheusStatLogger, StatLoggerBase,
+                                     StatLoggerFactory)
 from vllm.v1.metrics.reader import Metric, get_metrics_snapshot
 from vllm.v1.metrics.stats import IterationStats
-from vllm.v1.worker.worker_base import WorkerBase
 
 logger = init_logger(__name__)
 
@@ -74,16 +71,14 @@ class LLMEngine:
         self.cache_config = vllm_config.cache_config
 
         self.log_stats = log_stats
+        self.stat_logger: Optional[StatLoggerBase] = None
+        if self.log_stats:
+            self.stat_logger = PrometheusStatLogger(vllm_config)
 
-        executor_backend = (
-            self.vllm_config.parallel_config.distributed_executor_backend)
-        parallel_config = vllm_config.parallel_config
-        self.external_launcher_dp = (parallel_config.data_parallel_size > 1 and
-                                     executor_backend == "external_launcher")
         # important: init dp group before init the engine_core
         # In the decoupled engine case this is handled in EngineCoreProc.
-        if not multiprocess_mode and parallel_config.data_parallel_size > 1 \
-            and not self.external_launcher_dp:
+        parallel_config = vllm_config.parallel_config
+        if not multiprocess_mode and parallel_config.data_parallel_size > 1:
             self.dp_group = parallel_config.stateless_init_dp_group()
         else:
             self.dp_group = None
@@ -94,7 +89,9 @@ class LLMEngine:
         else:
             # Tokenizer (+ ensure liveness if running in another process).
             self.tokenizer = init_tokenizer_from_configs(
-                model_config=vllm_config.model_config)
+                model_config=vllm_config.model_config,
+                scheduler_config=vllm_config.scheduler_config,
+                lora_config=vllm_config.lora_config)
 
         # Processor (convert Inputs --> EngineCoreRequests)
         self.processor = Processor(vllm_config=vllm_config,
@@ -119,23 +116,9 @@ class LLMEngine:
             log_stats=self.log_stats,
         )
 
-        self.logger_manager: Optional[StatLoggerManager] = None
-        if self.log_stats:
-            self.logger_manager = StatLoggerManager(
-                vllm_config=vllm_config,
-                custom_stat_loggers=stat_loggers,
-                enable_default_loggers=log_stats,
-            )
-            self.logger_manager.log_engine_initialized()
-
         if not multiprocess_mode:
             # for v0 compatibility
             self.model_executor = self.engine_core.engine_core.model_executor  # type: ignore
-
-        if self.external_launcher_dp:
-            # If we use DP in external launcher mode, we reuse the
-            # existing DP group used for data communication.
-            self.dp_group = get_dp_group().cpu_group
 
         # Don't keep the dummy data in memory
         self.reset_mm_cache()
@@ -273,15 +256,12 @@ class LLMEngine:
 
         # 3) Abort any reqs that finished due to stop strings.
         self.engine_core.abort_requests(processed_outputs.reqs_to_abort)
-
+        # print("hello", outputs.scheduler_stats)
         # 4) Record stats
-        if self.logger_manager is not None:
+        if self.stat_logger is not None:
             assert outputs.scheduler_stats is not None
-            self.logger_manager.record(
-                scheduler_stats=outputs.scheduler_stats,
-                iteration_stats=iteration_stats,
-            )
-            self.do_log_stats_with_interval()
+            self.stat_logger.record(scheduler_stats=outputs.scheduler_stats,
+                                    iteration_stats=iteration_stats)
 
         return processed_outputs.request_outputs
 
@@ -317,26 +297,12 @@ class LLMEngine:
         assert self.log_stats, "Stat logging disabled"
         return get_metrics_snapshot()
 
-    def get_tokenizer(self) -> AnyTokenizer:
+    def get_tokenizer_group(self) -> TokenizerGroup:
         if self.tokenizer is None:
             raise ValueError("Unable to get tokenizer because "
                              "skip_tokenizer_init is True")
 
         return self.tokenizer
-
-    def do_log_stats(self) -> None:
-        """Log stats if logging is enabled."""
-        if self.logger_manager:
-            self.logger_manager.log()
-
-    def do_log_stats_with_interval(self) -> None:
-        """Log stats when the time interval has passed."""
-        now = time.time()
-        if not hasattr(self, "_last_log_time"):
-            self._last_log_time = now
-        if now - self._last_log_time >= envs.VLLM_LOG_STATS_INTERVAL:
-            self.do_log_stats()
-            self._last_log_time = now
 
     def add_lora(self, lora_request: LoRARequest) -> bool:
         """Load a new LoRA adapter into the engine for future requests."""
@@ -355,16 +321,12 @@ class LLMEngine:
         return self.engine_core.pin_lora(lora_id)
 
     def collective_rpc(self,
-                       method: Union[str, Callable[[WorkerBase], _R]],
+                       method: Union[str, Callable[..., _R]],
                        timeout: Optional[float] = None,
                        args: tuple = (),
                        kwargs: Optional[dict[str, Any]] = None) -> list[_R]:
         return self.engine_core.collective_rpc(method, timeout, args, kwargs)
 
-    def apply_model(self, func: Callable[[nn.Module], _R]) -> list[_R]:
-        return self.collective_rpc("apply_model", args=(func, ))
-
     def __del__(self):
-        if dp_group := getattr(self, "dp_group",
-                               None) and not self.external_launcher_dp:
+        if dp_group := getattr(self, "dp_group", None):
             stateless_destroy_torch_distributed_process_group(dp_group)

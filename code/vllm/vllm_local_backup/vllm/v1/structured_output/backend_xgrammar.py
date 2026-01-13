@@ -34,7 +34,7 @@ class XgrammarBackend(StructuredOutputBackend):
 
     def __post_init__(self):
         self.disable_any_whitespace = \
-            self.vllm_config.structured_outputs_config.disable_any_whitespace
+            self.vllm_config.decoding_config.disable_any_whitespace
 
         if isinstance(self.tokenizer, MistralTokenizer):
             # NOTE: ideally, xgrammar should handle this accordingly.
@@ -108,9 +108,7 @@ class XgrammarBackend(StructuredOutputBackend):
                     end=s["end"],
                 ) for s in s_tag["structures"]
             ]
-            structural_tag = xgr.StructuralTag.from_legacy_structural_tag(
-                tags, s_tag["triggers"])
-            ctx = self.compiler.compile_structural_tag(structural_tag)
+            ctx = self.compiler.compile_structural_tag(tags, s_tag["triggers"])
         else:
             logger.error(
                 "Validation should have already occurred. Please file an issue."
@@ -250,37 +248,37 @@ def validate_xgrammar_grammar(sampling_params: SamplingParams) -> None:
 
     Raises ValueError if the request is not supported.
     """
-    if sampling_params.structured_outputs is None:
+    if sampling_params.guided_decoding is None:
         return
 
-    so_params = sampling_params.structured_outputs
+    gd_params = sampling_params.guided_decoding
 
-    if so_params.regex:
+    if gd_params.regex:
         try:
-            xgr.Grammar.from_regex(so_params.regex)
+            xgr.Grammar.from_regex(gd_params.regex)
         except Exception as err:
             raise ValueError("Failed to transform regex into a grammar: "
                              f"{err}") from err
 
-    if so_params.choice:
-        choice_grammar = choice_as_grammar(so_params.choice)
+    if gd_params.choice:
+        choice_grammar = choice_as_grammar(gd_params.choice)
         try:
             xgr.Grammar.from_ebnf(choice_grammar)
         except Exception as err:
             raise ValueError("Failed to transform choices into a grammar: "
                              "{err}") from err
-        so_params.choice = None
-        so_params.grammar = choice_grammar
+        gd_params.choice = None
+        gd_params.grammar = choice_grammar
         return
 
-    if so_params.json:
-        if isinstance(so_params.json, str):
+    if gd_params.json:
+        if isinstance(gd_params.json, str):
             try:
-                schema = json.loads(so_params.json)
+                schema = json.loads(gd_params.json)
             except json.JSONDecodeError as e:
                 raise ValueError("Invalid JSON grammar specification.") from e
         else:
-            schema = so_params.json
+            schema = gd_params.json
 
         try:
             xgr.Grammar.from_json_schema(schema)
@@ -293,11 +291,11 @@ def validate_xgrammar_grammar(sampling_params: SamplingParams) -> None:
                              "supported by xgrammar.")
         return
 
-    if so_params.grammar:
-        if grammar_is_likely_lark(so_params.grammar):
+    if gd_params.grammar:
+        if grammar_is_likely_lark(gd_params.grammar):
             # xgrammar supports EBNF grammars only
             try:
-                so_params.grammar = convert_lark_to_ebnf(so_params.grammar)
+                gd_params.grammar = convert_lark_to_ebnf(gd_params.grammar)
             except ValueError as e:
                 raise ValueError(
                     "Failed to convert the grammar from Lark to EBNF. ") from e
@@ -305,14 +303,14 @@ def validate_xgrammar_grammar(sampling_params: SamplingParams) -> None:
         # Test parsing EBNF grammar, possibly already converted from Lark
         try:
             # parse the grammar, but we aren't compiling it.
-            xgr.Grammar.from_ebnf(so_params.grammar)
+            xgr.Grammar.from_ebnf(gd_params.grammar)
         except Exception as e:
             raise ValueError("Invalid grammar specification.") from e
         return
 
-    if so_params.structural_tag:
+    if gd_params.structural_tag:
         try:
-            s_tag = json.loads(so_params.structural_tag)
+            s_tag = json.loads(gd_params.structural_tag)
             tags = [
                 xgr.StructuralTagItem(
                     begin=s["begin"],
@@ -320,8 +318,6 @@ def validate_xgrammar_grammar(sampling_params: SamplingParams) -> None:
                     end=s["end"],
                 ) for s in s_tag["structures"]
             ]
-            structural_tag = xgr.StructuralTag.from_legacy_structural_tag(
-                tags, s_tag["triggers"])
-            xgr.Grammar.from_structural_tag(structural_tag)
+            xgr.Grammar.from_structural_tag(tags, s_tag["triggers"])
         except Exception as e:
             raise ValueError("Invalid structural tag specification.") from e

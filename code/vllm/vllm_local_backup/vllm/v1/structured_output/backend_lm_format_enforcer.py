@@ -138,30 +138,30 @@ class LMFormatEnforcerBackend(StructuredOutputBackend):
 
 def validate_structured_output_request_lm_format_enforcer(
         params: SamplingParams):
-    if params.structured_outputs is None:
+    if params.guided_decoding is None:
         return
 
-    so_params = params.structured_outputs
+    gd_params = params.guided_decoding
 
-    if so_params.regex:
+    if gd_params.regex:
         return
-    elif so_params.json:
-        if isinstance(so_params.json, str):
+    elif gd_params.json:
+        if isinstance(gd_params.json, str):
             try:
                 # make sure schema is valid json
-                json.loads(so_params.json)
+                json.loads(gd_params.json)
             except json.JSONDecodeError as e:
                 raise ValueError("Invalid JSON grammar specification.") from e
         else:
             try:
-                json.dumps(so_params.json)
+                json.dumps(gd_params.json)
             except Exception as e:
                 raise ValueError(
-                    f"Error serializing structured outputs jsonschema: {e}"
+                    f"Error serializing guided decoding jsonschema: {e}"
                 ) from e
         return
-    elif so_params.choice:
+    elif gd_params.choice:
         return
-    elif so_params.grammar:
-        raise ValueError("LM Format Enforcer structured outputs backend "
+    elif gd_params.grammar:
+        raise ValueError("LM Format Enforcer guided decoding backend "
                          "does not support grammar specifications")
