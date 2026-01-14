@@ -11,5 +11,3 @@ for req_per_sec in "${REQ_PER_SEC_S[@]}"; do
     $PY_BIN "$VLLM_SCRIPT" --policy family_load --max_batch_size 1000 --write_output --multiplier 50 --max_new_tokens 100 --req_per_sec "$req_per_sec"
     $PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 50 --max_new_tokens 100 --req_per_sec "$req_per_sec"
 done
-
-$PY_BIN "$VLLM_SCRIPT" --policy radix_cost --max_batch_size 1000 --write_output --multiplier 50 --max_new_tokens 100 --req_per_sec 200

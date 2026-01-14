@@ -28,7 +28,7 @@ def main():
     parser.add_argument("--multiplier", type=int, default=10)
     parser.add_argument("--max_new_tokens", type=int, default=50)
     parser.add_argument("--write_output", action="store_true")
-    parser.add_argument("--policy", type=str, default="fcfs")
+    parser.add_argument("--policy", type=str, default="lpm")
     args = parser.parse_args()
 
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
