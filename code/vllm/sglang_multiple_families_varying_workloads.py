@@ -1,10 +1,10 @@
 import random
 import string
 import time
-import sys as system
+import argparse
 
 from transformers import AutoTokenizer
-from system_prompt import queries, system_prompt
+from system_prompt import queries, system_prompt as sys_prompt
 import sglang as sgl
 
 
@@ -18,38 +18,36 @@ def generate_prefixes(n):
 
 
 def main():
-    model_name = "meta-llama/Llama-3.1-8B-Instruct"
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    num_families = int(system.argv[1]) if len(system.argv) > 1 else 10
-    req_per_sec = int(system.argv[2]) if len(system.argv) > 2 else 20
-    max_batch_size = int(system.argv[3]) if len(system.argv) > 3 else 100
-    randomness = int(system.argv[4]) if len(system.argv) > 4 else 0
-    prefixes = generate_prefixes(num_families)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model_name", type=str, default="meta-llama/Llama-3.1-8B-Instruct")
+    parser.add_argument("--num_families", type=int, default=2)
+    parser.add_argument("--req_per_sec", type=int, default=None)
+    parser.add_argument("--max_batch_size", type=int, default=500)
+    parser.add_argument("--randomness", type=int, default=1)
+    parser.add_argument("--len_factor", type=float, default=1.0)
+    parser.add_argument("--multiplier", type=int, default=10)
+    parser.add_argument("--max_new_tokens", type=int, default=50)
+    parser.add_argument("--write_output", action="store_true")
+    parser.add_argument("--policy", type=str, default="fcfs")
+    args = parser.parse_args()
+
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name)
+
+    prefixes = generate_prefixes(args.num_families)
     prompts = []
-    families = []  
-    current_load = (num_families * len(queries)) / req_per_sec
-    multiplier = max(1, 10/current_load)
-    multiplier = int(multiplier)
-    system_prompts = []
+    families = []
+
+    # Adjust system prompt length
+    if args.len_factor > 1.0:
+        system_prompt = sys_prompt * int(args.len_factor)
+    else:
+        system_prompt = sys_prompt[: int(len(sys_prompt) * args.len_factor)]
+
+    # Build prompts
     for prefix in prefixes:
-        chat_messages = [
-            {"role": "system", "content": prefix + " " + system_prompt},
-        ]
-        try:
-            full_prompt = tokenizer.apply_chat_template(
-                chat_messages,
-                tokenize=False,
-                add_generation_prompt=True,
-            )
-        except Exception:
-            full_prompt = prefix + " " + system_prompt
-        system_prompts.append(full_prompt)
-    
-    for prefix in prefixes: 
-        for q in queries*multiplier:
-            modified_system_prompt = prefix + " " + system_prompt
+        for q in queries * args.multiplier:
             chat_messages = [
-                {"role": "system", "content": modified_system_prompt},
+                {"role": "system", "content": prefix + " " + system_prompt},
                 {"role": "user", "content": q},
             ]
             try:
@@ -59,47 +57,61 @@ def main():
                     add_generation_prompt=True,
                 )
             except Exception:
-                full_prompt = modified_system_prompt + " Question: " + q
+                full_prompt = prefix + " " + system_prompt + " Question: " + q
 
             prompts.append(full_prompt)
             families.append(prefix)
 
     print(f"Generated {len(prompts)} prompts in total.")
+
+    # Randomization (same logic as vLLM script)
     paired = list(zip(prompts, families))
-    if randomness == 2:
-        random.shuffle(paired)
-    elif randomness == 1:
-        # every 50 sized chunk should remain as it is, but shuffle the chunks
-        chunked = [paired[i:i+50] for i in range(0, len(paired), 50)]
+    if args.randomness > 0:
+        chunked = [
+            paired[i : i + args.randomness]
+            for i in range(0, len(paired), args.randomness)
+        ]
         random.shuffle(chunked)
         paired = [item for chunk in chunked for item in chunk]
-    prompts, families = zip(*paired)
 
-    enable_chunked_prefill = True
+    prompts, families = zip(*paired)
+    prompts = list(prompts)
+
+    # Initialize SGLang engine
     llm = sgl.Engine(
-        model_path=model_name, 
+        model_path=args.model_name,
         mem_fraction_static=0.98,
         max_total_tokens=32768,
-        max_running_requests=max_batch_size,
+        max_running_requests=args.max_batch_size,
+        schedule_policy=args.policy,
     )
-    sampling_params = {"temperature": 0.7, "max_new_tokens": 30}
-    # out = llm.generate(list(system_prompts), sampling_params)
-    initial_start_time = time.time()
-    for i in range(0, len(prompts), req_per_sec):
-        start_time = time.time()
-        outputs = llm.generate(list(prompts[i:i+req_per_sec]), sampling_params)
-        time.sleep(max(0, 1 - time.time() + start_time))
+
+    sampling_params = {
+        "temperature": 0.7,
+        "max_new_tokens": args.max_new_tokens,
+    }
+
+    # Run benchmark
+    start_time = time.time()
+    llm.generate(
+        prompts,
+        sampling_params,
+    )
     end_time = time.time()
-    throughput = len(prompts) / (end_time - initial_start_time)
-    print(
-        "Throughput: ",
-        throughput,
-        "req/s (enabling chunked prefill:",
-        enable_chunked_prefill,
-        ")",
-    )
-    with open("vllm_multiple_families_varying_workloads_output.txt", "a") as f:
-        f.write(f"Throughput Test with {num_families} families, {req_per_sec} req/sec and max_batch_size of {max_batch_size} (randomness: {randomness}) for SGLANG: {throughput}\n")
+
+    throughput = len(prompts) / (end_time - start_time)
+    print("Throughput:", throughput, "req/s")
+
+    if args.write_output:
+        with open(".out", "a") as f:
+            f.write(
+                f"Throughput Test | families={args.num_families} | "
+                f"req/s={args.req_per_sec} | max_batch={args.max_batch_size} | "
+                f"randomness={args.randomness} | len_factor={args.len_factor} | "
+                f"model={args.model_name} | max_new_tokens={args.max_new_tokens} | "
+                f"num_prompts={len(prompts)} | throughput={throughput}\n"
+            )
+
 
 if __name__ == "__main__":
     main()

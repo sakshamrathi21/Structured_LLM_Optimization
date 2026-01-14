@@ -590,13 +590,23 @@ R2 is selected since it has maximum prefix overlap with the working set.
 
 \end{frame}
 
-\begin{frame}{Throughput vs sequence length}
+\begin{frame}{Throughput vs Sequence length}
     \begin{figure}
         \centering
     \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_vs_seq_length.png}
     \captionof{figure}{Throughput vs Sequence Length}
 \end{figure}
 \end{frame}
+
+\begin{frame}{Throughput vs req/sec}
+    We model the request ingestion as a poisson process (basically, with exponential sleep times between two consecutive requests)
+    \begin{figure}
+        \centering
+    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_vs_req_per_sec_poisson.png}
+    \captionof{figure}{Throughput vs Varying Ingestion}
+\end{figure}
+\end{frame}
+
 
 \section{}
 \begin{frame}
