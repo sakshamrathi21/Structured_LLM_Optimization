@@ -24,9 +24,17 @@ sglang_fcfs = {
     10: 10.4794
 }
 
+sglang_dfs_weight = {
+    1: 14.32,
+    2: 8.91,
+    5: 3.77,
+    10: 2.116,
+}
+
 # Fill missing length factors with NaN (so matplotlib skips them)
 sglang_lpm_vals = [sglang_lpm.get(l, np.nan) for l in len_factors]
 sglang_fcfs_vals = [sglang_fcfs.get(l, np.nan) for l in len_factors]
+sglang_dfs_vals = [sglang_dfs_weight.get(l, np.nan) for l in len_factors]
 
 # -----------------------------
 # vLLM results
@@ -57,6 +65,7 @@ plt.figure(figsize=(11, 7))
 # SGLang
 plt.plot(len_factors, sglang_lpm_vals, 'o--', linewidth=2, label='SGLang LPM')
 plt.plot(len_factors, sglang_fcfs_vals, 's--', linewidth=2, label='SGLang FCFS')
+plt.plot(len_factors, sglang_dfs_vals, 'v--', linewidth=2, label='SGLang DFS-Weight')
 
 # vLLM
 plt.plot(len_factors, vllm_radix_vals, 'o-', linewidth=2, label='vLLM Radix-Cost')
