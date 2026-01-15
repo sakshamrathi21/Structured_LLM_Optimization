@@ -507,6 +507,25 @@ R2 is selected since it has maximum prefix overlap with the working set.
     \end{itemize}
 \end{frame}
 
+\subsection{SGLANG Schedulers}
+\begin{frame}{LPM: Longest Prefix Matching}
+    \begin{itemize}
+        \item Prioritizes requests based on how much of their input prefix already exists in the prefix cache
+        \item Requests with longer cached prefixes are scheduled earlier
+        \item If multiple requests share a short prefix that is not yet cached, only a few are scheduled first. Others may be temporarily deprioritized to allow one request to populate the cache
+        \item If the waiting queue is large (e.g., $>$ 128 requests), LPM is disabled and falls back to FCFS to avoid expensive prefix matching
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{DFS Weight}
+    \begin{itemize}
+        \item Organizes requests according to the structure of the prefix cache tree
+        \item Each request is associated with a last matched node in the prefix tree
+        \item Each tree node is assigned a weight equal to the number of requests ending at that node plus the weights of all its descendant nodes
+        \item Perform DFS: add requests in that order (visit children in descending order of weights)
+    \end{itemize}
+\end{frame}
+
 \section{Throughput Numbers}
 \begin{frame}{Workload Setup}
     \begin{itemize}
@@ -615,6 +634,17 @@ R2 is selected since it has maximum prefix overlap with the working set.
 \end{figure}
 \end{frame}
 
+
+\section{Summary}
+\begin{frame}{Key Propositions}
+    Just to summarize, we have the following key propositions:
+    \begin{itemize}
+        \item We can operate in a dynamic workload - where requests are being added continuously, unlike BatchLLM
+        \item The ChunkedHashTree can work on arbitrarily long requests, with significantly low CPU overhead (can be optimized more)
+        \item We know on when to stop, basically if the prefixes change by a huge amount on adding the next request, we will stop adding stuff at that point, even if we didn't hit \texttt{max\_batch\_size} parameter (missing in all the existing approaches, we know of)
+        \item Our benefits are based on L2 cache purity, instead of being benefitted from Radix Tree Node LRU Eviction from HBM
+    \end{itemize}
+\end{frame}
 
 \section{}
 \begin{frame}

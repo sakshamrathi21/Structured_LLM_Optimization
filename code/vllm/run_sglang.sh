@@ -7,6 +7,6 @@ REQ_PER_SEC_S=(10 20 50)
 
 for lf in "${LEN_FACTOR[@]}"; do
 # for req_per_sec in "${REQ_PER_SEC_S[@]}"; do
-    $PY_BIN "$SGLANG_SCRIPT" --policy lpm --max_batch_size 500 --write_output --multiplier 50 --max_new_tokens 100 --len_factor "$lf"
-    $PY_BIN "$SGLANG_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 50 --max_new_tokens 100 --len_factor "$lf"
+    # $PY_BIN "$SGLANG_SCRIPT" --policy lpm --max_batch_size 500 --write_output --multiplier 50 --max_new_tokens 100 --len_factor "$lf"
+    $PY_BIN "$SGLANG_SCRIPT" --policy dfs-weight --max_batch_size 500 --write_output --multiplier 25 --max_new_tokens 100 --len_factor "$lf"
 done
