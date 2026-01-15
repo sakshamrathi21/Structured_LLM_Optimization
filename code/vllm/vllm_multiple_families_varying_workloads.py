@@ -33,7 +33,7 @@ def main():
     parser.add_argument("--len_factor", type=float, default=1.0)
     parser.add_argument("--policy", type=str, default="fcfs", choices=list(get_args(SchedulerPolicy)))
     parser.add_argument("--multiplier", type=int, default=10)
-    parser.add_argument("--max_new_tokens", type=int, default=50)
+    parser.add_argument("--max_new_tokens", type=int, default=100)
     parser.add_argument("--write_output", action="store_true", help="Whether to write output to a file.")
     args = parser.parse_args()
 
