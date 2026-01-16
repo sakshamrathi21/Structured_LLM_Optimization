@@ -49,7 +49,7 @@ def main():
     prefixes = generate_prefixes(num_families)
     prompts = []
     families = []  
-    multiplier = int(args.multiplier*2/num_families)
+    multiplier = args.multiplier
     system_prompts = []
     m_sys_prompt = sys_prompt
     if len_factor > 1.0:
