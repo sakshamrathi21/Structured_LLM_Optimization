@@ -1,82 +1,66 @@
+import re
 import matplotlib.pyplot as plt
-import numpy as np
+from collections import defaultdict
+import sys
 
-# -----------------------------
-# Length factors
-# -----------------------------
-len_factors = [1, 2, 5, 10]
+# ----------- CONFIG -----------
+LOG_FILE = "/home/saksham/CS492/code/vllm/vllm_multiple_families_varying_workloads_output.txt"   # change to your file name
+# ------------------------------
 
-# -----------------------------
-# SGLang results (max_batch=500)
-# -----------------------------
-# First = LPM, Second = FCFS
-sglang_lpm = {
-    1: 35.1254,
-    2: 28.3909,
-    5: 19.7881,
-    10: 10.4652
-}
+pattern = re.compile(
+    r"Throughput Test with (\d+) families, (\d+) req/sec.*\(policy: ([^)]+)\).*: ([0-9.]+)"
+)
 
-sglang_fcfs = {
-    1: 34.4680,
-    2: 28.6956,
-    5: 19.7313,
-    10: 10.4794
-}
+# data[families][policy][req_sec] = throughput
+data = defaultdict(lambda: defaultdict(dict))
 
-sglang_dfs_weight = {
-    1: 14.32,
-    2: 8.91,
-    5: 3.77,
-    10: 2.116,
-}
+with open(LOG_FILE, "r") as f:
+    for line in f:
+        line = line.strip()
+        m = pattern.search(line)
+        if m:
+            families = int(m.group(1))
+            req_sec = int(m.group(2))
+            policy = m.group(3)
+            throughput = float(m.group(4))
 
-# Fill missing length factors with NaN (so matplotlib skips them)
-sglang_lpm_vals = [sglang_lpm.get(l, np.nan) for l in len_factors]
-sglang_fcfs_vals = [sglang_fcfs.get(l, np.nan) for l in len_factors]
-sglang_dfs_vals = [sglang_dfs_weight.get(l, np.nan) for l in len_factors]
+            data[families][policy][req_sec] = throughput
 
-# -----------------------------
-# vLLM results
-# -----------------------------
-# batch=1000
-vllm_radix = {
-    1: 43.5445, 2: 39.7591, 5: 30.1317, 10: 18.9529
-}
 
-vllm_lpm = {
-    1: 42.6260, 2: 42.1705, 5: 37.4262, 10: 24.2105
-}
+# Ensure consistent ordering
+policies = ["radix_cost", "family_load", "fcfs"]
 
-# batch=500
-vllm_fcfs = {
-    1: 19.1136, 2: 12.5005, 5: 6.0260, 10: 3.3082
-}
+for families in sorted(data.keys()):
+    plt.figure()
 
-vllm_radix_vals = [vllm_radix[l] for l in len_factors]
-vllm_lpm_vals = [vllm_lpm[l] for l in len_factors]
-vllm_fcfs_vals = [vllm_fcfs[l] for l in len_factors]
+    req_rates = sorted({
+        r for p in data[families].values() for r in p.keys()
+    })
 
-# -----------------------------
-# Plot
-# -----------------------------
-plt.figure(figsize=(11, 7))
+    for policy in policies:
+        if policy not in data[families]:
+            continue
 
-# SGLang
-plt.plot(len_factors, sglang_lpm_vals, 'o--', linewidth=2, label='SGLang LPM')
-plt.plot(len_factors, sglang_fcfs_vals, 's--', linewidth=2, label='SGLang FCFS')
-plt.plot(len_factors, sglang_dfs_vals, 'v--', linewidth=2, label='SGLang DFS-Weight')
+        y = []
+        x = []
 
-# vLLM
-plt.plot(len_factors, vllm_radix_vals, 'o-', linewidth=2, label='vLLM Radix-Cost')
-plt.plot(len_factors, vllm_lpm_vals, 's-', linewidth=2, label='vLLM Family-Load')
-plt.plot(len_factors, vllm_fcfs_vals, '^-', linewidth=2, label='vLLM FCFS')
+        for r in req_rates:
+            if r in data[families][policy]:
+                x.append(r)
+                y.append(data[families][policy][r])
 
-plt.xlabel('Length Factor (multiples of 1300 tokens)', fontsize=12)
-plt.ylabel('Throughput (req/s)', fontsize=12)
-plt.title('Throughput vs Seuence Length Length\nSGLang vs vLLM (Llama-3.1-8B-Instruct)', fontsize=14)
+        policy_label = policy
+        if policy == "family_load":
+            policy_label = "user provides family IDs"
+        elif policy == "radix_cost":
+            policy_label = "radix tree based"
+        plt.plot(x, y, marker='o', label=policy)
 
-plt.grid(True, linestyle='--', alpha=0.6)
-plt.legend()
-plt.tight_layout()
-plt.savefig("throughput_vllm_sglang_comparison_scheduling_policies.png")
+    plt.title(f"Throughput vs Req/sec ({families} families)")
+    plt.xlabel("Request Rate (req/sec)")
+    plt.ylabel("Throughput")
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(f"../../results/throughput_vs_req_sec_families_{families}_poisson.png")
+
+# plt.savefig("try.png")
