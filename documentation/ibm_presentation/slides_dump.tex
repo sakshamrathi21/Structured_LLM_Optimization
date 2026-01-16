@@ -666,11 +666,28 @@ R2 is selected since it has maximum prefix overlap with the working set.
     \end{figure}
 \end{frame}
 
+
+\begin{frame}{DRAM Metric}
+    \begin{figure}
+        \centering
+    \includegraphics[width=\textwidth]{\RESULTDIR/dram_meaning.png}
+    \captionof{figure}{DRAM Accesses' Metric (from DCGMI)}
+    \end{figure}
+\end{frame}
+
 \begin{frame}{DRAM Accesses' CDF}
     \begin{figure}
         \centering
-    \includegraphics[width=0.8\textwidth]{\RESULTDIR/drama_family_fcfs.png}
-    \captionof{figure}{DRAM Accesses' CDF (2 families, 6500 tokens shared context, throughput gain was roughly 4.5x)}
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/drama_family_fcfs.png}
+    \captionof{figure}{DRAM Accesses' CDF (2 families, 6500 tokens shared context, throughput gain was roughly 4x, metric sampled every 1ms)}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{DRAM Accesses' Statistics}
+    \begin{figure}
+        \centering
+    \includegraphics[width=0.5\textwidth]{\RESULTDIR/dram_stats.png}
+    \captionof{figure}{DRAM Accesses' Stats (2 families, 6500 tokens shared context, throughput gain was roughly 4.5x, metric sampled every 1ms)}
     \end{figure}
 \end{frame}
 
