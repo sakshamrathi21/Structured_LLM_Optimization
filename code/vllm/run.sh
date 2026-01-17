@@ -19,5 +19,8 @@
 # nv-nsight-cu-cli --target-processes all --section MemoryWorkloadAnalysis --launch-skip 500 --launch-count 1000 --csv python vllm_multiple_families_varying_workloads.py --multiplier 5 > .out_fcfs
 
 
-python vllm_multiple_families_varying_workloads.py --policy family_load --len_factor 5 --write_dcgmi --max_batch_size 1000
-python vllm_multiple_families_varying_workloads.py --len_factor 5 --write_dcgmi --max_batch_size 500
+python vllm_multiple_families_varying_workloads.py --policy family_load --len_factor 10 --write_dcgmi --max_batch_size 1000
+python vllm_multiple_families_varying_workloads.py --len_factor 10 --write_dcgmi --max_batch_size 500
+
+python vllm_multiple_families_varying_workloads.py --policy family_load --len_factor 1 --write_dcgmi --max_batch_size 1000
+python vllm_multiple_families_varying_workloads.py --len_factor 1 --write_dcgmi --max_batch_size 500

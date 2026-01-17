@@ -55,8 +55,8 @@ def print_stats(data, label):
 # -------------------------------
 # Read both files
 # -------------------------------
-drama1 = read_drama("/home/saksham/CS492/code/vllm/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-2_rps-None_batch-1000_rand-1_lenf-5.0_policy-family_load_maxnew-100_20260117-193415.log")
-drama2 = read_drama("/home/saksham/CS492/code/vllm/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-2_rps-None_batch-500_rand-1_lenf-5.0_policy-fcfs_maxnew-100_20260117-193608.log")
+drama1 = read_drama("dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-2_rps-None_batch-1000_rand-1_lenf-1.0_policy-family_load_maxnew-100.log")
+drama2 = read_drama("dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-2_rps-None_batch-500_rand-1_lenf-1.0_policy-fcfs_maxnew-100.log")
 
 # -------------------------------
 # Print statistics
@@ -73,7 +73,7 @@ plt.ylabel("DRAMA value")
 plt.title("Raw DRAMA Values")
 plt.grid(True)
 plt.legend()
-plt.savefig("try.png")
+# plt.savefig("try.png")
 # -------------------------------
 # Plot both CDFs
 # -------------------------------
