@@ -20,7 +20,7 @@ DCGMI
 
 ```bash
 dcgmi profile -l -i 0
-sudo dcgmi dmon -e 1002,1003,1004,1005 -d 10
+sudo dcgmi dmon -e 1002,1003,1004,1005 -d 1
 ```
 
 

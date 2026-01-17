@@ -2,6 +2,8 @@ import random
 import string
 import time
 import argparse
+import subprocess
+import os
 
 from typing import get_args
 
@@ -20,6 +22,21 @@ def generate_prefixes(n):
     return prefixes[:n]
 
 
+def build_dcgmi_filename(args):
+    name = (
+        f"dcgmi_model-{args.model_name.replace('/', '_')}"
+        f"_families-{args.num_families}"
+        f"_rps-{args.req_per_sec}"
+        f"_batch-{args.max_batch_size}"
+        f"_rand-{args.randomness}"
+        f"_lenf-{args.len_factor}"
+        f"_policy-{args.policy}"
+        f"_maxnew-{args.max_new_tokens}"
+        f".log"
+    )
+    return name
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_name", type=str, default="meta-llama/Llama-3.1-8B-Instruct", choices=[
@@ -34,47 +51,27 @@ def main():
     parser.add_argument("--policy", type=str, default="fcfs", choices=list(get_args(SchedulerPolicy)))
     parser.add_argument("--multiplier", type=int, default=10)
     parser.add_argument("--max_new_tokens", type=int, default=100)
-    parser.add_argument("--write_output", action="store_true", help="Whether to write output to a file.")
+    parser.add_argument("--write_output", action="store_true")
+    parser.add_argument("--write_dcgmi", action="store_true", help="Enable DCGMI monitoring and logging")
+
     args = parser.parse_args()
 
-    num_families = args.num_families
-    req_per_sec = args.req_per_sec
-    max_batch_size = args.max_batch_size
-    randomness = args.randomness
-    len_factor = args.len_factor
-    model_name = args.model_name
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name)
 
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-
-    prefixes = generate_prefixes(num_families)
+    prefixes = generate_prefixes(args.num_families)
     prompts = []
-    families = []  
-    multiplier = args.multiplier
-    system_prompts = []
+    families = []
+
     m_sys_prompt = sys_prompt
-    if len_factor > 1.0:
-        m_sys_prompt *= int(len_factor)
+    if args.len_factor > 1.0:
+        m_sys_prompt *= int(args.len_factor)
     else:
-        m_sys_prompt = m_sys_prompt[0:int(len(m_sys_prompt)*len_factor)]
+        m_sys_prompt = m_sys_prompt[0:int(len(m_sys_prompt) * args.len_factor)]
+
     system_prompt = m_sys_prompt
+
     for prefix in prefixes:
-        chat_messages = [
-            {"role": "system", "content": prefix + " " + system_prompt},
-        ]
-        try:
-            full_prompt = tokenizer.apply_chat_template(
-                chat_messages,
-                tokenize=False,
-                add_generation_prompt=True,
-            )
-        except Exception:
-            full_prompt = prefix + " " + system_prompt
-        system_prompts.append(full_prompt)
-    
-    for prefix in prefixes: 
-        cnt = 0
-        for q in (queries*multiplier):
-            cnt += 1
+        for q in (queries * args.multiplier):
             modified_system_prompt = prefix + " " + system_prompt
             chat_messages = [
                 {"role": "system", "content": modified_system_prompt},
@@ -93,40 +90,87 @@ def main():
             families.append(prefix)
 
     print(f"Generated {len(prompts)} prompts in total.")
+
     paired = list(zip(prompts, families))
-    if randomness > 0:
-        chunked = [paired[i:i+randomness] for i in range(0, len(paired), randomness)]
+    if args.randomness > 0:
+        chunked = [paired[i:i+args.randomness] for i in range(0, len(paired), args.randomness)]
         random.shuffle(chunked)
         paired = [item for chunk in chunked for item in chunk]
-    prompts, families = zip(*paired)
 
-    enable_chunked_prefill = True
+    prompts, families = zip(*paired)
+    prompts = list(prompts)
+
     llm = LLM(
-        model=model_name,
+        model=args.model_name,
         gpu_memory_utilization=0.90,
-        enable_chunked_prefill=enable_chunked_prefill,
+        enable_chunked_prefill=True,
         max_num_batched_tokens=32768,
         enable_prefix_caching=True,
-        max_num_seqs=max_batch_size,
+        max_num_seqs=args.max_batch_size,
         scheduling_policy=args.policy,
     )
 
     initial_start_time = time.time()
-    prompts = list(prompts)
-    llm.generate(prompts, SamplingParams(temperature=0.7, max_tokens=args.max_new_tokens), poisson_lambda=req_per_sec)
+
+    # ----- CONDITIONAL DCGMI WRAPPING -----
+
+    if args.write_dcgmi:
+        dcgmi_file = build_dcgmi_filename(args)
+        print(f"[INFO] Logging DCGMI output to: {dcgmi_file}")
+
+        dcgmi_cmd = [
+            "sudo", "dcgmi", "dmon",
+            "-e", "1002,1003,1004,1005",
+            "-d", "1"
+        ]
+
+        with open(dcgmi_file, "w") as f:
+            dcgmi_proc = subprocess.Popen(
+                dcgmi_cmd,
+                stdout=f,
+                stderr=subprocess.STDOUT
+            )
+
+            try:
+                llm.generate(
+                    prompts,
+                    SamplingParams(temperature=0.7, max_tokens=args.max_new_tokens),
+                    poisson_lambda=args.req_per_sec
+                )
+            finally:
+                print("[INFO] Stopping DCGMI monitoring...")
+                dcgmi_proc.terminate()
+                try:
+                    dcgmi_proc.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    dcgmi_proc.kill()
+
+    else:
+        # Normal run without DCGMI
+        llm.generate(
+            prompts,
+            SamplingParams(temperature=0.7, max_tokens=args.max_new_tokens),
+            poisson_lambda=args.req_per_sec
+        )
+
     end_time = time.time()
+
     throughput = len(prompts) / (end_time - initial_start_time)
+
     print(time.time(), "Completed all requests.")
-    print(
-        "Throughput: ",
-        throughput,
-        "req/s (enabling chunked prefill:",
-        enable_chunked_prefill,
-        ")",
-    )
+    print("Throughput:", throughput, "req/s")
+
     if args.write_output:
         with open("vllm_multiple_families_varying_workloads_output.txt", "a") as f:
-            f.write(f"Throughput Test with {num_families} families, {req_per_sec} req/sec and max_batch_size of {max_batch_size} (randomness: {randomness}) (len factor: {len_factor}) (model_name: {model_name}) (policy: {args.policy}) (max_new_tokens: {args.max_new_tokens}) (num_prompts: {len(prompts)}): {throughput}\n")
+            f.write(
+                f"Throughput Test with {args.num_families} families, "
+                f"{args.req_per_sec} req/sec and max_batch_size of {args.max_batch_size} "
+                f"(randomness: {args.randomness}) (len factor: {args.len_factor}) "
+                f"(model_name: {args.model_name}) (policy: {args.policy}) "
+                f"(max_new_tokens: {args.max_new_tokens}) "
+                f"(num_prompts: {len(prompts)}): {throughput}\n"
+            )
+
 
 if __name__ == "__main__":
     main()

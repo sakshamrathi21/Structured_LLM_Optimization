@@ -20,7 +20,7 @@ def read_drama(filename):
                 continue
 
             try:
-                drama.append(float(parts[-1]))
+                drama.append(float(parts[-3]))
             except ValueError:
                 continue
 
@@ -32,6 +32,7 @@ def read_drama(filename):
         raise ValueError(f"{filename}: DRAMA column is all zeros")
 
     return drama[nz[0] : nz[-1] + 1]
+    # return drama[nz[0] : 20000]
 
 
 def plot_cdf(data, label):
@@ -54,8 +55,8 @@ def print_stats(data, label):
 # -------------------------------
 # Read both files
 # -------------------------------
-drama1 = read_drama(".out_fam")
-drama2 = read_drama(".out_fcfs")
+drama1 = read_drama("/home/saksham/CS492/code/vllm/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-2_rps-None_batch-1000_rand-1_lenf-5.0_policy-family_load_maxnew-100_20260117-193415.log")
+drama2 = read_drama("/home/saksham/CS492/code/vllm/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-2_rps-None_batch-500_rand-1_lenf-5.0_policy-fcfs_maxnew-100_20260117-193608.log")
 
 # -------------------------------
 # Print statistics
@@ -63,6 +64,16 @@ drama2 = read_drama(".out_fcfs")
 print_stats(drama1, "User gives out the family IDs")
 print_stats(drama2, "First come first serve")
 
+plt.figure()
+plt.plot(drama1, label="User gives out the family IDs")
+plt.plot(drama2, label="First come first serve")
+
+plt.xlabel("Index")
+plt.ylabel("DRAMA value")
+plt.title("Raw DRAMA Values")
+plt.grid(True)
+plt.legend()
+plt.savefig("try.png")
 # -------------------------------
 # Plot both CDFs
 # -------------------------------
@@ -75,4 +86,4 @@ plt.ylabel("CDF")
 plt.title("CDF of DRAMA")
 plt.grid(True)
 plt.legend()
-plt.savefig("../../results/drama_family_fcfs.png")
+# plt.savefig("../../results/drama_family_fcfs.png")
