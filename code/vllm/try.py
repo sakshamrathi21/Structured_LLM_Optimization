@@ -55,8 +55,8 @@ def print_stats(data, label):
 # -------------------------------
 # Read both files
 # -------------------------------
-drama1 = read_drama("dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-2_rps-None_batch-1000_rand-1_lenf-1.0_policy-family_load_maxnew-100.log")
-drama2 = read_drama("dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-2_rps-None_batch-500_rand-1_lenf-1.0_policy-fcfs_maxnew-100.log")
+drama1 = read_drama("/home/saksham/CS492/code/vllm/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-5_rps-None_batch-1000_rand-1_lenf-10.0_policy-family_load_maxnew-100.log")
+drama2 = read_drama("dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-5_rps-None_batch-500_rand-1_lenf-10.0_policy-fcfs_maxnew-100.log")
 
 # -------------------------------
 # Print statistics
