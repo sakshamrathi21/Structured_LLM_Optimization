@@ -1,6 +1,58 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+def remove_bursts(data, window=50, k=1.5, min_burst_len=20):
+    """
+    Identify and remove contiguous 'bursts' where the rolling average
+    is significantly higher than baseline.
+
+    Parameters:
+        data : np.array
+        window : size of rolling window (samples)
+        k : IQR multiplier for threshold
+        min_burst_len : minimum contiguous samples to call a burst
+
+    Returns:
+        filtered_data, mask
+    """
+
+    if len(data) < window:
+        return data, np.ones_like(data, dtype=bool)
+
+    # Rolling mean
+    kernel = np.ones(window) / window
+    rolling = np.convolve(data, kernel, mode="same")
+
+    # Robust threshold based on distribution
+    q1 = np.percentile(rolling, 25)
+    q3 = np.percentile(rolling, 75)
+    iqr = q3 - q1
+
+    threshold = 0.35
+
+    # Identify potential burst points
+    high = rolling > threshold
+
+    # Group contiguous regions
+    mask = np.ones_like(data, dtype=bool)
+
+    i = 0
+    n = len(data)
+
+    while i < n:
+        if high[i]:
+            start = i
+            while i < n and high[i]:
+                i += 1
+            end = i
+
+            if (end - start) >= min_burst_len:
+                mask[start:end] = False
+        else:
+            i += 1
+
+    return data[mask], mask
+
 
 def read_drama(filename):
     drama = []
@@ -20,7 +72,9 @@ def read_drama(filename):
                 continue
 
             try:
-                drama.append(float(parts[-3]))
+                # if (float(parts[-1])) > 0.35:
+                #     continue
+                drama.append(float(parts[-1]))
             except ValueError:
                 continue
 
@@ -31,7 +85,7 @@ def read_drama(filename):
     if len(nz) == 0:
         raise ValueError(f"{filename}: DRAMA column is all zeros")
 
-    return drama[nz[0] : nz[-1] + 1]
+    return drama
     # return drama[nz[0] : 20000]
 
 
@@ -47,20 +101,19 @@ def print_stats(data, label):
     print(f"Count    : {len(data)}")
     print(f"Mean     : {np.mean(data):.6f}")
     print(f"Median   : {np.median(data):.6f}")
+    # print(f"Max      : {np.max(data):.6f}")
 
-    for p in [50, 75, 90, 95, 99]:
+    for p in [75, 90, 95, 99]:
         print(f"P{p:<2}      : {np.percentile(data, p):.6f}")
 
 
 # -------------------------------
 # Read both files
 # -------------------------------
-drama1 = read_drama("/home/saksham/CS492/code/vllm/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-5_rps-None_batch-1000_rand-1_lenf-10.0_policy-family_load_maxnew-100.log")
-drama2 = read_drama("dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-5_rps-None_batch-500_rand-1_lenf-10.0_policy-fcfs_maxnew-100.log")
-
-# -------------------------------
-# Print statistics
-# -------------------------------
+drama1 = read_drama("dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-5_rps-100_batch-200_rand-1_lenf-10.0_policy-family_load_maxnew-100.log")
+drama2 = read_drama("dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-5_rps-100_batch-500_rand-1_lenf-10.0_policy-fcfs_maxnew-100.log")
+# filtered1, mask1 = remove_bursts(drama1)
+# filtered2, mask2 = remove_bursts(drama2)
 print_stats(drama1, "User gives out the family IDs")
 print_stats(drama2, "First come first serve")
 
