@@ -753,7 +753,7 @@ R2 is selected since it has maximum prefix overlap with the working set.
     \begin{itemize}
         \item Number of families: 1/2/5
         \item Requests per family: we fix the scheduler batch size to 500, so 500/250/100 requests per family
-        \item Blocks per request: vLLM's block stores 16 tokens, assuming a shared context of 6400 tokens: 400 blocks + 1 block for the distinct suffix (query itelf)
+        \item Blocks per request: vLLM's block stores 16 tokens; assuming a shared context of 6400 tokens: 400 blocks + 1 block for the distinct suffix (query itelf)
         \item Decode iterations: 100
         \item L2 cache size: For our GPU it is 96MB. A shared context of 1300 tokens amounts to 180MB for LLama3.1-8B model. So, 96MB amounts to 44 blocks roughly, out of which we can assume that we have 25 blocks reserved for KV caches (and others for weights/activation tensors etc)
         \item Number of parallel processing units: We have 142 SMs, and each SM has 64 warps, however each attention kernel might use multiple warps, so let us assume 200 parallel processing units
@@ -771,7 +771,7 @@ R2 is selected since it has maximum prefix overlap with the working set.
             \item Each scheduled request generates a sequence of memory accesses
             \item Each access is processed by the L2 cache model
             \item Cache hit/miss statistics are updated
-            \item Prefetching is triggered
+            \item Prefetching is triggered, if enabled
         \end{enumerate}
         \item This loop repeats for 100 decode iterations
     \end{itemize}
