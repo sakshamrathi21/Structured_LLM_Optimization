@@ -726,7 +726,7 @@ R2 is selected since it has maximum prefix overlap with the working set.
 \end{frame}
 
 
-\section{Summary}
+\section{Key Propositions}
 \begin{frame}{Key Propositions}
     Just to summarize, we have the following key propositions:
     \begin{itemize}
@@ -736,6 +736,310 @@ R2 is selected since it has maximum prefix overlap with the working set.
         \item Our benefits are based on L2 cache purity, instead of being benefitted from Radix Tree Node LRU Eviction from HBM
     \end{itemize}
 \end{frame}
+
+
+\section{L2Cache Simulator}
+\begin{frame}{Simulator Design}
+    \begin{itemize}
+        \item Software model of L2 cache behaviour during batched LLM inference
+        \item Multiple concurrent LLM requests
+        \item Accessing KV cache blocks
+        \item Over many decode iterations
+        \item With/without hardware prefetching
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Parameters we can tweak}
+    \begin{itemize}
+        \item Number of families: 1/2/5
+        \item Requests per family: we fix the scheduler batch size to 500, so 500/250/100 requests per family
+        \item Blocks per request: vLLM's block stores 16 tokens, assuming a shared context of 6400 tokens: 400 blocks + 1 block for the distinct suffix (query itelf)
+        \item Decode iterations: 100
+        \item L2 cache size: For our GPU it is 96MB. A shared context of 1300 tokens amounts to 180MB for LLama3.1-8B model. So, 96MB amounts to 44 blocks roughly, out of which we can assume that we have 25 blocks reserved for KV caches (and others for weights/activation tensors etc)
+        \item Number of parallel processing units: We have 142 SMs, and each SM has 64 warps, however each attention kernel might use multiple warps, so let us assume 200 parallel processing units
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Simulation Flow}
+    \begin{itemize}
+        \item The simulator runs for a fixed number of decode iterations
+        \item In each iteration:
+        \begin{enumerate}
+            \item All requests are reset to initial state
+            \item A batch of requests is scheduled to run in parallel
+            \item Each scheduled request generates a sequence of memory accesses
+            \item Each access is processed by the L2 cache model
+            \item Cache hit/miss statistics are updated
+            \item Prefetching is triggered
+        \end{enumerate}
+        \item This loop repeats for 100 decode iterations
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{L2 Cache Model}
+    \begin{itemize}
+        \item Modeled as a fixed-size LRU cache
+        \item Capacity: 25 KV blocks
+        \item For every block access:
+        \begin{itemize}
+            \item If block is in cache $\rightarrow$ demand hit
+            \item If not in cache $\rightarrow$ demand miss + DRAM access
+            \item Block is inserted and LRU order updated
+        \end{itemize}
+        \item Evicted prefetched blocks are counted as wasted
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Stride-Based Prefetching}
+    \begin{itemize}
+        \item Maintains a small history of recent accesses
+        \item Computes stride between consecutive blocks (mostly 1)
+        \item If the same stride repeats with high confidence:
+        \begin{itemize}
+            \item Predict future blocks using that stride
+            \item Issue prefetches ahead of time
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Spatial Region Prefetching}
+    \begin{itemize}
+        \item Spatial locality in address space
+        \item When block $i$ is accessed:
+        \begin{itemize}
+            \item Also prefetch nearby blocks
+            \item $i+1, i+2, ...$ within a small window
+        \end{itemize}
+        \item Useful when:
+        \begin{itemize}
+            \item adjacent KV blocks are likely to be reused
+            \item access patterns are not perfectly sequential
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Simulator stats - 1 family}
+
+\begin{columns}
+    \column{0.48\textwidth}
+    \centering
+    \textbf{Without Prefetching}
+    
+    \vspace{2mm}
+    
+    {\scriptsize \begin{tabular}{|l|r|}
+        \hline
+        Metric & Value \\
+        \hline
+        Cache Hit Rate & 66.96\% \\
+        DRAM Accesses & 6,625,496 \\
+        Demand Hits & 13,424,504 \\
+        Demand Misses & 6,625,496 \\
+        Total Accesses & 20,050,000 \\
+        \hline
+    \end{tabular}}
+
+    \column{0.48\textwidth}
+    \centering
+    \textbf{With Prefetching}
+    
+    \vspace{2mm}
+    
+    {\scriptsize \begin{tabular}{|l|r|}
+        \hline
+        Metric & Value \\
+        \hline
+        Cache Hit Rate & 64.25\% \\
+        DRAM Accesses & 22,971,098 \\
+        Demand Hits & 12,881,255 \\
+        Demand Misses & 7,168,745 \\
+        Total Accesses & 20,050,000 \\
+        Useful Prefetches & 4,196,846 \\
+        Wasted Prefetches & 11,605,500 \\
+        Prefetch Accuracy & 26.56\% \\
+        Stride Prefetches & 2,172,430 \\
+        Region Prefetches & 40,000,000 \\
+        Next-Line Prefetches & 0 \\
+        \hline
+    \end{tabular}}
+
+\end{columns}
+
+\vspace{3mm}
+
+\centering
+\small
+
+\end{frame}
+
+\begin{frame}{Simulator Stats - 5 families}
+
+\begin{columns}
+    \column{0.48\textwidth}
+    \centering
+    \textbf{Without Prefetching}
+    
+    \vspace{2mm}
+    
+    {\scriptsize \begin{tabular}{|l|r|}
+        \hline
+        Metric & Value \\
+        \hline
+        Cache Hit Rate & 15.08\% \\
+        DRAM Accesses & 17,027,080 \\
+        Demand Hits & 3,022,920 \\
+        Demand Misses & 17,027,080 \\
+        Total Accesses & 20,050,000 \\
+        \hline
+    \end{tabular}}
+
+    \column{0.48\textwidth}
+    \centering
+    \textbf{With Prefetching}
+    
+    \vspace{2mm}
+    
+    {\scriptsize \begin{tabular}{|l|r|}
+        \hline
+        Metric & Value \\
+        \hline
+        Cache Hit Rate & 14.53\% \\
+        DRAM Accesses & 53,019,202 \\
+        Demand Hits & 2,912,894 \\
+        Demand Misses & 17,137,106 \\
+        Total Accesses & 20,050,000 \\
+        Useful Prefetches & 1,764,442 \\
+        Wasted Prefetches & 34,117,642 \\
+        Prefetch Accuracy & 4.92\% \\
+        Stride Prefetches & 1,876,190 \\
+        Region Prefetches & 40,000,000 \\
+        Next-Line Prefetches & 0 \\
+        \hline
+    \end{tabular}}
+
+\end{columns}
+
+\vspace{3mm}
+
+\centering
+\small
+
+\end{frame}
+
+
+\begin{frame}{Simulator Stats - without prefetching}
+\begin{columns}
+    \column{0.48\textwidth}
+    \centering
+    \textbf{1 family}
+    
+    \vspace{2mm}
+    
+    {\scriptsize \begin{tabular}{|l|r|}
+        \hline
+        Metric & Value \\
+        \hline
+        Cache Hit Rate & 66.96\% \\
+        DRAM Accesses & 6,625,496 \\
+        Demand Hits & 13,424,504 \\
+        Demand Misses & 6,625,496 \\
+        Total Accesses & 20,050,000 \\
+        \hline
+    \end{tabular}}
+
+    \column{0.48\textwidth}
+    \centering
+    \textbf{5 families}
+    
+    \vspace{2mm}
+    
+    {\scriptsize \begin{tabular}{|l|r|}
+        \hline
+        Metric & Value \\
+        \hline
+        Cache Hit Rate & 15.08\% \\
+        DRAM Accesses & 17,027,080 \\
+        Demand Hits & 3,022,920 \\
+        Demand Misses & 17,027,080 \\
+        Total Accesses & 20,050,000 \\
+        \hline
+    \end{tabular}}
+
+\end{columns}
+
+\vspace{3mm}
+
+\centering
+\small
+\end{frame}
+
+
+\begin{frame}{Simulator Stats - with prefetching}
+\begin{columns}
+    \column{0.48\textwidth}
+    \centering
+    \textbf{1 family}
+    
+    \vspace{2mm}
+    
+    {\scriptsize \begin{tabular}{|l|r|}
+        \hline
+        Metric & Value \\
+        \hline
+        Cache Hit Rate & 64.25\% \\
+        DRAM Accesses & 22,971,098 \\
+        Demand Hits & 12,881,255 \\
+        Demand Misses & 7,168,745 \\
+        Total Accesses & 20,050,000 \\
+        Useful Prefetches & 4,196,846 \\
+        Wasted Prefetches & 11,605,500 \\
+        Prefetch Accuracy & 26.56\% \\
+        Stride Prefetches & 2,172,430 \\
+        Region Prefetches & 40,000,000 \\
+        Next-Line Prefetches & 0 \\
+        \hline
+    \end{tabular}}
+
+    \column{0.48\textwidth}
+    \centering
+    \textbf{5 families}
+    
+    \vspace{2mm}
+    
+    {\scriptsize \begin{tabular}{|l|r|}
+        \hline
+        Metric & Value \\
+        \hline
+        Cache Hit Rate & 14.53\% \\
+        DRAM Accesses & 53,019,202 \\
+        Demand Hits & 2,912,894 \\
+        Demand Misses & 17,137,106 \\
+        Total Accesses & 20,050,000 \\
+        Useful Prefetches & 1,764,442 \\
+        Wasted Prefetches & 34,117,642 \\
+        Prefetch Accuracy & 4.92\% \\
+        Stride Prefetches & 1,876,190 \\
+        Region Prefetches & 40,000,000 \\
+        Next-Line Prefetches & 0 \\
+        \hline
+    \end{tabular}}
+
+\end{columns}
+
+\vspace{3mm}
+
+\centering
+\small
+\end{frame}
+
+
+
+
+
+
+
 
 \section{}
 \begin{frame}
