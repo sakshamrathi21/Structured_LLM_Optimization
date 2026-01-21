@@ -1,3 +1,4 @@
+#!/home/saksham/CS496/code/vllm/.venv/bin/python
 import random
 import string
 import time
@@ -39,10 +40,7 @@ def build_dcgmi_filename(args):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model_name", type=str, default="meta-llama/Llama-3.1-8B-Instruct", choices=[
-        "meta-llama/Llama-3.1-8B-Instruct",
-        "qwen/qwen2.5-0.5b-instruct",
-    ])
+    parser.add_argument("--model_name", type=str, default="meta-llama/Llama-3.1-8B-Instruct")
     parser.add_argument("--num_families", type=int, default=2)
     parser.add_argument("--req_per_sec", type=int, default=None)
     parser.add_argument("--max_batch_size", type=int, default=500)
@@ -108,6 +106,7 @@ def main():
         enable_prefix_caching=True,
         max_num_seqs=args.max_batch_size,
         scheduling_policy=args.policy,
+        enforce_eager=True,
     )
 
     initial_start_time = time.time()
