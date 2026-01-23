@@ -15,10 +15,11 @@
 #     done
 # done
 
-# nv-nsight-cu-cli --target-processes all --section MemoryWorkloadAnalysis --launch-skip 500 --launch-count 1000 --csv python vllm_multiple_families_varying_workloads.py --multiplier 5 --policy family_load > .out_fam
-# nv-nsight-cu-cli --target-processes all --section MemoryWorkloadAnalysis --launch-skip 500 --launch-count 1000 --csv python vllm_multiple_families_varying_workloads.py --multiplier 5 > .out_fcfs
+nv-nsight-cu-cli --target-processes all --section MemoryWorkloadAnalysis --kernel-name regex:flash --csv ./vllm_multiple_families_varying_workloads.py --multiplier 5 --policy family_load > .out_fam
+
+nv-nsight-cu-cli --target-processes all --section MemoryWorkloadAnalysis --kernel-name regex:flash --csv ./vllm_multiple_families_varying_workloads.py --multiplier 5 > .out_fcfs
 
 
-python vllm_multiple_families_varying_workloads.py --policy family_load --len_factor 10 --write_dcgmi --max_batch_size 200 --multiplier 20 --num_families 5 --req_per_sec 100
-python vllm_multiple_families_varying_workloads.py --len_factor 10 --write_dcgmi --max_batch_size 500 --multiplier 20 --num_families 5 --req_per_sec 100
+# python vllm_multiple_families_varying_workloads.py --policy family_load --len_factor 10 --write_dcgmi --max_batch_size 200 --multiplier 20 --num_families 5 --req_per_sec 100
+# python vllm_multiple_families_varying_workloads.py --len_factor 10 --write_dcgmi --max_batch_size 500 --multiplier 20 --num_families 5 --req_per_sec 100
 
