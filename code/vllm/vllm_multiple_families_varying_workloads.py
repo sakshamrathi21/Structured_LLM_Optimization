@@ -100,13 +100,13 @@ def main():
 
     llm = LLM(
         model=args.model_name,
-        gpu_memory_utilization=0.90,
+        gpu_memory_utilization=0.95,
         enable_chunked_prefill=True,
-        max_num_batched_tokens=32768,
+        # max_num_batched_tokens=32768,
         enable_prefix_caching=True,
         max_num_seqs=args.max_batch_size,
         scheduling_policy=args.policy,
-        enforce_eager=True,
+        # enforce_eager=True,
     )
 
     initial_start_time = time.time()
