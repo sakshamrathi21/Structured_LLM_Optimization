@@ -3,7 +3,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 
 # ---------- CONFIG ----------
-INPUT_FILE = "/home/saksham/CS496/code/vllm/vllm_multiple_families_varying_workloads_output.txt"
+INPUT_FILE = "vllm_multiple_families_varying_workloads_output.txt"
 # ----------------------------
 
 # Regex to extract fields
