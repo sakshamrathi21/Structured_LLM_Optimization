@@ -1,86 +1,3 @@
-Throughput Test with 2 families, 20 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 16.03225985906593
-Throughput Test with 2 families, 20 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 16.392566044243303
-Throughput Test with 2 families, 20 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 18.183031005417565
-Throughput Test with 2 families, 50 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 31.48008244031523
-Throughput Test with 2 families, 50 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 31.05305351347848
-Throughput Test with 2 families, 50 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 18.691924209709754
-Throughput Test with 2 families, 100 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 41.943352687694286
-Throughput Test with 2 families, 100 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 42.13698759981207
-Throughput Test with 2 families, 100 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 19.58552338514597
-Throughput Test with 2 families, 200 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 43.57884765607132
-Throughput Test with 2 families, 200 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 43.5864837334035
-Throughput Test with 2 families, 200 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 20.55071143075887
-Throughput Test with 2 families, 500 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 43.46369089698717
-Throughput Test with 2 families, 500 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 43.70404738917565
-Throughput Test with 2 families, 500 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 20.668345826697017
-Throughput Test with 5 families, 20 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 10000): 15.330029012930344
-Throughput Test with 5 families, 20 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 10000): 15.062268959624104
-Throughput Test with 5 families, 20 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 10000): 17.899356348072732
-Throughput Test with 5 families, 50 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 10000): 24.721834026495046
-Throughput Test with 5 families, 50 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 10000): 25.657183714421855
-Throughput Test with 5 families, 50 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 10000): 18.147795062439613
-Throughput Test with 5 families, 100 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 10000): 32.852030514921296
-Throughput Test with 5 families, 100 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 10000): 34.644723854036016
-
-
-
-Throughput Test with 10 families, 20 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 14.55657019616085
-Throughput Test with 10 families, 20 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 13.944822973408167
-Throughput Test with 10 families, 20 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 17.74794841562422
-Throughput Test with 10 families, 50 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 22.929049542465776
-Throughput Test with 10 families, 50 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 23.10945315955285
-Throughput Test with 10 families, 50 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 18.790861330039288
-Throughput Test with 10 families, 100 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 29.179030332415923
-Throughput Test with 10 families, 100 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 29.86345728067233
-Throughput Test with 10 families, 100 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 19.744599404059244
-Throughput Test with 10 families, 200 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 34.44193176664682
-Throughput Test with 10 families, 200 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 35.62723235915573
-Throughput Test with 10 families, 200 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 19.987805582160647
-Throughput Test with 10 families, 500 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 36.21766777715194
-Throughput Test with 10 families, 500 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 38.186115451348705
-Throughput Test with 10 families, 500 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 20.64747557604429
-Throughput Test with 20 families, 20 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 13.774525482614669
-Throughput Test with 20 families, 20 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 13.184977947997666
-Throughput Test with 20 families, 20 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 17.276211840738043
-Throughput Test with 20 families, 50 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 21.0063673051748
-Throughput Test with 20 families, 50 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 21.38078968642624
-Throughput Test with 20 families, 50 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 18.53306949042188
-Throughput Test with 20 families, 100 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 25.526407557089918
-Throughput Test with 20 families, 100 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 26.613644884826464
-Throughput Test with 20 families, 100 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 19.28159131612532
-Throughput Test with 20 families, 200 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 29.77782963395613
-Throughput Test with 20 families, 200 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 30.83043953068821
-Throughput Test with 20 families, 200 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 20.12368128522719
-Throughput Test with 20 families, 500 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 31.9254065866162
-Throughput Test with 20 families, 500 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 33.267192217291246
-Throughput Test with 20 families, 500 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 19.526346081098133
-
-Throughput Test with 5 families, 20 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 14.447819242704272
-Throughput Test with 5 families, 20 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 14.269817251260575
-Throughput Test with 5 families, 20 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 18.01334219493467
-Throughput Test with 5 families, 50 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 24.812491258634306
-Throughput Test with 5 families, 50 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 25.528898651628925
-Throughput Test with 5 families, 50 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 18.5071301035654
-Throughput Test with 5 families, 100 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 33.4337080957248
-Throughput Test with 5 families, 100 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 34.23988728856683
-Throughput Test with 5 families, 100 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 19.768405430779662
-Throughput Test with 5 families, 200 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 39.60516858241013
-Throughput Test with 5 families, 200 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 40.47881168381669
-Throughput Test with 5 families, 200 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 20.722899269627934
-Throughput Test with 5 families, 500 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 4000): 39.498869413863325
-Throughput Test with 5 families, 500 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 4000): 41.623668872880444
-Throughput Test with 5 families, 500 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 4000): 20.46148630132654
-
-
-
-
-
-
-
-
-
-
-
 Throughput Test with 5 families, 20 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 10000): 15.542169424423687
 Throughput Test with 5 families, 20 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 10000): 14.626710481665029
 Throughput Test with 5 families, 20 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 10000): 14.106065256947833
@@ -141,3 +58,10 @@ Throughput Test with 5 families, 200 req/sec and max_batch_size of 500 (randomne
 Throughput Test with 5 families, 500 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 10.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: radix_cost) (max_new_tokens: 100) (num_prompts: 10000): 15.779350109280708
 Throughput Test with 5 families, 500 req/sec and max_batch_size of 1000 (randomness: 1) (len factor: 10.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 100) (num_prompts: 10000): 19.625725920719024
 Throughput Test with 5 families, 500 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 10.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_prompts: 10000): 2.3038738483247903
+Throughput Test with 5 families, 20 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: dynamic_batching) (max_new_tokens: 100) (num_prompts: 10000): 14.142418130394027
+Throughput Test with 5 families, 50 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: dynamic_batching) (max_new_tokens: 100) (num_prompts: 10000): 14.324710740230346
+Throughput Test with 5 families, 100 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: dynamic_batching) (max_new_tokens: 100) (num_prompts: 10000): 14.714805521195071
+Throughput Test with 5 families, 200 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: dynamic_batching) (max_new_tokens: 100) (num_prompts: 10000): 14.903295859083807
+Throughput Test with 5 families, 500 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 1.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: dynamic_batching) (max_new_tokens: 100) (num_prompts: 10000): 15.165728833456827
+Throughput Test with 5 families, 20 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 3.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: dynamic_batching) (max_new_tokens: 100) (num_prompts: 10000): 6.480524744313591
+Throughput Test with 5 families, 50 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 3.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: dynamic_batching) (max_new_tokens: 100) (num_prompts: 10000): 6.744133776364009

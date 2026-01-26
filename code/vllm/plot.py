@@ -1,66 +1,55 @@
 import re
-import matplotlib.pyplot as plt
 from collections import defaultdict
-import sys
+import matplotlib.pyplot as plt
 
-# ----------- CONFIG -----------
-LOG_FILE = "/home/saksham/CS492/code/vllm/vllm_multiple_families_varying_workloads_output.txt"   # change to your file name
-# ------------------------------
+# ---------- CONFIG ----------
+INPUT_FILE = "/home/saksham/CS496/code/vllm/vllm_multiple_families_varying_workloads_output.txt"
+# ----------------------------
 
+# Regex to extract fields
 pattern = re.compile(
-    r"Throughput Test with (\d+) families, (\d+) req/sec.*\(policy: ([^)]+)\).*: ([0-9.]+)"
+    r"(?P<req>\d+)\s+req/sec.*?"
+    r"\(len factor:\s+(?P<len_factor>[\d.]+)\).*?"
+    r"\(policy:\s+(?P<policy>[^)]+)\).*?"
+    r":\s+(?P<throughput>[\d.]+)"
 )
 
-# data[families][policy][req_sec] = throughput
-data = defaultdict(lambda: defaultdict(dict))
+# data[len_factor][policy] = list of (req/sec, throughput)
+data = defaultdict(lambda: defaultdict(list))
 
-with open(LOG_FILE, "r") as f:
+# ---------- PARSE FILE ----------
+with open(INPUT_FILE, "r") as f:
     for line in f:
-        line = line.strip()
-        m = pattern.search(line)
-        if m:
-            families = int(m.group(1))
-            req_sec = int(m.group(2))
-            policy = m.group(3)
-            throughput = float(m.group(4))
-
-            data[families][policy][req_sec] = throughput
-
-
-# Ensure consistent ordering
-policies = ["radix_cost", "family_load", "fcfs"]
-
-for families in sorted(data.keys()):
-    plt.figure()
-
-    req_rates = sorted({
-        r for p in data[families].values() for r in p.keys()
-    })
-
-    for policy in policies:
-        if policy not in data[families]:
+        match = pattern.search(line)
+        if not match:
             continue
 
-        y = []
-        x = []
+        req = int(match.group("req"))
+        len_factor = float(match.group("len_factor"))
+        policy = match.group("policy")
+        throughput = float(match.group("throughput"))
 
-        for r in req_rates:
-            if r in data[families][policy]:
-                x.append(r)
-                y.append(data[families][policy][r])
+        data[len_factor][policy].append((req, throughput))
 
-        policy_label = policy
-        if policy == "family_load":
-            policy_label = "user provides family IDs"
-        elif policy == "radix_cost":
-            policy_label = "radix tree based"
+print(data)
+# ---------- PLOTTING ----------
+for len_factor, policies in sorted(data.items()):
+    plt.figure()
+
+    for policy, points in policies.items():
+        # sort by req/sec for proper lines
+        points.sort(key=lambda x: x[0])
+        x = [p[0] for p in points]
+        y = [p[1] for p in points]
+        print(len_factor, policy, x, y)
+
         plt.plot(x, y, marker='o', label=policy)
 
-    plt.title(f"Throughput vs Req/sec ({families} families)")
-    plt.xlabel("Request Rate (req/sec)")
+    plt.xlabel("Requests per Second")
     plt.ylabel("Throughput")
+    plt.title(f"Throughput vs Req/sec (len factor = {len_factor})")
     plt.legend()
     plt.grid(True)
-    plt.savefig(f"../../results/throughput_vs_req_sec_families_{families}_poisson.png")
 
-# plt.savefig("try.png")
+    plt.tight_layout()
+    plt.savefig(f"../../results/final_{len_factor}.png")
