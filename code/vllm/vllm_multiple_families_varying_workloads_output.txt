@@ -77,9 +77,7 @@ Throughput Test with 5 families, 20 req/sec and max_batch_size of 500 (randomnes
 Throughput Test with 5 families, 50 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 10.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: dynamic_batching) (max_new_tokens: 100) (num_prompts: 10000): 2.3545905420092628
 Throughput Test with 5 families, 100 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 10.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: dynamic_batching) (max_new_tokens: 100) (num_prompts: 10000): 2.3056205196516415
 Throughput Test with 5 families, 200 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 10.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: dynamic_batching) (max_new_tokens: 100) (num_prompts: 10000): 2.3566184036596036
-
-
-Throughput Test with 5 families, 200 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 10.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: dynamic_batching) (max_new_tokens: 100) (num_prompts: 10000): 2.3433175036586032
+Throughput Test with 5 families, 500 req/sec and max_batch_size of 500 (randomness: 1) (len factor: 10.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: dynamic_batching) (max_new_tokens: 100) (num_prompts: 10000): 2.3433175036586032
 
 Throughput Test | families=5 | req/s=20 | max_batch=500 | randomness=1 | len_factor=1.0 | model=meta-llama/Llama-3.1-8B-Instruct | max_new_tokens=100 | num_prompts=5000 | throughput=16.48753709584208 | policy=dfs-weight
 Throughput Test | families=5 | req/s=20 | max_batch=500 | randomness=1 | len_factor=1.0 | model=meta-llama/Llama-3.1-8B-Instruct | max_new_tokens=100 | num_prompts=5000 | throughput=16.836903334161462 | policy=lpm
