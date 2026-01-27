@@ -1,5 +1,6 @@
 # #!/usr/bin/env bash
 VLLM_SCRIPT="vllm_multiple_families_varying_workloads.py"
+SGLANG_SCRIPT="sglang_multiple_families_varying_workloads.py"
 PY_BIN="/home/saksham/CS496/code/vllm/.venv/bin/python"                        
 
 LEN_FACTOR=(1.0 3.0 5.0 10.0)
@@ -12,7 +13,10 @@ for lf in "${LEN_FACTOR[@]}"; do
         # $PY_BIN "$VLLM_SCRIPT" --policy radix_cost --max_batch_size 1000 --write_output --multiplier 20 --max_new_tokens 100 --req_per_sec "$req_per_sec" --num_families 5 --len_factor "$lf"
         # $PY_BIN "$VLLM_SCRIPT" --policy family_load --max_batch_size 1000 --write_output --multiplier 20 --max_new_tokens 100 --req_per_sec "$req_per_sec" --num_families 5 --len_factor "$lf"
         # $PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 20 --max_new_tokens 100 --req_per_sec "$req_per_sec"  --num_families 5 --len_factor "$lf"
-        $PY_BIN "$VLLM_SCRIPT" --policy dynamic_batching --max_batch_size 500 --write_output --multiplier 20 --max_new_tokens 100 --req_per_sec "$req_per_sec" --num_families 5 --len_factor "$lf"
+        # $PY_BIN "$VLLM_SCRIPT" --policy dynamic_batching --max_batch_size 500 --write_output --multiplier 20 --max_new_tokens 100 --req_per_sec "$req_per_sec" --num_families 5 --len_factor "$lf"
+        $PY_BIN "$SGLANG_SCRIPT" --policy dfs-weight --max_batch_size 500 --write_output --multiplier 10 --max_new_tokens 100 --req_per_sec "$req_per_sec" --num_families 5 --len_factor "$lf"
+        $PY_BIN "$SGLANG_SCRIPT" --policy lpm --max_batch_size 500 --write_output --multiplier 10 --max_new_tokens 100 --req_per_sec "$req_per_sec" --num_families 5 --len_factor "$lf"
+        $PY_BIN "$SGLANG_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 10 --max_new_tokens 100 --req_per_sec "$req_per_sec" --num_families 5 --len_factor "$lf"
     done
 done
 

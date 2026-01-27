@@ -1,3 +1,4 @@
+#!/home/saksham/CS496/code/vllm/.venv/bin/python
 import random
 import string
 import time
@@ -26,7 +27,7 @@ def main():
     parser.add_argument("--randomness", type=int, default=1)
     parser.add_argument("--len_factor", type=float, default=1.0)
     parser.add_argument("--multiplier", type=int, default=10)
-    parser.add_argument("--max_new_tokens", type=int, default=50)
+    parser.add_argument("--max_new_tokens", type=int, default=100)
     parser.add_argument("--write_output", action="store_true")
     parser.add_argument("--policy", type=str, default="lpm")
     args = parser.parse_args()
@@ -96,6 +97,7 @@ def main():
     llm.generate(
         prompts,
         sampling_params,
+        poisson_rate=args.req_per_sec,
     )
     end_time = time.time()
 
@@ -103,13 +105,13 @@ def main():
     print("Throughput:", throughput, "req/s")
 
     if args.write_output:
-        with open(".out", "a") as f:
+        with open("vllm_multiple_families_varying_workloads_output.txt", "a") as f:
             f.write(
                 f"Throughput Test | families={args.num_families} | "
                 f"req/s={args.req_per_sec} | max_batch={args.max_batch_size} | "
                 f"randomness={args.randomness} | len_factor={args.len_factor} | "
                 f"model={args.model_name} | max_new_tokens={args.max_new_tokens} | "
-                f"num_prompts={len(prompts)} | throughput={throughput}\n"
+                f"num_prompts={len(prompts)} | throughput={throughput} | policy={args.policy}\n"
             )
 
 
