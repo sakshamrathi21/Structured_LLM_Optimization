@@ -157,7 +157,12 @@ def main():
     throughput = len(prompts) / (end_time - initial_start_time)
 
     print(time.time(), "Completed all requests.")
-    print("Throughput:", throughput, "req/s")
+    print(f"Throughput Test with {args.num_families} families, "
+        f"{args.req_per_sec} req/sec and max_batch_size of {args.max_batch_size} "
+        f"(randomness: {args.randomness}) (len factor: {args.len_factor}) "
+        f"(model_name: {args.model_name}) (policy: {args.policy}) "
+        f"(max_new_tokens: {args.max_new_tokens}) "
+        f"(num_prompts: {len(prompts)}): {throughput}\n")
 
     if args.write_output:
         with open("vllm_multiple_families_varying_workloads_output.txt", "a") as f:

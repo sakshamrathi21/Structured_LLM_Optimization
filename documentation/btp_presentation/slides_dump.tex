@@ -1037,9 +1037,100 @@ R2 is selected since it has maximum prefix overlap with the working set.
 
 
 
+\section{Finding the Sweet Zone}
+\begin{frame}{How many families?}
+\begin{itemize}
+    \item A high request arrival rate (500 req/sec)
+    \item Max batch size of 500
+    \item A shared prefix of length 6500 tokens
+    \item 100 new output tokens 
+    \item Model: Llama3.1-8B
+\end{itemize}
+\begin{table}
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|c|cc|cc|}
+\hline
+\multirow{2}{*}{Number of Families} 
+& \multicolumn{2}{c|}{vLLM Baseline (FCFS)} 
+& \multicolumn{2}{c|}{vLLM (User-provided Family IDs)} \\
+\cline{2-5}
+& Average Batch Size & Throughput 
+& Average Batch Size & Throughput \\
+\hline
+10  & 465.48  & 5.92 & 141.23 & 21.94 \\
+20  & 455.47 & 5.74 & 72.67 & 15.27 \\
+50  & 57.48 & 2.07 & 64.77 & 14.84 \\
+100 & 41.97 & 1.11 & 67.14 & 14.82 \\
+\hline
+\end{tabular}
+}
+\end{table}
+\end{frame}
 
 
+\begin{frame}{How many req/sec?}
+\begin{itemize}
+    \item 5 families
+    \item Max batch size of 500
+    \item A shared prefix of length 6500 tokens
+    \item 100 new output tokens 
+    \item Model: Llama3.1-8B
+\end{itemize}
+\begin{table}
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|c|cc|cc|}
+\hline
+\multirow{2}{*}{req/sec} 
+& \multicolumn{2}{c|}{vLLM Baseline (FCFS)} 
+& \multicolumn{2}{c|}{vLLM (User-provided Family IDs)} \\
+\cline{2-5}
+& Average Batch Size & Throughput 
+& Average Batch Size & Throughput \\
+\hline
+1  & 2.6  & 1.04 & 2.02 & 0.95 \\
+2  & 5.15  & 2.00 & 4.48 & 1.99 \\
+5  & 29.60  & 5.09 & 11.11 & 4.40 \\
+10  & 395.80  & 4.42 & 23.96 & 8.16 \\
+20  & 438.85  & 5.25 & 52.79 & 13.32 \\
+\hline
+\end{tabular}
+}
+\end{table}
+\end{frame}
 
+
+\begin{frame}{How long should the shared prefix be?}
+\begin{itemize}
+    \item A high request arrival rate (500 req/sec)
+    \item Max batch size of 500
+    \item 5 families
+    \item 100 new output tokens 
+    \item Model: Llama3.1-8B
+\end{itemize}
+\begin{table}
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|c|cc|cc|}
+\hline
+\multirow{2}{*}{Shared Prefix Length in Number of Tokens} 
+& \multicolumn{2}{c|}{vLLM Baseline (FCFS)} 
+& \multicolumn{2}{c|}{vLLM (User-provided Family IDs)} \\
+\cline{2-5}
+& Average Batch Size & Throughput 
+& Average Batch Size & Throughput \\
+\hline
+13  & 457.911  & 42.47 & 324.544 & 44.67 \\
+65  & 448.87  & 40.14 & 318.60 & 43.96 \\
+130  & 460.09  & 38.19 & 330.49 & 41.99 \\
+260  & 462.80  & 35.34 & 326.36 & 44.58 \\
+650  & 469.12  & 27.47 & 335.21 & 42.00 \\
+\hline
+\end{tabular}
+}
+\end{table}
+\end{frame}
 
 \section{}
 \begin{frame}
