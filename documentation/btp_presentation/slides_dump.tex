@@ -1161,6 +1161,40 @@ LongChat-13B  & 5.28 & 0.61 & 215.70 & 22.01 \\
 \end{table}
 \end{frame}
 
+
+\begin{frame}{Time taken by individual functions}
+\begin{table}[ht]
+\centering
+\small
+\resizebox{\textwidth}{!}{\begin{tabular}{|l|c|r|r|}
+\hline
+\textbf{Function} &
+\textbf{Calls} &
+\textbf{FamilyLoadRequestQueue Avg (ns)} &
+\textbf{RadixCostRequestQueue Avg (ns)} \\
+\hline
+add\_request &
+2000 &
+2{,}426.40 &
+12{,}096{,}365.73 \\
+peek\_request &
+2000 &
+879.28 &
+58{,}358.12 \\
+pop\_request &
+2000 &
+983.38 &
+76{,}673.44 \\
+should\_add\_more\_to\_batch &
+2700 &
+2{,}087.00 &
+77{,}511.13 \\
+\hline
+\end{tabular}}
+\caption{Average execution time comparison of request queue functions}
+\label{tab:queue-avg-comparison}
+\end{table}
+\end{frame}
 \section{}
 \begin{frame}
     \Huge{\centerline{\bf Thank You}}
