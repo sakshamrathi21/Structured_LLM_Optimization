@@ -30,33 +30,12 @@ NUM_FAMILIES=(5)
 
 
 
-# $PY_BIN "$VLLM_SCRIPT" --policy family_load --max_batch_size 1000 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 1 --num_families 5 --len_factor 5 >> .out
-# $PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 1 --num_families 5 --len_factor 5 >> .out
+$PY_BIN "$VLLM_SCRIPT" --policy radix_cost --max_batch_size 1000 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 5 --model_name qwen/qwen2.5-0.5b-instruct >> .out
+$PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 5  --model_name qwen/qwen2.5-0.5b-instruct  >> .out
 
-# $PY_BIN "$VLLM_SCRIPT" --policy family_load --max_batch_size 1000 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 2 --num_families 5 --len_factor 5 >> .out
-# $PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 2 --num_families 5 --len_factor 5 >> .out
-
-# $PY_BIN "$VLLM_SCRIPT" --policy family_load --max_batch_size 1000 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 5 --num_families 5 --len_factor 5 >> .out
-# $PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 5 --num_families 5 --len_factor 5 >> .out
-
-# $PY_BIN "$VLLM_SCRIPT" --policy family_load --max_batch_size 1000 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 10 --num_families 5 --len_factor 5 >> .out
-# $PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 10 --num_families 5 --len_factor 5 >> .out
-
-# $PY_BIN "$VLLM_SCRIPT" --policy family_load --max_batch_size 1000 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 20 --num_families 5 --len_factor 5 >> .out
-# $PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 20 --num_families 5 --len_factor 5 >> .out
+$PY_BIN "$VLLM_SCRIPT" --policy radix_cost --max_batch_size 1000 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 5 --model_name lmsys/longchat-13b-16k >> .out
+$PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 5  --model_name lmsys/longchat-13b-16k  >> .out
 
 
-$PY_BIN "$VLLM_SCRIPT" --policy family_load --max_batch_size 1000 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 0.01 >> .out
-$PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 0.01 >> .out
 
-$PY_BIN "$VLLM_SCRIPT" --policy family_load --max_batch_size 1000 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 0.05 >> .out
-$PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 0.05 >> .out
 
-$PY_BIN "$VLLM_SCRIPT" --policy family_load --max_batch_size 1000 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 0.1 >> .out
-$PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 0.1 >> .out
-
-$PY_BIN "$VLLM_SCRIPT" --policy family_load --max_batch_size 1000 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 0.2 >> .out
-$PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 0.2 >> .out
-
-$PY_BIN "$VLLM_SCRIPT" --policy family_load --max_batch_size 1000 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 0.5 >> .out
-$PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 0.5 >> .out

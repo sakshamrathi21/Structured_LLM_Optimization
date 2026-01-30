@@ -1121,11 +1121,40 @@ R2 is selected since it has maximum prefix overlap with the working set.
 & Average Batch Size & Throughput 
 & Average Batch Size & Throughput \\
 \hline
-13  & 457.911  & 42.47 & 324.544 & 44.67 \\
+13  & 455.48 & 42.47 & 141.23 & 44.67 \\
 65  & 448.87  & 40.14 & 318.60 & 43.96 \\
 130  & 460.09  & 38.19 & 330.49 & 41.99 \\
 260  & 462.80  & 35.34 & 326.36 & 44.58 \\
 650  & 469.12  & 27.47 & 335.21 & 42.00 \\
+\hline
+\end{tabular}
+}
+\end{table}
+\end{frame}
+
+\begin{frame}{How large should the model be?}
+\begin{itemize}
+    \item A high request arrival rate (500 req/sec)
+    \item Max batch size of 500
+    \item 5 families
+    \item 100 new output tokens 
+    \item Shared prefix length: 6500 tokens
+\end{itemize}
+\begin{table}
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|c|cc|cc|}
+\hline
+\multirow{2}{*}{Model Name} 
+& \multicolumn{2}{c|}{vLLM Baseline (FCFS)} 
+& \multicolumn{2}{c|}{vLLM (User-provided Family IDs)} \\
+\cline{2-5}
+& Average Batch Size & Throughput 
+& Average Batch Size & Throughput \\
+\hline
+Qwen2.5-0.5B  & 378.98 & 25.40 & 89.63 & 49.08 \\
+Llama3.1-8B  & 448.87  & 24.15 & 151.21 & 4.37 \\
+LongChat-13B  & 5.28 & 0.61 & 215.70 & 22.01 \\
 \hline
 \end{tabular}
 }
