@@ -28,13 +28,11 @@ NUM_FAMILIES=(5)
 # python vllm_multiple_families_varying_workloads.py --policy family_load --len_factor 10 --write_dcgmi --max_batch_size 200 --multiplier 20 --num_families 5 --req_per_sec 100
 # python vllm_multiple_families_varying_workloads.py --len_factor 10 --write_dcgmi --max_batch_size 500 --multiplier 20 --num_families 5 --req_per_sec 100
 
+$PY_BIN "$VLLM_SCRIPT" --policy radix_cost --max_batch_size 1000 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 5 >> .out
+# $PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 5  --model_name qwen/qwen2.5-0.5b-instruct  >> .out
 
-
-$PY_BIN "$VLLM_SCRIPT" --policy radix_cost --max_batch_size 1000 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 5 --model_name qwen/qwen2.5-0.5b-instruct >> .out
-$PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 5  --model_name qwen/qwen2.5-0.5b-instruct  >> .out
-
-$PY_BIN "$VLLM_SCRIPT" --policy radix_cost --max_batch_size 1000 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 5 --model_name lmsys/longchat-13b-16k >> .out
-$PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 5  --model_name lmsys/longchat-13b-16k  >> .out
+# $PY_BIN "$VLLM_SCRIPT" --policy radix_cost --max_batch_size 1000 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 5 --model_name lmsys/longchat-13b-16k >> .out
+# $PY_BIN "$VLLM_SCRIPT" --policy fcfs --max_batch_size 500 --write_output --multiplier 4 --max_new_tokens 100 --req_per_sec 500 --num_families 5 --len_factor 5  --model_name lmsys/longchat-13b-16k  >> .out
 
 
 

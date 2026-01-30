@@ -38,5 +38,5 @@ cp for vllm local backup
 
 
 ```bash
-cp -r /home/saksham/CS492/code/sglang/.venv/lib/python3.12/site-packages/vllm/v1/core/sched /home/saksham/CS492/code/vllm/vllm_local_backup/vllm/v1/core/
+cp -r /home/saksham/CS496/code/sglang/.venv/lib/python3.12/site-packages/vllm/v1/core/sched /home/saksham/CS496/code/vllm/vllm_local_backup/vllm/v1/core/
 ```
