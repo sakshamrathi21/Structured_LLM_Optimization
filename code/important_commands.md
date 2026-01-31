@@ -40,3 +40,10 @@ cp for vllm local backup
 ```bash
 cp -r /home/saksham/CS496/code/sglang/.venv/lib/python3.12/site-packages/vllm/v1/core/sched /home/saksham/CS496/code/vllm/vllm_local_backup/vllm/v1/core/
 ```
+
+
+```bash
+rm -rf *
+cmake -DCMAKE_BUILD_TYPE=Release -Dpybind11_DIR=$(python -m pybind11 --cmakedir) ..
+make -j
+```

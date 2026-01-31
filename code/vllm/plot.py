@@ -171,9 +171,9 @@ with open(INPUT_FILE, "r") as f:
         if policy == "fcfs" and not second_match:
             policy = "vllm fcfs"
         elif policy == "radix_cost":
-            policy = "chunked hash tree"
+            policy = "chunked hash tree + vllm"
         elif policy == "family_load":
-            policy = "user gives out family IDs"
+            policy = "user gives out family IDs + vllm"
         elif policy == "dynamic_batching":
             policy = "dynamic batching"
         elif policy == "fcfs" and second_match:
