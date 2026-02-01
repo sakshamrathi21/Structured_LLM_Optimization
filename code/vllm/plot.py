@@ -182,7 +182,16 @@ with open(INPUT_FILE, "r") as f:
             policy = "sglang longest prefix match"
         elif policy == "dfs-weight":
             policy = "sglang dfs weight"
-        data[len_factor][policy].append((req, throughput))
+
+        found_existing = False
+        for i in range(len(data[len_factor][policy])):
+            if data[len_factor][policy][i][0] == req:
+                data[len_factor][policy][i] = (req, throughput)
+                found_existing = True
+                break
+                
+        if not found_existing:
+            data[len_factor][policy].append((req, throughput))
         
         # Debug first few matches
         if matched_lines <= 3:

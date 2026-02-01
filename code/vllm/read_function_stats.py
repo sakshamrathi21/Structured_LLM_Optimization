@@ -1,7 +1,7 @@
 import re
 from collections import defaultdict
 
-log_file = ".out2"  # change this to your log file path
+log_file = ".out"  # change this to your log file path
 
 # Data structure: {function_name: {"calls": int, "total": int}}
 stats = defaultdict(lambda: {"calls": 0, "total": 0})

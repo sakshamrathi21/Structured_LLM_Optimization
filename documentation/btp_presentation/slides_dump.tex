@@ -330,7 +330,6 @@ Batch size grows dynamically as long as marginal cost is low.
 \end{itemize}
 \end{frame}
 
-
 \begin{frame}{Chunked Hash Tree Based - Insertion}
 \centering
 \begin{tikzpicture}[
@@ -338,27 +337,23 @@ Batch size grows dynamically as long as marginal cost is low.
     level distance=12mm,
     sibling distance=32mm
 ]
-
-\node {Level 0\\hash(A B)}
+\node (level0) at (0,0) {Level 0\\hash(A B)}
     child { node {R1, R2, R3} };
-
-\node[right=2cm] {Level 1\\hash(A B C D)}
+\node (level1) at (3.5,0) {Level 1\\hash(A B C D)}
     child { node {R1, R2} };
-
-\node[right=5cm] {Level 2\\hash(A B C D E F)}
+\node (level1) at (7,0) {Level 1\\hash(A B I J)}
+    child { node {R3} };
+\node at (0,-2.5) {Level 2\\hash(A B C D E F)}
     child { node {R1} };
-
-
-\node[right=8cm, below=1.8cm] {Level 2\\hash(A B C D G H)}
+\node at (3.5,-2.5) {Level 2\\hash(A B C D G H)}
     child { node {R2} };
-
+\node at (7,-2.5) {Level 2\\hash(A B I J K L)}
+    child { node {R3} };
 \end{tikzpicture}
-
 \vspace{0.5em}
 \small
 Each level stores hashes of cumulative token prefixes.
 \end{frame}
-
 
 \begin{frame}{Chunked Hash Tree Based - Working Set}
 \centering
@@ -368,26 +363,23 @@ Each level stores hashes of cumulative token prefixes.
     level distance=12mm,
     sibling distance=32mm
 ]
-
-\node[ws] {Level 0\\hash(A B)}
+\node[ws] (level0) at (0,0) {Level 0\\hash(A B)}
     child { node {R1, R2, R3} };
-
-\node[ws, right=2cm] {Level 1\\hash(A B C D)}
+\node[ws] (level1) at (3.5,0) {Level 1\\hash(A B C D)}
     child { node {R1, R2} };
-
-\node[ws, right=5cm] {Level 2\\hash(A B C D E F)}
+\node (level1) at (7,0) {Level 1\\hash(A B I J)}
+    child { node {R3} };
+\node[ws] at (0,-2.5) {Level 2\\hash(A B C D E F)}
     child { node {R1} };
-
-\node[right=8cm, below=1.8cm] {Level 2\\hash(A B C D G H)}
+\node at (3.5,-2.5) {Level 2\\hash(A B C D G H)}
     child { node {R2} };
-
+\node at (7,-2.5) {Level 2\\hash(A B I J K L)}
+    child { node {R3} };
 \end{tikzpicture}
-
 \vspace{0.5em}
 \small
 Green boxes indicate prefix hashes in the working set.
 \end{frame}
-
 
 \begin{frame}{Chunked Hash Tree Based - Best Request Selection}
 \centering
@@ -398,26 +390,24 @@ Green boxes indicate prefix hashes in the working set.
     level distance=12mm,
     sibling distance=32mm
 ]
-
-\node[ws] {Level 0\\hash(A B)}
+\node[ws] (level0) at (0,0) {Level 0\\hash(A B)}
     child { node {R1, R2, R3} };
-
-\node[ws, right=2cm] {Level 1\\hash(A B C D)}
+\node[ws] (level1) at (3.5,0) {Level 1\\hash(A B C D)}
     child { node {R1, R2} };
-
-\node[right=5cm] {Level 2\\hash(A B C D E F)}
+\node (level1) at (7,0) {Level 1\\hash(A B I J)}
+    child { node {R3} };
+\node[ws] at (0,-2.5) {Level 2\\hash(A B C D E F)}
     child { node {R1} };
-
-\node[candidate, right=8cm, below=1.8cm]
-    {Level 2\\hash(A B C D G H)}
+\node[candidate] at (3.5,-2.5) {Level 2\\hash(A B C D G H)}
     child { node {R2} };
-
-\draw[->, thick, red] (1.7,-1.1) -- (2.5,-1.1);
-
+\node at (7,-2.5) {Level 2\\hash(A B I J K L)}
+    child { node {R3} };
+\draw[->, thick, red] (1.9,-1.1) -- (2.8,-1.1);
 \end{tikzpicture}
-
 \vspace{0.5em}
 \small
+Green boxes indicate prefix hashes in the working set. 
+
 R2 is selected since it has maximum prefix overlap with the working set.
 \end{frame}
 
@@ -1161,40 +1151,45 @@ LongChat-13B  & 5.28 & 0.61 & 215.70 & 22.01 \\
 \end{table}
 \end{frame}
 
-
 \begin{frame}{Time taken by individual functions}
 \begin{table}[ht]
 \centering
 \small
-\resizebox{\textwidth}{!}{\begin{tabular}{|l|c|r|r|}
+\resizebox{\textwidth}{!}{\begin{tabular}{|l|c|r|r|r|}
 \hline
 \textbf{Function} &
 \textbf{Calls} &
 \textbf{FamilyLoadRequestQueue Avg (ns)} &
-\textbf{RadixCostRequestQueue Avg (ns)} \\
+\textbf{RadixCostRequestQueue Avg (ns)} &
+\textbf{C++ Implementation Avg (ns)} \\
 \hline
 add\_request &
 2000 &
 2{,}426.40 &
-12{,}096{,}365.73 \\
+12{,}096{,}365.73 &
+820{,}406.82 \\
 peek\_request &
 2000 &
 879.28 &
-58{,}358.12 \\
+58{,}358.12 &
+1{,}919.68 \\
 pop\_request &
 2000 &
 983.38 &
-76{,}673.44 \\
+76{,}673.44 &
+7{,}128.38 \\
 should\_add\_more\_to\_batch &
-2700 &
+2600 &
 2{,}087.00 &
-77{,}511.13 \\
+77{,}511.13 &
+4{,}795.59 \\
 \hline
 \end{tabular}}
 \caption{Average execution time comparison of request queue functions}
 \label{tab:queue-avg-comparison}
 \end{table}
 \end{frame}
+
 \section{}
 \begin{frame}
     \Huge{\centerline{\bf Thank You}}

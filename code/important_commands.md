@@ -43,7 +43,5 @@ cp -r /home/saksham/CS496/code/sglang/.venv/lib/python3.12/site-packages/vllm/v1
 
 
 ```bash
-rm -rf *
-cmake -DCMAKE_BUILD_TYPE=Release -Dpybind11_DIR=$(python -m pybind11 --cmakedir) ..
-make -j
+cd /home/saksham/CS496/code/vllm/.venv/lib/python3.12/site-packages/vllm/v1/core/sched/build ; rm -rf * ; cmake -DCMAKE_BUILD_TYPE=Release -Dpybind11_DIR=$(python -m pybind11 --cmakedir) .. ; make -j ; cd -
 ```
