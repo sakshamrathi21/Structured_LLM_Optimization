@@ -186,12 +186,15 @@ with open(INPUT_FILE, "r") as f:
         found_existing = False
         for i in range(len(data[len_factor][policy])):
             if data[len_factor][policy][i][0] == req:
-                data[len_factor][policy][i] = (req, throughput)
+                # data[len_factor][policy][i] = (req, throughput)
                 found_existing = True
                 break
-                
+
+        print(found_existing, policy)  
         if not found_existing:
             data[len_factor][policy].append((req, throughput))
+        elif found_existing and policy == "chunked hash tree + vllm":
+            data[len_factor]["chunked hash tree + vllm + c++"].append((req, throughput))
         
         # Debug first few matches
         if matched_lines <= 3:
