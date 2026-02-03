@@ -1,5 +1,6 @@
 from collections import defaultdict, deque
 from typing import Dict, List, Optional, Set, Tuple
+import xxhash
 
 class _RadixNode:
     """
@@ -437,129 +438,334 @@ class SyncRadixTreeClient:
             self.proc.terminate()
 
 
+# class ChunkedHashTree:
+#     def __init__(self, chunk_size: int = 500):
+#         self.chunk_size = chunk_size
+#         self.levels: Dict[int, Dict[int, Set[str]]] = defaultdict(lambda: defaultdict(set))
+#         self.request_tokens: Dict[str, List[int]] = {}
+#         self.request_hashes: Dict[str, List[int]] = {}
+#         self.working_set_hashes: Set[Tuple[int, int]] = set()
+#         self.hash_ref_counts: Dict[Tuple[int, int], int] = defaultdict(int)
+#         self.active_requests: Set[str] = set()
+#         self.waiting_requests: List[str] = []
+        
+#         self.missing_chunks_cache: Dict[str, int] = {}
+        
+#         self.hash_to_waiting_requests: Dict[Tuple[int, int], Set[str]] = defaultdict(set)
+
+#     def _compute_hashes_incremental(self, token_ids: List[int]) -> List[int]:
+#         hashes = []
+#         hasher = xxhash.xxh64()
+        
+#         for i, token in enumerate(token_ids):
+#             hasher.update(token.to_bytes(4, 'little'))
+            
+#             # Store hash at chunk boundaries
+#             if (i + 1) % self.chunk_size == 0 or i == len(token_ids) - 1:
+#                 hashes.append(hasher.intdigest())
+        
+#         return hashes
+    
+#     def insert(self, request_id: str, token_ids: List[int]) -> int:
+#         if request_id in self.request_tokens:
+#             return 0
+        
+#         hashes = self._compute_hashes_incremental(token_ids)
+#         self.request_tokens[request_id] = token_ids
+#         self.request_hashes[request_id] = hashes
+        
+#         for level, hash_val in enumerate(hashes):
+#             self.levels[level][hash_val].add(request_id)
+        
+#         self.waiting_requests.append(request_id)
+        
+#         missing = sum(1 for level, hash_val in enumerate(hashes) 
+#                      if (level, hash_val) not in self.working_set_hashes)
+#         self.missing_chunks_cache[request_id] = missing
+        
+#         for level, hash_val in enumerate(hashes):
+#             self.hash_to_waiting_requests[(level, hash_val)].add(request_id)
+        
+#         return len(token_ids)
+
+#     def _count_missing_chunks(self, request_id: str):
+#         return self.missing_chunks_cache.get(request_id, float('inf'))
+
+#     def find_best_request(self) -> Tuple[Optional[str], int]:
+#         if not self.waiting_requests:
+#             return None, 0
+        
+#         best_req = None
+#         best_cost = float("inf")
+        
+#         for req_id in self.waiting_requests:
+#             cost = self.missing_chunks_cache.get(req_id, float('inf'))
+#             if cost < best_cost:
+#                 best_cost = cost
+#                 best_req = req_id
+#                 if cost == 0:
+#                     return best_req, 0
+        
+#         return best_req, int(best_cost)
+
+#     def activate_request(self, request_id: str) -> Tuple[int, int]:
+#         if request_id in self.active_requests:
+#             return 0, 0
+#         if request_id not in self.request_hashes:
+#             return 0, 0
+        
+#         self.active_requests.add(request_id)
+#         if request_id in self.waiting_requests:
+#             self.waiting_requests.remove(request_id)
+#             # Remove from cache since it's no longer waiting
+#             self.missing_chunks_cache.pop(request_id, None)
+        
+#         hashes = self.request_hashes[request_id]
+#         added_count = 0
+        
+#         for level, hash_val in enumerate(hashes):
+#             key = (level, hash_val)
+            
+#             if self.hash_ref_counts[key] == 0:
+#                 for waiting_req in self.hash_to_waiting_requests[key]:
+#                     if waiting_req in self.missing_chunks_cache:
+#                         self.missing_chunks_cache[waiting_req] -= 1
+                
+#                 self.working_set_hashes.add(key)
+#                 added_count += 1
+            
+#             self.hash_ref_counts[key] += 1
+        
+#         # Clean up reverse index for this request
+#         for level, hash_val in enumerate(hashes):
+#             self.hash_to_waiting_requests[(level, hash_val)].discard(request_id)
+        
+#         return added_count, len(hashes)
+
+#     def finish_request(self, request_id: str) -> Tuple[int, int]:
+#         if request_id not in self.active_requests:
+#             return 0, 0
+        
+#         self.active_requests.remove(request_id)
+#         hashes = self.request_hashes.get(request_id, [])
+#         evicted_count = 0
+        
+#         for level, hash_val in enumerate(hashes):
+#             key = (level, hash_val)
+#             self.hash_ref_counts[key] -= 1
+            
+#             if self.hash_ref_counts[key] == 0:
+#                 for waiting_req in self.hash_to_waiting_requests[key]:
+#                     if waiting_req in self.missing_chunks_cache:
+#                         self.missing_chunks_cache[waiting_req] += 1
+                
+#                 self.working_set_hashes.discard(key)
+#                 evicted_count += 1
+#                 del self.hash_ref_counts[key]
+        
+#         self.remove(request_id)
+#         return evicted_count, len(hashes)
+
+#     def remove(self, request_id: str) -> None:
+#         if request_id not in self.request_tokens:
+#             return
+        
+#         if request_id in self.waiting_requests:
+#             self.waiting_requests.remove(request_id)
+        
+#         self.missing_chunks_cache.pop(request_id, None)
+        
+#         hashes = self.request_hashes.get(request_id, [])
+        
+#         for level, hash_val in enumerate(hashes):
+#             self.hash_to_waiting_requests[(level, hash_val)].discard(request_id)
+#             if not self.hash_to_waiting_requests[(level, hash_val)]:
+#                 del self.hash_to_waiting_requests[(level, hash_val)]
+        
+#         for level, hash_val in enumerate(hashes):
+#             self.levels[level][hash_val].discard(request_id)
+#             if not self.levels[level][hash_val]:
+#                 del self.levels[level][hash_val]
+        
+#         del self.request_tokens[request_id]
+#         del self.request_hashes[request_id]
+
+#     def get_working_set_size(self) -> int:
+#         """Get total number of chunks in working set."""
+#         return len(self.working_set_hashes)
+    
+#     def get_working_set_tokens(self) -> int:
+#         """Estimate total tokens in working set (chunks × chunk_size)."""
+#         return len(self.working_set_hashes) * self.chunk_size
+    
+#     def get_stats(self) -> Dict:
+#         """Get statistics about the tree."""
+#         total_chunks = sum(len(hashes) for hashes in self.request_hashes.values())
+        
+#         return {
+#             "total_requests": len(self.request_tokens),
+#             "active_requests": len(self.active_requests),
+#             "waiting_requests": len(self.waiting_requests),
+#             "working_set_chunks": len(self.working_set_hashes),
+#             "working_set_tokens_estimate": self.get_working_set_tokens(),
+#             "total_chunks": total_chunks,
+#             "avg_chunks_per_request": total_chunks / len(self.request_tokens) if self.request_tokens else 0,
+#         }
+    
+#     def dump(self) -> None:
+#         """Print the hash tree structure."""
+#         print("\n" + "="*80)
+#         print("ChunkedHashTree dump")
+#         print("="*80)
+        
+#         print(f"\nChunk size: {self.chunk_size}")
+#         print(f"\nLevels: {len(self.levels)}")
+        
+#         for level in sorted(self.levels.keys()):
+#             print(f"\nLevel {level} (tokens 0:{(level+1)*self.chunk_size}):")
+#             hashes = self.levels[level]
+#             print(f"  Unique hashes: {len(hashes)}")
+            
+#             # Show sample hashes
+#             for i, (hash_val, req_ids) in enumerate(list(hashes.items())[:3]):
+#                 key = (level, hash_val)
+#                 ws_status = "WS" if key in self.working_set_hashes else "--"
+#                 ref_count = self.hash_ref_counts.get(key, 0)
+                
+#                 print(f"    hash={hash_val:20d} {ws_status}({ref_count}) reqs={list(req_ids)[:3]}")
+            
+#             if len(hashes) > 3:
+#                 print(f"    ... and {len(hashes)-3} more hashes")
+        
+#         stats = self.get_stats()
+#         print(f"\nStats:")
+#         for key, value in stats.items():
+#             print(f"  {key}: {value}")
+        
+#         print(f"\nActive: {list(self.active_requests)[:5]}{'...' if len(self.active_requests) > 5 else ''}")
+#         print(f"Waiting: {len(self.waiting_requests)} requests")
+#         print("="*80 + "\n")
+
+import heapq
 
 class ChunkedHashTree:
-    """
-    Hash-based prefix tree using cumulative chunks.
-    Each level represents hash(tokens[0:chunk_size*level]).
-    
-    Much faster than radix tree - no tree traversal or splits needed.
-    """
-    
     def __init__(self, chunk_size: int = 500):
         self.chunk_size = chunk_size
-        
-        # Level -> (hash -> set of request_ids)
         self.levels: Dict[int, Dict[int, Set[str]]] = defaultdict(lambda: defaultdict(set))
-        
-        # Request metadata
         self.request_tokens: Dict[str, List[int]] = {}
-        self.request_hashes: Dict[str, List[int]] = {}  # req_id -> list of hashes at each level
-        
-        # Working set tracking
-        self.working_set_hashes: Set[Tuple[int, int]] = set()  # Set of (level, hash) tuples
-        self.hash_ref_counts: Dict[Tuple[int, int], int] = defaultdict(int)  # (level, hash) -> count
-        
-        # Request state
+        self.request_hashes: Dict[str, List[int]] = {}
+        self.working_set_hashes: Set[Tuple[int, int]] = set()
+        self.hash_ref_counts: Dict[Tuple[int, int], int] = defaultdict(int)
         self.active_requests: Set[str] = set()
         self.waiting_requests: List[str] = []
-    
-    def _compute_hashes(self, token_ids: List[int]) -> List[int]:
-        """
-        Compute cumulative prefix hashes.
-        Returns list of hashes: [hash(0:500), hash(0:1000), hash(0:1500), ...]
-        """
-        hashes = []
-        num_chunks = (len(token_ids) + self.chunk_size - 1) // self.chunk_size
         
-        for level in range(num_chunks):
-            end_idx = min((level + 1) * self.chunk_size, len(token_ids))
-            prefix = tuple(token_ids[0:end_idx])
-            hashes.append(hash(prefix))
+        self.missing_chunks_cache: Dict[str, int] = {}
+        
+        self.hash_to_waiting_requests: Dict[Tuple[int, int], Set[str]] = defaultdict(set)
+        
+        self.waiting_heap: List[Tuple[int, str]] = []
+        self.heap_entry_finder: Dict[str, Tuple[int, str]] = {}
+        self.REMOVED = '<removed>'
+
+    def _compute_hashes_incremental(self, token_ids: List[int]) -> List[int]:
+        hashes = []
+        hasher = xxhash.xxh64()
+        
+        for i, token in enumerate(token_ids):
+            hasher.update(token.to_bytes(4, 'little'))
+            
+            if (i + 1) % self.chunk_size == 0 or i == len(token_ids) - 1:
+                hashes.append(hasher.intdigest())
         
         return hashes
     
+    def _add_to_heap(self, request_id: str, missing_count: int):
+        """Add or update request in the heap."""
+        # Mark old entry as removed if it exists
+        if request_id in self.heap_entry_finder:
+            old_entry = self.heap_entry_finder[request_id]
+            old_entry = (old_entry[0], self.REMOVED)  # Mark as removed
+        
+        # Add new entry
+        entry = (missing_count, request_id)
+        self.heap_entry_finder[request_id] = entry
+        heapq.heappush(self.waiting_heap, entry)
+    
+    def _remove_from_heap(self, request_id: str):
+        """Remove request from heap (lazy deletion)."""
+        if request_id in self.heap_entry_finder:
+            del self.heap_entry_finder[request_id]
+    
     def insert(self, request_id: str, token_ids: List[int]) -> int:
-        """
-        Insert a request. O(num_chunks) - just hash computations.
-        Returns: number of tokens
-        """
         if request_id in self.request_tokens:
-            return
+            return 0
         
-        # Compute hashes for all cumulative prefixes
-        hashes = self._compute_hashes(token_ids)
-        
-        # Store request data
+        hashes = self._compute_hashes_incremental(token_ids)
         self.request_tokens[request_id] = token_ids
         self.request_hashes[request_id] = hashes
         
-        # Add to level hash tables
         for level, hash_val in enumerate(hashes):
             self.levels[level][hash_val].add(request_id)
         
-        # Add to waiting queue
         self.waiting_requests.append(request_id)
         
-        return len(token_ids)
-    
-    def _count_missing_chunks(self, request_id: str) -> int:
-        """Count how many chunk hashes are NOT in working set."""
-        if request_id not in self.request_hashes:
-            return float('inf')
-        
-        hashes = self.request_hashes[request_id]
-        missing = 0
+        missing = sum(1 for level, hash_val in enumerate(hashes) 
+                     if (level, hash_val) not in self.working_set_hashes)
+        self.missing_chunks_cache[request_id] = missing
         
         for level, hash_val in enumerate(hashes):
-            if (level, hash_val) not in self.working_set_hashes:
-                missing += 1
+            self.hash_to_waiting_requests[(level, hash_val)].add(request_id)
         
-        return missing
-    
+        # Add to heap
+        self._add_to_heap(request_id, missing)
+        
+        return len(token_ids)
+
+    def _count_missing_chunks(self, request_id: str):
+        return self.missing_chunks_cache.get(request_id, float('inf'))
+
     def find_best_request(self) -> Tuple[Optional[str], int]:
-        """
-        Find waiting request with fewest missing chunks (most prefix overlap).
-        O(R × C) where R=waiting requests, C=avg chunks per request.
-        
-        Returns: (request_id, num_missing_chunks)
-        """
-        if not self.waiting_requests:
-            return None, 0
-        
-        best_req = None
-        best_cost = float("inf")
-        
-        for req_id in self.waiting_requests:
-            cost = self._count_missing_chunks(req_id)
+        """Find request with minimum missing chunks using heap - O(log n) amortized."""
+        # Skip removed entries at the top of heap
+        while self.waiting_heap:
+            cost, req_id = self.waiting_heap[0]
             
-            if cost < best_cost:
-                best_cost = cost
-                best_req = req_id
-                
-                # Early exit if perfect match
-                if cost <= 1:
-                    return best_req, int(cost)
+            # Check if this entry is still valid
+            if req_id == self.REMOVED:
+                heapq.heappop(self.waiting_heap)
+                continue
+            
+            # Check if request is still waiting
+            if req_id not in self.heap_entry_finder:
+                heapq.heappop(self.waiting_heap)
+                continue
+            
+            # Check if the cost is still accurate (it should be due to updates)
+            current_cost = self.missing_chunks_cache.get(req_id, float('inf'))
+            if cost != current_cost:
+                # Entry is stale, remove and re-add with correct cost
+                heapq.heappop(self.waiting_heap)
+                self._add_to_heap(req_id, current_cost)
+                continue
+            
+            # Found valid entry
+            return req_id, int(cost)
         
-        return best_req, int(best_cost)
-    
+        return None, 0
+
     def activate_request(self, request_id: str) -> Tuple[int, int]:
-        """
-        Activate a request and add its hash nodes to working set.
-        O(num_chunks) operations.
-        
-        Returns: (num_chunks_added, total_chunks)
-        """
         if request_id in self.active_requests:
             return 0, 0
-        
         if request_id not in self.request_hashes:
             return 0, 0
         
         self.active_requests.add(request_id)
-        
         if request_id in self.waiting_requests:
             self.waiting_requests.remove(request_id)
+            # Remove from cache since it's no longer waiting
+            self.missing_chunks_cache.pop(request_id, None)
+            # Remove from heap
+            self._remove_from_heap(request_id)
         
         hashes = self.request_hashes[request_id]
         added_count = 0
@@ -567,68 +773,77 @@ class ChunkedHashTree:
         for level, hash_val in enumerate(hashes):
             key = (level, hash_val)
             
-            # Add to working set if first reference
             if self.hash_ref_counts[key] == 0:
+                for waiting_req in self.hash_to_waiting_requests[key]:
+                    if waiting_req in self.missing_chunks_cache:
+                        old_missing = self.missing_chunks_cache[waiting_req]
+                        self.missing_chunks_cache[waiting_req] -= 1
+                        # Update heap entry
+                        self._add_to_heap(waiting_req, old_missing - 1)
+                
                 self.working_set_hashes.add(key)
                 added_count += 1
             
             self.hash_ref_counts[key] += 1
         
-        return added_count, len(hashes)
-    
-    def finish_request(self, request_id: str) -> Tuple[int, int]:
-        """
-        Finish a request and evict its hash nodes from working set.
-        O(num_chunks) operations.
+        # Clean up reverse index for this request
+        for level, hash_val in enumerate(hashes):
+            self.hash_to_waiting_requests[(level, hash_val)].discard(request_id)
         
-        Returns: (num_chunks_evicted, total_chunks)
-        """
+        return added_count, len(hashes)
+
+    def finish_request(self, request_id: str) -> Tuple[int, int]:
         if request_id not in self.active_requests:
             return 0, 0
         
         self.active_requests.remove(request_id)
-        
         hashes = self.request_hashes.get(request_id, [])
         evicted_count = 0
         
         for level, hash_val in enumerate(hashes):
             key = (level, hash_val)
-            
             self.hash_ref_counts[key] -= 1
             
-            # Remove from working set if no more references
             if self.hash_ref_counts[key] == 0:
+                for waiting_req in self.hash_to_waiting_requests[key]:
+                    if waiting_req in self.missing_chunks_cache:
+                        old_missing = self.missing_chunks_cache[waiting_req]
+                        self.missing_chunks_cache[waiting_req] += 1
+                        # Update heap entry
+                        self._add_to_heap(waiting_req, old_missing + 1)
+                
                 self.working_set_hashes.discard(key)
                 evicted_count += 1
                 del self.hash_ref_counts[key]
         
-        # Remove request data
         self.remove(request_id)
-        
         return evicted_count, len(hashes)
-    
+
     def remove(self, request_id: str) -> None:
-        """Remove a request completely from the tree."""
         if request_id not in self.request_tokens:
             return
         
-        # Remove from waiting list
         if request_id in self.waiting_requests:
             self.waiting_requests.remove(request_id)
+            self._remove_from_heap(request_id)
         
-        # Remove from level hash tables
+        self.missing_chunks_cache.pop(request_id, None)
+        
         hashes = self.request_hashes.get(request_id, [])
+        
+        for level, hash_val in enumerate(hashes):
+            self.hash_to_waiting_requests[(level, hash_val)].discard(request_id)
+            if not self.hash_to_waiting_requests[(level, hash_val)]:
+                del self.hash_to_waiting_requests[(level, hash_val)]
+        
         for level, hash_val in enumerate(hashes):
             self.levels[level][hash_val].discard(request_id)
-            
-            # Clean up empty hash buckets
             if not self.levels[level][hash_val]:
                 del self.levels[level][hash_val]
         
-        # Remove metadata
         del self.request_tokens[request_id]
         del self.request_hashes[request_id]
-    
+
     def get_working_set_size(self) -> int:
         """Get total number of chunks in working set."""
         return len(self.working_set_hashes)
@@ -684,10 +899,6 @@ class ChunkedHashTree:
         print(f"\nActive: {list(self.active_requests)[:5]}{'...' if len(self.active_requests) > 5 else ''}")
         print(f"Waiting: {len(self.waiting_requests)} requests")
         print("="*80 + "\n")
-
-
-
-
 
 # Example usage
 if __name__ == "__main__":
