@@ -57,8 +57,8 @@ int main(int argc, char** argv)
 {
     int families = 5;
     int requests = 100;
-    int prefix_mb = 640;
-    int suffix_mb = 2;
+    int prefix_mb = 3000;
+    int suffix_mb = 3;
     int iters = 1;
 
     for (int i = 1; i < argc; i++) {
