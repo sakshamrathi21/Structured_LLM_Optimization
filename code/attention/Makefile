@@ -25,36 +25,19 @@ INCLUDES := -I$(CUDA_PATH)/include
 # Libraries
 LIBS := -L$(CUDA_PATH)/lib64 -lcudart -lcublas
 
-# Source files
 KERNEL_SRC := prefix_attention_kernel.cu
-EXAMPLE_SRC := example_usage.cu
-TEST_SRC := test_compile.cu
-MINIMAL_TEST_SRC := minimal_test.cu
 
-# Output binaries
 EXAMPLE_BIN := prefix_attention_example
-TEST_BIN := test_compile
-MINIMAL_BIN := minimal_test
 
 # Targets
-.PHONY: all clean example test minimal benchmark profile
+.PHONY: all clean example benchmark profile
 
-all: test minimal
+all: example
 
-example: $(EXAMPLE_SRC) $(KERNEL_SRC)
-	$(NVCC) $(NVCC_FLAGS) $(INCLUDES) -o $(EXAMPLE_BIN) $(EXAMPLE_SRC) $(LIBS)
+example: $(KERNEL_SRC)
+	$(NVCC) $(NVCC_FLAGS) $(INCLUDES) $(KERNEL_SRC) -o $(EXAMPLE_BIN) $(LIBS)
 	@echo "Build complete: $(EXAMPLE_BIN)"
 	@echo "Run with: ./$(EXAMPLE_BIN)"
-
-test: $(TEST_SRC) $(KERNEL_SRC)
-	$(NVCC) $(NVCC_FLAGS) $(INCLUDES) -o $(TEST_BIN) $(TEST_SRC) $(LIBS)
-	@echo "Build complete: $(TEST_BIN)"
-	@echo "Run with: ./$(TEST_BIN)"
-
-minimal: $(MINIMAL_TEST_SRC) $(KERNEL_SRC)
-	$(NVCC) $(NVCC_FLAGS) $(INCLUDES) -o $(MINIMAL_BIN) $(MINIMAL_TEST_SRC) $(LIBS)
-	@echo "Build complete: $(MINIMAL_BIN)"
-	@echo "Run with: ./$(MINIMAL_BIN)"
 
 # Run with profiler
 profile: example
@@ -66,7 +49,7 @@ verbose: example
 
 # Clean build artifacts
 clean:
-	rm -f $(EXAMPLE_BIN) $(TEST_BIN) $(MINIMAL_BIN) *.o *.ptx
+	rm -f $(EXAMPLE_BIN) *.o *.ptx
 
 # Print configuration
 info:

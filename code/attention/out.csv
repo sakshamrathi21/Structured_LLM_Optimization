@@ -1,0 +1,5 @@
+==PROF== Connected to process 35991 (/home/saksham/CS496/code/attention/prefix_attention_example)
+==PROF== Trying to shutdown target application
+==ERROR== Failed to profile "per_request_attention_kernel" in process 35991
+==PROF== Trying to shutdown target application
+==ERROR== An error occurred while trying to profile.
