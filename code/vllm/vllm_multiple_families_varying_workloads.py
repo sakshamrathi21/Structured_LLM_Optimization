@@ -100,7 +100,7 @@ def main():
 
     llm = LLM(
         model=args.model_name,
-        gpu_memory_utilization=0.95,
+        gpu_memory_utilization=0.75,
         enable_chunked_prefill=True,
         # max_num_batched_tokens=32768,
         enable_prefix_caching=True,

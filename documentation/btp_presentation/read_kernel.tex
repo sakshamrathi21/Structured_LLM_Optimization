@@ -1,0 +1,247 @@
+\documentclass[Serif, 10pt, brown]{beamer}
+\usepackage{booktabs,xcolor}
+\usepackage{pifont}
+\newcommand*\CHECK{\ding{51}}
+\usepackage{array}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+
+\usepackage{setspace,mathtools,amssymb,multirow,array,amsmath,tikz}
+\usepackage[normalsize]{subfigure}
+\usetikzlibrary{patterns,automata,positioning,decorations.pathreplacing,decorations,calc}
+\usepackage{curves}
+\usepackage{caption}
+\usepackage{wasysym}
+\usepackage{epsfig,epstopdf,graphicx}
+
+\curvewarnfalse
+
+\newtheorem{proposition}{Proposition}
+\theoremstyle{example}
+\newtheorem{theoremh}{Theorem}
+\theoremstyle{plain}
+\renewcommand{\textfraction}{0.01}
+\renewcommand{\floatpagefraction}{0.99}
+\newcommand{\ul}{\underline}
+\newcounter{units}
+\setbeamercovered{dynamic}
+\logo{\includegraphics[width=0.5in,keepaspectratio]{\FIGDIR/iitb_logo.png}}
+\newcommand{\FIGDIR}{../figures} 
+\newcommand{\RESULTDIR}{../../results} 
+\mode<presentation>{
+    \usetheme[right,currentsection,hideothersubsections]{UTD}
+    \useoutertheme{sidebar}
+    \useinnertheme[shadow]{rounded}
+    \usecolortheme{whale}
+    \usecolortheme{orchid}
+    \usefonttheme[onlymath]{serif}
+    \setbeamertemplate{footline}{\centerline{Slide \insertframenumber/\inserttotalframenumber}}
+}
+
+\usebeamercolor[fg]{author in sidebar}
+\title[{Systems for LLMs}]{\sc Benchmarking and Performance Analysis of LLM Inferencing Systems}
+\author[\ul{Saksham Rathi}]{{\textbf{Saksham Rathi}}}
+\institute[UTD]{\sc\small Systems for LLMs\\ Under Prof. Mythili Vutukuru}
+\date[UCI]{Indian Institute of Technology Bombay \\ Autumn 2025-26}
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}{Contents}
+	\tableofcontents
+\end{frame}
+
+\section{Simplified Read Kernel}
+
+\begin{frame}{Simplified Read Kernel}
+    \begin{itemize}
+        \item \textbf{Goal:} Model family-workload by kernels that have the sole job of reading KV cache blocks from the HBM
+        \item Each request reads a huge family-shared prefix and a distinct suffix
+        \item Each kernel launch creates its own grid
+        \item All kernels submitted to a single stream
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Block-to-Request Mapping}
+\textbf{Definitions:}
+\begin{itemize}
+    \item Blocks per request = $B$
+    \item Total blocks = requests $\times B$
+\end{itemize}
+
+\vspace{0.4cm}
+
+\textbf{Inside the kernel:}
+\begin{itemize}
+    \item The request id can be found as: blockIdx.x / B
+    \item The corresponding block in the rqeuest can be found as: blockIdx.x \% B
+\end{itemize}
+
+\vspace{0.4cm}
+
+\textbf{Effect:}
+\begin{itemize}
+    \item Blocks from different requests execute concurrently
+    \item GPU scheduler interleaves them naturally
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Memory Structure}
+\begin{verbatim}
+[d_mem]
+ |-- Family 0
+ |    |-- Large Shared Prefix
+ |    |-- Request 0 Suffix
+ |    |-- Request 1 Suffix
+ |    |-- ...
+ |-- Family 1
+ |    |-- ...
+
+\end{verbatim}
+
+\end{frame}
+
+
+\begin{frame}{Optimizations}
+    \textbf{CUDA Graph Integration:}
+\begin{itemize}
+    \item Single kernel launch captured in graph
+    \item Graph instantiated once
+    \item Launched repeatedly (corresponding to multiple decode iterations)
+\end{itemize}
+
+\textbf{Loop Unrolling:}
+\begin{itemize}
+    \item Unroll inner loop reading block data
+    \item Each thread reads multiple elements (in a single for loop iteration)
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{DRAM Accesses' Statistics for vLLM}
+    \begin{itemize}
+        \item \textbf{DRAMA:} A DCGMI metric that counts the fraction of cycles the DRAM pipe is active in a unit time interval
+        \item A higher instantaneous value indicates more DRAM activity/utilization
+        \item We sample this metric every 1ms during the kernel execution
+        \item We run two experiments (all in the same batch):
+        \begin{itemize}
+            \item Single family with 500 requests
+            \item 5 families with 100 requests each
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{DRAM Accesses' Statistics for vLLM}
+\begin{itemize}
+        \item For the first case, the median DRAM utilization was found to be 0.106, whereas for the second case, it was 0.02, roughly 5x lesser
+        \item Homogeneous batches $\rightarrow$ Higher DRAM utilization 
+        \item If we sum over the DRAM utilization samples, we find that the single family case has a sum of 2677.81, whereas the 5 family case has a sum of 3781.25. If we assume that the amount of data transferred is proportional to the sum of DRAM utilizations, we can say that the 5 family case transfers 1.41x more data than the single family case
+        \item This in turn gives us a hint that we are getting higher L2 cache hit rates in the single-family case
+        \item The SM Occupancy was around 0.40 for both the cases
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}{Read Kernel Results (Family Size = 180MB)}
+For LLama3.1-8B, a shared prefix of length 1300 tokens occupies roughly 180MB.
+    \begin{table}[ht]
+\centering
+\resizebox{\textwidth}{!}{\begin{tabular}{lcc}
+\hline
+\textbf{Metric} & \textbf{Single Family (500 Req)} & \textbf{5 Families (100 Req Each)} \\
+\hline
+Shared Prefix Size (Per Family) (MB) & 180 & 180 \\
+Distinct Suffix Size (Per Request) (MB) & 3 & 3 \\
+Total HBM Data Needed (MB) & 1,760 & 2,520 \\
+Total Data Across All Requests (Including Redundancy) (MB) & 95,940 & 95,940 \\
+Execution Time (s) & 4.856 & 4.848 \\
+Median DRAM Utilization & 0.305 & 0.294 \\
+Median SM Occupancy & 0.66 & 0.66 \\
+DRAM Bandwidth (Including Redundancy, assuming 0 L2 reuse) (GB/s) & 19.76 & 19.79 \\
+Peak DRAM Bandwidth (GB/s) & 960.10 & 960.10 \\
+\hline
+\end{tabular}}
+\end{table}
+
+\end{frame}
+
+\begin{frame}{Read Kernel Results (Family Size = 900MB)}
+For LLama3.1-8B, a shared prefix of length 6500 tokens occupies roughly 900MB.
+    \begin{table}[ht]
+\centering
+\resizebox{\textwidth}{!}{\begin{tabular}{lcc}
+\hline
+\textbf{Metric} & \textbf{Single Family (500 Req)} & \textbf{5 Families (100 Req Each)} \\
+\hline
+Shared Prefix Size (Per Family) (MB) & 900 & 900 \\
+Distinct Suffix Size (Per Request) (MB) & 3 & 3 \\
+Total HBM Data Needed (MB) & 2,410 & 5,770 \\
+Total Data Across All Requests (Including Redundancy) (MB) & 421,000 & 421,000 \\
+Execution Time (s) & 21.902 & 23.086 \\
+Median DRAM Utilization & 0.391 & 0.438 \\
+Median SM Occupancy & 0.66 & 0.66 \\
+DRAM Bandwidth (Including Redundancy, assuming 0 L2 reuse) (GB/s) & 19.22 & 18.01 \\
+Peak DRAM Bandwidth (GB/s) & 960.10 & 960.10 \\
+\hline
+\end{tabular}}
+\end{table}
+
+\end{frame}
+
+
+\begin{frame}{Read Kernel Results (Family Size = 1800MB)}
+For LLama3.1-8B, a shared prefix of length 13000 tokens occupies roughly 1800MB.
+    \begin{table}[ht]
+\centering
+\resizebox{\textwidth}{!}{\begin{tabular}{lcc}
+\hline
+\textbf{Metric} & \textbf{Single Family (500 Req)} & \textbf{5 Families (100 Req Each)} \\
+\hline
+Shared Prefix Size (Per Family) (MB) & 1,800 & 1,800 \\
+Distinct Suffix Size (Per Request) (MB) & 3 & 3 \\
+Total HBM Data Needed (MB) & 3,460 & 11,010 \\
+Total Data Across All Requests (Including Redundancy) (MB) & 945,290 & 945,290 \\
+Execution Time (s) & 53.733 & 57.7208 \\
+Median DRAM Utilization & 0.517 & 0.557 \\
+Median SM Occupancy & 0.66 & 0.66 \\
+DRAM Bandwidth (Including Redundancy, assuming 0 L2 reuse) (GB/s) & 17.59 & 16.38 \\
+Peak DRAM Bandwidth (GB/s) & 960.10 & 960.10 \\
+\hline
+\end{tabular}}
+\end{table}
+
+\end{frame}
+
+
+\begin{frame}{Read Kernel Results (Family Size = 9000MB)}
+For LLama3.1-8B, a shared prefix of length 65000 tokens occupies roughly 9000MB.
+    \begin{table}[ht]
+\centering
+\resizebox{\textwidth}{!}{\begin{tabular}{lcc}
+\hline
+\textbf{Metric} & \textbf{Single Family (500 Req)} & \textbf{5 Families (100 Req Each)} \\
+\hline
+Shared Prefix Size (Per Family) (MB) & 9,000 & 9,000 \\
+Distinct Suffix Size (Per Request) (MB) & 3 & 3 \\
+Total HBM Data Needed (MB) & 11,010 & 47,760 \\
+Total Data Across All Requests (Including Redundancy) (MB) & 4,720,160 & 4,720,160 \\
+Execution Time (s) & 313.94 & 336.6913 \\
+Median DRAM Utilization & 0.621 & 0.688 \\
+Median SM Occupancy & 0.66 & 0.66 \\
+DRAM Bandwidth (Including Redundancy, assuming 0 L2 reuse) (GB/s) & 15.04 & 14.02 \\
+Peak DRAM Bandwidth (GB/s) & 960.10 & 960.10 \\
+\hline
+\end{tabular}}
+\end{table}
+
+\end{frame}
+
+
+
+\section{}
+\begin{frame}
+    \Huge{\centerline{\bf Thank You}}
+\end{frame}
+
+\end{document}

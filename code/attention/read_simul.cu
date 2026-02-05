@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 {
     int families = 5;
     int requests = 100;
-    int prefix_mb = 3000;
+    int prefix_mb = 9000;
     int suffix_mb = 3;
     int iters = 1;
 
@@ -125,10 +125,34 @@ int main(int argc, char** argv)
     CHECK(cudaStreamEndCapture(capture_stream, &graph));
     CHECK(cudaGraphInstantiate(&graph_exec, graph, nullptr, nullptr, 0));
 
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
+    cudaEventRecord(start, 0);
     for (int i = 0; i < iters; i++) {
-        std::cout << "Iteration " << i << std::endl;
         CHECK(cudaGraphLaunch(graph_exec, 0));
     }
+    CHECK(cudaDeviceSynchronize());
+    cudaEventRecord(stop, 0);
+    cudaEventSynchronize(stop);
+
+    float ms = 0;
+    cudaEventElapsedTime(&ms, start, stop);
+
+    size_t bytes_per_iter = families * (
+        prefix_elems * sizeof(float) * requests + 
+        suffix_elems * sizeof(float) * requests  
+    );
+    size_t total_bytes = bytes_per_iter * iters;
+    float time_s = ms / 1000.0f;
+    float bandwidth_GBps = (total_bytes / 1e9) / time_s;
+
+    printf("\n=== BANDWIDTH ANALYSIS ===\n");
+    printf("Data per iteration: %.2f GB\n", bytes_per_iter / 1e9);
+    printf("Total data transferred: %.2f GB\n", total_bytes / 1e9);
+    printf("Time: %.2f ms (%.4f s)\n", ms, time_s);
+    printf("Achieved DRAM Bandwidth: %.2f GB/s\n", bandwidth_GBps);
 
     CHECK(cudaDeviceSynchronize());
 
@@ -137,6 +161,17 @@ int main(int argc, char** argv)
     cudaStreamDestroy(capture_stream);
     cudaFree(d_mem);
     cudaFree(d_sink);
+
+    cudaDeviceProp prop;
+    cudaGetDeviceProperties(&prop, 0);
+
+    float memory_clock_khz = prop.memoryClockRate;  
+    int memory_bus_width = prop.memoryBusWidth;   
+    float peak_bandwidth_GBps = 2.0 * memory_clock_khz * (memory_bus_width / 8) / 1e6;
+
+    printf("Peak DRAM Bandwidth: %.2f GB/s\n", peak_bandwidth_GBps);
+    printf("Bandwidth Utilization: %.1f%%\n", 
+       100.0 * bandwidth_GBps / peak_bandwidth_GBps);
 
     printf("Done.\n");
     return 0;
