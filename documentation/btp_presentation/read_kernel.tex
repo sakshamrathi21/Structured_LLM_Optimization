@@ -239,6 +239,31 @@ Peak DRAM Bandwidth (GB/s) & 960.10 & 960.10 \\
 
 
 
+\begin{frame}{Read Kernel Results (Family Size = 1800MB) (Running vLLM Engine in Parallel)}
+For LLama3.1-8B, a shared prefix of length 13000 tokens occupies roughly 1800MB.
+    \begin{table}[ht]
+\centering
+\resizebox{\textwidth}{!}{\begin{tabular}{lcc}
+\hline
+\textbf{Metric} & \textbf{Single Family (500 Req)} & \textbf{5 Families (100 Req Each)} \\
+\hline
+Shared Prefix Size (Per Family) (MB) & 1,800 & 1,800 \\
+Distinct Suffix Size (Per Request) (MB) & 3 & 3 \\
+Total HBM Data Needed (MB) & 3,460 & 11,010 \\
+Total Data Across All Requests (Including Redundancy) (MB) & 945,290 & 945,290 \\
+Execution Time (s) & 154.97 & 135.617 \\
+Median DRAM Utilization & 0.452 & 0.429 \\
+Median SM Occupancy & 0.66 & 0.66 \\
+DRAM Bandwidth (Including Redundancy, assuming 0 L2 reuse) (GB/s) & 6.10 & 6.97 \\
+Peak DRAM Bandwidth (GB/s) & 960.10 & 960.10 \\
+\hline
+\end{tabular}}
+\end{table}
+
+\end{frame}
+
+
+
 \section{}
 \begin{frame}
     \Huge{\centerline{\bf Thank You}}

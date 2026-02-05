@@ -55,9 +55,9 @@ __global__ void read_kernel_multi(
 
 int main(int argc, char** argv)
 {
-    int families = 5;
-    int requests = 100;
-    int prefix_mb = 9000;
+    int families = 1;
+    int requests = 500;
+    int prefix_mb = 1800;
     int suffix_mb = 3;
     int iters = 1;
 
