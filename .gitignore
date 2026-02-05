@@ -22,5 +22,4 @@ out_*
 __pycache__/
 *.sqlite
 *.out*
-*.nsys-rep
 try.py
