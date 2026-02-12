@@ -1,0 +1,324 @@
+\documentclass[Serif, 10pt, brown]{beamer}
+\usepackage{booktabs,xcolor}
+\usepackage{pifont}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usetikzlibrary{shapes,arrows,positioning,calc,trees,decorations.pathreplacing}
+
+\definecolor{shared1}{RGB}{46,204,113}  % Green
+\definecolor{shared2}{RGB}{52,152,219}  % Blue
+\definecolor{shared3}{RGB}{155,89,182}  % Purple
+\definecolor{unique1}{RGB}{231,76,60}   % Red
+\definecolor{unique2}{RGB}{230,126,34}  % Orange
+\definecolor{unique3}{RGB}{241,196,15}  % Yellow
+\definecolor{unique4}{RGB}{149,165,166} % Gray
+\newcommand*\CHECK{\ding{51}}
+\usepackage{array}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+
+\usepackage{setspace,mathtools,amssymb,multirow,array,amsmath,tikz}
+\usepackage[normalsize]{subfigure}
+\usetikzlibrary{patterns,automata,positioning,decorations.pathreplacing,decorations,calc}
+\usepackage{curves}
+\usepackage{caption}
+\usepackage{wasysym}
+\usepackage{epsfig,epstopdf,graphicx}
+
+\curvewarnfalse
+
+\newtheorem{proposition}{Proposition}
+\theoremstyle{example}
+\newtheorem{theoremh}{Theorem}
+\theoremstyle{plain}
+\renewcommand{\textfraction}{0.01}
+\renewcommand{\floatpagefraction}{0.99}
+\newcommand{\ul}{\underline}
+\newcounter{units}
+\setbeamercovered{dynamic}
+\logo{\includegraphics[width=0.5in,keepaspectratio]{\FIGDIR/iitb_logo.png}}
+\newcommand{\FIGDIR}{../figures} 
+\newcommand{\RESULTDIR}{../../results} 
+\mode<presentation>{
+    \usetheme[right,currentsection,hideothersubsections]{UTD}
+    \useoutertheme{sidebar}
+    \useinnertheme[shadow]{rounded}
+    \usecolortheme{whale}
+    \usecolortheme{orchid}
+    \usefonttheme[onlymath]{serif}
+    \setbeamertemplate{footline}{\centerline{Slide \insertframenumber/\inserttotalframenumber}}
+}
+
+\usebeamercolor[fg]{author in sidebar}
+\title[{Systems for LLMs}]{\sc Benchmarking and Performance Analysis of LLM Inferencing Systems}
+\author[\ul{Saksham Rathi}]{{\textbf{Saksham Rathi}}}
+\institute[UTD]{\sc\small Systems for LLMs\\ Under Prof. Mythili Vutukuru}
+\date[UCI]{Indian Institute of Technology Bombay \\ Autumn 2025-26}
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}{Contents}
+	\tableofcontents
+\end{frame}
+
+\section{Radix Tree Workload Modes}
+
+\begin{frame}{Mode 1}
+    \begin{tikzpicture}[
+    box/.style={rectangle, draw, minimum width=1cm, minimum height=0.6cm, anchor=west},
+    label/.style={font=\small}
+]
+    \node[font=\Large\bfseries] at (0,2) {Full Sharing (All share 3L)};
+    
+    \node[label] at (0,0.5) {All requests:};
+    
+    \node[box, fill=shared1, minimum width=6cm] (s1) at (1,0.5) {};
+    \node[label, white, font=\bfseries] at (s1.center) {Shared 3L};
+    
+    \draw[decorate, decoration={brace, amplitude=5pt, mirror}] 
+        (1,-0.2) -- (7,-0.2) node[midway, below=5pt, font=\footnotesize] {3L tokens};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Mode 2}
+    \hspace*{+1cm}
+    \begin{tikzpicture}[
+    box/.style={rectangle, draw, minimum width=1cm, minimum height=0.6cm, anchor=west},
+    label/.style={font=\small}
+]
+    \node[font=\Large\bfseries] at (2,3.5) {All share 2L, then 2xL};
+    
+    % Level 1: All share
+    \node[label] at (0,2) {All requests:};
+    \node[box, fill=shared1, minimum width=4cm] (l1) at (1,2) {};
+    \node[label, white, font=\bfseries] at (l1.center) {Shared 2L};
+    
+    % Level 2: Two groups
+    \node[label] at (0,0.8) {Group 1 (5k):};
+    \node[box, fill=shared1, minimum width=4cm] at (1,0.8) {};
+    \node[box, fill=unique1, minimum width=2cm] at (5,0.8) {};
+    \node[label, white] at (3,0.8) {Shared 2L};
+    \node[label, white] at (6,0.8) {+L unique};
+    
+    \node[label] at (0,0) {Group 2 (5k):};
+    \node[box, fill=shared1, minimum width=4cm] at (1,0) {};
+    \node[box, fill=unique2, minimum width=2cm] at (5,0) {};
+    \node[label, white] at (3,0) {Shared 2L};
+    \node[label, white] at (6,0) {+L unique};
+    
+    % Annotations
+    \draw[decorate, decoration={brace, amplitude=5pt, mirror}] 
+        (1,-0.7) -- (5,-0.7) node[midway, below=5pt, font=\footnotesize] {2L};
+    \draw[decorate, decoration={brace, amplitude=5pt, mirror}] 
+        (5,-0.7) -- (7,-0.7) node[midway, below=5pt, font=\footnotesize] {L};
+    
+    % Arrow showing split
+    \draw[->, thick] (5,1.7) -- (5,1.1);
+    \node[font=\footnotesize] at (6.5,1.4) {Split into 2 groups};
+    
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Mode 3}
+    \hspace*{0cm}
+    \begin{tikzpicture}[
+    box/.style={rectangle, draw, minimum width=1cm, minimum height=0.6cm, anchor=west},
+    label/.style={font=\small}
+]
+    \node[font=\Large\bfseries] at (1.5,3.5) {All share L, then 2x2L};
+    
+    \node[label] at (0,2) {All requests:};
+    \node[box, fill=shared1, minimum width=2cm] (l1) at (3,2) {};
+    \node[label, white, font=\bfseries] at (l1.center) {Shared L};
+    
+    \node[label] at (0,0.8) {Group 1:};
+    \node[box, fill=shared1, minimum width=2cm] at (3,0.8) {};
+    \node[box, fill=unique1, minimum width=4cm] at (5,0.8) {};
+    \node[label, white] at (4,0.8) {L};
+    \node[label, white] at (7,0.8) {+2L unique};
+    
+    \node[label] at (0,0) {Group 2:};
+    \node[box, fill=shared1, minimum width=2cm] at (3,0) {};
+    \node[box, fill=unique2, minimum width=4cm] at (5,0) {};
+    \node[label, white] at (4,0) {L};
+    \node[label, white] at (7,0) {+2L unique};
+    
+    \draw[decorate, decoration={brace, amplitude=5pt, mirror}] 
+        (3,-0.7) -- (5,-0.7) node[midway, below=5pt, font=\footnotesize] {L};
+    \draw[decorate, decoration={brace, amplitude=5pt, mirror}] 
+        (5,-0.7) -- (9,-0.7) node[midway, below=5pt, font=\footnotesize] {2L};
+    
+    \draw[->, thick] (4,1.7) -- (4,1.1);
+    \node[font=\footnotesize] at (5.5,1.4) {Split into 2 groups};
+    
+\end{tikzpicture}
+
+\end{frame}
+
+\begin{frame}{Mode 4}
+    \begin{tikzpicture}[
+    box/.style={rectangle, draw, minimum width=0.8cm, minimum height=0.5cm, anchor=west},
+    label/.style={font=\small},
+    level distance=1.2cm,
+    level 1/.style={sibling distance=6cm},
+    level 2/.style={sibling distance=3cm}
+]
+    \node[font=\Large\bfseries] at (3,5) {Three-Level Tree (L → 2L → 3L, 4 leaves)};
+    
+    \node[label] at (0,3.5) {Level 1:};
+    \node[box, fill=shared1, minimum width=2cm] at (2,3.5) {};
+    \node[label, white] at (3,3.5) {L (all share)};
+    
+    \node[label] at (0,2) {Level 2:};
+    \node[box, fill=shared1, minimum width=2cm] at (2,2) {};
+    \node[box, fill=shared2, minimum width=2cm] at (4.5,2) {};
+    \node[label, white, font=\footnotesize] at (3,2) {Branch 1};
+    \node[label, white, font=\footnotesize] at (5.5,2) {Branch 2};
+    \node[font=\footnotesize] at (3,1.6) {+L};
+    \node[font=\footnotesize] at (5.5,1.6) {+L};
+    
+    \node[label] at (0,0.5) {Level 3:};
+    \node[box, fill=unique1, minimum width=1.2cm] at (1.5,0.5) {};
+    \node[box, fill=unique2, minimum width=1.2cm] at (3,0.5) {};
+    \node[box, fill=unique3, minimum width=1.2cm] at (5,0.5) {};
+    \node[box, fill=unique4, minimum width=1.2cm] at (6.5,0.5) {};
+    
+    \node[label, white, font=\tiny] at (2.1,0.5) {Leaf 1};
+    \node[label, white, font=\tiny] at (3.6,0.5) {Leaf 2};
+    \node[label, white, font=\tiny] at (5.6,0.5) {Leaf 3};
+    \node[label, white, font=\tiny] at (7.1,0.5) {Leaf 4};
+    
+    \node[font=\tiny] at (2.1,0.1) {+L};
+    \node[font=\tiny] at (3.6,0.1) {+L};
+    \node[font=\tiny] at (5.6,0.1) {+L};
+    \node[font=\tiny] at (7.1,0.1) {+L};
+    
+    \draw[->, thick] (3,3.2) -- (3,2.3);
+    \draw[->, thick] (3,3.2) -- (5.5,2.3);
+    \draw[->, thick] (3,1.7) -- (2.1,0.8);
+    \draw[->, thick] (3,1.7) -- (3.6,0.8);
+    \draw[->, thick] (5.5,1.7) -- (5.6,0.8);
+    \draw[->, thick] (5.5,1.7) -- (7.1,0.8);
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Mode 5}
+    \begin{tikzpicture}[
+    box/.style={rectangle, draw, minimum width=1cm, minimum height=0.6cm, anchor=west},
+    label/.style={font=\small}
+]
+    \node[font=\Large\bfseries] at (3,3) {2 separate groups with 3L each};
+    
+    \node[label] at (0,1.5) {Group 1:};
+    \node[box, fill=unique1, minimum width=6cm] at (3,1.5) {};
+    \node[label, white, font=\bfseries] at (6,1.5) {Context A (3L tokens)};
+    
+    \node[label] at (0,0.5) {Group 2:};
+    \node[box, fill=unique2, minimum width=6cm] at (3,0.5) {};
+    \node[label, white, font=\bfseries] at (6,0.5) {Context B (3L tokens)};
+
+    \draw[decorate, decoration={brace, amplitude=5pt, mirror}] 
+        (3,-0.2) -- (9,-0.2) node[midway, below=5pt, font=\footnotesize] {3L tokens (completely different)};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Results across varying L}
+    \begin{figure}
+        \centering
+    \includegraphics[width=\textwidth]{\RESULTDIR/radix_tree_workloads_results.png}
+    \captionof{figure}{Results across varying L}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Mode 6}
+    \begin{tikzpicture}[
+    box/.style={rectangle, draw, minimum width=0.4cm, minimum height=0.5cm, anchor=west},
+    label/.style={font=\small}
+]
+    \node[font=\Large\bfseries] at (5,4) {2.5L shared + 10x0.5L};
+    
+    \node[label] at (2,2.5) {All requests:};
+    \node[box, fill=shared1, minimum width=5cm] at (3,2.5) {};
+    \node[label, white, font=\bfseries] at (5.5,2.5) {Shared 2.5L};
+    
+    \node[label] at (2,1) {10 groups};
+    
+    \foreach \x/\col in {0/unique1, 1/unique2, 2/unique3, 3/unique4, 4/unique1, 5/unique2, 6/unique3, 7/unique4, 8/unique1, 9/unique2} {
+        \node[box, fill=shared1, minimum width=5cm] at (3+\x*0.5,1-\x*0.15) {};
+        \node[box, fill=\col, minimum width=1cm] at (8+\x*0.5,1-\x*0.15) {};
+    }
+    
+    \draw[decorate, decoration={brace, amplitude=5pt, mirror}] 
+        (3,-1.0) -- (9,-1.0) node[midway, below=5pt, font=\footnotesize] {2.5L};
+    \draw[decorate, decoration={brace, amplitude=5pt, mirror}] 
+        (9,-1.0) -- (10,-1.0) node[midway, below=5pt, font=\footnotesize] {0.5L};
+    
+    \draw[->, thick] (5.5,2.2) -- (5.5,1.4);
+    \node[font=\footnotesize] at (7,1.8) {Split into 10 groups};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Mode 7}
+    \begin{tikzpicture}[
+    box/.style={rectangle, draw, minimum width=0.3cm, minimum height=0.4cm, anchor=west},
+    label/.style={font=\small}
+]
+    \node[font=\Large\bfseries\sffamily] at (4,4) {2.8L shared + 50x0.2L};
+
+    
+    \node[label] at (2,2.5) {All requests:};
+    \node[box, fill=shared1, minimum width=5.6cm] at (3,2.5) {};
+    \node[label, white, font=\bfseries] at (5.8,2.5) {Shared 2.8L};
+    \node[label] at (2,1) {50 groups};
+    
+    \foreach \x/\col in {0/unique1, 1/unique2, 2/unique3, 3/unique4, 4/unique1, 5/unique2, 6/unique3, 7/unique4, 8/unique1, 9/unique2, 10/unique3, 11/unique4, 12/unique1, 13/unique2, 14/unique3} {
+        \node[box, fill=shared1, minimum width=5.6cm] at (3+\x*0.3,1-\x*0.08) {};
+        \node[box, fill=\col, minimum width=0.4cm] at (8.6+\x*0.3,1-\x*0.08) {};
+    }
+    
+    \node[font=\footnotesize] at (7,-0.5) {...(More groups)};
+    
+    \draw[decorate, decoration={brace, amplitude=5pt, mirror}] 
+        (3,-1.2) -- (9.6,-1.2) node[midway, below=5pt, font=\footnotesize] {2.8L};
+    \draw[decorate, decoration={brace, amplitude=5pt, mirror}] 
+        (9.6,-1.2) -- (10,-1.2) node[midway, below=5pt, font=\footnotesize] {0.2L};
+    
+\end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}{Mode 8}
+    \begin{tikzpicture}[
+    box/.style={rectangle, draw, minimum width=0.3cm, minimum height=0.4cm, anchor=west},
+    label/.style={font=\small}
+]
+    \node[font=\Large\bfseries] at (5,4) {0.2L shared + 50x2.8L};
+    
+    \node[label] at (1.5,2.5) {All 10k requests:};
+    \node[box, fill=shared1, minimum width=0.4cm] at (3,2.5) {};
+    \node[label, font=\footnotesize] at (3.5,2.5) {0.2L};
+    
+    \node[label] at (1.5,1) {50 groups};
+    
+    \foreach \x/\col in {0/unique1, 1/unique2, 2/unique3, 3/unique4, 4/unique1, 5/unique2, 6/unique3, 7/unique4, 8/unique1, 9/unique2, 10/unique3, 11/unique4, 12/unique1, 13/unique2, 14/unique3} {
+        \node[box, fill=shared1, minimum width=0.4cm] at (3+\x*0.35,1-\x*0.08) {};
+        \node[box, fill=\col, minimum width=5.6cm] at (3.4+\x*0.35,1-\x*0.08) {};
+    }
+    
+    \node[font=\footnotesize] at (6.5,-0.5) {...(More groups)};
+    
+    \draw[decorate, decoration={brace, amplitude=5pt, mirror}] 
+        (3,-1.2) -- (3.4,-1.2) node[midway, below=5pt, font=\footnotesize] {0.2L};
+    \draw[decorate, decoration={brace, amplitude=5pt, mirror}] 
+        (3.4,-1.2) -- (11,-1.2) node[midway, below=5pt, font=\footnotesize] {2.8L};
+\end{tikzpicture}
+
+\end{frame}
+
+
+\section{}
+\begin{frame}
+    \Huge{\centerline{\bf Thank You}}
+\end{frame}
+
+\end{document}
