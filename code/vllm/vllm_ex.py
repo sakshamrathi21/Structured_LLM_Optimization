@@ -5,6 +5,7 @@ from transformers import AutoTokenizer
 import numpy as np
 from system_prompt import system_prompt, queries
 
+
 async def workload(llm, prompts, sampling_params, qps):
     """
     Send requests at ~target QPS. If queries pile up,
@@ -22,7 +23,7 @@ async def workload(llm, prompts, sampling_params, qps):
         intervals_passed = int((now - next_time) / interval) + 1
         for _ in range(intervals_passed):
             if i < len(prompts):
-                backlog.append(prompts[i])  
+                backlog.append(prompts[i])
                 i += 1
 
         if backlog:
@@ -70,7 +71,10 @@ async def main(qpss):
     prompts = []
     for q in queries:
         user_only = tokenizer.apply_chat_template(
-            [{"role": "system", "content": system_prompt},{"role": "user", "content": q}],
+            [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": q},
+            ],
             tokenize=False,
             add_generation_prompt=True,
         )
@@ -78,17 +82,20 @@ async def main(qpss):
 
     sampling_params = SamplingParams(temperature=0.7, max_tokens=80)
 
-    for qps in qpss: 
+    for qps in qpss:
         print(f"\n=== Running with QPS={qps} ===")
         latencies = await workload(llm, prompts, sampling_params, qps)
         summarize(latencies)
 
+
 if __name__ == "__main__":
     # take the command line arg
     import sys
+
     if len(sys.argv) > 1:
         qps = [int(sys.argv[1])]
     else:
         qps = 5
     import asyncio
+
     asyncio.run(main(qps))

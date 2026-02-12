@@ -13,7 +13,9 @@ print(df.head())
 
 # Plot bytes transferred vs time
 plt.figure(figsize=(10, 5))
-plt.scatter(df["start_ms"], df["bytes"], c="blue", label="Bytes per transfer", alpha=0.7)
+plt.scatter(
+    df["start_ms"], df["bytes"], c="blue", label="Bytes per transfer", alpha=0.7
+)
 plt.xlabel("Time (ms since start)")
 plt.ylabel("Bytes transferred")
 plt.title("GPU Memory Transfers over Time")

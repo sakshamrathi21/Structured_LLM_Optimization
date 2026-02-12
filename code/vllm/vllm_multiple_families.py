@@ -26,9 +26,9 @@ def main():
     whether_random = int(system.argv[3]) if len(system.argv) > 3 else 1
     prefixes = generate_prefixes(num_families)  # 10 families
     prompts = []
-    families = []  
+    families = []
 
-    for prefix in prefixes: 
+    for prefix in prefixes:
         for q in queries:
             modified_system_prompt = prefix + " " + system_prompt
             chat_messages = [
@@ -65,12 +65,28 @@ def main():
     prompts = list(prompts)
     families = list(families)
     sampling_params = SamplingParams(temperature=0.7, max_tokens=30)
-    print("Total number of requests to simulate:", len(prompts), "for max_num_seqs =", max_num_seqs)
+    print(
+        "Total number of requests to simulate:",
+        len(prompts),
+        "for max_num_seqs =",
+        max_num_seqs,
+    )
     initial_time = time.time()
     print("Simulation started at time:", initial_time)
     outputs = llm.generate(list(prompts), sampling_params)
     print("Simulation completed at time:", time.time())
-    print("Throughput of vLLM:", len(outputs) / (time.time() - initial_time), "req/s", "for number of families =", num_families, "and max_num_seqs =", max_num_seqs, "whether random =", whether_random)
+    print(
+        "Throughput of vLLM:",
+        len(outputs) / (time.time() - initial_time),
+        "req/s",
+        "for number of families =",
+        num_families,
+        "and max_num_seqs =",
+        max_num_seqs,
+        "whether random =",
+        whether_random,
+    )
+
 
 if __name__ == "__main__":
     main()

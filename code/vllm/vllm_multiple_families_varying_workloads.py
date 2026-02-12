@@ -40,17 +40,23 @@ def build_dcgmi_filename(args):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model_name", type=str, default="meta-llama/Llama-3.1-8B-Instruct")
+    parser.add_argument(
+        "--model_name", type=str, default="meta-llama/Llama-3.1-8B-Instruct"
+    )
     parser.add_argument("--num_families", type=int, default=2)
     parser.add_argument("--req_per_sec", type=int, default=None)
     parser.add_argument("--max_batch_size", type=int, default=500)
     parser.add_argument("--randomness", type=int, default=1)
     parser.add_argument("--len_factor", type=float, default=1.0)
-    parser.add_argument("--policy", type=str, default="fcfs", choices=list(get_args(SchedulerPolicy)))
+    parser.add_argument(
+        "--policy", type=str, default="fcfs", choices=list(get_args(SchedulerPolicy))
+    )
     parser.add_argument("--multiplier", type=int, default=10)
     parser.add_argument("--max_new_tokens", type=int, default=100)
     parser.add_argument("--write_output", action="store_true")
-    parser.add_argument("--write_dcgmi", action="store_true", help="Enable DCGMI monitoring and logging")
+    parser.add_argument(
+        "--write_dcgmi", action="store_true", help="Enable DCGMI monitoring and logging"
+    )
 
     args = parser.parse_args()
 
@@ -64,12 +70,12 @@ def main():
     if args.len_factor > 1.0:
         m_sys_prompt *= int(args.len_factor)
     else:
-        m_sys_prompt = m_sys_prompt[0:int(len(m_sys_prompt) * args.len_factor)]
+        m_sys_prompt = m_sys_prompt[0 : int(len(m_sys_prompt) * args.len_factor)]
 
     system_prompt = m_sys_prompt
 
     for prefix in prefixes:
-        for q in (queries * args.multiplier):
+        for q in queries * args.multiplier:
             modified_system_prompt = prefix + " " + system_prompt
             chat_messages = [
                 {"role": "system", "content": modified_system_prompt},
@@ -91,7 +97,10 @@ def main():
 
     paired = list(zip(prompts, families))
     if args.randomness > 0:
-        chunked = [paired[i:i+args.randomness] for i in range(0, len(paired), args.randomness)]
+        chunked = [
+            paired[i : i + args.randomness]
+            for i in range(0, len(paired), args.randomness)
+        ]
         random.shuffle(chunked)
         paired = [item for chunk in chunked for item in chunk]
 
@@ -117,24 +126,16 @@ def main():
         dcgmi_file = build_dcgmi_filename(args)
         print(f"[INFO] Logging DCGMI output to: {dcgmi_file}")
 
-        dcgmi_cmd = [
-            "sudo", "dcgmi", "dmon",
-            "-e", "1002,1003,1004,1005",
-            "-d", "1"
-        ]
+        dcgmi_cmd = ["sudo", "dcgmi", "dmon", "-e", "1002,1003,1004,1005", "-d", "1"]
 
         with open(dcgmi_file, "w") as f:
-            dcgmi_proc = subprocess.Popen(
-                dcgmi_cmd,
-                stdout=f,
-                stderr=subprocess.STDOUT
-            )
+            dcgmi_proc = subprocess.Popen(dcgmi_cmd, stdout=f, stderr=subprocess.STDOUT)
 
             try:
                 llm.generate(
                     prompts,
                     SamplingParams(temperature=0.7, max_tokens=args.max_new_tokens),
-                    poisson_lambda=args.req_per_sec
+                    poisson_lambda=args.req_per_sec,
                 )
             finally:
                 print("[INFO] Stopping DCGMI monitoring...")
@@ -149,7 +150,7 @@ def main():
         llm.generate(
             prompts,
             SamplingParams(temperature=0.7, max_tokens=args.max_new_tokens),
-            poisson_lambda=args.req_per_sec
+            poisson_lambda=args.req_per_sec,
         )
 
     end_time = time.time()
@@ -157,12 +158,14 @@ def main():
     throughput = len(prompts) / (end_time - initial_start_time)
 
     print(time.time(), "Completed all requests.")
-    print(f"Throughput Test with {args.num_families} families, "
+    print(
+        f"Throughput Test with {args.num_families} families, "
         f"{args.req_per_sec} req/sec and max_batch_size of {args.max_batch_size} "
         f"(randomness: {args.randomness}) (len factor: {args.len_factor}) "
         f"(model_name: {args.model_name}) (policy: {args.policy}) "
         f"(max_new_tokens: {args.max_new_tokens}) "
-        f"(num_prompts: {len(prompts)}): {throughput}\n")
+        f"(num_prompts: {len(prompts)}): {throughput}\n"
+    )
 
     if args.write_output:
         with open("vllm_multiple_families_varying_workloads_output.txt", "a") as f:

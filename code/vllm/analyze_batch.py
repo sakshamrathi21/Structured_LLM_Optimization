@@ -3,6 +3,7 @@ import re
 import sys
 import statistics
 
+
 def extract_times(lines):
     times = []
     pattern = re.compile(r"current time:\s*([0-9]+\.[0-9]+)")
@@ -16,7 +17,7 @@ def extract_times(lines):
 
 
 def compute_differences(times):
-    return [times[i] - times[i-1] for i in range(1, len(times))]
+    return [times[i] - times[i - 1] for i in range(1, len(times))]
 
 
 def percentile(data, pct):
@@ -30,7 +31,7 @@ def percentile(data, pct):
     # statistics.quantiles splits into 100 groups to approximate percentiles
     # We ask for 100-quantiles and pick the desired one
     qs = statistics.quantiles(data, n=100)
-    index = max(0, min(98, int(pct) - 1))   # clamp to valid range
+    index = max(0, min(98, int(pct) - 1))  # clamp to valid range
     return qs[index]
 
 

@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def remove_bursts(data, window=50, k=1.5, min_burst_len=20):
     """
     Identify and remove contiguous 'bursts' where the rolling average
@@ -110,8 +111,12 @@ def print_stats(data, label):
 # -------------------------------
 # Read both files
 # -------------------------------
-drama1 = read_drama("dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-5_rps-100_batch-200_rand-1_lenf-10.0_policy-family_load_maxnew-100.log")
-drama2 = read_drama("dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-5_rps-100_batch-500_rand-1_lenf-10.0_policy-fcfs_maxnew-100.log")
+drama1 = read_drama(
+    "dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-5_rps-100_batch-200_rand-1_lenf-10.0_policy-family_load_maxnew-100.log"
+)
+drama2 = read_drama(
+    "dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-5_rps-100_batch-500_rand-1_lenf-10.0_policy-fcfs_maxnew-100.log"
+)
 # filtered1, mask1 = remove_bursts(drama1)
 # filtered2, mask2 = remove_bursts(drama2)
 print_stats(drama1, "User gives out the family IDs")

@@ -89,15 +89,17 @@ def _merge_and_write(queues, csv_file):
 
     with open(csv_file, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow([
-            "timestamp",
-            "gpu_mem_used_MB",
-            "pcie_rx_MBps",
-            "pcie_tx_MBps",
-            "gpu_util_percent",
-            "mem_util_percent",
-            "power_W"
-        ])
+        writer.writerow(
+            [
+                "timestamp",
+                "gpu_mem_used_MB",
+                "pcie_rx_MBps",
+                "pcie_tx_MBps",
+                "gpu_util_percent",
+                "mem_util_percent",
+                "power_W",
+            ]
+        )
         for ts in all_ts:
             row = [
                 f"{ts:.3f}",
@@ -106,7 +108,7 @@ def _merge_and_write(queues, csv_file):
                 f"{data['pcie_tx'].get(ts, '-')}",
                 f"{data['gpu_util'].get(ts, '-')}",
                 f"{data['mem_util'].get(ts, '-')}",
-                f"{data['power'].get(ts, '-')}"
+                f"{data['power'].get(ts, '-')}",
             ]
             writer.writerow(row)
 
@@ -165,5 +167,5 @@ def stop_logging():
 
 if __name__ == "__main__":
     start_logging(interval=0.01)
-    time.sleep(10)   # workload here
+    time.sleep(10)  # workload here
     stop_logging()

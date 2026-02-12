@@ -1,5 +1,6 @@
 # from datasets import load_dataset
 from collections import defaultdict
+
 # # datasets = ["narrativeqa", "qasper", "multifieldqa_en", "multifieldqa_zh", "hotpotqa", "2wikimqa", "musique", "dureader", "gov_report", "qmsum", "multi_news", "vcsum", "trec", "triviaqa", "samsum", "lsht", "passage_count", "passage_retrieval_en", "passage_retrieval_zh", "lcc", "repobench-p"]
 
 # datasets = ["qasper"]
@@ -33,9 +34,8 @@ from datasets import load_dataset, disable_caching
 # # "coursera", "GSM(16-shot)", "QuALITY", "TopicRet", "TOFEL", "codeU", "SFiction", "LongFQA", "GovReport", "CUAD", "QMSum", "MultiDoc2Dial", "NarrativeQA", "NQ", "Multi-news", "Openreview", "BigPatent", "SPACE", "Qasper", "SummScreen"]
 
 
-
 # for testset in datasets:
-#     # disable_caching()  uncomment this if you cannot download codeU and sci_fi 
+#     # disable_caching()  uncomment this if you cannot download codeU and sci_fi
 #     data = load_dataset('L4NLP/LEval', testset, split='test')
 #     # evaluate your model
 
@@ -49,10 +49,9 @@ context_to_queries = defaultdict(list)
 #     context_to_queries[context].append(query)
 
 # # Print stats
-# 
+#
 
 # # Example: show one context and its queries
-
 
 
 from datasets import load_dataset
@@ -63,12 +62,9 @@ from datasets import load_dataset
 #     "cmrc_mixup", "lic_mixup", "dureader_mixup"
 # ]
 
-DATASET_NAMES = [
-    "hotpotwikiqa_mixup"
-]
-DATASET_LENGTH_LEVEL = [
-    '16k'
-]
+DATASET_NAMES = ["hotpotwikiqa_mixup"]
+DATASET_LENGTH_LEVEL = ["16k"]
+
 
 def get_dataset_names(dataset_names, length_levels):
     datasets = []
@@ -77,8 +73,9 @@ def get_dataset_names(dataset_names, length_levels):
             datasets.append(f"{name}_{length}")
     return datasets
 
+
 for dataset in get_dataset_names(DATASET_NAMES, DATASET_LENGTH_LEVEL):
-    data = load_dataset("Infinigence/LVEval", dataset, split='test', token=True)
+    data = load_dataset("Infinigence/LVEval", dataset, split="test", token=True)
 
 for sample in data:
     context = sample["context"]

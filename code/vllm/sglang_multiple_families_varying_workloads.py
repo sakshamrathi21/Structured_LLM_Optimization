@@ -20,7 +20,9 @@ def generate_prefixes(n):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model_name", type=str, default="meta-llama/Llama-3.1-8B-Instruct")
+    parser.add_argument(
+        "--model_name", type=str, default="meta-llama/Llama-3.1-8B-Instruct"
+    )
     parser.add_argument("--num_families", type=int, default=2)
     parser.add_argument("--req_per_sec", type=int, default=None)
     parser.add_argument("--max_batch_size", type=int, default=500)

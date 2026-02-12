@@ -21,7 +21,7 @@ pattern = re.compile(
     \(num_prompts:\s*(?P<num_prompts>\d+)\)\s*
     :\s*(?P<throughput>[\d.]+)
     """,
-    re.VERBOSE
+    re.VERBOSE,
 )
 
 pattern2 = re.compile(
@@ -38,7 +38,7 @@ pattern2 = re.compile(
     throughput=(?P<throughput>[\d.]+)\s*\|\s*
     policy=(?P<policy>[\w-]+)
     """,
-    re.VERBOSE
+    re.VERBOSE,
 )
 
 # data[len_factor][policy] = list of (req/sec, throughput)
@@ -59,7 +59,7 @@ with open(INPUT_FILE, "r") as f:
             second_match = True
             if not match:
                 continue
-        
+
         matched_lines += 1
         req = int(match.group("req_per_sec"))
         len_factor = float(match.group("len_factor"))
@@ -80,7 +80,7 @@ with open(INPUT_FILE, "r") as f:
         elif policy == "dfs-weight":
             policy = "sglang dfs weight"
         data[len_factor][policy].append((req, throughput))
-        
+
         # Debug first few matches
         if matched_lines <= 3:
             print(f"\nMatch {matched_lines}:")
@@ -124,7 +124,7 @@ pattern = re.compile(
     \(num_prompts:\s*(?P<num_prompts>\d+)\)\s*
     :\s*(?P<throughput>[\d.]+)
     """,
-    re.VERBOSE
+    re.VERBOSE,
 )
 
 pattern2 = re.compile(
@@ -141,7 +141,7 @@ pattern2 = re.compile(
     throughput=(?P<throughput>[\d.]+)\s*\|\s*
     policy=(?P<policy>[\w-]+)
     """,
-    re.VERBOSE
+    re.VERBOSE,
 )
 
 # data[len_factor][policy] = list of (req/sec, throughput)
@@ -162,7 +162,7 @@ with open(INPUT_FILE, "r") as f:
             second_match = True
             if not match:
                 continue
-        
+
         matched_lines += 1
         req = int(match.group("req_per_sec"))
         len_factor = float(match.group("len_factor"))
@@ -190,12 +190,12 @@ with open(INPUT_FILE, "r") as f:
                 found_existing = True
                 break
 
-        print(found_existing, policy)  
+        print(found_existing, policy)
         if not found_existing:
             data[len_factor][policy].append((req, throughput))
         elif found_existing and policy == "chunked hash tree + vllm":
             data[len_factor]["chunked hash tree + vllm + c++"].append((req, throughput))
-        
+
         # Debug first few matches
         if matched_lines <= 3:
             print(f"\nMatch {matched_lines}:")
@@ -222,38 +222,43 @@ if not data:
 else:
     for len_factor, policies in sorted(data.items()):
         plt.figure(figsize=(10, 6))
-        
+
         all_x_values = set()  # Collect all unique x values
-        
+
         for policy, points in policies.items():
             if not points:
                 continue
-                
+
             # sort by req/sec for proper lines
             points.sort(key=lambda x: x[0])
             x = [p[0] for p in points]
             y = [p[1] for p in points]
-            
+
             all_x_values.update(x)  # Add all x values to our set
-            
-            print(f"\nPlotting {policy} (len_factor={len_factor}): {len(points)} points")
+
+            print(
+                f"\nPlotting {policy} (len_factor={len_factor}): {len(points)} points"
+            )
             print(f"  X (req/sec): {x}")
             print(f"  Y (throughput): {y}")
-            
-            plt.plot(x, y, marker='o', label=policy, linewidth=2, markersize=6)
-        
+
+            plt.plot(x, y, marker="o", label=policy, linewidth=2, markersize=6)
+
         # Set explicit x-axis ticks to show all data points
         if all_x_values:
             x_ticks = sorted(all_x_values)
             plt.xticks(x_ticks, rotation=45 if len(x_ticks) > 10 else 0)
-        
+
         plt.xlabel("Requests per Second", fontsize=12)
         plt.ylabel("Throughput (req/sec)", fontsize=12)
-        plt.title(f"Throughput vs Request Rate (average shared prefix length = {int(len_factor*1300)} tokens)", fontsize=14)
+        plt.title(
+            f"Throughput vs Request Rate (average shared prefix length = {int(len_factor*1300)} tokens)",
+            fontsize=14,
+        )
         plt.legend()
         plt.grid(True, alpha=0.3)
         plt.tight_layout()
-        
+
         output_file = f"../../results/throughput_across_req_rate_{len_factor}.png"
         plt.savefig(output_file, dpi=150)
         print(f"\nSaved: {output_file}")

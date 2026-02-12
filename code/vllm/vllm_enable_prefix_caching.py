@@ -77,7 +77,10 @@ def get_generation_time(llm, sampling_params, prompts):
 
 def main():
     # set enable_prefix_caching=True to enable APC
-    llm = LLM(model="/home/saksham/.cache/huggingface/hub/models--TinyLlama--TinyLlama-1.1B-Chat-v1.0/snapshots/fe8a4ea1ffedaf415f4da2f062534de366a451e6", enable_prefix_caching=True)
+    llm = LLM(
+        model="/home/saksham/.cache/huggingface/hub/models--TinyLlama--TinyLlama-1.1B-Chat-v1.0/snapshots/fe8a4ea1ffedaf415f4da2f062534de366a451e6",
+        enable_prefix_caching=True,
+    )
 
     sampling_params = SamplingParams(temperature=0, max_tokens=100)
 

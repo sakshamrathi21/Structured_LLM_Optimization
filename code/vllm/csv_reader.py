@@ -17,7 +17,8 @@ with open(".out_fam") as f:
             l2_fam_vals.append(float(row[-1]))
 
 import statistics
-import numpy as np   # convenient for percentiles
+import numpy as np  # convenient for percentiles
+
 
 def print_stats(name, vals):
     if not vals:
@@ -45,5 +46,3 @@ def print_stats(name, vals):
 
 print_stats("FCFS L2 Hit Rate", l2_fcfs_vals)
 print_stats("FAM  L2 Hit Rate", l2_fam_vals)
-
-

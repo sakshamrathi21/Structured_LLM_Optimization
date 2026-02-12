@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # --- INPUT FILES ---
-logfile = "out_infinite"          # LLM logs
+logfile = "out_infinite"  # LLM logs
 gpulogfile = "gpu_metrics.csv"  # GPU/CPU metrics log from start_logging()
 
 # --- REGEX PATTERNS FOR LLM LOG ---
@@ -45,22 +45,20 @@ for req in requests.values():
 import pandas as pd
 
 # --- PARSE GPU/CPU LOG ---
-df = pd.read_csv(gpulogfile, na_values="-")   # treat "-" as NaN
+df = pd.read_csv(gpulogfile, na_values="-")  # treat "-" as NaN
 df["timestamp"] = df["timestamp"] - gen_start  # align with gen_start
 
 # Rename columns to match our log format if needed
-df.rename(columns={
-    "pcie_rx_MBps": "cpu_to_gpu_MBps",
-    "pcie_tx_MBps": "gpu_to_cpu_MBps"
-}, inplace=True)
-
-
-
+df.rename(
+    columns={"pcie_rx_MBps": "cpu_to_gpu_MBps", "pcie_tx_MBps": "gpu_to_cpu_MBps"},
+    inplace=True,
+)
 
 
 # --- PLOTTING ---
-fig, axes = plt.subplots(3, 1, figsize=(14, 10), sharex=True,
-                         gridspec_kw={"height_ratios": [2, 1, 1]})
+fig, axes = plt.subplots(
+    3, 1, figsize=(14, 10), sharex=True, gridspec_kw={"height_ratios": [2, 1, 1]}
+)
 
 # ---- (1) Request timeline ----
 ax = axes[0]
@@ -72,15 +70,50 @@ for i, (rid, req) in enumerate(sorted(requests.items())):
     yticks.append(y)
     ylabels.append(f"Req {rid}")
 
-    ax.scatter(req["add_time"], y, marker="*", color="black", s=100, label="Add time" if i == 0 else "")
-    ax.text(req["add_time"], y + 1.2, f"Add\n{req['add_time']:.3f}", fontsize=7, ha="center", color="black")
+    ax.scatter(
+        req["add_time"],
+        y,
+        marker="*",
+        color="black",
+        s=100,
+        label="Add time" if i == 0 else "",
+    )
+    ax.text(
+        req["add_time"],
+        y + 1.2,
+        f"Add\n{req['add_time']:.3f}",
+        fontsize=7,
+        ha="center",
+        color="black",
+    )
 
     if req["prefill"] is not None:
-        ax.scatter(req["prefill"], y, marker="s", color=colors[i % len(colors)], s=60, label="Prefill" if i == 0 else "")
-        ax.text(req["prefill"], y + 1.2, f"P\n{req['prefill']:.3f}", fontsize=7, ha="center", color=colors[i % len(colors)])
+        ax.scatter(
+            req["prefill"],
+            y,
+            marker="s",
+            color=colors[i % len(colors)],
+            s=60,
+            label="Prefill" if i == 0 else "",
+        )
+        ax.text(
+            req["prefill"],
+            y + 1.2,
+            f"P\n{req['prefill']:.3f}",
+            fontsize=7,
+            ha="center",
+            color=colors[i % len(colors)],
+        )
 
     for idx, t in enumerate(req["tokens"]):
-        ax.scatter(t, y, marker="o", color="gray", s=40, label="Token" if (i == 0 and idx == 0) else "")
+        ax.scatter(
+            t,
+            y,
+            marker="o",
+            color="gray",
+            s=40,
+            label="Token" if (i == 0 and idx == 0) else "",
+        )
 
 ax.set_ylabel("Requests")
 ax.set_yticks(yticks)
@@ -95,8 +128,8 @@ axes[1].plot(
     df.loc[mask, "gpu_mem_used_MB"],
     label="GPU Mem (MB)",
     color="tab:blue",
-    marker="o",       # circle markers
-    linestyle="-"     # keep line if you want; use "" for points only
+    marker="o",  # circle markers
+    linestyle="-",  # keep line if you want; use "" for points only
 )
 axes[1].set_ylabel("GPU Mem (MB)")
 axes[1].legend(loc="upper right")
@@ -109,7 +142,7 @@ axes[2].plot(
     label="CPU→GPU BW",
     color="tab:green",
     marker="o",
-    linestyle="-"
+    linestyle="-",
 )
 
 mask_tx = df["gpu_to_cpu_MBps"].notna()
@@ -119,7 +152,7 @@ axes[2].plot(
     label="GPU→CPU BW",
     color="tab:red",
     marker="o",
-    linestyle="-"
+    linestyle="-",
 )
 
 axes[2].set_ylabel("BW MB/s")

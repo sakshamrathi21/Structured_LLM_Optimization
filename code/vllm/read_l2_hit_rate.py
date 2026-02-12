@@ -2,6 +2,7 @@
 import csv
 import statistics
 
+
 def analyze_l2_hit_rates(filename):
     l2_values = []
 
@@ -49,6 +50,7 @@ def analyze_l2_hit_rates(filename):
     print("\nHistogram (5% buckets):")
     for b in sorted(buckets):
         print(f"{b:02d}–{b+4:02d}% : {buckets[b]}")
+
 
 # Example usage
 analyze_l2_hit_rates(".out_fam")

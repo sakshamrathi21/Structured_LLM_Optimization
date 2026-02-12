@@ -57,7 +57,6 @@ Rule 5: After period S, all jobs are boosted to highest priority.
 """
 
 
-
 queries = [
     "What is the main goal of MLFQ scheduling?",
     "Who first described the MLFQ scheduler and in what system?",
