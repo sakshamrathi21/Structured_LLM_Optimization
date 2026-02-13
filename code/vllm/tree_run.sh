@@ -1,8 +1,5 @@
-python two_family.py --fraction 1 --batch_size 5
-python two_family.py --fraction 1 --batch_size 10
-python two_family.py --fraction 1 --batch_size 20
-python two_family.py --fraction 1 --batch_size 50
-python two_family.py --fraction 1 --batch_size 100
-python two_family.py --fraction 1 --batch_size 200
-python two_family.py --fraction 1 --batch_size 300
-python two_family.py --fraction 1 --batch_size 500
+python two_family.py --fraction 0 --L 2000 --write_dcgmi
+python two_family.py --fraction 0.1 --L 2000 --write_dcgmi
+python two_family.py --fraction 0.5 --L 2000 --write_dcgmi
+python two_family.py --fraction 0.8 --L 2000 --write_dcgmi
+python two_family.py --fraction 1 --L 2000 --write_dcgmi

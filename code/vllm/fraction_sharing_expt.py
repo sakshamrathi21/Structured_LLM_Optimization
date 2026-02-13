@@ -1,6 +1,7 @@
 import time
 import argparse
 import random
+import subprocess
 
 from transformers import AutoTokenizer
 from vllm import LLM, SamplingParams
@@ -66,7 +67,20 @@ def build_prompts(tokenizer, L, N, fraction):
     return prompts
 
 
-def run_experiment(llm, prompts, max_new_tokens, iterations):
+def build_dcgmi_filename(args):
+    name = (
+        f"dcgmi_fractional_model-{args.model.replace('/', '_')}"
+        f"_L-{args.L}"
+        f"_frac-{args.fraction}"
+        f"_reqs-{args.requests}"
+        f"_batch-{args.batch_size}"
+        f"_maxnew-{args.max_new_tokens}"
+        f".log"
+    )
+    return name
+
+
+def run_experiment(llm, prompts, max_new_tokens, iterations, write_dcgmi=False, args=None):
 
     params = SamplingParams(temperature=0.7, max_tokens=max_new_tokens)
 
@@ -81,22 +95,46 @@ def run_experiment(llm, prompts, max_new_tokens, iterations):
 
     times = []
 
-    for i in range(iterations):
+    # ----- CONDITIONAL DCGMI WRAPPING -----
+    dcgmi_proc = None
+    dcgmi_file = None
 
-        start = time.time()
+    if write_dcgmi and args:
+        dcgmi_file = build_dcgmi_filename(args)
+        print(f"[INFO] Logging DCGMI output to: {dcgmi_file}")
 
-        llm.generate(prompts, params)
+        dcgmi_cmd = ["sudo", "dcgmi", "dmon", "-e", "1002,1003,1004,1005", "-d", "1"]
 
-        elapsed = time.time() - start
-        throughput = len(prompts) / elapsed
+        f_dcgmi = open(dcgmi_file, "w")
+        dcgmi_proc = subprocess.Popen(dcgmi_cmd, stdout=f_dcgmi, stderr=subprocess.STDOUT)
 
-        print(
-            f"[ITER {i+1}] "
-            f"time = {elapsed:.3f}s | "
-            f"throughput = {throughput:.2f} req/s"
-        )
+    try:
+        for i in range(iterations):
 
-        times.append(elapsed)
+            start = time.time()
+
+            llm.generate(prompts, params)
+
+            elapsed = time.time() - start
+            throughput = len(prompts) / elapsed
+
+            print(
+                f"[ITER {i+1}] "
+                f"time = {elapsed:.3f}s | "
+                f"throughput = {throughput:.2f} req/s"
+            )
+
+            times.append(elapsed)
+
+    finally:
+        if dcgmi_proc:
+            print("[INFO] Stopping DCGMI monitoring...")
+            dcgmi_proc.terminate()
+            try:
+                dcgmi_proc.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                dcgmi_proc.kill()
+            f_dcgmi.close()
 
     avg_time = sum(times) / len(times)
     avg_throughput = len(prompts) / avg_time
@@ -135,6 +173,10 @@ def main():
 
     parser.add_argument("--seed", type=int, default=42)
 
+    parser.add_argument(
+        "--write_dcgmi", action="store_true", help="Enable DCGMI monitoring and logging"
+    )
+
     args = parser.parse_args()
 
     random.seed(args.seed)
@@ -156,7 +198,7 @@ def main():
         max_num_seqs=args.batch_size,
     )
 
-    run_experiment(llm, prompts, args.max_new_tokens, args.iterations)
+    run_experiment(llm, prompts, args.max_new_tokens, args.iterations, args.write_dcgmi, args)
 
 
 if __name__ == "__main__":
