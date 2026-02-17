@@ -13,11 +13,13 @@ import math
 
 from vllm.v1.request import Request
 from vllm.v1.core.sched.radix_tree import TokenRadixTree, SyncRadixTreeClient
+from vllm.v1.core.sched.rl import QLearningScheduler, ContextualBanditScheduler, HeuristicScheduler, StateAction
+from vllm.v1.core.sched.build.chunked_hash_tree import ChunkedHashTree
 
-import sys
-sys.path.append("/home/saksham/CS496/code/vllm/.venv/lib/python3.12/site-packages/vllm/v1/core/sched/build")
+# import sys
+# sys.path.append("/home/saksham/CS496/code/vllm/.venv/lib/python3.12/site-packages/vllm/v1/core/sched/build")
 
-from chunked_hash_tree import ChunkedHashTree
+# from chunked_hash_tree import ChunkedHashTree
 
 
 import time
@@ -384,6 +386,312 @@ class RadixCostRequestQueue(RequestQueue):
             return False
         return cost <= 1
     
+    
+
+class RadixCostRequestQueue_RL(RequestQueue):
+
+    def __init__(
+        self,
+        scheduler_type: str = 'heuristic',  # 'qlearning', 'bandit', or 'heuristic'
+        scheduler_params: dict = None,
+        model_save_path: Optional[str] = None
+    ):
+        
+        self._radix = ChunkedHashTree(chunk_size=500)
+        self._pending_requests = {}  # dict[str, Request]
+        self._id_map = {}  # dict[str, int]
+        self._id_to_request = {}  # dict[int, str]
+        self._next_id = 1
+        
+        # Initialize scheduler
+        if scheduler_params is None:
+            scheduler_params = {}
+        
+        if scheduler_type == 'qlearning':
+            self.scheduler = QLearningScheduler(**scheduler_params)
+        elif scheduler_type == 'bandit':
+            self.scheduler = ContextualBanditScheduler(**scheduler_params)
+        elif scheduler_type == 'heuristic':
+            self.scheduler = HeuristicScheduler(**scheduler_params)
+        else:
+            raise ValueError(f"Unknown scheduler type: {scheduler_type}")
+        
+        self.scheduler_type = scheduler_type
+        self.model_save_path = model_save_path
+        
+        # Load existing model if available
+        if model_save_path and hasattr(self.scheduler, 'load'):
+            try:
+                self.scheduler.load(model_save_path)
+                print(f"Loaded RL model from {model_save_path}")
+            except FileNotFoundError:
+                print(f"No existing model found at {model_save_path}, starting fresh")
+        
+        # Track current batch info for reward computation
+        self.current_batch_info = None
+        self.last_batch_start_time = None
+        self.batch_count = 0
+        
+        # Performance tracking
+        self.batch_execution_times = []
+        self.batch_sizes = []
+        self.decisions_made = []
+
+    def _intern_id(self, request_id: str) -> int:
+        """Map vLLM string request_id -> compact int ID."""
+        rid = self._id_map.get(request_id)
+        if rid is None:
+            rid = self._next_id
+            self._next_id += 1
+            self._id_map[request_id] = rid
+            self._id_to_request[rid] = request_id
+        return rid
+
+    def _release_id(self, request_id: str) -> None:
+        """Remove ID mapping when request is fully gone."""
+        rid = self._id_map.pop(request_id, None)
+        if rid is not None:
+            self._id_to_request.pop(rid, None)
+
+    def add_request(self, request: Request) -> None:
+        rid = self._intern_id(request.request_id)
+        self._radix.insert(rid, request.all_token_ids)
+        self._pending_requests[request.request_id] = request
+
+    def pop_request(self) -> Request:
+        rid, _, _, _ = self._radix.find_best_request()
+        if rid == 0:
+            raise IndexError("pop from empty radix queue")
+
+        request_id = self._id_to_request[rid]
+        request = self._pending_requests.pop(request_id)
+
+        self._radix.activate_request(rid)
+        return request
+
+    def peek_request(self) -> Request:
+        rid, _, _, _ = self._radix.find_best_request()
+        if rid == 0:
+            raise IndexError("peek from empty radix queue")
+
+        request_id = self._id_to_request[rid]
+        return self._pending_requests[request_id]
+
+    def prepend_request(self, request: Request) -> None:
+        self.add_request(request)
+
+    def prepend_requests(self, requests: RequestQueue) -> None:
+        for request in requests:
+            self.add_request(request)
+
+    def remove_request(self, request: Request) -> None:
+        request_id = request.request_id
+        if request_id in self._pending_requests:
+            rid = self._id_map.get(request_id)
+            if rid is not None:
+                self._radix.remove(rid)
+            del self._pending_requests[request_id]
+            self._release_id(request_id)
+
+    def remove_requests(self, requests: Iterable[Request]) -> None:
+        for request in requests:
+            self.remove_request(request)
+
+    def __bool__(self) -> bool:
+        has_pending = bool(self._pending_requests)
+        rid, _, _, _ = self._radix.find_best_request()
+        has_waiting = rid != 0
+        return has_waiting
+
+    def __len__(self) -> int:
+        return len(self._pending_requests)
+
+    def __iter__(self) -> Iterator[Request]:
+        return iter(self._pending_requests.values())
+
+    def __reversed__(self) -> Iterator[Request]:
+        for request_id in reversed(list(self._pending_requests.keys())):
+            yield self._pending_requests[request_id]
+
+    def free_request(self, request: Request) -> None:
+        request_id = request.request_id
+        rid = self._id_map.get(request_id)
+        if rid is not None:
+            self._radix.finish_request(rid)
+            self._release_id(request_id)
+
+    def should_add_more_to_batch(self, **kwargs) -> bool:
+        """
+        RL-based decision on whether to add more requests to the batch.
+        
+        This is the core method where the RL agent makes decisions.
+        """
+        current_batch_size = kwargs.get("current_batch_size", 0)
+        last_batch_time = kwargs.get("last_batch_time", 0.0)
+        current_batch_id = kwargs.get("current_batch_id", 0)
+        
+        # Always add to empty batch
+        if current_batch_size == 0:
+            self.last_batch_start_time = time.time()
+            self.current_batch_info = None
+            return True
+        
+        # Get state information from radix tree
+        rid, chunks_before, chunks_after, requests_waiting = self._radix.find_best_request()
+        
+        if rid == 0:
+            # No requests available
+            return False
+        
+        # Provide feedback to RL model from previous batch — only once per batch ID transition.
+        # should_add_more_to_batch is called in a tight loop (once per candidate request),
+        # so we gate on batch_id changing to avoid redundant updates.
+        if (
+            last_batch_time > 0
+            and self.current_batch_info is not None
+            and current_batch_id != self.current_batch_info.get('batch_id')
+            and self.scheduler_type != "heuristic"
+        ):
+            self._provide_feedback(last_batch_time)
+        
+        # Make RL decision
+        decision = self.scheduler.should_add_request(
+            batch_size=current_batch_size,
+            chunks_before=chunks_before,
+            chunks_after=chunks_after,
+            requests_waiting=requests_waiting
+        )
+        
+        # Capture state snapshot once per batch (on the first call for this batch_id).
+        # Subsequent calls within the same batch reuse the same snapshot for the RL update.
+        if (
+            self.current_batch_info is None
+            or current_batch_id != self.current_batch_info.get('batch_id')
+        ):
+            self.current_batch_info = {
+                'batch_size': current_batch_size,
+                'chunks_before': chunks_before,
+                'chunks_after': chunks_after,
+                'requests_waiting': requests_waiting,
+                'action': decision,
+                'batch_id': current_batch_id
+            }
+        
+        # Log decision (you can remove this in production)
+        print(f"[RL Decision] batch_size={current_batch_size}, "
+              f"chunks_before={chunks_before}, chunks_after={chunks_after}, "
+              f"requests_waiting={requests_waiting}, decision={'ADD' if decision else 'SKIP'}, "
+              f"batch_id={current_batch_id}")
+        
+        if hasattr(self.scheduler, 'epsilon'):
+            print(f"[RL Stats] epsilon={self.scheduler.epsilon:.3f}, "
+                  f"steps={self.scheduler.step_count}")
+        
+        self.decisions_made.append({
+            'batch_size': current_batch_size,
+            'chunks_before': chunks_before,
+            'chunks_after': chunks_after,
+            'requests_waiting': requests_waiting,
+            'decision': decision,
+            'batch_id': current_batch_id
+        })
+        
+        return decision
+    
+    def _provide_feedback(self, batch_execution_time: float):
+        """
+        Provide reward feedback to the RL model based on batch execution time.
+        
+        Args:
+            batch_execution_time: Time taken for the last batch decode step
+        """
+        if self.current_batch_info is None:
+            return
+        
+        # Reward is negative execution time (we want to minimize latency)
+        reward = -batch_execution_time
+        
+        # Get current state for TD learning (if applicable)
+        rid, chunks_before, chunks_after, requests_waiting = self._radix.find_best_request()
+        
+        next_state = None
+        if rid != 0:
+            next_state = (
+                self.current_batch_info['batch_size'],  # Batch size hasn't changed yet
+                chunks_before,
+                chunks_after,
+                requests_waiting
+            )
+        
+        # Update the model
+        if self.scheduler_type == 'qlearning' and next_state:
+            self.scheduler.update(
+                batch_size=self.current_batch_info['batch_size'],
+                chunks_before=self.current_batch_info['chunks_before'],
+                chunks_after=self.current_batch_info['chunks_after'],
+                requests_waiting=self.current_batch_info['requests_waiting'],
+                action=self.current_batch_info['action'],
+                reward=reward,
+                next_batch_size=next_state[0],
+                next_chunks_before=next_state[1],
+                next_chunks_after=next_state[2],
+                next_requests_waiting=next_state[3]
+            )
+        else:
+            # For bandit or terminal states
+            self.scheduler.update(
+                batch_size=self.current_batch_info['batch_size'],
+                chunks_before=self.current_batch_info['chunks_before'],
+                chunks_after=self.current_batch_info['chunks_after'],
+                requests_waiting=self.current_batch_info['requests_waiting'],
+                action=self.current_batch_info['action'],
+                reward=reward
+            )
+        
+        # Track performance
+        self.batch_execution_times.append(batch_execution_time)
+        self.batch_sizes.append(self.current_batch_info['batch_size'])
+        self.batch_count += 1
+        
+        # Periodically save model
+        if self.model_save_path and self.batch_count % 100 == 0:
+            if hasattr(self.scheduler, 'save'):
+                self.scheduler.save(self.model_save_path)
+                print(f"Saved RL model to {self.model_save_path} (batch {self.batch_count})")
+    
+    def get_statistics(self) -> dict:
+        """Get training and performance statistics"""
+        stats = {
+            'batch_count': self.batch_count,
+            'avg_batch_time': sum(self.batch_execution_times[-100:]) / len(self.batch_execution_times[-100:])
+                             if self.batch_execution_times else 0,
+            'avg_batch_size': sum(self.batch_sizes[-100:]) / len(self.batch_sizes[-100:])
+                             if self.batch_sizes else 0,
+        }
+        
+        # Add scheduler-specific stats
+        if hasattr(self.scheduler, 'get_statistics'):
+            stats.update(self.scheduler.get_statistics())
+        
+        return stats
+    
+    def print_statistics(self):
+        """Print performance statistics"""
+        stats = self.get_statistics()
+        print("\n" + "="*60)
+        print("RL Batch Scheduler Statistics")
+        print("="*60)
+        for key, value in stats.items():
+            if isinstance(value, float):
+                print(f"{key:30s}: {value:.4f}")
+            else:
+                print(f"{key:30s}: {value}")
+        print("="*60 + "\n")
+    
+
+
+
+
 class FamilyLoadRequestQueue(RequestQueue):
     def __init__(self):
         self.family_requests: dict[int, deque[Request]] = {}
@@ -652,7 +960,7 @@ def create_request_queue(policy: SchedulingPolicy) -> RequestQueue:
     elif policy == SchedulingPolicy.FCFS:
         return FCFSRequestQueue()
     elif policy == SchedulingPolicy.RADIX_COST:
-        return RadixCostRequestQueue()
+        return RadixCostRequestQueue_RL()
     elif policy == SchedulingPolicy.FAMILY_LOAD:
         return FamilyLoadRequestQueue()
     elif policy == SchedulingPolicy.GREEDY_L2:

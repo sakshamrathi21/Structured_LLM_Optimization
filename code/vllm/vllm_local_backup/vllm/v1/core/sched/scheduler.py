@@ -255,7 +255,14 @@ class Scheduler(SchedulerInterface):
         self.batch_size_total = 0
         self.count_runs = 0
 
+        self.last_scheduler_call_time = None
+        self.current_scheduler_call_time = None
+        self.current_batch_id = 0
+
     def schedule(self) -> SchedulerOutput:
+        self.last_scheduler_call_time = self.current_scheduler_call_time
+        self.current_scheduler_call_time = time.time()
+        self.current_batch_id += 1
         # NOTE(woosuk) on the scheduling algorithm:
         # There's no "decoding phase" nor "prefill phase" in the scheduler.
         # Each request just has the num_computed_tokens and
@@ -468,8 +475,11 @@ class Scheduler(SchedulerInterface):
             self.scheduler_start_time = time.time()
         # Next, schedule the WAITING requests.
         if not preempted_reqs:
+            last_batch_time = None
+            if self.last_scheduler_call_time is not None:
+                last_batch_time = self.current_scheduler_call_time - self.last_scheduler_call_time
             while self.waiting and token_budget > 0:
-                if not self.waiting.should_add_more_to_batch(current_batch_size=len(self.running), num_total_gpu_blocks=self.cache_config.num_gpu_blocks, num_total_free_gpu_blocks=self.kv_cache_manager.block_pool.get_num_free_blocks()):
+                if not self.waiting.should_add_more_to_batch(current_batch_size=len(self.running), num_total_gpu_blocks=self.cache_config.num_gpu_blocks, num_total_free_gpu_blocks=self.kv_cache_manager.block_pool.get_num_free_blocks(), last_batch_time=last_batch_time, current_batch_id=self.current_batch_id):
                     break
                 
                 if len(self.running) == self.max_num_running_reqs:
