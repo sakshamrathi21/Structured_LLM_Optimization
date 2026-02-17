@@ -145,42 +145,68 @@
 \end{block}
 \end{frame}
 
-
 \section{Policies}
 
 % ------------------------------------------------
 \begin{frame}{Policy 1: Q-Learning Scheduler}
 
-\textbf{State Discretization}
-
-\begin{itemize}
-    \item Discretize continuous state into buckets:
-    \[
-    \tilde{s}_t = (\tilde{B}, \widetilde{C_B - C_A}, \tilde{R}_W)
-    \]
-    \item Buckets defined for:
     \begin{itemize}
-        \item Batch size $B$
-        \item Chunk difference $C_B - C_A$
-        \item Requests waiting $R_W$
+        \item Trial-and-error learning method
+        \item The system tries actions (ADD or SKIP), observes rewards and gradually learns which action works best in each situation.
+        \item \textbf{Goal:} ``In this situation, which action gives the best long-term outcome?''
     \end{itemize}
+\end{frame}
+\begin{frame}{Policy 1: Q-Learning Scheduler}
+\textbf{State Discretization (Making the problem manageable)}
+
+The real system has continuous values.
+We convert them into buckets (like "low", "medium", "high").
+
+\[
+\tilde{s}_t = (\tilde{B}, \widetilde{C_B - C_A}, \tilde{R}_W)
+\]
+
+Where:
+\begin{itemize}
+    \item $B$ = batch size
+    \item $C_B - C_A$ = chunk difference (loss signal)
+    \item $R_W$ = number of waiting requests
 \end{itemize}
 
-\textbf{Q-Function}
+\textbf{Intuition:}
+Instead of remembering every exact number,
+we group similar situations together.
+
+\end{frame}
+\begin{frame}{Policy 1: Q-Learning Scheduler}
+
+\textbf{Q-Function (What is being learned?)}
 
 \[
 Q(s_t, a_t)
 \]
 
-Stored as lookup table:
+This is a table storing:
 \[
 Q : (\tilde{s}, a) \rightarrow \mathbb{R}
 \]
 
+For each state and action,
+store a number that estimates
+``how good this action is in this situation''.
+
 \end{frame}
 
 % ------------------------------------------------
-\begin{frame}{Q-Learning: Action Selection}
+\begin{frame}{Policy 1: Q-Learning Scheduler}
+
+The system must balance:
+\begin{itemize}
+    \item Try new actions (exploration)
+    \item Use what it already learned (exploitation)
+\end{itemize}
+
+\vspace{0.3cm}
 
 \textbf{Epsilon-Greedy Policy}
 
@@ -192,7 +218,21 @@ a_t =
 \end{cases}
 \]
 
-\textbf{Exploration Decay (Linear)}
+\begin{itemize}
+    \item With probability $\epsilon$, try something random
+    \item Otherwise, choose the action with highest learned value
+\end{itemize}
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Policy 1: Q-Learning Scheduler}
+\textbf{Intuition:}
+Early on, explore a lot.
+Later, trust what you learned.
+
+
+\textbf{Exploration Decay}
 
 \[
 \epsilon_t =
@@ -205,18 +245,22 @@ a_t =
 \end{cases}
 \]
 
+
 \end{frame}
 
 % ------------------------------------------------
-\begin{frame}{Q-Learning: Update Rule}
+\begin{frame}{Policy 1: Q-Learning Scheduler}
 
-\textbf{Temporal Difference Target}
+\textbf{How Learning Happens}
 
-\[
-y_t = r_t
-\]
+After taking action $a_t$:
+\begin{itemize}
+    \item Observe reward $r_t$
+    \item Update the table
+\end{itemize}
 
-\textbf{Q-Update}
+
+\textbf{Update Rule}
 
 \[
 Q(s_t, a_t)
@@ -225,11 +269,24 @@ Q(s_t, a_t)
 +
 \alpha
 \left(
-y_t - Q(s_t, a_t)
+r_t - Q(s_t, a_t)
 \right)
 \]
 
-\textbf{Objective:}
+\begin{itemize}
+    \item If reward is better than expected → increase value
+    \item If worse → decrease value
+\end{itemize}
+
+$\alpha$ = learning rate (how fast we adjust)
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Policy 1: Q-Learning Scheduler}
+
+\textbf{Overall Objective}
+
 \[
 \max_\pi \; \mathbb{E}
 \left[
@@ -238,27 +295,50 @@ y_t - Q(s_t, a_t)
 \right]
 \]
 
+Find a policy $\pi$ that maximizes long-term rewards.
+
+Not just immediate reward, we care about the future too.
+
 \end{frame}
 
 % ------------------------------------------------
 \begin{frame}{Policy 2: Contextual Bandit (UCB)}
 
-\textbf{Simplified State}
+    \begin{itemize}
+        \item This is a simpler learning strategy.
+        \item It does NOT consider long-term future.
+        \item \textbf{Goal:} ``Which action works best right now in this situation?''
+    \end{itemize}
 
 \[
 \hat{s}_t =
 \text{bin}(B, C_B - C_A, R_W)
 \]
 
-\textbf{Statistics Maintained}
+We still bucket the state.
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Policy 2: Contextual Bandit (UCB)}
+
+\textbf{Statistics Stored}
 
 \[
-N(\hat{s}, a) \quad \text{(action count)}
+N(\hat{s}, a) \quad \text{(how many times tried)}
 \]
+
 \[
 \bar{r}(\hat{s}, a) =
 \frac{\sum r}{N(\hat{s}, a)}
 \]
+
+Track average reward of each action.
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Policy 2: Contextual Bandit (UCB)}
 
 \textbf{Upper Confidence Bound (UCB)}
 
@@ -273,46 +353,69 @@ c
 }
 \]
 
+\textbf{Intuition:}
+
+Two parts:
+\begin{itemize}
+    \item Exploit: choose high average reward
+    \item Explore: boost rarely tried actions
+\end{itemize}
+
+If an action was rarely tried,
+its uncertainty is large → encourage exploration.
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Policy 2: Contextual Bandit (UCB)}
+
 \textbf{Policy}
 
 \[
 a_t = \arg\max_a \text{UCB}(\hat{s}_t, a)
 \]
 
+\textbf{Meaning:}
+Choose the action with highest optimistic estimate.
+
 \end{frame}
 
 % ------------------------------------------------
 \begin{frame}{Policy 3: Heuristic Scheduler}
 
-\textbf{Chunk Loss}
+    \begin{itemize}
+        \item This policy does NOT learn.
+        \item It uses manually designed rules.
+    \end{itemize}
 
-\[
-\Delta C = C_B - C_A
-\]
+\vspace{1cm}
 
-\textbf{Decision Rules}
+\textbf{Chunk Loss} $\Delta C = C_B - C_A$
 
-\begin{enumerate}
-    \item If $B = 0$ → ADD
-    \item If $\Delta C \le 0$ → ADD
-    \item If $B < B_{\min}$:
-    \[
-    \text{ADD if } \Delta C \le C_{\max} + 2
-    \]
-    \item If $B \ge B_{\min}$:
-    \[
-    \text{ADD if } \Delta C \le C_{\max}
-    \]
-    \item If many requests waiting:
-    \[
-    \text{ADD if } R_W \ge 10
-    \text{ and }
-    \Delta C \le C_{\max} + 1
-    \]
-    \item Otherwise → SKIP
-\end{enumerate}
+Interpretation:
+\begin{itemize}
+    \item If $\Delta C$ small $\rightarrow$ memory accesses remain similar
+    \item If large $\rightarrow$ too much loss in temporal and spatial locality
+\end{itemize}
+
 
 \end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Policy 3: Heuristic Scheduler}
+
+\textbf{Decision Logic}
+
+\begin{enumerate}
+    \item If no batch $\rightarrow$ ADD
+    \item If no chunk loss $\rightarrow$ ADD
+    \item If batch small $\rightarrow$ tolerate slightly more loss
+    \item If batch large $\rightarrow$ be stricter
+    \item If many waiting requests $\rightarrow$ prioritize ADD
+    \item Otherwise $\rightarrow$ SKIP
+\end{enumerate}
+\end{frame}
+
 
 \section{}
 \begin{frame}
