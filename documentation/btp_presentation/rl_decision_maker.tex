@@ -1,0 +1,322 @@
+\documentclass[Serif, 10pt, brown]{beamer}
+\usepackage{booktabs,xcolor}
+\usepackage{pifont}
+\newcommand*\CHECK{\ding{51}}
+\usepackage{array}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+
+\usepackage{setspace,mathtools,amssymb,multirow,array,amsmath,tikz}
+\usepackage[normalsize]{subfigure}
+\usetikzlibrary{patterns,automata,positioning,decorations.pathreplacing,decorations,calc}
+\usepackage{curves}
+\usepackage{caption}
+\usepackage{wasysym}
+\usepackage{epsfig,epstopdf,graphicx}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{array}
+
+\usetikzlibrary{arrows.meta, fit, backgrounds, positioning, calc, decorations.pathreplacing, shapes.geometric}
+
+%% ── colour palette ──────────────────────────────────────────────────────────
+\definecolor{active}{RGB}{52,152,219}       % blue  – active requests
+\definecolor{waiting}{RGB}{231,76,60}       % red   – waiting requests
+\definecolor{shared}{RGB}{39,174,96}        % green – shared-prefix chain
+\definecolor{newblock}{RGB}{243,156,18}     % amber – newly-added block
+\definecolor{evicted}{RGB}{192,57,43}       % dark red – evicted block
+\definecolor{neutral}{RGB}{149,165,166}     % grey  – unrelated block
+\definecolor{highlight}{RGB}{155,89,182}    % purple – highlighted result
+\definecolor{bg}{RGB}{245,245,250}          % page bg
+
+\setbeamercolor{background canvas}{bg=bg}
+\setbeamertemplate{navigation symbols}{}
+\setbeamerfont{title}{size=\large,series=\bfseries}
+
+%% ── helpers ─────────────────────────────────────────────────────────────────
+% Draw one hash block: \hashblock{x}{y}{label}{fillcolor}{textcolor}
+\newcommand{\hashblock}[5]{%
+  \node[draw, minimum width=1.1cm, minimum height=0.65cm,
+        rounded corners=3pt, fill=#4, text=#5,
+        font=\ttfamily\scriptsize, line width=0.6pt] at (#1,#2) {#3};
+}
+
+% Thick bracket above a range of blocks
+% \chainbrace{x_start}{x_end}{y_top}{label}
+\newcommand{\chainbrace}[4]{%
+  \draw[decorate,
+        decoration={brace,amplitude=5pt,raise=2pt},
+        thick, color=shared]
+    (#2+0.55,#3) -- (#1-0.55,#3) node[midway,above=7pt,color=shared,font=\small\bfseries]{#4};
+}
+
+\curvewarnfalse
+
+\newtheorem{proposition}{Proposition}
+\theoremstyle{example}
+\newtheorem{theoremh}{Theorem}
+\theoremstyle{plain}
+\renewcommand{\textfraction}{0.01}
+\renewcommand{\floatpagefraction}{0.99}
+\newcommand{\ul}{\underline}
+\newcounter{units}
+\setbeamercovered{dynamic}
+\logo{\includegraphics[width=0.5in,keepaspectratio]{\FIGDIR/iitb_logo.png}}
+\newcommand{\FIGDIR}{../figures} 
+\newcommand{\RESULTDIR}{../../results} 
+\mode<presentation>{
+    \usetheme[right,currentsection,hideothersubsections]{UTD}
+    \useoutertheme{sidebar}
+    \useinnertheme[shadow]{rounded}
+    \usecolortheme{whale}
+    \usecolortheme{orchid}
+    \usefonttheme[onlymath]{serif}
+    \setbeamertemplate{footline}{\centerline{Slide \insertframenumber/\inserttotalframenumber}}
+}
+
+\usebeamercolor[fg]{author in sidebar}
+\title[{Systems for LLMs}]{\sc Benchmarking and Performance Analysis of LLM Inferencing Systems}
+\author[\ul{Saksham Rathi}]{{\textbf{Saksham Rathi}}}
+\institute[UTD]{\sc\small Systems for LLMs\\ Under Prof. Mythili Vutukuru}
+\date[UCI]{Indian Institute of Technology Bombay \\ Autumn 2025-26}
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}{Contents}
+	\tableofcontents
+\end{frame}
+
+\section{The Core Trade-off}
+
+\begin{frame}{The Core Trade-off}
+    \begin{itemize}
+        \item Larger Batches $\rightarrow$ Higher GPU Utilization
+        \item Larger Shared Prefix $\rightarrow$ Better Temporal and Spatial Locality
+        \item Need to ensure the prefix is the same across \textbf{all} the requests
+    \end{itemize}
+\end{frame}
+
+\section{Chunked Hash Tree}
+
+\begin{frame}{Changes to Chunked Hash Tree}
+    \begin{itemize}
+        \item Previously, we used to find the cost of adding a request to the working set (in terms of the newer chunks)
+        \item Now we need information regarding the shared prefix chunks of all the active requests, along with changes to this upon adding a new request
+        \item \textbf{Shared Prefix Chain:} A vector of hash blocks which is identical across all the active requests
+        \item On activation: We iterate from back, and see if adding the request removes any blocks?
+        \item On finishing: We iterate over the remaining blocks of the finished request, and check if any other blocks are shared across all the other active requests, and can be added to this chain. 
+    \end{itemize}
+\end{frame}
+
+
+
+\section{RL Problem Formulation}
+
+\begin{frame}{State}
+    \begin{itemize}
+        \item \textbf{B:} current batch size
+        \item $\mathbf{C_B:}$ number of chunks shared before adding a new request
+        \item $\mathbf{C_A:}$ number of chunks which will remain shared after adding the new (best) request
+        \item $\mathbf{R_W:}$ number of requests waiting at the end of $C_A$
+    \end{itemize}
+\begin{block}{State}
+    $s_t \in (B, C_B, C_A, R_W)$
+\end{block}
+\end{frame}
+
+\begin{frame}{Action}
+    \begin{itemize}
+        \item \textbf{ADD:} pop and activate the best request from the chunked hash tree
+        \item \textbf{SKIP:} break the batch construction loop, dispatch the batch to GPU
+    \end{itemize}
+\begin{block}{Action}
+    $a_t \in (\texttt{ADD}, \texttt{SKIP})$
+\end{block}
+\end{frame}
+
+\begin{frame}{Reward}
+    \begin{itemize}
+        \item Negative decode wall step time of the previous batch
+        \item Delivered once per batch
+    \end{itemize}
+    \begin{block}{Reward}
+    $r_t = -t_{\texttt{exec}}^{(t-1)}$
+\end{block}
+\end{frame}
+
+
+\section{Policies}
+
+% ------------------------------------------------
+\begin{frame}{Policy 1: Q-Learning Scheduler}
+
+\textbf{State Discretization}
+
+\begin{itemize}
+    \item Discretize continuous state into buckets:
+    \[
+    \tilde{s}_t = (\tilde{B}, \widetilde{C_B - C_A}, \tilde{R}_W)
+    \]
+    \item Buckets defined for:
+    \begin{itemize}
+        \item Batch size $B$
+        \item Chunk difference $C_B - C_A$
+        \item Requests waiting $R_W$
+    \end{itemize}
+\end{itemize}
+
+\textbf{Q-Function}
+
+\[
+Q(s_t, a_t)
+\]
+
+Stored as lookup table:
+\[
+Q : (\tilde{s}, a) \rightarrow \mathbb{R}
+\]
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Q-Learning: Action Selection}
+
+\textbf{Epsilon-Greedy Policy}
+
+\[
+a_t =
+\begin{cases}
+\text{random action} & \text{with probability } \epsilon \\
+\arg\max_{a} Q(s_t, a) & \text{otherwise}
+\end{cases}
+\]
+
+\textbf{Exploration Decay (Linear)}
+
+\[
+\epsilon_t =
+\begin{cases}
+\epsilon_{\text{start}} -
+(\epsilon_{\text{start}} - \epsilon_{\text{end}})
+\frac{t}{T_{\text{decay}}}
+& t < T_{\text{decay}} \\
+\epsilon_{\text{end}} & \text{otherwise}
+\end{cases}
+\]
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Q-Learning: Update Rule}
+
+\textbf{Temporal Difference Target}
+
+\[
+y_t = r_t
+\]
+
+\textbf{Q-Update}
+
+\[
+Q(s_t, a_t)
+\leftarrow
+Q(s_t, a_t)
++
+\alpha
+\left(
+y_t - Q(s_t, a_t)
+\right)
+\]
+
+\textbf{Objective:}
+\[
+\max_\pi \; \mathbb{E}
+\left[
+\sum_{t=0}^{\infty}
+\gamma^t r_t
+\right]
+\]
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Policy 2: Contextual Bandit (UCB)}
+
+\textbf{Simplified State}
+
+\[
+\hat{s}_t =
+\text{bin}(B, C_B - C_A, R_W)
+\]
+
+\textbf{Statistics Maintained}
+
+\[
+N(\hat{s}, a) \quad \text{(action count)}
+\]
+\[
+\bar{r}(\hat{s}, a) =
+\frac{\sum r}{N(\hat{s}, a)}
+\]
+
+\textbf{Upper Confidence Bound (UCB)}
+
+\[
+\text{UCB}(\hat{s}, a)
+=
+\bar{r}(\hat{s}, a)
++
+c
+\sqrt{
+\frac{\log T}{N(\hat{s}, a)}
+}
+\]
+
+\textbf{Policy}
+
+\[
+a_t = \arg\max_a \text{UCB}(\hat{s}_t, a)
+\]
+
+\end{frame}
+
+% ------------------------------------------------
+\begin{frame}{Policy 3: Heuristic Scheduler}
+
+\textbf{Chunk Loss}
+
+\[
+\Delta C = C_B - C_A
+\]
+
+\textbf{Decision Rules}
+
+\begin{enumerate}
+    \item If $B = 0$ → ADD
+    \item If $\Delta C \le 0$ → ADD
+    \item If $B < B_{\min}$:
+    \[
+    \text{ADD if } \Delta C \le C_{\max} + 2
+    \]
+    \item If $B \ge B_{\min}$:
+    \[
+    \text{ADD if } \Delta C \le C_{\max}
+    \]
+    \item If many requests waiting:
+    \[
+    \text{ADD if } R_W \ge 10
+    \text{ and }
+    \Delta C \le C_{\max} + 1
+    \]
+    \item Otherwise → SKIP
+\end{enumerate}
+
+\end{frame}
+
+\section{}
+\begin{frame}
+    \Huge{\centerline{\bf Thank You}}
+\end{frame}
+
+\end{document}
