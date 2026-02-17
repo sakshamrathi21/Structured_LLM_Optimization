@@ -17,6 +17,28 @@
 \usepackage{amsmath}
 \usepackage{array}
 
+\usepackage[utf8]{inputenc}
+% \usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usetikzlibrary{arrows.meta, positioning, fit, backgrounds, shapes.geometric,
+                decorations.pathreplacing, calc}
+
+%% ── Colour palette ──────────────────────────────────────────
+\definecolor{colA}{RGB}{59,130,246}
+\definecolor{colB}{RGB}{16,185,129}
+\definecolor{colC}{RGB}{245,158,11}
+\definecolor{sharedcol}{RGB}{139,92,246}
+\definecolor{missingcol}{RGB}{239,68,68}
+\definecolor{workcol}{RGB}{107,114,128}
+\definecolor{bgblock}{RGB}{241,245,249}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+
 \usetikzlibrary{arrows.meta, fit, backgrounds, positioning, calc, decorations.pathreplacing, shapes.geometric}
 
 %% ── colour palette ──────────────────────────────────────────────────────────
@@ -31,7 +53,7 @@
 
 \setbeamercolor{background canvas}{bg=bg}
 \setbeamertemplate{navigation symbols}{}
-\setbeamerfont{title}{size=\large,series=\bfseries}
+\setbeamerfont{title}{size=\Large,series=\bfseries}
 
 %% ── helpers ─────────────────────────────────────────────────────────────────
 % Draw one hash block: \hashblock{x}{y}{label}{fillcolor}{textcolor}
@@ -76,7 +98,7 @@
 
 \usebeamercolor[fg]{author in sidebar}
 \title[{Systems for LLMs}]{\sc Benchmarking and Performance Analysis of LLM Inferencing Systems}
-\author[\ul{Saksham Rathi}]{{\textbf{Saksham Rathi}}}
+\author[\ul{Saksham}]{{\textbf{Saksham Rathi}}}
 \institute[UTD]{\sc\small Systems for LLMs\\ Under Prof. Mythili Vutukuru}
 \date[UCI]{Indian Institute of Technology Bombay \\ Autumn 2025-26}
 
@@ -103,12 +125,299 @@
     \begin{itemize}
         \item Previously, we used to find the cost of adding a request to the working set (in terms of the newer chunks)
         \item Now we need information regarding the shared prefix chunks of all the active requests, along with changes to this upon adding a new request
-        \item \textbf{Shared Prefix Chain:} A vector of hash blocks which is identical across all the active requests
-        \item On activation: We iterate from back, and see if adding the request removes any blocks?
-        \item On finishing: We iterate over the remaining blocks of the finished request, and check if any other blocks are shared across all the other active requests, and can be added to this chain. 
     \end{itemize}
 \end{frame}
 
+\begin{frame}{Shared Prefix Chain}
+\begin{center}
+\begin{tikzpicture}[scale=0.96]
+
+\node[draw=workcol!35, fill=bgblock, rounded corners=7pt,
+      minimum width=8.5cm, minimum height=3.55cm] at (3,-0.45){};
+\node[workcol, font=\small\bfseries] at (3.0, 1.10) {Active Requests};
+
+\node[font=\small\bfseries, colA] at (-0.5, 0.42){A:};
+\foreach \j/\h in {0/{a1},1/{a2},2/{a3},3/{a4}}{
+  \pgfmathsetmacro{\rx}{0.85+\j*1.65}
+  \node[draw, rounded corners=3pt,
+        minimum width=1.35cm, minimum height=0.56cm,
+        fill=colA!18, draw=colA!65, font=\scriptsize\ttfamily] at (\rx, 0.42) {\h};
+}
+
+\node[font=\small\bfseries, colB] at (-0.5,-0.48){B:};
+\foreach \j/\h in {0/{a1},1/{a2},2/{a3},3/{b4}}{
+  \pgfmathsetmacro{\rx}{0.85+\j*1.65}
+  \node[draw, rounded corners=3pt,
+        minimum width=1.35cm, minimum height=0.56cm,
+        fill=colB!18, draw=colB!65, font=\scriptsize\ttfamily] at (\rx,-0.48) {\h};
+}
+
+\foreach \j in {0,1,2}{
+  \pgfmathsetmacro{\rx}{0.85+\j*1.65}
+  \draw[sharedcol!75, line width=2.2pt, rounded corners=5pt]
+    (\rx-0.75, 0.78) rectangle (\rx+0.75,-0.84);
+}
+
+%% Shared chain row
+\node[font=\small\bfseries, sharedcol] at (-0.5,-1.70){Chain:};
+\foreach \j/\h in {0/{a1},1/{a2},2/{a3}}{
+  \pgfmathsetmacro{\rx}{0.85+\j*1.65}
+  \node[draw, rounded corners=3pt,
+        minimum width=1.35cm, minimum height=0.56cm,
+        fill=sharedcol!18, draw=sharedcol!70,
+        font=\scriptsize\ttfamily, text=sharedcol!80] (SC\j) at (\rx,-1.70) {\h};
+  \draw[->, sharedcol!55, dashed, thick] (\rx,-0.84) -- (\rx,-1.43);
+}
+
+\draw[decorate, decoration={brace,amplitude=5pt}, sharedcol, thick]
+  (0.07,-1.52) -- (4.94,-1.52)
+  node[midway, above=5pt, font=\scriptsize\bfseries, sharedcol]{length = 3};
+
+\draw[->, missingcol!80, dashed, thick]
+  (6.30, 0.42) -- (6.30,-0.48)
+  node[midway, right=3pt, font=\scriptsize, missingcol]{differ};
+
+\end{tikzpicture}
+\end{center}
+
+\textbf{Shared Prefix Chain:} A vector of hash blocks identical across all active requests. 
+\end{frame}
+
+
+\begin{frame}{Effect of \texttt{activate\_request()} -- Chain Shrinks}
+\begin{center}
+\begin{tikzpicture}[scale=0.80]
+
+%% BEFORE (left panel)
+\node[font=\small\bfseries] at (2.5, 3.15){\textbf{Before} activation};
+
+\node[font=\scriptsize\bfseries, colA] at (-0.5,1.55){A:};
+\foreach \j/\h in {0/{a1},1/{a2},2/{a3},3/{a4}}{
+  \pgfmathsetmacro{\rx}{0.60+\j*1.30}
+  \node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+        fill=colA!18, draw=colA!60, font=\scriptsize\ttfamily] at (\rx,1.55) {\h};
+}
+
+\node[font=\scriptsize\bfseries, colB] at (-0.5,0.70){B:};
+\foreach \j/\h in {0/{a1},1/{a2},2/{a3},3/{b4}}{
+  \pgfmathsetmacro{\rx}{0.60+\j*1.30}
+  \node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+        fill=colB!18, draw=colB!60, font=\scriptsize\ttfamily] at (\rx,0.70) {\h};
+}
+
+\node[font=\scriptsize\bfseries, sharedcol] at (-0.7,-0.15){Chain:};
+\foreach \j/\h in {0/{a1},1/{a2},2/{a3}}{
+  \pgfmathsetmacro{\rx}{0.60+\j*1.30}
+  \node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+        fill=sharedcol!18, draw=sharedcol!65,
+        font=\scriptsize\ttfamily, text=sharedcol!80] at (\rx,-0.15) {\h};
+}
+
+%% New request C (arriving)
+\node[font=\scriptsize\bfseries, colC] at (-0.7,2.15){new C:};
+\foreach \j/\h in {0/{a1},1/{a2},2/{c3},3/{c4}}{
+  \pgfmathsetmacro{\rx}{0.60+\j*1.30}
+  \node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+        fill=colC!18, draw=colC!60, font=\scriptsize\ttfamily] at (\rx,2.15) {\h};
+}
+\draw[->, colC!80, thick] (2.0, 1.88) -- (2.0, 1.02)
+  node[midway, right=2pt, font=\scriptsize, colC]{activating};
+
+%% Central arrow
+\draw[->, very thick, black!55] (4.45, -0.75) -- (5.55, -0.75)
+  node[midway, above=2pt, font=\scriptsize\bfseries]{\texttt{activate(C)}};
+
+\node[font=\small\bfseries] at (9.6, 2.15){\textbf{After} activation};
+
+\foreach \j/\h in {0/{a1},1/{a2},2/{a3},3/{a4}}{
+  \pgfmathsetmacro{\rx}{7.10+\j*1.30}
+  \node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+        fill=colA!18, draw=colA!60, font=\scriptsize\ttfamily] at (\rx,1.55) {\h};
+}
+
+\foreach \j/\h in {0/{a1},1/{a2},2/{a3},3/{b4}}{
+  \pgfmathsetmacro{\rx}{7.10+\j*1.30}
+  \node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+        fill=colB!18, draw=colB!60, font=\scriptsize\ttfamily] at (\rx,0.70) {\h};
+}
+
+\foreach \j/\h in {0/{a1},1/{a2},2/{c3},3/{c4}}{
+  \pgfmathsetmacro{\rx}{7.10+\j*1.30}
+  \node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+        fill=colC!18, draw=colC!60, font=\scriptsize\ttfamily] at (\rx,-0.10) {\h};
+}
+
+\foreach \j/\h in {0/{a1},1/{a2}}{
+  \pgfmathsetmacro{\rx}{7.10+\j*1.30}
+  \node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+        fill=sharedcol!18, draw=sharedcol!65,
+        font=\scriptsize\ttfamily, text=sharedcol!80] at (\rx,-0.95) {\h};
+}
+
+%% a3 crossed out
+\node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+      fill=missingcol!12, draw=missingcol!55,
+      font=\scriptsize\ttfamily, text=missingcol] at (9.70,-0.95){a3};
+\draw[missingcol, very thick]
+  (9.70-0.58,-0.95-0.26) -- (9.70+0.58,-0.95+0.26);
+\draw[missingcol, very thick]
+  (9.70+0.58,-0.95-0.26) -- (9.70-0.58,-0.95+0.26);
+\node[missingcol, font=\scriptsize\bfseries] at (9.70,-1.52){removed!};
+
+\end{tikzpicture}
+\end{center}
+
+\textbf{\color{colC}Why shrinks:} C has \texttt{c3} at level~2, but chain holds \texttt{a3}. Scan forward; stop at first mismatch.
+\end{frame}
+
+
+\begin{frame}{Effect of \texttt{finish\_request()} -- Chain Grows}
+\begin{center}
+\begin{tikzpicture}[scale=0.80]
+
+\node[font=\small\bfseries] at (2.5, 2.10){\textbf{Before} finishing};
+
+\node[font=\scriptsize\bfseries, colA] at (-0.3,1.55){A:};
+\foreach \j/\h in {0/{a1},1/{a2},2/{a3},3/{a4}}{
+  \pgfmathsetmacro{\rx}{0.60+\j*1.30}
+  \node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+        fill=colA!18, draw=colA!60, font=\scriptsize\ttfamily] at (\rx,1.55) {\h};
+}
+
+\node[font=\scriptsize\bfseries, colB] at (-0.3,0.70){B:};
+\foreach \j/\h in {0/{a1},1/{a2},2/{a3},3/{b4}}{
+  \pgfmathsetmacro{\rx}{0.60+\j*1.30}
+  \node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+        fill=colB!18, draw=colB!60, font=\scriptsize\ttfamily] at (\rx,0.70) {\h};
+}
+
+\node[font=\scriptsize\bfseries, colC] at (-0.3,-0.10){C:};
+\foreach \j/\h in {0/{a1},1/{a2},2/{c3},3/{c4}}{
+  \pgfmathsetmacro{\rx}{0.60+\j*1.30}
+  \node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+        fill=colC!18, draw=colC!60, font=\scriptsize\ttfamily] at (\rx,-0.10) {\h};
+}
+
+\node[font=\scriptsize\bfseries, sharedcol] at (-0.6,-0.95){Chain:};
+\foreach \j/\h in {0/{a1},1/{a2}}{
+  \pgfmathsetmacro{\rx}{0.60+\j*1.30}
+  \node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+        fill=sharedcol!18, draw=sharedcol!65,
+        font=\scriptsize\ttfamily, text=sharedcol!80] at (\rx,-0.95) {\h};
+}
+
+%% Arrow
+\draw[->, very thick, black!55] (5.25, 0.70) -- (6.35, 0.70)
+  node[midway, above=2pt, font=\scriptsize\bfseries]{\texttt{finish(C)}};
+
+%% AFTER
+\node[font=\small\bfseries] at (9.6, 2.10){\textbf{After} finishing C};
+
+\foreach \j in {0,1,2,3}{
+  \pgfmathsetmacro{\rx}{7.10+\j*1.30}
+  \node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+        fill=black!5, draw=black!20, font=\scriptsize\ttfamily, text=black!28]
+       at (\rx,-0.10) {---};
+}
+\draw[black!30, line width=1pt]
+  (6.85,-0.10) -- (11.90,-0.10)
+  node[midway, above=1pt, font=\scriptsize, black!35]{removed};
+
+
+\foreach \j/\h in {0/{a1},1/{a2},2/{a3},3/{a4}}{
+  \pgfmathsetmacro{\rx}{7.10+\j*1.30}
+  \node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+        fill=colA!18, draw=colA!60, font=\scriptsize\ttfamily] at (\rx,1.55) {\h};
+}
+
+\foreach \j/\h in {0/{a1},1/{a2},2/{a3},3/{b4}}{
+  \pgfmathsetmacro{\rx}{7.10+\j*1.30}
+  \node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+        fill=colB!18, draw=colB!60, font=\scriptsize\ttfamily] at (\rx,0.70) {\h};
+}
+
+\foreach \j/\h in {0/{a1},1/{a2},2/{a3}}{
+  \pgfmathsetmacro{\rx}{7.10+\j*1.30}
+  \node[draw, rounded corners=2pt, minimum width=1.1cm, minimum height=0.50cm,
+        fill=sharedcol!18, draw=sharedcol!65,
+        font=\scriptsize\ttfamily, text=sharedcol!80] at (\rx,-0.95) {\h};
+}
+
+%% Highlight new block (a3)
+\draw[colB!80, line width=2.3pt, rounded corners=4pt]
+  (9.70-0.63,-0.95-0.33) rectangle (9.70+0.63,-0.95+0.33);
+\node[colB!80, font=\scriptsize\bfseries] at (9.70,-1.52){extended!};
+
+\end{tikzpicture}
+\end{center}
+\textbf{\color{colB}Why grows:} C was blocking \texttt{a3}: it had \texttt{c3} at level~2 instead. Now only A and B remain; both share \texttt{a3} at level~2 $\Rightarrow$ scan forward and extend.
+\end{frame}
+
+\begin{frame}{Shared Prefix Chain -- Full Lifecycle}
+\begin{center}
+\begin{tikzpicture}[scale=0.78, every node/.style={font=\scriptsize}]
+
+%% Time axis
+\draw[->, thick, black!45] (-0.4, 0) -- (12.8, 0)
+  node[right, font=\scriptsize]{time};
+
+%% Event at x=1.0
+\draw[workcol, thick] (1.0,0) -- (1.0,0.56);
+\filldraw[workcol!30, draw=workcol, thick] (1.0,0.56) circle (3.5pt);
+\node[workcol!90!black, above=5pt] at (1.0,0.56) {\textbf{Insert A,B,C}};
+
+%% Event at x=3.4
+\draw[colA, thick] (3.4,0) -- (3.4,0.56);
+\filldraw[colA!30, draw=colA, thick] (3.4,0.56) circle (3.5pt);
+\node[colA!90!black, above=5pt] at (3.4,0.56) {\textbf{activate(A)}};
+
+%% Event at x=5.5
+\draw[colB, thick] (5.5,0) -- (5.5,0.56);
+\filldraw[colB!30, draw=colB, thick] (5.5,0.56) circle (3.5pt);
+\node[colB!90!black, above=5pt] at (5.5,0.56) {\textbf{activate(B)}};
+
+%% Event at x=7.6
+\draw[colC, thick] (7.6,0) -- (7.6,0.56);
+\filldraw[colC!30, draw=colC, thick] (7.6,0.56) circle (3.5pt);
+\node[colC!90!black, above=5pt] at (7.6,0.56) {\textbf{activate(C)}};
+
+%% Event at x=10.2
+\draw[colC, thick] (10.2,0) -- (10.2,0.56);
+\filldraw[colC!30, draw=colC, thick] (10.2,0.56) circle (3.5pt);
+\node[colC!90!black, above=5pt] at (10.2,0.56) {\textbf{finish(C)}};
+
+%% Chain-length segments
+\draw[workcol!30, line width=7pt] (0.0,-0.55) -- (3.35,-0.55);
+\node[workcol!70] at (1.65,-0.55){len=0};
+
+\draw[colA!70, line width=7pt] (3.40,-0.55) -- (5.45,-0.55);
+\node[white] at (4.42,-0.55){\textbf{len=4}};
+
+\draw[sharedcol!80, line width=7pt] (5.50,-0.55) -- (7.55,-0.55);
+\node[white] at (6.52,-0.55){\textbf{len=3}};
+
+\draw[missingcol!75, line width=7pt] (7.60,-0.55) -- (10.15,-0.55);
+\node[white] at (8.87,-0.55){\textbf{len=2}};
+
+\draw[colB!75, line width=7pt] (10.20,-0.55) -- (12.40,-0.55);
+\node[white] at (11.30,-0.55){\textbf{len=3}};
+
+
+%% Annotations below bar
+\node[text width=1.75cm, align=center, workcol!80] at (1.65,-1.40)
+  {no active\\requests};
+\node[text width=1.75cm, align=center, colA!80] at (4.42,-1.40)
+  {only A:\\full chain};
+\node[text width=1.75cm, align=center, sharedcol] at (6.52,-1.40)
+  {A and B:\\3 match};
+\node[text width=1.75cm, align=center, missingcol] at (8.87,-1.40)
+  {C breaks\\at level~3};
+\node[text width=1.75cm, align=center, colB!80] at (11.30,-1.40)
+  {C gone;\\chain grows};
+
+\end{tikzpicture}
+\end{center}
+\end{frame}
 
 
 \section{RL Problem Formulation}
@@ -147,7 +456,6 @@
 
 \section{Policies}
 
-% ------------------------------------------------
 \begin{frame}{Policy 1: Q-Learning Scheduler}
 
     \begin{itemize}
@@ -197,7 +505,6 @@ store a number that estimates
 
 \end{frame}
 
-% ------------------------------------------------
 \begin{frame}{Policy 1: Q-Learning Scheduler}
 
 The system must balance:
