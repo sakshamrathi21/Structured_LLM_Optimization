@@ -110,23 +110,46 @@
 \end{frame}
 
 \section{Motivation}
+\section{Motivation}
 \begin{frame}{Motivation}
   \begin{itemize}
-    \item Shared prefix workloads
-    \item Targeting both \textbf{multi-family} and \textbf{radix-tree} style workloads
-    \item No one so far has analyzed \textbf{DRAM} bandwidth utilization and \textbf{L2} cache hit rates
-    \item No one cared about \textbf{temporal} and \textbf{spatial} locality, while accessing the KV blocks
-    \item So far the focus has been on HBM space utilization
-    \item Lack of CPU-efficient schedulers that work for dynamic workloads
+    \item Modern LLM inference is often \textbf{memory-bandwidth bound} during decode
+    \item KV-cache accesses dominate performance for long-context workloads
+    \item Existing systems primarily optimize \textbf{HBM capacity utilization}
+    \item However, decode efficiency also depends on \textbf{temporal and spatial locality}
+    \item Current schedulers do not explicitly account for \textbf{cache behavior or DRAM bandwidth utilization}
   \end{itemize}
 \end{frame}
 
+\begin{frame}{Core Scheduling Problem}
+  \begin{itemize}
+    \item Multiple requests often share long token prefixes
+    \item During decode, batches issue simultaneous KV-cache memory requests
+    \item Heterogeneous batches reduce:
+      \begin{itemize}
+        \item Cache hit rates
+        \item DRAM access efficiency
+        \item Effective bandwidth utilization
+      \end{itemize}
+    \item Fully homogeneous batches improve locality but may hurt system-level efficiency
+  \end{itemize}
+  \begin{block}{Goal}
+    Construct batches that balance GPU utilization and prefix locality
+  \end{block}
+\end{frame}
+
+
 \section{Initial Experiments}
+\begin{frame}
+    \Huge{\centerline{\bf Initial Experiments}}
+\end{frame}
+
+
 \begin{frame}{Two-family batch mixture}
 \centering
 \hspace*{-0.7cm}
 \begin{tikzpicture}[
-    scale=0.85,
+    scale=0.75,
     every node/.style={font=\footnotesize}
 ]
 % Parameters
@@ -140,8 +163,8 @@
 \def\spacing{0.2}
 
 % Title annotations
-\node[font=\small\bfseries, blue!70!black] at (2.5, 2.5) {Family A ($f \cdot N$ requests)};
-\node[font=\small\bfseries, orange!70!black] at (7.5, 2.5) {Family B ($(1-f) \cdot N$ requests)};
+\node[font=\tiny\bfseries, blue!70!black] at (2.5, 2.5) {Family A ($f \cdot N$ requests)};
+\node[font=\tiny\bfseries, orange!70!black] at (7.5, 2.5) {Family B ($(1-f) \cdot N$ requests)};
 
 % Draw Family A requests
 \foreach \i in {0,1,2,3,4} {
@@ -195,23 +218,50 @@
 
 \end{tikzpicture}
 \begin{itemize}
-  \item Two large prefixes
-  \item A fraction $f$ of the requests in a batch belong to family A, and the remaining requests belong to family $B$
+  \item Synthetic workload with \textbf{two distinct long prefixes} (Family A and B)
+  \item All requests are in the \textbf{decode phase} (prefill already completed)
+  \item Each prefix has length $L$ tokens
+  \item A fraction $f$ of the batch belongs to Family A, and $(1-f)$ to Family B
+  \item We vary $f$ to control the \textbf{degree of batch heterogeneity}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Two Family Batch Mixture (L = 2000 tokens)}
-    \begin{figure}
+\begin{frame}{Two Family Batch Mixture ($L = 2000$ tokens)}
+
+\begin{columns}[T]
+    
+    % Left column: Figure
+    \begin{column}{0.55\textwidth}
         \centering
-    \includegraphics[width=0.8\textwidth]{\RESULTDIR/two_family_fraction_A_2000.png}
-    \captionof{figure}{Results across fraction of requests from A}
-\end{figure}
-\begin{itemize}
-  \item All the prefill has already been completed so far
-  \item Both the families are 2000 tokens in size
-  \item Stark difference in throughput numbers between homogeneous and even slightly heterogeneous batches
-\end{itemize}
+        \includegraphics[width=\linewidth]{\RESULTDIR/two_family_fraction_A_2000.png}
+    \end{column}
+    
+    % Right column: Observations
+    \begin{column}{0.45\textwidth}
+        \small
+        \textbf{Setup:}
+        \begin{itemize}
+            \item Decode-only workload
+            \item Prefix length $L = 2000$
+            \item Fraction $f$ controls batch heterogeneity
+        \end{itemize}
+        
+        \textbf{Observations:}
+        \begin{itemize}
+            \item Throughput peaks at homogeneous batches ($f=0$ or $f=1$)
+            \item Even slight heterogeneity causes sharp degradation
+        \end{itemize}
+        
+    \end{column}
+
+\end{columns}
+
+\begin{block}{Key Takeaway}
+    Batch composition strongly impacts decode throughput.
+\end{block}
+
 \end{frame}
+
 
 \begin{frame}{Two Family Mixture (L = 2000 tokens) - Mean DRAM Activity}
     \begin{figure}
@@ -300,7 +350,16 @@
 
 \end{tikzpicture}
 
-\vspace{0.3cm}
+\begin{itemize}
+  \item Single-family workload: all requests originate from the same prefix
+  \item Total sequence length fixed at $L$
+  \item A fraction $f$ of the prefix is shared across all requests
+  \item Remaining $(1-f)L$ tokens are unique per request
+\end{itemize}
+
+\vspace{0.2cm}
+\textbf{Goal:} Isolate the impact of prefix sharing on decode throughput.
+
 \end{frame}
 
 \begin{frame}{Varying the amount of sharing (L = 500 tokens)}
@@ -311,52 +370,116 @@
 \end{figure}
 
 \begin{itemize}
-  \item Initial throughput numbers quite low, because of lack of space in HBM
-  \item $f$ increases $\rightarrow$ throughput increases
-  \item A larger chunk shared $\rightarrow$ a larger duration of spatial and temporal locality
+  \item Decode-only workload, $L = 500$
+  \item Low throughput at small $f$ due to HBM KV Cache evictions
+  \item Throughput increases steadily as shared prefix length grows
+  \item Larger shared region $\rightarrow$ longer duration of spatial and temporal locality
 \end{itemize}
+
 \end{frame}
 
 \section{Key Idea}
-\begin{frame}{Key Conclusions from the initial experiments}
+\begin{frame}{Key Conclusions from the Initial Experiments}
   \begin{itemize}
-    \item Memory requests from different requests are roughly simultaneous
-    \item Sequential accesses are quite helpful to utilize DRAM bandwidth fully
-    \item Enough requests should access nearby blocks to ensure high cache hit rates
-    \item Batches should be completely homogeneous to utilize these benefits fully
-    \item Merging requests from the same prefix together can also help in efficient KV cache eviction from the HBM $\rightarrow$ avoiding recomputation
+    \item Decode-phase memory requests from batched requests are issued nearly \textbf{simultaneously}
+    \item \textbf{Sequential} KV accesses improve effective DRAM bandwidth utilization
+    \item Shared-prefix batches increase \textbf{temporal} and \textbf{spatial} locality
+    \item Batches should be completely \textbf{homogeneous} to utilize these benefits fully
+    \item \textbf{Greater prefix overlap} across active requests improves cache hit rates
+    \item Merging requests from the same prefix together can also help in efficient KV cache eviction from the HBM $\rightarrow$ \textbf{avoiding recomputation}
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Key Ideas and Metric Proposed}
-  \textbf{Metric:} 
-  \begin{itemize}
-    \item (Number of requests running) $\times$ (Number of prefix chunks shared by \textbf{all} of them)
-    \item Higher number of requests $\rightarrow$ efficient GPU utilization
-    \item More number of prefix chunks shared $\rightarrow$ larger duration of spatial and temporal locality
-    \item All requests $\rightarrow$ heterogeneous batches do not help
-  \end{itemize}
 
-  \textbf{Key Ideas:} 
-  \begin{itemize}
-    \item Efficiently compute shared chunks $\rightarrow$ \textbf{Chunked Hash Tree}
-    \item Decision on when to stop the batch creation process $\rightarrow$ \textbf{RL}
-  \end{itemize}
+\begin{frame}{Key Metric and Direction}
+
+\textbf{Objective:}
+\begin{itemize}
+    \item Maximize concurrent GPU utilization
+    \item Maximize shared-prefix locality duration
+\end{itemize}
+\vspace{0.2cm}
+
+\textbf{Metric:}
+\vspace{-0.2cm}
+\[
+(\text{Batch Size}, \text{Shared Prefix Chunks (common to \textbf{all} active requests)})
+\]
+\vspace{-0.7cm}
+\begin{itemize}
+    \item Larger batch size $\rightarrow$ higher GPU utilization
+    \item More shared chunks $\rightarrow$ sustained temporal and spatial locality
+    \item Only chunks shared by \textbf{all} requests contribute to consistent reuse
+\end{itemize}
+
+\begin{block}{Design Questions:}
+    \begin{itemize}
+    \item How do we efficiently compute shared-prefix overlap at scale? 
+          $\rightarrow$ \textbf{Chunked Hash Tree}
+    \item When should we stop adding requests to a batch?
+          $\rightarrow$ \textbf{Reinforcement Learning (RL) Decision Maker}
+\end{itemize}
+\end{block}
+
 \end{frame}
+
 
 \section{Chunked Hash Tree}
-\begin{frame}{Chunked Hash Tree}
-  \begin{itemize}
-    \item Radix-tree selection is slow for large, online, long-context workloads
-    \item Requests are represented using \textbf{hashed cumulative prefixes}
-    \item Tokens are divided into fixed-size chunks
-    \item Each level corresponds to \texttt{hash(tokens[0:k])}
-    \item No explicit tree structure or node splitting
-    \item Much faster than radix trees for large workloads
-    \item Working set = set of active \textbf{(level, hash)} pairs
-    \item Scheduling prefers requests with minimal missing chunks
-  \end{itemize}
+
+\begin{frame}
+    \Huge{\centerline{\bf Chunked Hash Tree}}
 \end{frame}
+
+\begin{frame}{Why We Need a New Data Structure}
+\begin{itemize}
+    \item Scheduling requires computing: $\text{Shared Chunks Across Active Requests}$
+    \item Naively comparing token prefixes is:
+    \begin{itemize}
+        \item Too slow for long contexts (10K+ tokens)
+        \item Too expensive at high request rates
+    \end{itemize}
+    \item Radix trees:
+    \begin{itemize}
+        \item Require node splits
+        \item Expensive pointer traversal
+    \end{itemize}
+\end{itemize}
+
+\begin{block}{Requirement}
+We need a faster overlap computation  without explicit tree traversal.
+\end{block}
+
+\end{frame}
+
+\begin{frame}{Chunked Hash Tree}
+
+\begin{block}{Core Idea}
+Convert prefix-overlap computation into hash-set intersection over chunked prefixes.
+\end{block}
+
+\begin{itemize}
+    \item Divide tokens into fixed-size chunks of size $c$
+    
+    \item For each request, compute cumulative prefix hashes: $h_l = hash(tokens[0 : l \cdot c])$
+    % \[
+    %     h_l = \texttt{hash(tokens[0 : l \cdot c])}
+    % \]
+    
+    \item Represent each request as a set of \textbf{(level, hash)} pairs
+    
+    \item Working Set:
+    \[
+        W = \{(l, h_l)\ \text{for all active requests}\}
+    \]
+    
+    \item Shared chunks = levels where all active requests share the same hash
+    
+    \item Overlap computation reduces to counting shared hashes
+    (no tree traversal, no node splitting)
+\end{itemize}
+
+\end{frame}
+
 \begin{frame}{Chunked Hash Tree - Insertion}
 \centering
 \begin{tikzpicture}[
@@ -379,7 +502,16 @@
 \end{tikzpicture}
 \vspace{0.5em}
 \small
-Each level stores hashes of cumulative token prefixes.
+Each level corresponds to one chunk (size $c$ tokens). \\
+Nodes represent cumulative prefix hashes $h_l = hash(tokens[0:l \cdot c])$.
+
+\vspace{0.3em}
+
+\begin{itemize}
+    \item For each chunk, compute its cumulative hash
+    \item Add request ID to corresponding (level, hash) bucket
+\end{itemize}
+
 \end{frame}
 
 \begin{frame}{Chunked Hash Tree - Working Set}
@@ -403,13 +535,21 @@ Each level stores hashes of cumulative token prefixes.
 \node at (7,-2.5) {Level 2\\hash(A B I J K L)}
     child { node {R3} };
 \end{tikzpicture}
-\vspace{0.5em}
+\vspace{1.5em}
 \small
-Green boxes indicate prefix hashes in the working set.
+
+
+Working Set $W$ = all (level, hash) pairs
+corresponding to currently active requests.
+
+\vspace{0.3em}
+
+Shared chunks = levels where all active requests map to the same hash.
+
 \end{frame}
 
 \begin{frame}{Chunked Hash Tree - Best Request Selection}
-\centering
+% \centering
 \begin{tikzpicture}[
     every node/.style={draw, rectangle, rounded corners, minimum height=6mm, align=center},
     ws/.style={fill=green!25},
@@ -431,46 +571,70 @@ Green boxes indicate prefix hashes in the working set.
     child { node {R3} };
 \draw[->, thick, red] (1.9,-1.1) -- (2.8,-1.1);
 \end{tikzpicture}
-\vspace{0.5em}
-\small
-Green boxes indicate prefix hashes in the working set. 
 
-R2 is selected since it has maximum prefix overlap with the working set.
+\vspace{1.5em}
+
+\small
+
+For each candidate request:
+\begin{itemize}
+    \item Count number of (level, hash) pairs shared with $W$
+\end{itemize}
+
+Select request that maximizes shared levels
+
 \end{frame}
 
 \section{RL Decision Maker}
+
+\begin{frame}
+    \Huge{\centerline{\bf RL Decision Maker}}
+\end{frame}
 \begin{frame}{Formulation}
-  \textbf{State:}
-  \begin{itemize}
+    \begin{block}{Tradeoff}
+        Add more requests to increase GPU utilization, but risk reducing shared-prefix locality.
+    \end{block}
+  \begin{block}{State}
+        \begin{itemize}
         \item \textbf{B:} current batch size
-        \item $\mathbf{C_B:}$ number of chunks shared before adding a new request
-        \item $\mathbf{C_A:}$ number of chunks which will remain shared after adding the new (best) request
+        \item $\mathbf{C_B:}$ shared chunks across current active batch
+        \item $\mathbf{C_A:}$ shared chunks if best candidate is added
         \item $\mathbf{R_W:}$ number of requests waiting at the end of $C_A$
     \end{itemize}
+    \end{block}
+\end{frame}
 
-  \textbf{Action:}
-  \begin{itemize}
+
+\begin{frame}{Formulation}
+  \begin{block}{Action}
+        \begin{itemize}
         \item \textbf{ADD:} pop and activate the best request from the chunked hash tree
         \item \textbf{SKIP:} break the batch construction loop, dispatch the batch to GPU
     \end{itemize}
-
-  \textbf{Reward:}
-  \begin{itemize}
+    \end{block}
+    \begin{block}{Reward}
+        \begin{itemize}
         \item Negative decode wall step time of the previous batch
         \item Delivered once per batch
     \end{itemize}
+    \end{block}
 \end{frame}
-
 
 \begin{frame}{Policies}
   \begin{itemize}
-    \item \textbf{Q Learning:} The system tries actions (ADD or SKIP), observes rewards and gradually learns which action works best in each situation with respect to the long term outcome.
-    \item \textbf{Contextual Bandit:} Which action works best right now (ignoring long-term future) in this situation?
-    \item \textbf{Heuristics:} Based on current batch sizes and change in the number of chunks
+    \item \textbf{Q Learning:} Learns when sacrificing locality now may improve long-term throughput across future batches.
+    \item \textbf{Contextual Bandit:} Optimizes immediate throughput of the next batch only.
+    \item \textbf{Heuristics:} Static thresholds on batch size or chunk drop.
   \end{itemize}
+
 \end{frame}
 
 \section{Results}
+
+\begin{frame}
+    \Huge{\centerline{\bf Results}}
+\end{frame}
+
 \begin{frame}{Throughput vs Req Rate (5 families) (Sequence Length: 3900 tokens)}
     \begin{figure}
         \centering
