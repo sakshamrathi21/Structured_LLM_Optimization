@@ -5,6 +5,7 @@ find_package(pybind11 REQUIRED)
 
 add_library(chunked_hash_tree MODULE
     chunked_hash_tree.cpp
+    chunked_hash_tree_rl.cpp
     bindings.cpp
 )
 
