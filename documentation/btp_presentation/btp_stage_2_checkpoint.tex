@@ -1,0 +1,659 @@
+\documentclass[Serif, 10pt, brown]{beamer}
+\usepackage{booktabs,xcolor}
+\usepackage{pifont}
+\newcommand*\CHECK{\ding{51}}
+\usepackage{array}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+
+\usepackage{setspace,mathtools,amssymb,multirow,array,amsmath,tikz}
+\usepackage[normalsize]{subfigure}
+\usetikzlibrary{patterns,automata,positioning,decorations.pathreplacing,decorations,calc}
+\usepackage{curves}
+\usepackage{caption}
+\usepackage{wasysym}
+\usepackage{epsfig,epstopdf,graphicx}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{array}
+
+\usepackage[utf8]{inputenc}
+% \usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usetikzlibrary{arrows.meta, positioning, fit, backgrounds, shapes.geometric,
+                decorations.pathreplacing, calc}
+
+%% ── Colour palette ──────────────────────────────────────────
+\definecolor{colA}{RGB}{59,130,246}
+\definecolor{colB}{RGB}{16,185,129}
+\definecolor{colC}{RGB}{245,158,11}
+\definecolor{sharedcol}{RGB}{139,92,246}
+\definecolor{missingcol}{RGB}{239,68,68}
+\definecolor{workcol}{RGB}{107,114,128}
+\definecolor{bgblock}{RGB}{241,245,249}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+
+\usetikzlibrary{arrows.meta, fit, backgrounds, positioning, calc, decorations.pathreplacing, shapes.geometric}
+
+%% ── colour palette ──────────────────────────────────────────────────────────
+\definecolor{active}{RGB}{52,152,219}       % blue  – active requests
+\definecolor{waiting}{RGB}{231,76,60}       % red   – waiting requests
+\definecolor{shared}{RGB}{39,174,96}        % green – shared-prefix chain
+\definecolor{newblock}{RGB}{243,156,18}     % amber – newly-added block
+\definecolor{evicted}{RGB}{192,57,43}       % dark red – evicted block
+\definecolor{neutral}{RGB}{149,165,166}     % grey  – unrelated block
+\definecolor{highlight}{RGB}{155,89,182}    % purple – highlighted result
+\definecolor{bg}{RGB}{245,245,250}          % page bg
+
+\setbeamercolor{background canvas}{bg=bg}
+\setbeamertemplate{navigation symbols}{}
+\setbeamerfont{title}{size=\Large,series=\bfseries}
+
+%% ── helpers ─────────────────────────────────────────────────────────────────
+% Draw one hash block: \hashblock{x}{y}{label}{fillcolor}{textcolor}
+\newcommand{\hashblock}[5]{%
+  \node[draw, minimum width=1.1cm, minimum height=0.65cm,
+        rounded corners=3pt, fill=#4, text=#5,
+        font=\ttfamily\scriptsize, line width=0.6pt] at (#1,#2) {#3};
+}
+
+% Thick bracket above a range of blocks
+% \chainbrace{x_start}{x_end}{y_top}{label}
+\newcommand{\chainbrace}[4]{%
+  \draw[decorate,
+        decoration={brace,amplitude=5pt,raise=2pt},
+        thick, color=shared]
+    (#2+0.55,#3) -- (#1-0.55,#3) node[midway,above=7pt,color=shared,font=\small\bfseries]{#4};
+}
+
+\curvewarnfalse
+
+\newtheorem{proposition}{Proposition}
+\theoremstyle{example}
+\newtheorem{theoremh}{Theorem}
+\theoremstyle{plain}
+\renewcommand{\textfraction}{0.01}
+\renewcommand{\floatpagefraction}{0.99}
+\newcommand{\ul}{\underline}
+\newcounter{units}
+\setbeamercovered{dynamic}
+\logo{\includegraphics[width=0.5in,keepaspectratio]{\FIGDIR/iitb_logo.png}}
+\newcommand{\FIGDIR}{../figures} 
+\newcommand{\RESULTDIR}{../../results} 
+\mode<presentation>{
+    \usetheme[right,currentsection,hideothersubsections]{UTD}
+    \useoutertheme{sidebar}
+    \useinnertheme[shadow]{rounded}
+    \usecolortheme{whale}
+    \usecolortheme{orchid}
+    \usefonttheme[onlymath]{serif}
+    \setbeamertemplate{footline}{\centerline{Slide \insertframenumber/\inserttotalframenumber}}
+}
+
+\usebeamercolor[fg]{author in sidebar}
+\title[{Systems for LLMs}]{\sc Benchmarking and Performance Analysis of LLM Inferencing Systems}
+\author[\ul{Saksham}]{{\textbf{Saksham Rathi}}}
+\institute[UTD]{\sc\small Systems for LLMs\\ Under Prof. Mythili Vutukuru}
+\date[UCI]{Indian Institute of Technology Bombay \\ Autumn 2025-26}
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}{Contents}
+	\tableofcontents
+\end{frame}
+
+\section{Motivation}
+\section{Motivation}
+\begin{frame}{Motivation}
+  \begin{itemize}
+    \item Modern LLM inference is often \textbf{memory-bandwidth bound} during decode
+    \item KV-cache accesses dominate performance for long-context workloads
+    \item Existing systems primarily optimize \textbf{HBM capacity utilization}
+    \item However, decode efficiency also depends on \textbf{temporal and spatial locality}
+    \item Current schedulers do not explicitly account for \textbf{cache behavior or DRAM bandwidth utilization}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Core Scheduling Problem}
+  \begin{itemize}
+    \item Multiple requests often share long token prefixes
+    \item During decode, batches issue simultaneous KV-cache memory requests
+    \item Heterogeneous batches reduce:
+      \begin{itemize}
+        \item Cache hit rates
+        \item DRAM access efficiency
+        \item Effective bandwidth utilization
+      \end{itemize}
+    \item Fully homogeneous batches improve locality but may hurt system-level efficiency
+  \end{itemize}
+  \begin{block}{Goal}
+    Construct batches that balance GPU utilization and prefix locality
+  \end{block}
+\end{frame}
+
+
+\section{Initial Experiments}
+\begin{frame}
+    \Huge{\centerline{\bf Initial Experiments}}
+\end{frame}
+
+
+\begin{frame}{Two-family batch mixture}
+\centering
+\hspace*{-0.7cm}
+\begin{tikzpicture}[
+    scale=0.75,
+    every node/.style={font=\footnotesize}
+]
+% Parameters
+\def\totalwidth{10}
+\def\fraction{0.6}  % f = 0.6 (60% family A)
+\pgfmathsetmacro{\halfwidth}{\totalwidth/2}
+\pgfmathsetmacro{\leftwidth}{\halfwidth - 0.3}
+\pgfmathsetmacro{\rightstart}{\halfwidth + 0.3}
+\pgfmathsetmacro{\rightwidth}{\halfwidth - 0.3}
+\def\boxheight{0.5}
+\def\spacing{0.2}
+
+% Title annotations
+\node[font=\tiny\bfseries, blue!70!black] at (2.5, 2.5) {Family A ($f \cdot N$ requests)};
+\node[font=\tiny\bfseries, orange!70!black] at (7.5, 2.5) {Family B ($(1-f) \cdot N$ requests)};
+
+% Draw Family A requests
+\foreach \i in {0,1,2,3,4} {
+    \pgfmathsetmacro{\ypos}{1.8 - \i*(\boxheight + \spacing)}
+    
+    % Family A - all identical
+    \fill[blue!30] (0, \ypos) rectangle (\leftwidth, \ypos + \boxheight);
+    \draw[thick, blue] (0, \ypos) rectangle (\leftwidth, \ypos + \boxheight);
+    
+    % Label
+    \node[left, font=\tiny] at (0, \ypos + \boxheight/2) {A\i};
+    
+    % Text inside
+    \pgfmathsetmacro{\centerA}{\leftwidth/2}
+    \node[blue!70!black, font=\tiny] at (\centerA, \ypos + \boxheight/2) {\texttt{FAMILY\_A (L tokens)}};
+}
+
+% Draw Family B requests
+\foreach \i in {0,1,2} {
+    \pgfmathsetmacro{\ypos}{1.8 - \i*(\boxheight + \spacing)}
+    
+    % Family B - all identical (but different from A)
+    \fill[orange!30] (\rightstart, \ypos) rectangle (\totalwidth, \ypos + \boxheight);
+    \draw[thick, orange!70!black] (\rightstart, \ypos) rectangle (\totalwidth, \ypos + \boxheight);
+    
+    % Label
+    \node[right, font=\tiny] at (\totalwidth, \ypos + \boxheight/2) {B\i};
+    
+    % Text inside
+    \pgfmathsetmacro{\centerB}{\rightstart + \rightwidth/2}
+    \node[orange!70!black, font=\tiny] at (\centerB, \ypos + \boxheight/2) {\texttt{FAMILY\_B (L tokens)}};
+}
+
+% Annotations for counts
+\pgfmathsetmacro{\topA}{1.8 + \boxheight}
+\pgfmathsetmacro{\bottomA}{1.8 - 4*(\boxheight + \spacing)}
+\draw[<->, thick, blue] (-0.5, \topA) -- (-0.5, \bottomA) 
+    node[midway, left, font=\tiny] {$f \cdot N$};
+
+\pgfmathsetmacro{\bottomB}{1.8 - 2*(\boxheight + \spacing)}    
+\draw[<->, thick, orange!70!black] (\totalwidth + 0.5, \topA) -- (\totalwidth + 0.5, \bottomB) 
+    node[midway, right, font=\tiny] {$(1-f) N$};
+
+\fill[blue!30] (1.5, -2) rectangle ++(0.8, 0.35);
+\draw[thick, blue] (1.5, -2) rectangle ++(0.8, 0.35);
+\node[right, font=\tiny] at (2.4, -1.825) {Family A: all share same prefix};
+
+\fill[orange!30] (6, -2) rectangle ++(0.8, 0.35);
+\draw[thick, orange!70!black] (6, -2) rectangle ++(0.8, 0.35);
+\node[right, font=\tiny] at (6.9, -1.825) {Family B: all share same prefix};
+
+\end{tikzpicture}
+\begin{itemize}
+  \item Synthetic workload with \textbf{two distinct long prefixes} (Family A and B)
+  \item All requests are in the \textbf{decode phase} (prefill already completed)
+  \item Each prefix has length $L$ tokens
+  \item A fraction $f$ of the batch belongs to Family A, and $(1-f)$ to Family B
+  \item We vary $f$ to control the \textbf{degree of batch heterogeneity}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Two Family Batch Mixture ($L = 2000$ tokens)}
+
+\begin{columns}[T]
+    
+    % Left column: Figure
+    \begin{column}{0.55\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{\RESULTDIR/two_family_fraction_A_2000.png}
+    \end{column}
+    
+    % Right column: Observations
+    \begin{column}{0.45\textwidth}
+        \small
+        \textbf{Setup:}
+        \begin{itemize}
+            \item Decode-only workload
+            \item Prefix length $L = 2000$
+            \item Fraction $f$ controls batch heterogeneity
+        \end{itemize}
+        
+        \textbf{Observations:}
+        \begin{itemize}
+            \item Throughput peaks at homogeneous batches ($f=0$ or $f=1$)
+            \item Even slight heterogeneity causes sharp degradation
+        \end{itemize}
+        
+    \end{column}
+
+\end{columns}
+
+\begin{block}{Key Takeaway}
+    Batch composition strongly impacts decode throughput.
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}{Two Family Mixture (L = 2000 tokens) - Mean DRAM Activity}
+    \begin{figure}
+        \centering
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/mean_dram_act_frac_a_2000.png}
+    \captionof{figure}{Mean DRAM Activity across fraction of requests from A (L = 2000 tokens)}
+\end{figure}
+
+\begin{itemize}
+  \item DRAM activity higher for homogeneous batches
+  \item Sequential accesses $\rightarrow$ more spatial locality  $\rightarrow$ higher prefetcher confidence $\rightarrow$ more requests issued $\rightarrow$ higher DRAM utilization
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Two Family Mixture (L = 2000 tokens) - Total DRAM Accesses}
+    \begin{figure}
+        \centering
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/total_dram_acccesses_frac_a_2000.png}
+    \captionof{figure}{Total DRAM Accesses across fraction of requests from A (L = 2000 tokens)}
+\end{figure}
+
+\begin{itemize}
+  \item Total number of DRAM accesses lower for homogeneous batches
+  \item Requests running in parallel $\rightarrow$ higher number of requests sharing the same block $\rightarrow$ better temporal locality $\rightarrow$ larger cache hit rates $\rightarrow$ less DRAM accesses
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Varying the amount of sharing}
+\centering
+\begin{tikzpicture}[
+    scale=0.85,
+    every node/.style={font=\footnotesize}
+]
+
+\def\totalwidth{10}
+\def\fraction{0.5} 
+\pgfmathsetmacro{\sharedwidth}{\totalwidth * \fraction}
+\pgfmathsetmacro{\uniquewidth}{\totalwidth * (1-\fraction)}
+\def\boxheight{0.5}
+\def\spacing{0.2}
+
+\draw[<->, thick] (0, 2.2) -- (\totalwidth, 2.2) node[midway, above] {Total Length $L$ tokens};
+
+\draw[<->, thick, blue] (0, 1.8) -- (\sharedwidth, 1.8) node[midway, above, blue] {$f \cdot L$};
+
+\draw[<->, thick, red] (\sharedwidth, 1.8) -- (\totalwidth, 1.8) node[midway, above, red] {$(1-f) \cdot L$};
+
+\foreach \i in {0,1,2,3,4} {
+    \pgfmathsetmacro{\ypos}{1.2 - \i*(\boxheight + \spacing)}
+    
+    \fill[blue!30] (0, \ypos) rectangle (\sharedwidth, \ypos + \boxheight);
+    \draw[thick, blue] (0, \ypos) rectangle (\sharedwidth, \ypos + \boxheight);
+    
+    \ifnum\i=0
+        \fill[red!20, pattern=north east lines, pattern color=red!50] (\sharedwidth, \ypos) rectangle (\totalwidth, \ypos + \boxheight);
+    \fi
+    \ifnum\i=1
+        \fill[red!20, pattern=north west lines, pattern color=red!50] (\sharedwidth, \ypos) rectangle (\totalwidth, \ypos + \boxheight);
+    \fi
+    \ifnum\i=2
+        \fill[red!20, pattern=horizontal lines, pattern color=red!50] (\sharedwidth, \ypos) rectangle (\totalwidth, \ypos + \boxheight);
+    \fi
+    \ifnum\i=3
+        \fill[red!20, pattern=vertical lines, pattern color=red!50] (\sharedwidth, \ypos) rectangle (\totalwidth, \ypos + \boxheight);
+    \fi
+    \ifnum\i=4
+        \fill[red!20, pattern=dots, pattern color=red!50] (\sharedwidth, \ypos) rectangle (\totalwidth, \ypos + \boxheight);
+    \fi
+    \draw[thick, red] (\sharedwidth, \ypos) rectangle (\totalwidth, \ypos + \boxheight);
+    
+    \node[left, font=\tiny] at (-0.2, \ypos + \boxheight/2) {Req \i};
+    
+    \node[blue!70!black, font=\tiny] at (\sharedwidth/2, \ypos + \boxheight/2) {\texttt{SHARED}};
+    \node[red!70!black, font=\tiny] at (\sharedwidth + \uniquewidth/2, \ypos + \boxheight/2) {\texttt{U\i}};
+}
+
+
+\fill[blue!30] (1, -2.8) rectangle ++(0.8, 0.35);
+\draw[thick, blue] (1, -2.8) rectangle ++(0.8, 0.35);
+\node[right, font=\tiny] at (1.9, -2.625) {Shared prefix};
+
+\fill[red!20, pattern=north east lines, pattern color=red!50] (6.5, -2.8) rectangle ++(0.8, 0.35);
+\draw[thick, red] (6.5, -2.8) rectangle ++(0.8, 0.35);
+\node[right, font=\tiny] at (7.4, -2.625) {Unique per request};
+
+\end{tikzpicture}
+
+\begin{itemize}
+  \item Single-family workload: all requests originate from the same prefix
+  \item Total sequence length fixed at $L$
+  \item A fraction $f$ of the prefix is shared across all requests
+  \item Remaining $(1-f)L$ tokens are unique per request
+\end{itemize}
+
+\vspace{0.2cm}
+\textbf{Goal:} Isolate the impact of prefix sharing on decode throughput.
+
+\end{frame}
+
+\begin{frame}{Varying the amount of sharing (L = 500 tokens)}
+    \begin{figure}
+        \centering
+    \includegraphics[width=0.7\textwidth]{\RESULTDIR/throughput_vs_amount_of_sharing_500_more_points.png}
+    \captionof{figure}{Results across varying L}
+\end{figure}
+
+\begin{itemize}
+  \item Decode-only workload, $L = 500$
+  \item Low throughput at small $f$ due to HBM KV Cache evictions
+  \item Throughput increases steadily as shared prefix length grows
+  \item Larger shared region $\rightarrow$ longer duration of spatial and temporal locality
+\end{itemize}
+
+\end{frame}
+
+\section{Key Idea}
+\begin{frame}{Key Conclusions from the Initial Experiments}
+  \begin{itemize}
+    \item Decode-phase memory requests from batched requests are issued nearly \textbf{simultaneously}
+    \item \textbf{Sequential} KV accesses improve effective DRAM bandwidth utilization
+    \item Shared-prefix batches increase \textbf{temporal} and \textbf{spatial} locality
+    \item Batches should be completely \textbf{homogeneous} to utilize these benefits fully
+    \item \textbf{Greater prefix overlap} across active requests improves cache hit rates
+    \item Merging requests from the same prefix together can also help in efficient KV cache eviction from the HBM $\rightarrow$ \textbf{avoiding recomputation}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Key Metric and Direction}
+
+\textbf{Objective:}
+\begin{itemize}
+    \item Maximize concurrent GPU utilization
+    \item Maximize shared-prefix locality duration
+\end{itemize}
+\vspace{0.2cm}
+
+\textbf{Metric:}
+\vspace{-0.2cm}
+\[
+(\text{Batch Size}, \text{Shared Prefix Chunks (common to \textbf{all} active requests)})
+\]
+\vspace{-0.7cm}
+\begin{itemize}
+    \item Larger batch size $\rightarrow$ higher GPU utilization
+    \item More shared chunks $\rightarrow$ sustained temporal and spatial locality
+    \item Only chunks shared by \textbf{all} requests contribute to consistent reuse
+\end{itemize}
+
+\begin{block}{Design Questions:}
+    \begin{itemize}
+    \item How do we efficiently compute shared-prefix overlap at scale? 
+          $\rightarrow$ \textbf{Chunked Hash Tree}
+    \item When should we stop adding requests to a batch?
+          $\rightarrow$ \textbf{Reinforcement Learning (RL) Decision Maker}
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+
+\section{Chunked Hash Tree}
+
+\begin{frame}
+    \Huge{\centerline{\bf Chunked Hash Tree}}
+\end{frame}
+
+\begin{frame}{Why We Need a New Data Structure}
+\begin{itemize}
+    \item Scheduling requires computing: $\text{Shared Chunks Across Active Requests}$
+    \item Naively comparing token prefixes is:
+    \begin{itemize}
+        \item Too slow for long contexts (10K+ tokens)
+        \item Too expensive at high request rates
+    \end{itemize}
+    \item Radix trees:
+    \begin{itemize}
+        \item Require node splits
+        \item Expensive pointer traversal
+    \end{itemize}
+\end{itemize}
+
+\begin{block}{Requirement}
+We need a faster overlap computation  without explicit tree traversal.
+\end{block}
+
+\end{frame}
+
+\begin{frame}{Chunked Hash Tree}
+
+\begin{block}{Core Idea}
+Convert prefix-overlap computation into hash-set intersection over chunked prefixes.
+\end{block}
+
+\begin{itemize}
+    \item Divide tokens into fixed-size chunks of size $c$
+    
+    \item For each request, compute cumulative prefix hashes: $h_l = hash(tokens[0 : l \cdot c])$
+    % \[
+    %     h_l = \texttt{hash(tokens[0 : l \cdot c])}
+    % \]
+    
+    \item Represent each request as a set of \textbf{(level, hash)} pairs
+    
+    \item Working Set:
+    \[
+        W = \{(l, h_l)\ \text{for all active requests}\}
+    \]
+    
+    \item Shared chunks = levels where all active requests share the same hash
+    
+    \item Overlap computation reduces to counting shared hashes
+    (no tree traversal, no node splitting)
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Chunked Hash Tree - Insertion}
+\centering
+\begin{tikzpicture}[
+    every node/.style={draw, rectangle, rounded corners, minimum height=6mm, align=center},
+    level distance=12mm,
+    sibling distance=32mm
+]
+\node (level0) at (0,0) {Level 0\\hash(A B)}
+    child { node {R1, R2, R3} };
+\node (level1) at (3.5,0) {Level 1\\hash(A B C D)}
+    child { node {R1, R2} };
+\node (level1) at (7,0) {Level 1\\hash(A B I J)}
+    child { node {R3} };
+\node at (0,-2.5) {Level 2\\hash(A B C D E F)}
+    child { node {R1} };
+\node at (3.5,-2.5) {Level 2\\hash(A B C D G H)}
+    child { node {R2} };
+\node at (7,-2.5) {Level 2\\hash(A B I J K L)}
+    child { node {R3} };
+\end{tikzpicture}
+\vspace{0.5em}
+\small
+Each level corresponds to one chunk (size $c$ tokens). \\
+Nodes represent cumulative prefix hashes $h_l = hash(tokens[0:l \cdot c])$.
+
+\vspace{0.3em}
+
+\begin{itemize}
+    \item For each chunk, compute its cumulative hash
+    \item Add request ID to corresponding (level, hash) bucket
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Chunked Hash Tree - Working Set}
+\centering
+\begin{tikzpicture}[
+    every node/.style={draw, rectangle, rounded corners, minimum height=6mm, align=center},
+    ws/.style={fill=green!25},
+    level distance=12mm,
+    sibling distance=32mm
+]
+\node[ws] (level0) at (0,0) {Level 0\\hash(A B)}
+    child { node {R1, R2, R3} };
+\node[ws] (level1) at (3.5,0) {Level 1\\hash(A B C D)}
+    child { node {R1, R2} };
+\node (level1) at (7,0) {Level 1\\hash(A B I J)}
+    child { node {R3} };
+\node[ws] at (0,-2.5) {Level 2\\hash(A B C D E F)}
+    child { node {R1} };
+\node at (3.5,-2.5) {Level 2\\hash(A B C D G H)}
+    child { node {R2} };
+\node at (7,-2.5) {Level 2\\hash(A B I J K L)}
+    child { node {R3} };
+\end{tikzpicture}
+\vspace{1.5em}
+\small
+
+
+Working Set $W$ = all (level, hash) pairs
+corresponding to currently active requests.
+
+\vspace{0.3em}
+
+Shared chunks = levels where all active requests map to the same hash.
+
+\end{frame}
+
+\begin{frame}{Chunked Hash Tree - Best Request Selection}
+% \centering
+\begin{tikzpicture}[
+    every node/.style={draw, rectangle, rounded corners, minimum height=6mm, align=center},
+    ws/.style={fill=green!25},
+    candidate/.style={fill=blue!20},
+    level distance=12mm,
+    sibling distance=32mm
+]
+\node[ws] (level0) at (0,0) {Level 0\\hash(A B)}
+    child { node {R1, R2, R3} };
+\node[ws] (level1) at (3.5,0) {Level 1\\hash(A B C D)}
+    child { node {R1, R2} };
+\node (level1) at (7,0) {Level 1\\hash(A B I J)}
+    child { node {R3} };
+\node[ws] at (0,-2.5) {Level 2\\hash(A B C D E F)}
+    child { node {R1} };
+\node[candidate] at (3.5,-2.5) {Level 2\\hash(A B C D G H)}
+    child { node {R2} };
+\node at (7,-2.5) {Level 2\\hash(A B I J K L)}
+    child { node {R3} };
+\draw[->, thick, red] (1.9,-1.1) -- (2.8,-1.1);
+\end{tikzpicture}
+
+\vspace{1.5em}
+
+\small
+
+For each candidate request:
+\begin{itemize}
+    \item Count number of (level, hash) pairs shared with $W$
+\end{itemize}
+
+Select request that maximizes shared levels
+
+\end{frame}
+
+\section{RL Decision Maker}
+
+\begin{frame}
+    \Huge{\centerline{\bf RL Decision Maker}}
+\end{frame}
+\begin{frame}{Formulation}
+    \begin{block}{Tradeoff}
+        Add more requests to increase GPU utilization, but risk reducing shared-prefix locality.
+    \end{block}
+  \begin{block}{State}
+        \begin{itemize}
+        \item \textbf{B:} current batch size
+        \item $\mathbf{C_B:}$ shared chunks across current active batch
+        \item $\mathbf{C_A:}$ shared chunks if best candidate is added
+        \item $\mathbf{R_W:}$ number of requests waiting at the end of $C_A$
+    \end{itemize}
+    \end{block}
+\end{frame}
+
+
+\begin{frame}{Formulation}
+  \begin{block}{Action}
+        \begin{itemize}
+        \item \textbf{ADD:} pop and activate the best request from the chunked hash tree
+        \item \textbf{SKIP:} break the batch construction loop, dispatch the batch to GPU
+    \end{itemize}
+    \end{block}
+    \begin{block}{Reward}
+        \begin{itemize}
+        \item Negative decode wall step time of the previous batch
+        \item Delivered once per batch
+    \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Policies}
+  \begin{itemize}
+    \item \textbf{Q Learning:} Learns when sacrificing locality now may improve long-term throughput across future batches.
+    \item \textbf{Contextual Bandit:} Optimizes immediate throughput of the next batch only.
+    \item \textbf{Heuristics:} Static thresholds on batch size or chunk drop.
+  \end{itemize}
+
+\end{frame}
+
+\section{Results}
+
+\begin{frame}
+    \Huge{\centerline{\bf Results}}
+\end{frame}
+
+\begin{frame}{Throughput vs Req Rate (5 families) (Sequence Length: 3900 tokens)}
+    \begin{figure}
+        \centering
+    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_across_req_rate_3.0.png}
+    \captionof{figure}{Throughput vs Request Rate (5 families)}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Throughput vs Req Rate (5 families) (Sequence Length: 13000 tokens)}
+    \begin{figure}
+        \centering
+    \includegraphics[width=0.8\textwidth]{\RESULTDIR/throughput_across_req_rate_10.0.png}
+    \captionof{figure}{Throughput vs Request Rate (5 families)}
+\end{figure}
+\end{frame}
+
+\section{}
+\begin{frame}
+    \Huge{\centerline{\bf Thank You}}
+\end{frame}
+
+\end{document}
