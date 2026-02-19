@@ -160,7 +160,7 @@ def main():
         help="Total number of suffix families",
     )
     parser.add_argument("--requests", type=int, default=500)
-    parser.add_argument("--iterations", type=int, default=3)
+    parser.add_argument("--iterations", type=int, default=1)
     parser.add_argument("--max_new_tokens", type=int, default=50)
     parser.add_argument("--batch_size", type=int, default=500)
     parser.add_argument("--seed", type=int, default=42)

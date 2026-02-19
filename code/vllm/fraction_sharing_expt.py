@@ -165,7 +165,7 @@ def main():
 
     parser.add_argument("--requests", type=int, default=500)
 
-    parser.add_argument("--iterations", type=int, default=3)
+    parser.add_argument("--iterations", type=int, default=1)
 
     parser.add_argument("--max_new_tokens", type=int, default=50)
 
@@ -175,6 +175,9 @@ def main():
 
     parser.add_argument(
         "--write_dcgmi", action="store_true", help="Enable DCGMI monitoring and logging"
+    )
+    parser.add_argument(
+        "--policy", type=str, default="fcfs"
     )
 
     args = parser.parse_args()
@@ -196,6 +199,7 @@ def main():
         enable_prefix_caching=True,
         enable_chunked_prefill=True,
         max_num_seqs=args.batch_size,
+        scheduling_policy=args.policy,
     )
 
     run_experiment(llm, prompts, args.max_new_tokens, args.iterations, args.write_dcgmi, args)
