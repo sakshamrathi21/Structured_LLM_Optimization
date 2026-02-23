@@ -198,7 +198,7 @@ def main():
         enable_prefix_caching=True,
         enable_chunked_prefill=True,
         max_num_seqs=args.batch_size,
-        max_num_batched_tokens=65536,
+        max_num_batched_tokens=32768,
     )
 
     run_experiment(llm, prompts, args.max_new_tokens, args.iterations, args.write_dcgmi, args)

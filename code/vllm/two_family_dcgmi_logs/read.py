@@ -49,8 +49,11 @@ for frac in fractions:
 # Plot
 plt.figure()
 plt.plot(fractions[:len(avg_durations)], avg_durations, marker='o')
-plt.xlabel("Fraction of requests with A as the system prompt")
-plt.ylabel("Throughput (req/sec)")
+plt.xlabel("Fraction", fontweight="bold", fontsize=15)
+plt.ylabel("Throughput (req/sec)", fontweight="bold", fontsize=15)
+plt.xticks(fontsize=15)
+plt.yticks(fontsize=15)
 plt.ylim(0, max(avg_durations) + 10)
+plt.tight_layout()
 # plt.title("Average Scheduler Duration vs Fraction")
 plt.savefig("../../../results/throughput_vs_fraction_two_fam_llama8b.png")
