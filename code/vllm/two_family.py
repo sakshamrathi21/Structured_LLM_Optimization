@@ -116,7 +116,7 @@ def run_experiment(llm, prompts, max_new_tokens, iterations, write_dcgmi=False, 
             start = time.time()
 
             llm.generate(prompts, params)
-
+            # print("scheduler end time:", time.time())
             elapsed = time.time() - start
             throughput = len(prompts) / elapsed
 
@@ -162,7 +162,7 @@ def main():
     )
 
     parser.add_argument(
-        "--fraction", type=float, default=0.5, help="fraction of family A (0–1)"
+        "--fraction", type=float, default=0.5, help="fraction of family A (0-1)"
     )
 
     parser.add_argument("--requests", type=int, default=500)
@@ -194,10 +194,11 @@ def main():
     print("\nInitializing vLLM...")
     llm = LLM(
         model=args.model,
-        gpu_memory_utilization=0.75,
+        gpu_memory_utilization=0.98,
         enable_prefix_caching=True,
         enable_chunked_prefill=True,
         max_num_seqs=args.batch_size,
+        max_num_batched_tokens=65536,
     )
 
     run_experiment(llm, prompts, args.max_new_tokens, args.iterations, args.write_dcgmi, args)

@@ -58,8 +58,10 @@ def print_stats(data, label):
 # -------------------------------
 # Read both files
 # -------------------------------
+import sys
+
 drama1 = read_drama(
-    "dcgmi_twofamily_model-meta-llama_Llama-3.1-8B-Instruct_L-2000_frac-1.0_reqs-500_batch-500_maxnew-50.log"
+    sys.argv[1]
 )
 # drama2 = read_drama(
 #     "dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-5_rps-100_batch-500_rand-1_lenf-10.0_policy-fcfs_maxnew-100.log"
