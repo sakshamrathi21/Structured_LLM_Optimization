@@ -195,7 +195,7 @@ def main():
     print("\nInitializing vLLM...")
     llm = LLM(
         model=args.model,
-        gpu_memory_utilization=0.75,
+        gpu_memory_utilization=0.95,
         enable_prefix_caching=True,
         enable_chunked_prefill=True,
         max_num_seqs=args.batch_size,

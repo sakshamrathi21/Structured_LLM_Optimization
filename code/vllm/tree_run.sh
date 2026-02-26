@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 VLLM_SCRIPT="/home/saksham/CS496/code/vllm/fraction_sharing_expt.py"
 PY_BIN="/home/saksham/CS496/code/vllm/.venv/bin/python"  
-F=(0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0)
+B=(5 10 20 30 50 75 100 150 200 250 300 500 1000)
 
-# for f in "${F[@]}"; do
-#     $PY_BIN "$VLLM_SCRIPT" --L 2000 --fraction "$f" --write_dcgmi --iterations 10 --batch_size 100 --requests 100
+# for b in "${B[@]}"; do
+#     REQUESTS=$((50 * b))
+#     $PY_BIN "$VLLM_SCRIPT" --L 2000 --fraction 1 --write_dcgmi --iterations 10 --batch_size "$b" --requests "$REQUESTS"
 # done
 
-for f in fraction_sharing_dcgmi_logs/*.log; do
+for f in batch_size_dcgmi_logs/*.log; do
     echo "$f"
     $PY_BIN read_drama.py "$f"
 done

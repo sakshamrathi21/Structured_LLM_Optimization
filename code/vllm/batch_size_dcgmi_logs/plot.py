@@ -1,0 +1,40 @@
+import re
+import matplotlib.pyplot as plt
+
+# Path to your single log file
+LOG_FILE = "out_batch_size"
+
+fractions = []
+means = []
+
+current_frac = None
+
+with open(LOG_FILE, "r") as f:
+    for line in f:
+        # Detect fraction from filename lines
+        frac_match = re.search(r"batch-([0-9.]+)_", line)
+        if frac_match:
+            current_frac = float(frac_match.group(1))
+        # Extract Mean
+        mean_match = re.search(r"Mean\s*:\s*([0-9.]+)", line)
+        if mean_match and current_frac is not None:
+            means.append(float(mean_match.group(1)))
+            fractions.append(current_frac)
+
+# Sort everything by fraction
+sorted_data = sorted(zip(fractions, means), key=lambda x: x[0])
+fractions, means = zip(*sorted_data)
+
+# -------------------------
+# Plot Mean vs Fraction
+# -------------------------
+plt.figure()
+plt.plot(fractions, means, marker='o')
+plt.xlabel("Batch Size", fontweight="bold", fontsize=15)
+plt.ylabel("Mean Tensor Core Utilization", fontweight="bold", fontsize=15)
+plt.xticks(fontsize=15)
+plt.yticks(fontsize=15)
+plt.ylim(0, None)
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("../../../results/mean_tenso_vs_batch_size_llama8b.png")
