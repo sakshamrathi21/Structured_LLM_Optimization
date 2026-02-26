@@ -44,7 +44,7 @@ for frac in fractions:
     if len(group) != iters_per_fraction - 1:
         break
     avg_duration = sum(group) / len(group)
-    avg_durations.append(500/avg_duration)
+    avg_durations.append(100/avg_duration)
     idx += iters_per_fraction
 
 # Plot
