@@ -1,0 +1,61 @@
+import re
+import matplotlib.pyplot as plt
+
+# ====== CONFIGURE THIS ======
+log_file = "out_fraction_sharing"   # <-- CHANGE THIS
+fractions = [
+    0, 0.1, 0.2, 0.3, 0.4,
+    0.5, 0.6, 0.7, 0.8, 0.9, 1.0
+]
+iters_per_fraction = 11
+# =============================
+
+start_pattern = re.compile(r"Scheduler start time:\s*([0-9.]+)")
+end_pattern = re.compile(r"Scheduler end time:\s*([0-9.]+)")
+
+start_times = []
+end_times = []
+
+# Read log file
+with open(log_file, "r") as f:
+    for line in f:
+        start_match = start_pattern.search(line)
+        if start_match:
+            start_times.append(float(start_match.group(1)))
+
+        end_match = end_pattern.search(line)
+        if end_match:
+            end_times.append(float(end_match.group(1)))
+
+# Sanity check
+if len(start_times) != len(end_times):
+    raise ValueError("Mismatch between start and end times")
+
+# Compute durations
+durations = [end - start for start, end in zip(start_times, end_times)]
+
+
+# Compute average per fraction
+avg_durations = []
+idx = 0
+
+for frac in fractions:
+    group = durations[idx + 1:idx + iters_per_fraction]
+    if len(group) != iters_per_fraction - 1:
+        break
+    avg_duration = sum(group) / len(group)
+    avg_durations.append(500/avg_duration)
+    idx += iters_per_fraction
+
+# Plot
+plt.figure()
+plt.plot(fractions[:len(avg_durations)], avg_durations, marker='o')
+plt.xlabel("Fraction", fontweight="bold", fontsize=15)
+plt.ylabel("Throughput (req/sec)", fontweight="bold", fontsize=15)
+plt.xticks(fontsize=15)
+plt.yticks(fontsize=15)
+plt.ylim(0, max(avg_durations) + 10)
+plt.tight_layout()
+plt.grid(True)
+# plt.title("Average Scheduler Duration vs Fraction")
+plt.savefig("../../../results/throughput_vs_fraction_frac_share_llama8b.png")
