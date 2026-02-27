@@ -49,39 +49,54 @@ policies      = ["default", "family_load"]
 colors        = {"default": "#4C72B0", "family_load": "#DD8452"}
 labels        = {"default": "FCFS", "family_load": "Batches grouped by prefixes"}
 
-# ── Helper to extract metric arrays ──────────────────────────────────────────
-def get_values(metric):
-    return {
-        p: [data[n].get(p, {}).get(metric) for n in family_counts]
-        for p in policies
-    }
+# ── Only default policy ───────────────────────────────────────────────────────
+# ── Only default policy ───────────────────────────────────────────────────────
+policy = "default"
 
-x       = np.arange(len(family_counts))
-width   = 0.35
-x_ticks = [str(n) for n in family_counts]
+throughput_vals = [data[n].get(policy, {}).get("throughput") for n in family_counts]
+batch_vals      = [data[n].get(policy, {}).get("batch_size") for n in family_counts]
 
-# ── Plot factory ──────────────────────────────────────────────────────────────
-def make_plots(metric, ylabel, title_suffix, filename_suffix):
-    vals = get_values(metric)
+x = np.arange(len(family_counts))
+width = 0.35
 
-    # --- Grouped bar chart ---------------------------------------------------
-    fig, ax = plt.subplots(figsize=(10, 5))
-    for i, p in enumerate(policies):
-        offset = (i - 0.5) * width
-        bars = ax.bar(x + offset, vals[p], width, label=labels[p], color=colors[p], alpha=0.85)
-        ax.bar_label(bars, fmt="%.1f", padding=3, fontsize=8)
+# ── Dual Y-Axis Grouped Bar Plot ──────────────────────────────────────────────
+# ── Dual Y-Axis Grouped Bar Plot ──────────────────────────────────────────────
+fig, ax1 = plt.subplots(figsize=(10, 5))
 
-    ax.set_xticks(x)
-    ax.set_xticklabels(x_ticks)
-    ax.set_xlabel("Number of Families", fontsize=15)
-    ax.set_ylabel(ylabel, fontsize=15)
-    ax.legend()
-    ax.grid(axis="y", linestyle="--", alpha=0.5)
-    plt.tight_layout()
-    plt.savefig(f"../../../results/hbm_evictions_bar_{filename_suffix}.png", dpi=150)
-    plt.close()
-    print(f"Saved bar_{filename_suffix}.png")
+# Left axis → Throughput bars
+bars1 = ax1.bar(
+    x - width/2,
+    throughput_vals,
+    width,
+    label="Throughput (req/s)",
+    color="#1f77b4",      # <-- CHANGE COLOR HERE
+    alpha=0.85
+)
 
-# ── Generate plots ────────────────────────────────────────────────────────────
-make_plots("throughput", "Throughput (req/s)", "Throughput vs Number of Families", "throughput")
-make_plots("batch_size", "Average Batch Size",  "Batch Size vs Number of Families",  "batch_size")
+ax1.set_xlabel("Number of Families")
+ax1.set_ylabel("Throughput (req/s)")
+ax1.set_xticks(x)
+ax1.set_xticklabels([str(n) for n in family_counts])
+ax1.grid(axis="y", linestyle="--", alpha=0.5)
+
+# Right axis → Batch size bars
+ax2 = ax1.twinx()
+bars2 = ax2.bar(
+    x + width/2,
+    batch_vals,
+    width,
+    label="Average Batch Size",
+    color="#d62728",      # <-- CHANGE COLOR HERE
+    alpha=0.85
+)
+
+ax2.set_ylabel("Average Batch Size")
+
+# ── Combined Legend ───────────────────────────────────────────────────────────
+handles = [bars1, bars2]
+labels  = ["Throughput (req/s)", "Average Batch Size"]
+ax1.legend(handles, labels, loc="best")
+
+plt.tight_layout()
+plt.savefig("../../../results/hbm_evictions_fcfs_throughput_vs_batchsize_dual_axis.png")
+plt.close()
