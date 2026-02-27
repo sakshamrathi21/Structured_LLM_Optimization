@@ -96,11 +96,11 @@ def run_experiment(llm, prompts, max_new_tokens, iterations):
         max_tokens=max_new_tokens,
     )
 
-    print("\n==============================")
-    print("Warm pass: building KV cache")
-    print("==============================")
-    llm.generate(prompts, params)
-    print("\nWarm pass complete.")
+    # print("\n==============================")
+    # print("Warm pass: building KV cache")
+    # print("==============================")
+    # llm.generate(prompts, params)
+    # print("\nWarm pass complete.")
     print("Starting timed runs...\n")
 
     times = []
@@ -164,6 +164,7 @@ def main():
     parser.add_argument("--max_new_tokens", type=int, default=50)
     parser.add_argument("--batch_size", type=int, default=500)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--policy", type=str, default="fcfs")
     args = parser.parse_args()
 
     random.seed(args.seed)
@@ -189,6 +190,7 @@ def main():
         enable_prefix_caching=True,
         enable_chunked_prefill=True,
         max_num_seqs=args.batch_size,
+        scheduling_policy=args.policy,
     )
 
     run_experiment(
