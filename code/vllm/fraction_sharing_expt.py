@@ -84,13 +84,13 @@ def run_experiment(llm, prompts, max_new_tokens, iterations, write_dcgmi=False, 
 
     params = SamplingParams(temperature=0.7, max_tokens=max_new_tokens)
 
-    print("\n==============================")
-    print("Warm pass: building KV cache")
-    print("==============================")
+    # print("\n==============================")
+    # print("Warm pass: building KV cache")
+    # print("==============================")
 
-    llm.generate(prompts, params)
+    # llm.generate(prompts, params)
 
-    print("\nWarm pass complete.")
+    # print("\nWarm pass complete.")
     print("Starting timed runs...\n")
 
     times = []
