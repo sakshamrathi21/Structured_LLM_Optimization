@@ -112,11 +112,11 @@ def run_experiment(llm, prompts, max_new_tokens, iterations, write_dcgmi=False, 
         max_tokens=max_new_tokens,
     )
 
-    # print("\n==============================")
-    # print("Warm pass: building KV cache")
-    # print("==============================")
-    # llm.generate(prompts, params)
-    # print("\nWarm pass complete.")
+    print("\n==============================")
+    print("Warm pass: building KV cache")
+    print("==============================")
+    llm.generate(prompts, params)
+    print("\nWarm pass complete.")
     print("Starting timed runs...\n")
 
     times = []
