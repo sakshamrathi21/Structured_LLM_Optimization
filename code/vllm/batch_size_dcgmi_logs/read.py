@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 # ====== CONFIGURE THIS ======
 log_file = "out_batch_size"   # <-- CHANGE THIS
 fractions = [
-    5, 10, 20, 30, 50, 75, 100, 150, 200, 250, 300, 500
+    5, 10, 20, 25, 30, 50, 75, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900
 ]
 iters_per_fraction = 11
 # =============================
@@ -22,6 +22,7 @@ with open(log_file, "r") as f:
 
 # Plot
 plt.figure()
+# print(fractions)
 plt.plot(fractions, start_times, marker='o')
 plt.xlabel("Batch Size", fontweight="bold", fontsize=15)
 plt.ylabel("Throughput (req/sec)", fontweight="bold", fontsize=15)

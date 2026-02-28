@@ -2,7 +2,7 @@ import re
 import matplotlib.pyplot as plt
 
 # Path to your single log file
-LOG_FILE = "out_batch_size"
+LOG_FILE = "smocc"
 
 fractions = []
 means = []
@@ -23,6 +23,7 @@ with open(LOG_FILE, "r") as f:
 
 # Sort everything by fraction
 sorted_data = sorted(zip(fractions, means), key=lambda x: x[0])
+print(fractions, means)
 fractions, means = zip(*sorted_data)
 
 # -------------------------
@@ -31,10 +32,10 @@ fractions, means = zip(*sorted_data)
 plt.figure()
 plt.plot(fractions, means, marker='o')
 plt.xlabel("Batch Size", fontweight="bold", fontsize=15)
-plt.ylabel("Mean Tensor Core Utilization", fontweight="bold", fontsize=15)
+plt.ylabel("Mean SM Occupancy", fontweight="bold", fontsize=15)
 plt.xticks(fontsize=15)
 plt.yticks(fontsize=15)
 plt.ylim(0, None)
 plt.grid(True)
 plt.tight_layout()
-plt.savefig("../../../results/mean_tenso_vs_batch_size_llama8b.png")
+plt.savefig("../../../results/mean_smocc_vs_batch_size_llama8b.png")
