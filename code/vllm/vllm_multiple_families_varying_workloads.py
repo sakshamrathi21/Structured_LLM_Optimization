@@ -51,8 +51,8 @@ def main():
     parser.add_argument(
         "--policy", type=str, default="fcfs", choices=list(get_args(SchedulerPolicy))
     )
-    parser.add_argument("--multiplier", type=int, default=4)
-    parser.add_argument("--max_new_tokens", type=int, default=100)
+    parser.add_argument("--multiplier", type=int, default=1)
+    parser.add_argument("--max_new_tokens", type=int, default=50)
     parser.add_argument("--write_output", action="store_true")
     parser.add_argument(
         "--write_dcgmi", action="store_true", help="Enable DCGMI monitoring and logging"
@@ -109,9 +109,9 @@ def main():
 
     llm = LLM(
         model=args.model_name,
-        gpu_memory_utilization=0.75,
+        gpu_memory_utilization=0.95,
         enable_chunked_prefill=True,
-        # max_num_batched_tokens=32768,
+        max_num_batched_tokens=32768,
         enable_prefix_caching=True,
         max_num_seqs=args.max_batch_size,
         scheduling_policy=args.policy,

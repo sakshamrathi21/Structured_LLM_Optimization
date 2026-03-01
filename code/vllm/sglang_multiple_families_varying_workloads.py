@@ -23,15 +23,15 @@ def main():
     parser.add_argument(
         "--model_name", type=str, default="meta-llama/Llama-3.1-8B-Instruct"
     )
-    parser.add_argument("--num_families", type=int, default=2)
+    parser.add_argument("--num_families", type=int, default=5)
     parser.add_argument("--req_per_sec", type=int, default=None)
     parser.add_argument("--max_batch_size", type=int, default=500)
     parser.add_argument("--randomness", type=int, default=1)
-    parser.add_argument("--len_factor", type=float, default=1.0)
-    parser.add_argument("--multiplier", type=int, default=10)
-    parser.add_argument("--max_new_tokens", type=int, default=100)
+    parser.add_argument("--len_factor", type=float, default=5.0)
+    parser.add_argument("--multiplier", type=int, default=1)
+    parser.add_argument("--max_new_tokens", type=int, default=50)
     parser.add_argument("--write_output", action="store_true")
-    parser.add_argument("--policy", type=str, default="lpm")
+    parser.add_argument("--policy", type=str, default="dfs-weight")
     args = parser.parse_args()
 
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
