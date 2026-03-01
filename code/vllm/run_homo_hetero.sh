@@ -7,7 +7,7 @@ set -euo pipefail
 
 # ── Config ────────────────────────────────────────────────────────────────────
 MODES=(1 2 3 4 5 6)
-DECODE_TOKENS=(1 2 5 10 25 50 100)
+DECODE_TOKENS=(500 1000)
 RESULTS_DIR="homo_hetero"
 CSV="$RESULTS_DIR/summary.csv"
 LOG_DIR="$RESULTS_DIR/logs"
