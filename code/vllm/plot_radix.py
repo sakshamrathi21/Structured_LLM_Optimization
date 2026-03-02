@@ -99,4 +99,4 @@ plt.legend(fontsize=13)
 plt.grid(axis="y", linestyle="--", alpha=0.4)
 
 plt.tight_layout()
-plt.savefig("../../results/tp_different_modes_sharing_at_top.png")
+plt.savefig("../../results/tp_different_modes_sharing_at_top_5L.png")
