@@ -193,8 +193,8 @@ def build_mode5_prompts(tokenizer, L, num_requests, query_base="What is AI?"):
     """
     Mode 5: Two separate groups, each with their own 3*L shared context
     """
-    group1_shared = generate_text_of_length(tokenizer, 3 * L, "GROUP1_3L ")
-    group2_shared = generate_text_of_length(tokenizer, 3 * L, "GROUP2_3L ")
+    group1_shared = generate_text_of_length(tokenizer, 4 * L, "GROUP1_3L ")
+    group2_shared = generate_text_of_length(tokenizer, 4 * L, "GROUP2_3L ")
 
     prompts = []
     half = num_requests // 2
