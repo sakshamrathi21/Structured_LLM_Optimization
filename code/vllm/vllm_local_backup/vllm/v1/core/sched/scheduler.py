@@ -249,7 +249,7 @@ class Scheduler(SchedulerInterface):
                 instance_id=self.vllm_config.instance_id,
             )
 
-        self.can_run_now = False
+        self.can_run_now = True
         self.scheduler_start_time = None
 
         self.batch_size_total = 0
@@ -469,16 +469,23 @@ class Scheduler(SchedulerInterface):
         # Use a temporary RequestQueue to collect requests that need to be
         # skipped and put back at the head of the waiting queue later
         skipped_waiting_requests = create_request_queue(self.policy)
-
-        if len(self.waiting) >= 200:
-            self.can_run_now = True
-            self.scheduler_start_time = time.time()
+        # print("he;;p", len(self.waiting), self.can_run_now, len(self.running))
+        # if len(self.waiting) >= 100:
+        #     self.can_run_now = True
+        #     self.scheduler_start_time = time.time()
+        #     print("Scheduler start time:", self.scheduler_start_time)
+        # if len(self.waiting) == 0 and len(self.running) == 0:
+        #     self.can_run_now = False
+        #     print("Scheduler end time:", time.time())
+        # print("hello:", len(preempted_reqs), len(self.waiting))
         # Next, schedule the WAITING requests.
         if not preempted_reqs:
             last_batch_time = None
             if self.last_scheduler_call_time is not None:
                 last_batch_time = self.current_scheduler_call_time - self.last_scheduler_call_time
-            while self.waiting and token_budget > 0:
+            # print("check:", bool(self.waiting), len(self.waiting), len(self.running), token_budget)
+            while self.waiting and token_budget > 0 and self.can_run_now:
+                # print("decision:", len(self.waiting), self.waiting.should_add_more_to_batch(current_batch_size=len(self.running), num_total_gpu_blocks=self.cache_config.num_gpu_blocks, num_total_free_gpu_blocks=self.kv_cache_manager.block_pool.get_num_free_blocks(), last_batch_time=last_batch_time, current_batch_id=self.current_batch_id))
                 if not self.waiting.should_add_more_to_batch(current_batch_size=len(self.running), num_total_gpu_blocks=self.cache_config.num_gpu_blocks, num_total_free_gpu_blocks=self.kv_cache_manager.block_pool.get_num_free_blocks(), last_batch_time=last_batch_time, current_batch_id=self.current_batch_id):
                     break
                 
@@ -726,7 +733,7 @@ class Scheduler(SchedulerInterface):
 
         self.batch_size_total += len(self.running)
         self.count_runs += 1
-        # print("Scheduler object destroyed, average batch size:", self.batch_size_total/self.count_runs)
+        # print("current batch size:", self.batch_size_total/self.count_runs)
         # Check if the scheduling constraints are satisfied.
         total_num_scheduled_tokens = sum(num_scheduled_tokens.values())
         assert total_num_scheduled_tokens <= self.max_num_scheduled_tokens
@@ -1519,7 +1526,7 @@ class Scheduler(SchedulerInterface):
 
     def _free_request(self, request: Request) -> dict[str, Any] | None:
         assert request.is_finished()
-
+        self.waiting.free_request(request)
         delay_free_blocks, kv_xfer_params = self._connector_finished(request)
         self.encoder_cache_manager.free(request)
         request_id = request.request_id

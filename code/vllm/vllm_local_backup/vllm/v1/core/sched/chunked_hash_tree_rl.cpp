@@ -279,6 +279,9 @@ uint32_t ChunkedHashTree_RL::insert(uint32_t request_id, const std::vector<uint3
 }
 
 std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> ChunkedHashTree_RL::find_best_request() {
+    // std::cout << "heap size: " << waiting_heap.size()
+    //       << " missing_cache size: " << missing_cache.size()
+    //       << std::endl;
     if (cache_valid && cached_best_request.has_value()) {
         return cached_best_request.value();
     }
@@ -355,8 +358,10 @@ ChunkedHashTree_RL::activate_request(uint32_t request_id)
             if (waiting_it != hash_to_waiting.end()) {
                 for (auto w : waiting_it->second) {
                     if (active_requests.count(w) || !missing_cache.count(w)) continue;
-                    if (--missing_cache[w] >= 0) {
-                        waiting_heap.push({missing_cache[w], w});
+                    auto &m = missing_cache[w];
+                    if (m > 0) {
+                        m--;
+                        waiting_heap.push({m, w});
                     }
                 }
             }

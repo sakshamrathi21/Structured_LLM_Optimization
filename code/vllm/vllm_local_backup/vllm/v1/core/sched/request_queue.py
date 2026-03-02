@@ -12,9 +12,9 @@ import time
 import math
 
 from vllm.v1.request import Request
-from vllm.v1.core.sched.radix_tree import TokenRadixTree, SyncRadixTreeClient
+from vllm.v1.core.sched.radix_tree import TokenRadixTree, SyncRadixTreeClient, ChunkedHashTree
 from vllm.v1.core.sched.rl import QLearningScheduler, ContextualBanditScheduler, HeuristicScheduler, StateAction
-from vllm.v1.core.sched.build.chunked_hash_tree import ChunkedHashTree
+# from vllm.v1.core.sched.build.chunked_hash_tree import ChunkedHashTree, ChunkedHashTree_RL
 
 # import sys
 # sys.path.append("/home/saksham/CS496/code/vllm/.venv/lib/python3.12/site-packages/vllm/v1/core/sched/build")
@@ -26,7 +26,7 @@ import time
 import functools
 import collections
 
-LOG_EVERY = 100
+LOG_EVERY = 10
 
 _function_stats = collections.defaultdict(
     lambda: {"calls": 0, "total_ns": 0}
@@ -68,6 +68,10 @@ class SchedulingPolicy(Enum):
     FAMILY_LOAD = "family_load"
     GREEDY_L2 = "greedy_l2"
     DYNAMIC_BATCHING = "dynamic_batching"
+    CHUNKED_HASH_TREE_HEURISTIC = "chunked_hash_tree_heuristic"
+    CHUNKED_HASH_TREE_QLEARNING = "chunked_hash_tree_qlearning"
+    CHUNKED_HASH_TREE_BANDIT = "chunked_hash_tree_bandit"
+    CHUNKED_HASH_TREE = "chunked_hash_tree"
 
 
 class RequestQueue(ABC):
@@ -273,8 +277,86 @@ class PriorityRequestQueue(RequestQueue):
         """Iterate over the queue in reverse priority order."""
         return reversed(list(self))
 
+class ChunkedHashTreeRequestQueue_Python(RequestQueue):
 
-class RadixCostRequestQueue(RequestQueue):
+    def __init__(self):
+        # C++ radix structure (integer IDs only)
+        self._radix = ChunkedHashTree(chunk_size=16)
+
+        # vLLM-visible storage
+        self._pending_requests: dict[str, Request] = {}
+
+    @log_cycles
+    def add_request(self, request: Request) -> None:
+        self._radix.insert(request_id=request.request_id, token_ids=list(request.all_token_ids))
+        self._pending_requests[request.request_id] = request
+
+    @log_cycles
+    def pop_request(self) -> Request:
+        rid, cost = self._radix.find_best_request()
+        if rid == None:
+            raise IndexError("pop from empty radix queue")
+        request = self._pending_requests.pop(rid)
+        self._radix.activate_request(rid)
+        return request
+
+    @log_cycles
+    def peek_request(self) -> Request:
+        rid, _ = self._radix.find_best_request()
+        if rid == None:
+            raise IndexError("peek from empty radix queue")
+        return self._pending_requests[rid]
+
+    def prepend_request(self, request: Request) -> None:
+        self.add_request(request)
+
+    def prepend_requests(self, requests: RequestQueue) -> None:
+        for request in requests:
+            self.add_request(request)
+
+    def remove_request(self, request: Request) -> None:
+        request_id = request.request_id
+        if request_id in self._pending_requests:
+            self._radix.remove(request_id)
+            del self._pending_requests[request_id]
+
+    def remove_requests(self, requests: Iterable[Request]) -> None:
+        for request in requests:
+            self.remove_request(request)
+
+    def __bool__(self) -> bool:
+        has_pending = bool(self._pending_requests)
+        rid, _ = self._radix.find_best_request()
+        has_waiting = rid != None
+        return has_waiting
+
+    def __len__(self) -> int:
+        return len(self._pending_requests)
+
+    def __iter__(self) -> Iterator[Request]:
+        return iter(self._pending_requests.values())
+
+    def __reversed__(self) -> Iterator[Request]:
+        for request_id in reversed(list(self._pending_requests.keys())):
+            yield self._pending_requests[request_id]
+
+    def free_request(self, request: Request) -> None:
+        request_id = request.request_id
+        self._radix.finish_request(request_id)
+
+    @log_cycles
+    def should_add_more_to_batch(self, **kwargs) -> bool:
+        current_batch_size = kwargs.get("current_batch_size", 0)
+        if current_batch_size == 0:
+            return True
+        rid, cost = self._radix.find_best_request()
+        if rid == 0:  # No requests available
+            return False
+        return cost <= 50
+
+
+
+class ChunkedHashTreeRequestQueue(RequestQueue):
 
     def __init__(self):
         # C++ radix structure (integer IDs only)
@@ -386,7 +468,82 @@ class RadixCostRequestQueue(RequestQueue):
             return False
         return cost <= 1
     
-    
+class RadixCostRequestQueue(RequestQueue):
+
+    def __init__(self):
+        # C++ radix structure (integer IDs only)
+        self._radix = TokenRadixTree()
+
+        # vLLM-visible storage
+        self._pending_requests: dict[str, Request] = {}
+
+    @log_cycles
+    def add_request(self, request: Request) -> None:
+        self._radix.insert(request_id=request.request_id, token_ids=list(request.all_token_ids))
+        self._pending_requests[request.request_id] = request
+
+    @log_cycles
+    def pop_request(self) -> Request:
+        rid, cost = self._radix.find_best_request()
+        if rid == None:
+            raise IndexError("pop from empty radix queue")
+        request = self._pending_requests.pop(rid)
+        self._radix.activate_request(rid)
+        return request
+
+    @log_cycles
+    def peek_request(self) -> Request:
+        rid, _ = self._radix.find_best_request()
+        if rid == None:
+            raise IndexError("peek from empty radix queue")
+        return self._pending_requests[rid]
+
+    def prepend_request(self, request: Request) -> None:
+        self.add_request(request)
+
+    def prepend_requests(self, requests: RequestQueue) -> None:
+        for request in requests:
+            self.add_request(request)
+
+    def remove_request(self, request: Request) -> None:
+        request_id = request.request_id
+        if request_id in self._pending_requests:
+            self._radix.remove(request_id)
+            del self._pending_requests[request_id]
+
+    def remove_requests(self, requests: Iterable[Request]) -> None:
+        for request in requests:
+            self.remove_request(request)
+
+    def __bool__(self) -> bool:
+        has_pending = bool(self._pending_requests)
+        rid, _ = self._radix.find_best_request()
+        has_waiting = rid != None
+        return has_waiting
+
+    def __len__(self) -> int:
+        return len(self._pending_requests)
+
+    def __iter__(self) -> Iterator[Request]:
+        return iter(self._pending_requests.values())
+
+    def __reversed__(self) -> Iterator[Request]:
+        for request_id in reversed(list(self._pending_requests.keys())):
+            yield self._pending_requests[request_id]
+
+    def free_request(self, request: Request) -> None:
+        request_id = request.request_id
+        self._radix.finish_request(request_id)
+
+    @log_cycles
+    def should_add_more_to_batch(self, **kwargs) -> bool:
+        current_batch_size = kwargs.get("current_batch_size", 0)
+        if current_batch_size == 0:
+            return True
+        rid, cost = self._radix.find_best_request()
+        if rid == 0:  # No requests available
+            return False
+        return cost <= 50
 
 class RadixCostRequestQueue_RL(RequestQueue):
 
@@ -397,7 +554,7 @@ class RadixCostRequestQueue_RL(RequestQueue):
         model_save_path: Optional[str] = None
     ):
         
-        self._radix = ChunkedHashTree(chunk_size=500)
+        self._radix = ChunkedHashTree_RL(chunk_size=500)
         self._pending_requests = {}  # dict[str, Request]
         self._id_map = {}  # dict[str, int]
         self._id_to_request = {}  # dict[int, str]
@@ -454,6 +611,7 @@ class RadixCostRequestQueue_RL(RequestQueue):
             self._id_to_request.pop(rid, None)
 
     def add_request(self, request: Request) -> None:
+        # print("added:", request.request_id)
         rid = self._intern_id(request.request_id)
         self._radix.insert(rid, request.all_token_ids)
         self._pending_requests[request.request_id] = request
@@ -489,6 +647,7 @@ class RadixCostRequestQueue_RL(RequestQueue):
         if request_id in self._pending_requests:
             rid = self._id_map.get(request_id)
             if rid is not None:
+                # print("removed:", request_id)
                 self._radix.remove(rid)
             del self._pending_requests[request_id]
             self._release_id(request_id)
@@ -499,8 +658,12 @@ class RadixCostRequestQueue_RL(RequestQueue):
 
     def __bool__(self) -> bool:
         has_pending = bool(self._pending_requests)
-        rid, _, _, _ = self._radix.find_best_request()
+        rid, c1, c2, c3 = self._radix.find_best_request()
         has_waiting = rid != 0
+        # print("bool", len(self._pending_requests), rid, c1, c2, c3)
+        # if has_pending and not has_waiting:
+        #     for req in self._pending_requests.values():
+        #         self.add_request(req)
         return has_waiting
 
     def __len__(self) -> int:
@@ -515,6 +678,7 @@ class RadixCostRequestQueue_RL(RequestQueue):
 
     def free_request(self, request: Request) -> None:
         request_id = request.request_id
+        # print("freed:", request_id)
         rid = self._id_map.get(request_id)
         if rid is not None:
             self._radix.finish_request(rid)
@@ -529,6 +693,7 @@ class RadixCostRequestQueue_RL(RequestQueue):
         current_batch_size = kwargs.get("current_batch_size", 0)
         last_batch_time = kwargs.get("last_batch_time", 0.0)
         current_batch_id = kwargs.get("current_batch_id", 0)
+        # print("Should add more to batch:", current_batch_size, last_batch_time, current_batch_id)
         
         # Always add to empty batch
         if current_batch_size == 0:
@@ -850,8 +1015,7 @@ class RadixCostRequestQueue_SeparateProcess(RequestQueue):
     """
     
     def __init__(self):
-        self._radix = SyncRadixTreeClient()
-        self._radix.start()
+        self._radix = TokenRadixTree()
         self._pending_requests: dict[str, 'Request'] = {}
     
     def add_request(self, request: 'Request') -> None:
@@ -859,7 +1023,7 @@ class RadixCostRequestQueue_SeparateProcess(RequestQueue):
         self._pending_requests[request.request_id] = request
     
     def pop_request(self) -> 'Request':
-        req_id, cost = self._radix.get_best_request()
+        req_id, cost = self._radix.find_best_request()
         if req_id is None:
             raise IndexError("pop from empty radix queue")
         request = self._pending_requests.pop(req_id)
@@ -960,12 +1124,21 @@ def create_request_queue(policy: SchedulingPolicy) -> RequestQueue:
     elif policy == SchedulingPolicy.FCFS:
         return FCFSRequestQueue()
     elif policy == SchedulingPolicy.RADIX_COST:
-        return RadixCostRequestQueue_RL()
+        return RadixCostRequestQueue()
     elif policy == SchedulingPolicy.FAMILY_LOAD:
         return FamilyLoadRequestQueue()
     elif policy == SchedulingPolicy.GREEDY_L2:
         return GreedyRequestQueue()
     elif policy == SchedulingPolicy.DYNAMIC_BATCHING:
         return DynamicBatchingRequestQueue()
+    elif policy == SchedulingPolicy.CHUNKED_HASH_TREE_HEURISTIC:
+        return RadixCostRequestQueue_RL(scheduler_type="heuristic")
+    elif policy == SchedulingPolicy.CHUNKED_HASH_TREE_BANDIT:
+        return RadixCostRequestQueue_RL(scheduler_type="bandit")
+    elif policy == SchedulingPolicy.CHUNKED_HASH_TREE_QLEARNING:
+        return RadixCostRequestQueue_RL(scheduler_type="qlearning")
+    elif policy == SchedulingPolicy.CHUNKED_HASH_TREE:
+        return ChunkedHashTreeRequestQueue_Python()
+        return ChunkedHashTreeRequestQueue()
     else:
         raise ValueError(f"Unknown scheduling policy: {policy}")
