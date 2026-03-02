@@ -39,7 +39,7 @@ def build_mode1_prompts(tokenizer, L, num_requests, query_base="What is AI?"):
     """
     Mode 1: All requests share a system prompt of length 3*L
     """
-    shared_prefix = generate_text_of_length(tokenizer, 3 * L, "SHARED_3L ")
+    shared_prefix = generate_text_of_length(tokenizer, 4 * L, "SHARED_3L ")
 
     prompts = []
     for i in range(num_requests):
@@ -67,8 +67,8 @@ def build_mode2_prompts(tokenizer, L, num_requests, query_base="What is AI?"):
     Mode 2: All share 2*L, then split into two groups each with additional L tokens
     """
     level1_shared = generate_text_of_length(tokenizer, 2 * L, "LEVEL1_2L ")
-    level2_group1 = generate_text_of_length(tokenizer, L, "GROUP1_L ")
-    level2_group2 = generate_text_of_length(tokenizer, L, "GROUP2_L ")
+    level2_group1 = generate_text_of_length(tokenizer, 2*L, "GROUP1_L ")
+    level2_group2 = generate_text_of_length(tokenizer, 2*L, "GROUP2_L ")
 
     prompts = []
     half = num_requests // 2
@@ -370,6 +370,167 @@ def build_mode8_prompts(tokenizer, L, num_requests, query_base="What is AI?"):
 
     return prompts
 
+def build_mode9_prompts(tokenizer, L, num_requests, query_base="What is AI?"):
+    """
+    Mode 3 (Revised):
+    - Level 1: All share L
+    - Level 2: Two branches, each with 3L
+    """
+
+    # Level 1 shared by all
+    level1_shared = generate_text_of_length(tokenizer, L, "LEVEL1_L ")
+
+    # Two 3L branches
+    branch1 = generate_text_of_length(tokenizer, 3 * L, "BRANCH1_3L ")
+    branch2 = generate_text_of_length(tokenizer, 3 * L, "BRANCH2_3L ")
+
+    prompts = []
+    half = num_requests // 2
+
+    for i in range(num_requests):
+        if i < half:
+            system_prompt = level1_shared + " " + branch1
+        else:
+            system_prompt = level1_shared + " " + branch2
+
+        query = f"{query_base} Request {i}."
+        chat_messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": query},
+        ]
+
+        try:
+            full_prompt = tokenizer.apply_chat_template(
+                chat_messages,
+                tokenize=False,
+                add_generation_prompt=True,
+            )
+        except Exception:
+            full_prompt = system_prompt + " Question: " + query
+
+        prompts.append(full_prompt)
+
+    return prompts
+
+def build_mode10_prompts(tokenizer, L, num_requests, query_base="What is AI?"):
+    """
+    Mode 4 (Revised):
+    - Level 1: All share L
+    - Level 2: Two branches, each L
+    - Level 3: Four leaves (2 per branch), each 2L
+    """
+
+    # Level 1
+    level1_shared = generate_text_of_length(tokenizer, L, "LEVEL1_L ")
+
+    # Level 2 (2 branches of L each)
+    branch1_L2 = generate_text_of_length(tokenizer, L, "L2_BRANCH1_L ")
+    branch2_L2 = generate_text_of_length(tokenizer, L, "L2_BRANCH2_L ")
+
+    # Level 3 (4 leaves of 2L each)
+    leaf1 = generate_text_of_length(tokenizer, 2 * L, "L3_LEAF1_2L ")
+    leaf2 = generate_text_of_length(tokenizer, 2 * L, "L3_LEAF2_2L ")
+    leaf3 = generate_text_of_length(tokenizer, 2 * L, "L3_LEAF3_2L ")
+    leaf4 = generate_text_of_length(tokenizer, 2 * L, "L3_LEAF4_2L ")
+
+    prompts = []
+    quarter = num_requests // 4
+
+    for i in range(num_requests):
+        if i < quarter:
+            system_prompt = level1_shared + " " + branch1_L2 + " " + leaf1
+        elif i < 2 * quarter:
+            system_prompt = level1_shared + " " + branch1_L2 + " " + leaf2
+        elif i < 3 * quarter:
+            system_prompt = level1_shared + " " + branch2_L2 + " " + leaf3
+        else:
+            system_prompt = level1_shared + " " + branch2_L2 + " " + leaf4
+
+        query = f"{query_base} Request {i}."
+        chat_messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": query},
+        ]
+
+        try:
+            full_prompt = tokenizer.apply_chat_template(
+                chat_messages,
+                tokenize=False,
+                add_generation_prompt=True,
+            )
+        except Exception:
+            full_prompt = system_prompt + " Question: " + query
+
+        prompts.append(full_prompt)
+
+    return prompts
+
+
+def build_mode11_prompts(tokenizer, L, num_requests, query_base="What is AI?"):
+    """
+    Mode 5 (Revised):
+    - Level 1: All share L
+    - Level 2: 2 branches (L each)
+    - Level 3: 4 branches (L each)
+    - Level 4: 8 branches (L each)
+    """
+
+    # Level 1
+    level1 = generate_text_of_length(tokenizer, L, "LEVEL1_L ")
+
+    # Level 2 (2 branches)
+    level2 = [
+        generate_text_of_length(tokenizer, L, "L2_BRANCH0_L "),
+        generate_text_of_length(tokenizer, L, "L2_BRANCH1_L "),
+    ]
+
+    # Level 3 (4 branches)
+    level3 = [
+        generate_text_of_length(tokenizer, L, f"L3_BRANCH{i}_L ")
+        for i in range(4)
+    ]
+
+    # Level 4 (8 branches)
+    level4 = [
+        generate_text_of_length(tokenizer, L, f"L4_BRANCH{i}_L ")
+        for i in range(8)
+    ]
+
+    prompts = []
+    eighth = num_requests // 8
+
+    for i in range(num_requests):
+        leaf_idx = i // eighth  # 0–7
+
+        l2_idx = leaf_idx // 4       # 0–1
+        l3_idx = leaf_idx // 2       # 0–3
+        l4_idx = leaf_idx            # 0–7
+
+        system_prompt = (
+            level1 + " " +
+            level2[l2_idx] + " " +
+            level3[l3_idx] + " " +
+            level4[l4_idx]
+        )
+
+        query = f"{query_base} Request {i}."
+        chat_messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": query},
+        ]
+
+        try:
+            full_prompt = tokenizer.apply_chat_template(
+                chat_messages,
+                tokenize=False,
+                add_generation_prompt=True,
+            )
+        except Exception:
+            full_prompt = system_prompt + " Question: " + query
+
+        prompts.append(full_prompt)
+
+    return prompts
 
 def build_dcgmi_filename(args):
     name = (
@@ -407,7 +568,7 @@ def main():
         help="Requests per second (Poisson arrival), None for batch mode",
     )
     parser.add_argument(
-        "--max_new_tokens", type=int, default=128, help="Maximum new tokens to generate"
+        "--max_new_tokens", type=int, default=50, help="Maximum new tokens to generate"
     )
     parser.add_argument(
         "--write_dcgmi", action="store_true", help="Enable DCGMI monitoring and logging"
@@ -468,6 +629,18 @@ def main():
         )
     elif args.mode == 8:
         prompts = build_mode5_prompts(
+            tokenizer, args.L, args.total_requests, args.query_base
+        )
+    elif args.mode == 9:
+        prompts = build_mode9_prompts(
+            tokenizer, args.L, args.total_requests, args.query_base
+        )
+    elif args.mode == 10:
+        prompts = build_mode10_prompts(
+            tokenizer, args.L, args.total_requests, args.query_base
+        )
+    elif args.mode == 11:
+        prompts = build_mode11_prompts(
             tokenizer, args.L, args.total_requests, args.query_base
         )
 

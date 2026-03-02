@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
-VLLM_SCRIPT="/home/saksham/CS496/code/vllm/tiered_prefix_experiment.py"
+VLLM_SCRIPT="/home/saksham/CS496/code/vllm/vllm_tree.py"
 PY_BIN="/home/saksham/CS496/code/vllm/.venv/bin/python"  
-B=(5 10 20 25 30 50 75 100 150 200 250 300 400 500 600 700 800 900)
+B=(100 200 500 1000 2000 5000)
 
-for b in "${B[@]}"; do
-    REQUESTS=$((5 * b))
-    $PY_BIN "$VLLM_SCRIPT" --L 2000 --f1 0 --f2 0.2 --num_families 5 --write_dcgmi --iterations 1 --batch_size "$b" --requests "$REQUESTS"
+for l in "${B[@]}"; do
+    $PY_BIN "$VLLM_SCRIPT" --mode 1 --L "$l" --total_requests 2000 --write_output 
+    $PY_BIN "$VLLM_SCRIPT" --mode 2 --L "$l" --total_requests 2000 --write_output 
+    $PY_BIN "$VLLM_SCRIPT" --mode 9 --L "$l" --total_requests 2000 --write_output 
+    $PY_BIN "$VLLM_SCRIPT" --mode 10 --L "$l" --total_requests 2000 --write_output 
+    $PY_BIN "$VLLM_SCRIPT" --mode 11 --L "$l" --total_requests 2000 --write_output 
 done
 
 # for f in batch_size_dcgmi_logs/*.log; do
