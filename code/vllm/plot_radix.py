@@ -11,7 +11,7 @@ LOG_FILE = "/home/saksham/CS496/code/vllm/radix_tree_experiment_results.txt"  # 
 
 # Fill this with your custom names
 RENAMING_MAP = {
-    1: "Complete sharing",
+    1: "Complete \nsharing",
     5: "No sharing",
     9: "2 levels",
     10: "3 levels",
@@ -63,24 +63,24 @@ plt.figure(figsize=(10, 6))
 for i, L in enumerate(all_L_values):
     throughputs = []
     for mode in all_modes:
-        throughputs.append(data[mode].get(L, 0))  # 0 if missing
+        throughputs.append(data[mode].get(L, 0)*50)  # 0 if missing
 
     offset = (i - num_L / 2) * bar_width + bar_width / 2
     bars = plt.bar(x + offset, throughputs, width=bar_width, label=f"L={L}")
 
     # === ADD THIS BLOCK TO PRINT VALUES ON TOP ===
-    for bar in bars:
-        height = bar.get_height()
-        if height > 0:  # avoid printing 0 bars
-            plt.text(
-                bar.get_x() + bar.get_width() / 2,
-                height,
-                f"{height:.1f}",     # format (change decimals if needed)
-                ha="center",
-                va="bottom",
-                fontsize=12,
-                rotation=0,
-            )
+    # for bar in bars:
+    #     height = bar.get_height()
+    #     if height > 0:  # avoid printing 0 bars
+    #         plt.text(
+    #             bar.get_x() + bar.get_width() / 2,
+    #             height,
+    #             f"{height:.1f}",     # format (change decimals if needed)
+    #             ha="center",
+    #             va="bottom",
+    #             fontsize=12,
+    #             rotation=0,
+    #         )
 
 # =========================
 # LABELING
@@ -91,12 +91,19 @@ mode_labels = [
     for mode in all_modes
 ]
 
-plt.xticks(x, mode_labels)
-plt.ylabel("Throughput (req/sec)")
-plt.xlabel("Sharing Pattern")
+plt.xticks(x, mode_labels, fontsize=18)
+plt.yticks(fontsize=20)
+plt.ylabel("Throughput (toks/sec)", fontsize=20)
+plt.xlabel("Sharing Pattern", fontsize=20)
 # plt.title("Throughput Across Sharing for Different L Values")
-plt.legend(fontsize=13)
+plt.legend(
+    fontsize=20,
+    loc="upper center",
+    bbox_to_anchor=(0.5, 1.15),  # move legend above plot
+    ncol=len(all_L_values),      # put all L values in one row
+    frameon=False
+)
 plt.grid(axis="y", linestyle="--", alpha=0.4)
 
 plt.tight_layout()
-plt.savefig("../../results/tp_different_modes_sharing_at_top_5L.png")
+plt.savefig("../../results/tp_different_modes_sharing_at_top.png")
