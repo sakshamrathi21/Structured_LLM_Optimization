@@ -51,7 +51,7 @@ for frac in fractions:
 plt.figure()
 plt.plot(fractions[:len(avg_durations)], avg_durations, marker='o')
 plt.xlabel("Fraction", fontweight="bold", fontsize=20)
-plt.ylabel("Throughput (req/sec)", fontweight="bold", fontsize=20)
+plt.ylabel("Throughput (toks/sec)", fontweight="bold", fontsize=20)
 plt.xticks(fontsize=20)
 plt.yticks(fontsize=20)
 plt.ylim(0, max(avg_durations) + 500)

@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 plt.rcParams.update({
-    "font.size": 16,           # Base font size (everything scales from this)
+    "font.size": 20,           # Base font size (everything scales from this)
     "axes.titlesize": 20,      # Title font size
-    "axes.labelsize": 18,      # X and Y label font size
-    "xtick.labelsize": 16,     # X tick labels
-    "ytick.labelsize": 16,     # Y tick labels
-    "legend.fontsize": 12,     # Legend text
+    "axes.labelsize": 20,      # X and Y label font size
+    "xtick.labelsize": 20,     # X tick labels
+    "ytick.labelsize": 20,     # Y tick labels
+    "legend.fontsize": 20,     # Legend text
     "figure.titlesize": 22     # Figure title (if used)
 })
 
@@ -53,7 +53,7 @@ labels        = {"default": "FCFS", "family_load": "Batches grouped by prefixes"
 # ── Only default policy ───────────────────────────────────────────────────────
 policy = "default"
 
-throughput_vals = [data[n].get(policy, {}).get("throughput") for n in family_counts]
+throughput_vals = [data[n].get(policy, {}).get("throughput")*50 for n in family_counts]
 batch_vals      = [data[n].get(policy, {}).get("batch_size") for n in family_counts]
 
 x = np.arange(len(family_counts))
@@ -68,13 +68,13 @@ bars1 = ax1.bar(
     x - width/2,
     throughput_vals,
     width,
-    label="Throughput (req/s)",
+    label="Throughput (toks/s)",
     color="#1f77b4",      # <-- CHANGE COLOR HERE
     alpha=0.85
 )
 
 ax1.set_xlabel("Number of Families")
-ax1.set_ylabel("Throughput (req/s)")
+ax1.set_ylabel("Throughput (toks/s)")
 ax1.set_xticks(x)
 ax1.set_xticklabels([str(n) for n in family_counts])
 ax1.grid(axis="y", linestyle="--", alpha=0.5)
@@ -93,9 +93,20 @@ bars2 = ax2.bar(
 ax2.set_ylabel("Average Batch Size")
 
 # ── Combined Legend ───────────────────────────────────────────────────────────
+# ── Combined Legend (Top, outside) ───────────────────────────────────────────
 handles = [bars1, bars2]
-labels  = ["Throughput (req/s)", "Average Batch Size"]
-ax1.legend(handles, labels, loc="best")
+labels  = ["Throughput (toks/s)", "Average Batch Size"]
+
+ax1.legend(
+    handles,
+    labels,
+    loc="upper center",
+    bbox_to_anchor=(0.5, 1.15),
+    ncol=2,
+    frameon=False
+)
+
+plt.tight_layout(rect=[0, 0, 1, 0.85])  # leave space at top
 
 plt.tight_layout()
 plt.savefig("../../../results/hbm_evictions_fcfs_throughput_vs_batchsize_dual_axis.png")
