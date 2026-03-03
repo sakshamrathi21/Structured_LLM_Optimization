@@ -3,7 +3,7 @@ import random
 import string
 import time
 import argparse
-
+import subprocess
 from transformers import AutoTokenizer
 from system_prompt import queries, system_prompt as sys_prompt
 import sglang as sgl
@@ -18,6 +18,21 @@ def generate_prefixes(n):
     return prefixes[:n]
 
 
+def build_dcgmi_filename(args):
+    name = (
+        f"dcgmi_model-{args.model_name.replace('/', '_')}"
+        f"_families-{args.num_families}"
+        f"_rps-{args.req_per_sec}"
+        f"_batch-{args.max_batch_size}"
+        f"_rand-{args.randomness}"
+        f"_lenf-{args.len_factor}"
+        f"_policy-{args.policy}"
+        f"_maxnew-{args.max_new_tokens}"
+        f".log"
+    )
+    return name
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -28,10 +43,14 @@ def main():
     parser.add_argument("--max_batch_size", type=int, default=500)
     parser.add_argument("--randomness", type=int, default=1)
     parser.add_argument("--len_factor", type=float, default=5.0)
-    parser.add_argument("--multiplier", type=int, default=1)
+    parser.add_argument("--multiplier", type=int, default=4)
     parser.add_argument("--max_new_tokens", type=int, default=50)
     parser.add_argument("--write_output", action="store_true")
     parser.add_argument("--policy", type=str, default="dfs-weight")
+    parser.add_argument(
+        "--write_dcgmi", action="store_true", help="Enable DCGMI monitoring and logging"
+    )
+
     args = parser.parse_args()
 
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
@@ -96,11 +115,40 @@ def main():
 
     # Run benchmark
     start_time = time.time()
-    llm.generate(
-        prompts,
-        sampling_params,
-        poisson_rate=args.req_per_sec,
-    )
+
+    # ----- CONDITIONAL DCGMI WRAPPING -----
+
+    if args.write_dcgmi:
+        dcgmi_file = build_dcgmi_filename(args)
+        print(f"[INFO] Logging DCGMI output to: {dcgmi_file}")
+
+        dcgmi_cmd = ["sudo", "dcgmi", "dmon", "-e", "1002,1003,1004,1005", "-d", "1"]
+
+        with open(dcgmi_file, "w") as f:
+            dcgmi_proc = subprocess.Popen(dcgmi_cmd, stdout=f, stderr=subprocess.STDOUT)
+
+            try:
+                llm.generate(
+                    prompts,
+                    sampling_params,
+                    poisson_rate=args.req_per_sec,
+                )
+            finally:
+                print("[INFO] Stopping DCGMI monitoring...")
+                dcgmi_proc.terminate()
+                try:
+                    dcgmi_proc.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    dcgmi_proc.kill()
+
+    else:
+        # Normal run without DCGMI
+        llm.generate(
+            prompts,
+            sampling_params,
+            poisson_rate=args.req_per_sec,
+        )
+
     end_time = time.time()
 
     throughput = len(prompts) / (end_time - start_time)

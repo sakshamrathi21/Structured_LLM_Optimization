@@ -1,0 +1,1562 @@
+
+Loading tokenizer...
+Building prompts...
+
+[INFO] Batch composition:
+  Family A requests : 0
+  Family B requests : 500
+  Tokens per prompt : 10000
+
+Generated 500 prompts
+
+Initializing vLLM...
+INFO 02-25 15:34:43 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.98, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'lmsys/longchat-13b-16k'}
+INFO 02-25 15:34:44 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 02-25 15:34:44 [model.py:1545] Using max model len 16384
+INFO 02-25 15:34:44 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 02-25 15:34:44 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 15:34:44 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 02-25 15:34:46 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:34:52 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='lmsys/longchat-13b-16k', speculative_config=None, tokenizer='lmsys/longchat-13b-16k', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=lmsys/longchat-13b-16k, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:34:54 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:35783 backend=nccl
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:34:54 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:34:54 [gpu_model_runner.py:3808] Starting to load model lmsys/longchat-13b-16k...
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:34:55 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:37:03 [default_loader.py:291] Loading weights took 127.42 seconds
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:37:04 [gpu_model_runner.py:3905] Model loading took 24.29 GiB memory and 128.851294 seconds
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:37:11 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/99d406db18/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:37:11 [backends.py:704] Dynamo bytecode transform time: 6.95 s
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:37:26 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 7.754 s
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:37:26 [monitor.py:34] torch.compile takes 14.71 s in total
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:37:27 [gpu_worker.py:358] Available KV cache memory: 18.62 GiB
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:37:27 [kv_cache_utils.py:1305] GPU KV cache size: 24,400 tokens
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:37:27 [kv_cache_utils.py:1310] Maximum concurrency for 16,384 tokens per request: 1.49x
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:37:37 [gpu_model_runner.py:4856] Graph capturing finished in 10 secs, took 0.62 GiB
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:37:37 [core.py:273] init engine (profile, create kv cache, warmup model) took 33.07 seconds
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m INFO 02-25 15:37:39 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 15:37:39 [llm.py:350] Supported tasks: ['generate']
+
+==============================
+Warm pass: building KV cache
+==============================
+
+Warm pass complete.
+Starting timed runs...
+
+[INFO] Logging DCGMI output to: dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.0_reqs-500_batch-500_maxnew-50.log
+[ITER 1] time = 13.944s | throughput = 35.86 req/s
+[ITER 2] time = 14.391s | throughput = 34.74 req/s
+[ITER 3] time = 14.253s | throughput = 35.08 req/s
+[ITER 4] time = 13.964s | throughput = 35.81 req/s
+WARNING 02-25 15:39:00 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2929-bdce2fc0, resetting decode stream.
+WARNING 02-25 15:39:02 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2864-9f78cfd0, resetting decode stream.
+[ITER 5] time = 14.657s | throughput = 34.11 req/s
+WARNING 02-25 15:39:13 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3020-9c39bac3, resetting decode stream.
+WARNING 02-25 15:39:16 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3192-99be07e5, resetting decode stream.
+[ITER 6] time = 14.212s | throughput = 35.18 req/s
+WARNING 02-25 15:39:32 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3574-80cd24f2, resetting decode stream.
+[ITER 7] time = 13.622s | throughput = 36.70 req/s
+WARNING 02-25 15:39:46 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4253-b142324b, resetting decode stream.
+[ITER 8] time = 14.686s | throughput = 34.05 req/s
+WARNING 02-25 15:40:00 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4895-85719c98, resetting decode stream.
+[ITER 9] time = 14.635s | throughput = 34.16 req/s
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler start time: 1772014063.0256581
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler end time: 1772014074.823049
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler start time: 1772014078.7992067
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler end time: 1772014088.782078
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler start time: 1772014092.778835
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler end time: 1772014103.184534
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler start time: 1772014107.137666
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler end time: 1772014117.4265072
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler start time: 1772014121.2192674
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler end time: 1772014131.397623
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler start time: 1772014135.2899923
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler end time: 1772014146.0580373
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler start time: 1772014150.0258527
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler end time: 1772014160.2710202
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler start time: 1772014163.7967997
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler end time: 1772014173.8783643
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler start time: 1772014177.7622647
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler end time: 1772014188.5804524
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler start time: 1772014192.396181
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler end time: 1772014203.218326
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler start time: 1772014207.2713776
+[0;36m(EngineCore_DP0 pid=1360116)[0;0m Scheduler end time: 1772014217.9853709
+[ITER 10] time = 14.761s | throughput = 33.87 req/s
+[INFO] Stopping DCGMI monitoring...
+
+====================================
+AVERAGED RESULTS
+====================================
+Average iteration time : 14.313s
+Average throughput     : 34.93 req/s
+====================================
+
+
+Loading tokenizer...
+Building prompts...
+
+[INFO] Batch composition:
+  Family A requests : 1
+  Family B requests : 499
+  Tokens per prompt : 10000
+
+Generated 500 prompts
+
+Initializing vLLM...
+INFO 02-25 15:40:45 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.98, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'lmsys/longchat-13b-16k'}
+INFO 02-25 15:40:47 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 02-25 15:40:47 [model.py:1545] Using max model len 16384
+INFO 02-25 15:40:47 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 02-25 15:40:47 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 15:40:47 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 02-25 15:40:48 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:40:56 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='lmsys/longchat-13b-16k', speculative_config=None, tokenizer='lmsys/longchat-13b-16k', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=lmsys/longchat-13b-16k, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:40:58 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:60439 backend=nccl
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:40:58 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:40:59 [gpu_model_runner.py:3808] Starting to load model lmsys/longchat-13b-16k...
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:41:00 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:41:59 [default_loader.py:291] Loading weights took 57.61 seconds
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:41:59 [gpu_model_runner.py:3905] Model loading took 24.29 GiB memory and 59.307050 seconds
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:42:07 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/99d406db18/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:42:07 [backends.py:704] Dynamo bytecode transform time: 8.09 s
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:42:21 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 7.253 s
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:42:21 [monitor.py:34] torch.compile takes 15.35 s in total
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:42:22 [gpu_worker.py:358] Available KV cache memory: 18.62 GiB
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:42:22 [kv_cache_utils.py:1305] GPU KV cache size: 24,400 tokens
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:42:22 [kv_cache_utils.py:1310] Maximum concurrency for 16,384 tokens per request: 1.49x
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:42:31 [gpu_model_runner.py:4856] Graph capturing finished in 9 secs, took 0.62 GiB
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:42:31 [core.py:273] init engine (profile, create kv cache, warmup model) took 31.55 seconds
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m INFO 02-25 15:42:32 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 15:42:33 [llm.py:350] Supported tasks: ['generate']
+
+==============================
+Warm pass: building KV cache
+==============================
+
+Warm pass complete.
+Starting timed runs...
+
+[INFO] Logging DCGMI output to: dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.002_reqs-500_batch-500_maxnew-50.log
+WARNING 02-25 15:43:35 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 938-a73ae32c, resetting decode stream.
+[ITER 1] time = 37.434s | throughput = 13.36 req/s
+WARNING 02-25 15:43:56 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1249-864a3654, resetting decode stream.
+WARNING 02-25 15:43:59 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1249-864a3654, resetting decode stream.
+[ITER 2] time = 24.779s | throughput = 20.18 req/s
+WARNING 02-25 15:44:37 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1667-921a19e9, resetting decode stream.
+WARNING 02-25 15:44:49 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1667-921a19e9, resetting decode stream.
+[ITER 3] time = 51.500s | throughput = 9.71 req/s
+WARNING 02-25 15:45:30 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2186-82e18951, resetting decode stream.
+[ITER 4] time = 39.796s | throughput = 12.56 req/s
+[ITER 5] time = 35.250s | throughput = 14.18 req/s
+[ITER 6] time = 51.225s | throughput = 9.76 req/s
+WARNING 02-25 15:47:29 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3603-8032f8f9, resetting decode stream.
+[ITER 7] time = 50.675s | throughput = 9.87 req/s
+[ITER 8] time = 33.616s | throughput = 14.87 req/s
+[ITER 9] time = 17.520s | throughput = 28.54 req/s
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler start time: 1772014356.7754133
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler end time: 1772014378.2790053
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler start time: 1772014382.0365186
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler end time: 1772014415.7391942
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler start time: 1772014419.825102
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler end time: 1772014440.5024292
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler start time: 1772014444.736342
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler end time: 1772014492.0287457
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler start time: 1772014495.922339
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler end time: 1772014531.8088903
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler start time: 1772014535.777004
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler end time: 1772014567.0607731
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler start time: 1772014571.0551114
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler end time: 1772014618.2830148
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler start time: 1772014622.186372
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler end time: 1772014668.9612434
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler start time: 1772014672.9683974
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler end time: 1772014702.5977209
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler start time: 1772014705.8769438
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler end time: 1772014720.1189458
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler start time: 1772014723.5632288
+[0;36m(EngineCore_DP0 pid=1361877)[0;0m Scheduler end time: 1772014737.513388
+[ITER 10] time = 17.422s | throughput = 28.70 req/s
+[INFO] Stopping DCGMI monitoring...
+
+====================================
+AVERAGED RESULTS
+====================================
+Average iteration time : 35.922s
+Average throughput     : 13.92 req/s
+====================================
+
+
+Loading tokenizer...
+Building prompts...
+
+[INFO] Batch composition:
+  Family A requests : 5
+  Family B requests : 495
+  Tokens per prompt : 10000
+
+Generated 500 prompts
+
+Initializing vLLM...
+INFO 02-25 15:49:20 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.98, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'lmsys/longchat-13b-16k'}
+INFO 02-25 15:49:21 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 02-25 15:49:21 [model.py:1545] Using max model len 16384
+INFO 02-25 15:49:21 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 02-25 15:49:21 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 15:49:21 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 02-25 15:49:23 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:49:30 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='lmsys/longchat-13b-16k', speculative_config=None, tokenizer='lmsys/longchat-13b-16k', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=lmsys/longchat-13b-16k, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:49:32 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:47431 backend=nccl
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:49:32 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:49:33 [gpu_model_runner.py:3808] Starting to load model lmsys/longchat-13b-16k...
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:49:34 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:49:52 [default_loader.py:291] Loading weights took 16.41 seconds
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:49:52 [gpu_model_runner.py:3905] Model loading took 24.29 GiB memory and 18.130162 seconds
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:49:58 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/99d406db18/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:49:58 [backends.py:704] Dynamo bytecode transform time: 5.25 s
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:50:11 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 7.283 s
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:50:11 [monitor.py:34] torch.compile takes 12.53 s in total
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:50:12 [gpu_worker.py:358] Available KV cache memory: 18.62 GiB
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:50:12 [kv_cache_utils.py:1305] GPU KV cache size: 24,400 tokens
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:50:12 [kv_cache_utils.py:1310] Maximum concurrency for 16,384 tokens per request: 1.49x
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:50:21 [gpu_model_runner.py:4856] Graph capturing finished in 9 secs, took 0.62 GiB
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:50:21 [core.py:273] init engine (profile, create kv cache, warmup model) took 29.15 seconds
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m INFO 02-25 15:50:23 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 15:50:23 [llm.py:350] Supported tasks: ['generate']
+
+==============================
+Warm pass: building KV cache
+==============================
+
+Warm pass complete.
+Starting timed runs...
+
+[INFO] Logging DCGMI output to: dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.01_reqs-500_batch-500_maxnew-50.log
+WARNING 02-25 15:52:03 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 954-a443ab80, resetting decode stream.
+[ITER 1] time = 48.751s | throughput = 10.26 req/s
+WARNING 02-25 15:52:32 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1494-9365198e, resetting decode stream.
+WARNING 02-25 15:52:33 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1133-a686c6d6, resetting decode stream.
+[ITER 2] time = 28.883s | throughput = 17.31 req/s
+[ITER 3] time = 28.011s | throughput = 17.85 req/s
+WARNING 02-25 15:53:40 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2282-b9561dfd, resetting decode stream.
+WARNING 02-25 15:53:44 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2297-b289caf9, resetting decode stream.
+WARNING 02-25 15:53:48 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2321-998708de, resetting decode stream.
+WARNING 02-25 15:53:49 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2297-b289caf9, resetting decode stream.
+[ITER 4] time = 50.805s | throughput = 9.84 req/s
+[ITER 5] time = 49.843s | throughput = 10.03 req/s
+[ITER 6] time = 49.481s | throughput = 10.10 req/s
+WARNING 02-25 15:55:47 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3795-be9a7d14, resetting decode stream.
+WARNING 02-25 15:55:51 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3992-a947d5f9, resetting decode stream.
+[ITER 7] time = 21.437s | throughput = 23.32 req/s
+[ITER 8] time = 34.061s | throughput = 14.68 req/s
+[ITER 9] time = 52.894s | throughput = 9.45 req/s
+WARNING 02-25 15:57:47 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 5182-bd1e85a8, resetting decode stream.
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler start time: 1772014826.9958682
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler end time: 1772014875.8368165
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler start time: 1772014879.3789773
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler end time: 1772014924.5934315
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler start time: 1772014928.6173193
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler end time: 1772014953.4512444
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler start time: 1772014958.1362727
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler end time: 1772014981.4831598
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler start time: 1772014985.548038
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler end time: 1772015032.2990074
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler start time: 1772015036.4795628
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler end time: 1772015082.1422343
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler start time: 1772015085.8362703
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler end time: 1772015131.6220806
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler start time: 1772015135.2690907
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler end time: 1772015153.049982
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler start time: 1772015156.7854118
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler end time: 1772015187.1211917
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler start time: 1772015190.8075404
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler end time: 1772015240.0134637
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler start time: 1772015243.9901001
+[0;36m(EngineCore_DP0 pid=1362583)[0;0m Scheduler end time: 1772015267.8525064
+[ITER 10] time = 27.850s | throughput = 17.95 req/s
+[INFO] Stopping DCGMI monitoring...
+
+====================================
+AVERAGED RESULTS
+====================================
+Average iteration time : 39.202s
+Average throughput     : 12.75 req/s
+====================================
+
+
+Loading tokenizer...
+Building prompts...
+
+[INFO] Batch composition:
+  Family A requests : 50
+  Family B requests : 450
+  Tokens per prompt : 10000
+
+Generated 500 prompts
+
+Initializing vLLM...
+INFO 02-25 15:58:06 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.98, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'lmsys/longchat-13b-16k'}
+INFO 02-25 15:58:07 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 02-25 15:58:07 [model.py:1545] Using max model len 16384
+INFO 02-25 15:58:07 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 02-25 15:58:07 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 15:58:07 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 02-25 15:58:09 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:58:15 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='lmsys/longchat-13b-16k', speculative_config=None, tokenizer='lmsys/longchat-13b-16k', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=lmsys/longchat-13b-16k, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:58:17 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:50295 backend=nccl
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:58:17 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:58:17 [gpu_model_runner.py:3808] Starting to load model lmsys/longchat-13b-16k...
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:58:18 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:58:34 [default_loader.py:291] Loading weights took 15.18 seconds
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:58:34 [gpu_model_runner.py:3905] Model loading took 24.29 GiB memory and 16.561290 seconds
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:58:40 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/99d406db18/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:58:40 [backends.py:704] Dynamo bytecode transform time: 5.29 s
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:58:54 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 7.316 s
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:58:54 [monitor.py:34] torch.compile takes 12.61 s in total
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:58:55 [gpu_worker.py:358] Available KV cache memory: 18.62 GiB
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:58:55 [kv_cache_utils.py:1305] GPU KV cache size: 24,400 tokens
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:58:55 [kv_cache_utils.py:1310] Maximum concurrency for 16,384 tokens per request: 1.49x
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:59:05 [gpu_model_runner.py:4856] Graph capturing finished in 10 secs, took 0.62 GiB
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:59:05 [core.py:273] init engine (profile, create kv cache, warmup model) took 30.55 seconds
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m INFO 02-25 15:59:07 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 15:59:07 [llm.py:350] Supported tasks: ['generate']
+
+==============================
+Warm pass: building KV cache
+==============================
+
+Warm pass complete.
+Starting timed runs...
+
+[INFO] Logging DCGMI output to: dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.1_reqs-500_batch-500_maxnew-50.log
+WARNING 02-25 16:00:06 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 657-8d2eae4a, resetting decode stream.
+[ITER 1] time = 49.608s | throughput = 10.08 req/s
+[ITER 2] time = 50.268s | throughput = 9.95 req/s
+[ITER 3] time = 48.439s | throughput = 10.32 req/s
+[ITER 4] time = 48.551s | throughput = 10.30 req/s
+WARNING 02-25 16:03:39 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2558-afd6545a, resetting decode stream.
+[ITER 5] time = 50.033s | throughput = 9.99 req/s
+[ITER 6] time = 50.642s | throughput = 9.87 req/s
+[ITER 7] time = 48.567s | throughput = 10.30 req/s
+[ITER 8] time = 51.191s | throughput = 9.77 req/s
+[ITER 9] time = 50.344s | throughput = 9.93 req/s
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler start time: 1772015350.63043
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler end time: 1772015396.2459207
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler start time: 1772015399.8642066
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler end time: 1772015445.854128
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler start time: 1772015449.8556414
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler end time: 1772015496.1231909
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler start time: 1772015499.6667602
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler end time: 1772015544.5627656
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler start time: 1772015548.1586459
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler end time: 1772015593.1149209
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler start time: 1772015596.656859
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler end time: 1772015643.1456213
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler start time: 1772015646.9839036
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler end time: 1772015693.790222
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler start time: 1772015697.7802796
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler end time: 1772015742.35799
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler start time: 1772015746.3020275
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler end time: 1772015793.5447352
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler start time: 1772015797.6641047
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler end time: 1772015843.8906498
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler start time: 1772015847.839028
+[0;36m(EngineCore_DP0 pid=1363702)[0;0m Scheduler end time: 1772015894.0415535
+[ITER 10] time = 50.151s | throughput = 9.97 req/s
+[INFO] Stopping DCGMI monitoring...
+
+====================================
+AVERAGED RESULTS
+====================================
+Average iteration time : 49.779s
+Average throughput     : 10.04 req/s
+====================================
+
+
+Loading tokenizer...
+Building prompts...
+
+[INFO] Batch composition:
+  Family A requests : 100
+  Family B requests : 400
+  Tokens per prompt : 10000
+
+Generated 500 prompts
+
+Initializing vLLM...
+INFO 02-25 16:08:31 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.98, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'lmsys/longchat-13b-16k'}
+INFO 02-25 16:08:32 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 02-25 16:08:32 [model.py:1545] Using max model len 16384
+INFO 02-25 16:08:33 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 02-25 16:08:33 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 16:08:33 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 02-25 16:08:34 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:08:40 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='lmsys/longchat-13b-16k', speculative_config=None, tokenizer='lmsys/longchat-13b-16k', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=lmsys/longchat-13b-16k, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:08:41 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:35233 backend=nccl
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:08:41 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:08:42 [gpu_model_runner.py:3808] Starting to load model lmsys/longchat-13b-16k...
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:08:42 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:08:59 [default_loader.py:291] Loading weights took 15.22 seconds
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:08:59 [gpu_model_runner.py:3905] Model loading took 24.29 GiB memory and 16.590964 seconds
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:09:05 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/99d406db18/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:09:05 [backends.py:704] Dynamo bytecode transform time: 5.27 s
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:09:18 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 7.325 s
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:09:18 [monitor.py:34] torch.compile takes 12.59 s in total
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:09:19 [gpu_worker.py:358] Available KV cache memory: 18.62 GiB
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:09:19 [kv_cache_utils.py:1305] GPU KV cache size: 24,400 tokens
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:09:19 [kv_cache_utils.py:1310] Maximum concurrency for 16,384 tokens per request: 1.49x
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:09:28 [gpu_model_runner.py:4856] Graph capturing finished in 9 secs, took 0.62 GiB
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:09:28 [core.py:273] init engine (profile, create kv cache, warmup model) took 29.05 seconds
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m INFO 02-25 16:09:30 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 16:09:30 [llm.py:350] Supported tasks: ['generate']
+
+==============================
+Warm pass: building KV cache
+==============================
+
+Warm pass complete.
+Starting timed runs...
+
+[INFO] Logging DCGMI output to: dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.2_reqs-500_batch-500_maxnew-50.log
+[ITER 1] time = 46.913s | throughput = 10.66 req/s
+WARNING 02-25 16:11:24 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1252-bbd4d894, resetting decode stream.
+WARNING 02-25 16:11:39 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1033-ac9ca9cb, resetting decode stream.
+WARNING 02-25 16:11:48 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1252-bbd4d894, resetting decode stream.
+[ITER 2] time = 47.300s | throughput = 10.57 req/s
+[ITER 3] time = 47.435s | throughput = 10.54 req/s
+[ITER 4] time = 46.630s | throughput = 10.72 req/s
+WARNING 02-25 16:13:46 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2967-9e428c50, resetting decode stream.
+WARNING 02-25 16:14:10 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2628-97c6f0ce, resetting decode stream.
+[ITER 5] time = 48.782s | throughput = 10.25 req/s
+[ITER 6] time = 49.382s | throughput = 10.13 req/s
+[ITER 7] time = 49.011s | throughput = 10.20 req/s
+[ITER 8] time = 48.491s | throughput = 10.31 req/s
+[ITER 9] time = 47.121s | throughput = 10.61 req/s
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler start time: 1772015973.6980605
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler end time: 1772016017.4714837
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler start time: 1772016021.046371
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler end time: 1772016064.3817973
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler start time: 1772016068.7997358
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler end time: 1772016111.6831315
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler start time: 1772016115.4172676
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler end time: 1772016159.1209228
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler start time: 1772016163.0417304
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler end time: 1772016205.750814
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler start time: 1772016209.7261286
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler end time: 1772016254.5328107
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler start time: 1772016258.0756118
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler end time: 1772016303.9144976
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler start time: 1772016308.1451716
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler end time: 1772016352.9276464
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler start time: 1772016356.856246
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler end time: 1772016401.41647
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler start time: 1772016405.3432426
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler end time: 1772016448.5367005
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler start time: 1772016452.3528714
+[0;36m(EngineCore_DP0 pid=1364140)[0;0m Scheduler end time: 1772016494.964441
+[ITER 10] time = 46.425s | throughput = 10.77 req/s
+[INFO] Stopping DCGMI monitoring...
+
+====================================
+AVERAGED RESULTS
+====================================
+Average iteration time : 47.749s
+Average throughput     : 10.47 req/s
+====================================
+
+
+Loading tokenizer...
+Building prompts...
+
+[INFO] Batch composition:
+  Family A requests : 150
+  Family B requests : 350
+  Tokens per prompt : 10000
+
+Generated 500 prompts
+
+Initializing vLLM...
+INFO 02-25 16:18:34 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.98, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'lmsys/longchat-13b-16k'}
+INFO 02-25 16:18:35 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 02-25 16:18:35 [model.py:1545] Using max model len 16384
+INFO 02-25 16:18:36 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 02-25 16:18:36 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 16:18:36 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 02-25 16:18:37 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:18:44 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='lmsys/longchat-13b-16k', speculative_config=None, tokenizer='lmsys/longchat-13b-16k', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=lmsys/longchat-13b-16k, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:18:45 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:43725 backend=nccl
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:18:45 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:18:45 [gpu_model_runner.py:3808] Starting to load model lmsys/longchat-13b-16k...
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:18:46 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:19:02 [default_loader.py:291] Loading weights took 15.13 seconds
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:19:03 [gpu_model_runner.py:3905] Model loading took 24.29 GiB memory and 16.516670 seconds
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:19:08 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/99d406db18/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:19:08 [backends.py:704] Dynamo bytecode transform time: 5.27 s
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:19:21 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 7.315 s
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:19:21 [monitor.py:34] torch.compile takes 12.58 s in total
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:19:22 [gpu_worker.py:358] Available KV cache memory: 18.62 GiB
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:19:22 [kv_cache_utils.py:1305] GPU KV cache size: 24,400 tokens
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:19:22 [kv_cache_utils.py:1310] Maximum concurrency for 16,384 tokens per request: 1.49x
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:19:31 [gpu_model_runner.py:4856] Graph capturing finished in 9 secs, took 0.62 GiB
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:19:31 [core.py:273] init engine (profile, create kv cache, warmup model) took 27.98 seconds
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m INFO 02-25 16:19:32 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 16:19:32 [llm.py:350] Supported tasks: ['generate']
+
+==============================
+Warm pass: building KV cache
+==============================
+
+Warm pass complete.
+Starting timed runs...
+
+[INFO] Logging DCGMI output to: dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.3_reqs-500_batch-500_maxnew-50.log
+[ITER 1] time = 43.505s | throughput = 11.49 req/s
+[ITER 2] time = 45.498s | throughput = 10.99 req/s
+[ITER 3] time = 45.404s | throughput = 11.01 req/s
+WARNING 02-25 16:23:06 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2131-b3f3777b, resetting decode stream.
+[ITER 4] time = 46.199s | throughput = 10.82 req/s
+[ITER 5] time = 43.758s | throughput = 11.43 req/s
+WARNING 02-25 16:24:30 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3212-8b5d93d8, resetting decode stream.
+WARNING 02-25 16:24:32 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3299-87ca531f, resetting decode stream.
+WARNING 02-25 16:24:43 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3137-b1d5c032, resetting decode stream.
+[ITER 6] time = 43.836s | throughput = 11.41 req/s
+[ITER 7] time = 44.600s | throughput = 11.21 req/s
+[ITER 8] time = 43.863s | throughput = 11.40 req/s
+[ITER 9] time = 45.259s | throughput = 11.05 req/s
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler start time: 1772016576.1593664
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler end time: 1772016616.411706
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler start time: 1772016619.8135521
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler end time: 1772016659.9161997
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler start time: 1772016663.8716166
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler end time: 1772016705.4136086
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler start time: 1772016709.308973
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler end time: 1772016750.8199575
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler start time: 1772016754.2870712
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler end time: 1772016797.014534
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler start time: 1772016800.8998601
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler end time: 1772016840.7895155
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler start time: 1772016844.1563005
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler end time: 1772016884.6109738
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler start time: 1772016888.2671058
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler end time: 1772016929.2118073
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler start time: 1772016932.7953265
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler end time: 1772016973.0752518
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler start time: 1772016976.7209272
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler end time: 1772017018.3469841
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler start time: 1772017021.8956711
+[0;36m(EngineCore_DP0 pid=1364391)[0;0m Scheduler end time: 1772017060.941546
+[ITER 10] time = 42.607s | throughput = 11.74 req/s
+[INFO] Stopping DCGMI monitoring...
+
+====================================
+AVERAGED RESULTS
+====================================
+Average iteration time : 44.453s
+Average throughput     : 11.25 req/s
+====================================
+
+
+Loading tokenizer...
+Building prompts...
+
+[INFO] Batch composition:
+  Family A requests : 200
+  Family B requests : 300
+  Tokens per prompt : 10000
+
+Generated 500 prompts
+
+Initializing vLLM...
+INFO 02-25 16:28:01 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.98, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'lmsys/longchat-13b-16k'}
+INFO 02-25 16:28:02 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 02-25 16:28:02 [model.py:1545] Using max model len 16384
+INFO 02-25 16:28:02 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 02-25 16:28:02 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 16:28:02 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 02-25 16:28:04 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:28:10 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='lmsys/longchat-13b-16k', speculative_config=None, tokenizer='lmsys/longchat-13b-16k', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=lmsys/longchat-13b-16k, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:28:12 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:44181 backend=nccl
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:28:12 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:28:12 [gpu_model_runner.py:3808] Starting to load model lmsys/longchat-13b-16k...
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:28:13 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:28:31 [default_loader.py:291] Loading weights took 16.33 seconds
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:28:31 [gpu_model_runner.py:3905] Model loading took 24.29 GiB memory and 18.045261 seconds
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:28:37 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/99d406db18/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:28:37 [backends.py:704] Dynamo bytecode transform time: 5.23 s
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:28:50 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 7.319 s
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:28:50 [monitor.py:34] torch.compile takes 12.55 s in total
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:28:51 [gpu_worker.py:358] Available KV cache memory: 18.62 GiB
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:28:51 [kv_cache_utils.py:1305] GPU KV cache size: 24,400 tokens
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:28:51 [kv_cache_utils.py:1310] Maximum concurrency for 16,384 tokens per request: 1.49x
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:29:00 [gpu_model_runner.py:4856] Graph capturing finished in 9 secs, took 0.62 GiB
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:29:00 [core.py:273] init engine (profile, create kv cache, warmup model) took 28.92 seconds
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m INFO 02-25 16:29:02 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 16:29:02 [llm.py:350] Supported tasks: ['generate']
+
+==============================
+Warm pass: building KV cache
+==============================
+
+Warm pass complete.
+Starting timed runs...
+
+[INFO] Logging DCGMI output to: dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.4_reqs-500_batch-500_maxnew-50.log
+WARNING 02-25 16:30:26 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 745-bb7181d9, resetting decode stream.
+[ITER 1] time = 44.168s | throughput = 11.32 req/s
+[ITER 2] time = 42.760s | throughput = 11.69 req/s
+[ITER 3] time = 40.096s | throughput = 12.47 req/s
+WARNING 02-25 16:32:30 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2020-9a34ce39, resetting decode stream.
+WARNING 02-25 16:32:31 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2252-9ef0735a, resetting decode stream.
+[ITER 4] time = 41.955s | throughput = 11.92 req/s
+[ITER 5] time = 41.304s | throughput = 12.11 req/s
+WARNING 02-25 16:33:40 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3256-900f2953, resetting decode stream.
+[ITER 6] time = 41.657s | throughput = 12.00 req/s
+WARNING 02-25 16:34:08 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3699-a1ea2aa1, resetting decode stream.
+[ITER 7] time = 40.671s | throughput = 12.29 req/s
+[ITER 8] time = 41.462s | throughput = 12.06 req/s
+WARNING 02-25 16:35:41 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4771-804f9adb, resetting decode stream.
+WARNING 02-25 16:35:54 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4614-b28c8101, resetting decode stream.
+WARNING 02-25 16:35:56 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4771-804f9adb, resetting decode stream.
+[ITER 9] time = 42.528s | throughput = 11.76 req/s
+WARNING 02-25 16:36:28 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 5225-b4445471, resetting decode stream.
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler start time: 1772017145.6217716
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler end time: 1772017184.0062425
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler start time: 1772017188.1952305
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler end time: 1772017228.1890955
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler start time: 1772017231.7610328
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler end time: 1772017270.947455
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler start time: 1772017275.107145
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler end time: 1772017311.0382383
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler start time: 1772017315.00075
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler end time: 1772017353.0057266
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler start time: 1772017356.5446687
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler end time: 1772017394.3129244
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler start time: 1772017398.1863103
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler end time: 1772017435.9487877
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler start time: 1772017439.9607527
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler end time: 1772017476.6264927
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler start time: 1772017480.1302001
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler end time: 1772017518.0877578
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler start time: 1772017521.646827
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler end time: 1772017560.6221685
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler start time: 1772017564.3952694
+[0;36m(EngineCore_DP0 pid=1365338)[0;0m Scheduler end time: 1772017601.8298116
+[ITER 10] time = 41.213s | throughput = 12.13 req/s
+[INFO] Stopping DCGMI monitoring...
+
+====================================
+AVERAGED RESULTS
+====================================
+Average iteration time : 41.782s
+Average throughput     : 11.97 req/s
+====================================
+
+
+Loading tokenizer...
+Building prompts...
+
+[INFO] Batch composition:
+  Family A requests : 250
+  Family B requests : 250
+  Tokens per prompt : 10000
+
+Generated 500 prompts
+
+Initializing vLLM...
+INFO 02-25 16:37:00 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.98, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'lmsys/longchat-13b-16k'}
+INFO 02-25 16:37:02 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 02-25 16:37:02 [model.py:1545] Using max model len 16384
+INFO 02-25 16:37:02 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 02-25 16:37:02 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 16:37:02 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 02-25 16:37:03 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:37:10 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='lmsys/longchat-13b-16k', speculative_config=None, tokenizer='lmsys/longchat-13b-16k', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=lmsys/longchat-13b-16k, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:37:11 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:33193 backend=nccl
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:37:11 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:37:11 [gpu_model_runner.py:3808] Starting to load model lmsys/longchat-13b-16k...
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:37:12 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:37:28 [default_loader.py:291] Loading weights took 15.26 seconds
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:37:29 [gpu_model_runner.py:3905] Model loading took 24.29 GiB memory and 16.663513 seconds
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:37:35 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/99d406db18/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:37:35 [backends.py:704] Dynamo bytecode transform time: 5.80 s
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:37:49 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 7.349 s
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:37:49 [monitor.py:34] torch.compile takes 13.15 s in total
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:37:50 [gpu_worker.py:358] Available KV cache memory: 18.62 GiB
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:37:50 [kv_cache_utils.py:1305] GPU KV cache size: 24,400 tokens
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:37:50 [kv_cache_utils.py:1310] Maximum concurrency for 16,384 tokens per request: 1.49x
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:37:59 [gpu_model_runner.py:4856] Graph capturing finished in 9 secs, took 0.62 GiB
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:37:59 [core.py:273] init engine (profile, create kv cache, warmup model) took 29.89 seconds
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m INFO 02-25 16:38:00 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 16:38:00 [llm.py:350] Supported tasks: ['generate']
+
+==============================
+Warm pass: building KV cache
+==============================
+
+Warm pass complete.
+Starting timed runs...
+
+[INFO] Logging DCGMI output to: dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.5_reqs-500_batch-500_maxnew-50.log
+[ITER 1] time = 39.577s | throughput = 12.63 req/s
+WARNING 02-25 16:39:44 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1096-85455b11, resetting decode stream.
+[ITER 2] time = 39.156s | throughput = 12.77 req/s
+[ITER 3] time = 40.062s | throughput = 12.48 req/s
+[ITER 4] time = 39.465s | throughput = 12.67 req/s
+[ITER 5] time = 40.215s | throughput = 12.43 req/s
+[ITER 6] time = 39.773s | throughput = 12.57 req/s
+WARNING 02-25 16:42:50 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3690-899c443f, resetting decode stream.
+WARNING 02-25 16:43:19 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3999-b8c74d9f, resetting decode stream.
+[ITER 7] time = 41.515s | throughput = 12.04 req/s
+[ITER 8] time = 39.976s | throughput = 12.51 req/s
+WARNING 02-25 16:44:21 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4683-82e62cff, resetting decode stream.
+WARNING 02-25 16:44:27 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4865-987e0f33, resetting decode stream.
+WARNING 02-25 16:44:30 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4511-a161a80f, resetting decode stream.
+WARNING 02-25 16:44:34 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4865-987e0f33, resetting decode stream.
+[ITER 9] time = 40.614s | throughput = 12.31 req/s
+WARNING 02-25 16:44:51 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 5207-af184856, resetting decode stream.
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler start time: 1772017684.2079463
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler end time: 1772017720.3670866
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler start time: 1772017723.731959
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler end time: 1772017759.9407623
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler start time: 1772017763.450485
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler end time: 1772017799.1002166
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler start time: 1772017802.8462038
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler end time: 1772017839.1614985
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler start time: 1772017842.9924428
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler end time: 1772017878.6206079
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler start time: 1772017881.742288
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler end time: 1772017918.8394368
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler start time: 1772017922.536602
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler end time: 1772017958.6124656
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler start time: 1772017962.3199673
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler end time: 1772018000.1273375
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler start time: 1772018003.972405
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler end time: 1772018040.0923643
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler start time: 1772018044.234142
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler end time: 1772018080.7239025
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler start time: 1772018084.50284
+[0;36m(EngineCore_DP0 pid=1365774)[0;0m Scheduler end time: 1772018121.5046418
+[ITER 10] time = 40.785s | throughput = 12.26 req/s
+[INFO] Stopping DCGMI monitoring...
+
+====================================
+AVERAGED RESULTS
+====================================
+Average iteration time : 40.114s
+Average throughput     : 12.46 req/s
+====================================
+
+
+Loading tokenizer...
+Building prompts...
+
+[INFO] Batch composition:
+  Family A requests : 300
+  Family B requests : 200
+  Tokens per prompt : 10000
+
+Generated 500 prompts
+
+Initializing vLLM...
+INFO 02-25 16:45:41 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.98, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'lmsys/longchat-13b-16k'}
+INFO 02-25 16:45:42 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 02-25 16:45:42 [model.py:1545] Using max model len 16384
+INFO 02-25 16:45:42 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 02-25 16:45:42 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 16:45:42 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 02-25 16:45:44 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:45:50 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='lmsys/longchat-13b-16k', speculative_config=None, tokenizer='lmsys/longchat-13b-16k', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=lmsys/longchat-13b-16k, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:45:51 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:35735 backend=nccl
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:45:51 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:45:52 [gpu_model_runner.py:3808] Starting to load model lmsys/longchat-13b-16k...
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:45:53 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:46:09 [default_loader.py:291] Loading weights took 15.61 seconds
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:46:10 [gpu_model_runner.py:3905] Model loading took 24.29 GiB memory and 17.128841 seconds
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:46:15 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/99d406db18/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:46:15 [backends.py:704] Dynamo bytecode transform time: 5.18 s
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:46:29 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 7.319 s
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:46:29 [monitor.py:34] torch.compile takes 12.50 s in total
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:46:30 [gpu_worker.py:358] Available KV cache memory: 18.62 GiB
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:46:30 [kv_cache_utils.py:1305] GPU KV cache size: 24,400 tokens
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:46:30 [kv_cache_utils.py:1310] Maximum concurrency for 16,384 tokens per request: 1.49x
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:46:39 [gpu_model_runner.py:4856] Graph capturing finished in 9 secs, took 0.62 GiB
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:46:39 [core.py:273] init engine (profile, create kv cache, warmup model) took 29.13 seconds
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m INFO 02-25 16:46:41 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 16:46:41 [llm.py:350] Supported tasks: ['generate']
+
+==============================
+Warm pass: building KV cache
+==============================
+WARNING 02-25 16:47:08 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 57-b51cad63, resetting decode stream.
+WARNING 02-25 16:47:10 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 398-ba12f46b, resetting decode stream.
+
+Warm pass complete.
+Starting timed runs...
+
+[INFO] Logging DCGMI output to: dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.6_reqs-500_batch-500_maxnew-50.log
+[ITER 1] time = 36.293s | throughput = 13.78 req/s
+WARNING 02-25 16:48:23 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1402-91f029fb, resetting decode stream.
+WARNING 02-25 16:48:30 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1109-99065f3f, resetting decode stream.
+[ITER 2] time = 37.932s | throughput = 13.18 req/s
+WARNING 02-25 16:49:08 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1930-a40698ce, resetting decode stream.
+[ITER 3] time = 36.441s | throughput = 13.72 req/s
+[ITER 4] time = 37.597s | throughput = 13.30 req/s
+[ITER 5] time = 38.255s | throughput = 13.07 req/s
+[ITER 6] time = 38.096s | throughput = 13.12 req/s
+[ITER 7] time = 37.134s | throughput = 13.46 req/s
+[ITER 8] time = 39.353s | throughput = 12.71 req/s
+WARNING 02-25 16:52:39 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4872-a5870d3c, resetting decode stream.
+WARNING 02-25 16:52:45 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4872-a5870d3c, resetting decode stream.
+WARNING 02-25 16:52:51 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4872-a5870d3c, resetting decode stream.
+WARNING 02-25 16:52:57 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4872-a5870d3c, resetting decode stream.
+[ITER 9] time = 38.027s | throughput = 13.15 req/s
+WARNING 02-25 16:53:09 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 5207-a117f079, resetting decode stream.
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler start time: 1772018204.4910374
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler end time: 1772018238.8432615
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler start time: 1772018242.45423
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler end time: 1772018275.1352746
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler start time: 1772018279.0902946
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler end time: 1772018313.0616214
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler start time: 1772018316.6988208
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler end time: 1772018349.5082412
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler start time: 1772018353.1212745
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler end time: 1772018387.1033604
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler start time: 1772018390.9873753
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler end time: 1772018425.359825
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler start time: 1772018428.989481
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler end time: 1772018463.4576368
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler start time: 1772018467.0988474
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler end time: 1772018500.5929615
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler start time: 1772018504.6745446
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler end time: 1772018539.9479573
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler start time: 1772018543.435225
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler end time: 1772018577.9716446
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler start time: 1772018581.4781501
+[0;36m(EngineCore_DP0 pid=1366178)[0;0m Scheduler end time: 1772018615.525867
+[ITER 10] time = 37.553s | throughput = 13.31 req/s
+[INFO] Stopping DCGMI monitoring...
+
+====================================
+AVERAGED RESULTS
+====================================
+Average iteration time : 37.668s
+Average throughput     : 13.27 req/s
+====================================
+
+
+Loading tokenizer...
+Building prompts...
+
+[INFO] Batch composition:
+  Family A requests : 350
+  Family B requests : 150
+  Tokens per prompt : 10000
+
+Generated 500 prompts
+
+Initializing vLLM...
+INFO 02-25 16:53:53 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.98, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'lmsys/longchat-13b-16k'}
+INFO 02-25 16:53:55 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 02-25 16:53:55 [model.py:1545] Using max model len 16384
+INFO 02-25 16:53:55 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 02-25 16:53:55 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 16:53:55 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 02-25 16:53:56 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:02 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='lmsys/longchat-13b-16k', speculative_config=None, tokenizer='lmsys/longchat-13b-16k', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=lmsys/longchat-13b-16k, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:03 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:39951 backend=nccl
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:03 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:04 [gpu_model_runner.py:3808] Starting to load model lmsys/longchat-13b-16k...
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:04 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:20 [default_loader.py:291] Loading weights took 15.20 seconds
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:21 [gpu_model_runner.py:3905] Model loading took 24.29 GiB memory and 16.545537 seconds
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:26 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/99d406db18/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:26 [backends.py:704] Dynamo bytecode transform time: 5.28 s
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:39 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 7.265 s
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:39 [monitor.py:34] torch.compile takes 12.54 s in total
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:40 [gpu_worker.py:358] Available KV cache memory: 18.62 GiB
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:40 [kv_cache_utils.py:1305] GPU KV cache size: 24,400 tokens
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:40 [kv_cache_utils.py:1310] Maximum concurrency for 16,384 tokens per request: 1.49x
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:49 [gpu_model_runner.py:4856] Graph capturing finished in 9 secs, took 0.62 GiB
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:49 [core.py:273] init engine (profile, create kv cache, warmup model) took 28.28 seconds
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m INFO 02-25 16:54:51 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 16:54:51 [llm.py:350] Supported tasks: ['generate']
+
+==============================
+Warm pass: building KV cache
+==============================
+WARNING 02-25 16:55:14 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 222-b05eef59, resetting decode stream.
+WARNING 02-25 16:55:24 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 449-991783b6, resetting decode stream.
+
+Warm pass complete.
+Starting timed runs...
+
+[INFO] Logging DCGMI output to: dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.7_reqs-500_batch-500_maxnew-50.log
+[ITER 1] time = 34.402s | throughput = 14.53 req/s
+[ITER 2] time = 36.506s | throughput = 13.70 req/s
+[ITER 3] time = 36.576s | throughput = 13.67 req/s
+[ITER 4] time = 35.430s | throughput = 14.11 req/s
+[ITER 5] time = 34.890s | throughput = 14.33 req/s
+WARNING 02-25 16:58:34 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3263-aad1682a, resetting decode stream.
+[ITER 6] time = 35.081s | throughput = 14.25 req/s
+WARNING 02-25 16:59:24 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3614-846a850b, resetting decode stream.
+[ITER 7] time = 32.541s | throughput = 15.37 req/s
+[ITER 8] time = 34.061s | throughput = 14.68 req/s
+[ITER 9] time = 36.026s | throughput = 13.88 req/s
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler start time: 1772018694.4373236
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler end time: 1772018726.2962584
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler start time: 1772018729.8550339
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler end time: 1772018760.6965966
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler start time: 1772018764.7974534
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler end time: 1772018797.2024746
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler start time: 1772018800.9226775
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler end time: 1772018833.7816803
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler start time: 1772018837.295425
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler end time: 1772018869.2100058
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler start time: 1772018872.6959658
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler end time: 1772018904.1016083
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler start time: 1772018907.642238
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler end time: 1772018939.1837919
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler start time: 1772018942.6419315
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler end time: 1772018971.7365983
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler start time: 1772018974.7374907
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler end time: 1772019005.7854276
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler start time: 1772019009.6022422
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler end time: 1772019041.8098502
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler start time: 1772019045.624773
+[0;36m(EngineCore_DP0 pid=1366409)[0;0m Scheduler end time: 1772019078.5625827
+[ITER 10] time = 36.754s | throughput = 13.60 req/s
+[INFO] Stopping DCGMI monitoring...
+
+====================================
+AVERAGED RESULTS
+====================================
+Average iteration time : 35.227s
+Average throughput     : 14.19 req/s
+====================================
+
+
+Loading tokenizer...
+Building prompts...
+
+[INFO] Batch composition:
+  Family A requests : 400
+  Family B requests : 100
+  Tokens per prompt : 10000
+
+Generated 500 prompts
+
+Initializing vLLM...
+INFO 02-25 17:01:38 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.98, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'lmsys/longchat-13b-16k'}
+INFO 02-25 17:01:39 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 02-25 17:01:39 [model.py:1545] Using max model len 16384
+INFO 02-25 17:01:39 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 02-25 17:01:39 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 17:01:39 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 02-25 17:01:41 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:01:47 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='lmsys/longchat-13b-16k', speculative_config=None, tokenizer='lmsys/longchat-13b-16k', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=lmsys/longchat-13b-16k, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:01:49 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:32915 backend=nccl
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:01:49 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:01:50 [gpu_model_runner.py:3808] Starting to load model lmsys/longchat-13b-16k...
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:01:51 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:02:07 [default_loader.py:291] Loading weights took 15.72 seconds
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:02:08 [gpu_model_runner.py:3905] Model loading took 24.29 GiB memory and 17.261887 seconds
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:02:13 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/99d406db18/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:02:13 [backends.py:704] Dynamo bytecode transform time: 5.25 s
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:02:27 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 7.249 s
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:02:27 [monitor.py:34] torch.compile takes 12.50 s in total
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:02:28 [gpu_worker.py:358] Available KV cache memory: 18.62 GiB
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:02:28 [kv_cache_utils.py:1305] GPU KV cache size: 24,400 tokens
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:02:28 [kv_cache_utils.py:1310] Maximum concurrency for 16,384 tokens per request: 1.49x
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:02:37 [gpu_model_runner.py:4856] Graph capturing finished in 9 secs, took 0.62 GiB
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:02:37 [core.py:273] init engine (profile, create kv cache, warmup model) took 28.89 seconds
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m INFO 02-25 17:02:38 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 17:02:38 [llm.py:350] Supported tasks: ['generate']
+
+==============================
+Warm pass: building KV cache
+==============================
+WARNING 02-25 17:03:06 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 183-b8ddbfe4, resetting decode stream.
+
+Warm pass complete.
+Starting timed runs...
+
+[INFO] Logging DCGMI output to: dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.8_reqs-500_batch-500_maxnew-50.log
+[ITER 1] time = 34.145s | throughput = 14.64 req/s
+[ITER 2] time = 33.496s | throughput = 14.93 req/s
+[ITER 3] time = 34.076s | throughput = 14.67 req/s
+WARNING 02-25 17:05:12 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2284-84d8eba1, resetting decode stream.
+WARNING 02-25 17:05:21 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2078-8acc7b02, resetting decode stream.
+[ITER 4] time = 32.567s | throughput = 15.35 req/s
+[ITER 5] time = 33.285s | throughput = 15.02 req/s
+[ITER 6] time = 34.277s | throughput = 14.59 req/s
+[ITER 7] time = 32.783s | throughput = 15.25 req/s
+[ITER 8] time = 33.763s | throughput = 14.81 req/s
+WARNING 02-25 17:08:08 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4521-a23c7dd6, resetting decode stream.
+[ITER 9] time = 33.491s | throughput = 14.93 req/s
+WARNING 02-25 17:08:43 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 5240-a1727ba4, resetting decode stream.
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler start time: 1772019162.144089
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler end time: 1772019192.3557312
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler start time: 1772019195.7125697
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler end time: 1772019226.5019524
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler start time: 1772019230.10134
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler end time: 1772019259.9966857
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler start time: 1772019263.5649595
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler end time: 1772019294.072623
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler start time: 1772019297.619994
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler end time: 1772019326.6505866
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler start time: 1772019329.6649547
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler end time: 1772019359.9244208
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler start time: 1772019363.5350182
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler end time: 1772019394.210137
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler start time: 1772019397.2274094
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler end time: 1772019426.986507
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler start time: 1772019430.7137089
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler end time: 1772019460.747338
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler start time: 1772019464.3580797
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler end time: 1772019494.240615
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler start time: 1772019497.606497
+[0;36m(EngineCore_DP0 pid=1367491)[0;0m Scheduler end time: 1772019526.8148332
+[ITER 10] time = 32.572s | throughput = 15.35 req/s
+[INFO] Stopping DCGMI monitoring...
+
+====================================
+AVERAGED RESULTS
+====================================
+Average iteration time : 33.445s
+Average throughput     : 14.95 req/s
+====================================
+
+
+Loading tokenizer...
+Building prompts...
+
+[INFO] Batch composition:
+  Family A requests : 450
+  Family B requests : 50
+  Tokens per prompt : 10000
+
+Generated 500 prompts
+
+Initializing vLLM...
+INFO 02-25 17:09:06 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.98, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'lmsys/longchat-13b-16k'}
+INFO 02-25 17:09:07 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 02-25 17:09:07 [model.py:1545] Using max model len 16384
+INFO 02-25 17:09:08 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 02-25 17:09:08 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 17:09:08 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 02-25 17:09:09 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:09:15 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='lmsys/longchat-13b-16k', speculative_config=None, tokenizer='lmsys/longchat-13b-16k', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=lmsys/longchat-13b-16k, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:09:17 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:36993 backend=nccl
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:09:17 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:09:17 [gpu_model_runner.py:3808] Starting to load model lmsys/longchat-13b-16k...
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:09:18 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:09:34 [default_loader.py:291] Loading weights took 15.20 seconds
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:09:34 [gpu_model_runner.py:3905] Model loading took 24.29 GiB memory and 16.565170 seconds
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:09:40 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/99d406db18/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:09:40 [backends.py:704] Dynamo bytecode transform time: 5.27 s
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:09:54 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 7.322 s
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:09:54 [monitor.py:34] torch.compile takes 12.59 s in total
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:09:55 [gpu_worker.py:358] Available KV cache memory: 18.62 GiB
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:09:55 [kv_cache_utils.py:1305] GPU KV cache size: 24,400 tokens
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:09:55 [kv_cache_utils.py:1310] Maximum concurrency for 16,384 tokens per request: 1.49x
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:10:04 [gpu_model_runner.py:4856] Graph capturing finished in 9 secs, took 0.62 GiB
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:10:04 [core.py:273] init engine (profile, create kv cache, warmup model) took 29.86 seconds
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m INFO 02-25 17:10:06 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 17:10:06 [llm.py:350] Supported tasks: ['generate']
+
+==============================
+Warm pass: building KV cache
+==============================
+
+Warm pass complete.
+Starting timed runs...
+
+[INFO] Logging DCGMI output to: dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.9_reqs-500_batch-500_maxnew-50.log
+WARNING 02-25 17:10:58 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 744-81722e8b, resetting decode stream.
+[ITER 1] time = 31.222s | throughput = 16.01 req/s
+WARNING 02-25 17:11:20 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1246-86d97461, resetting decode stream.
+WARNING 02-25 17:11:32 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1266-9c66c7bf, resetting decode stream.
+[ITER 2] time = 32.876s | throughput = 15.21 req/s
+[ITER 3] time = 32.151s | throughput = 15.55 req/s
+[ITER 4] time = 32.656s | throughput = 15.31 req/s
+[ITER 5] time = 32.529s | throughput = 15.37 req/s
+[ITER 6] time = 29.969s | throughput = 16.68 req/s
+[ITER 7] time = 30.568s | throughput = 16.36 req/s
+[ITER 8] time = 30.939s | throughput = 16.16 req/s
+[ITER 9] time = 32.019s | throughput = 15.62 req/s
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler start time: 1772019609.8789523
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler end time: 1772019637.7331207
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler start time: 1772019641.2028158
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler end time: 1772019668.9532175
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler start time: 1772019672.9258885
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler end time: 1772019701.8303995
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler start time: 1772019705.4796824
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler end time: 1772019733.9803784
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler start time: 1772019737.6446197
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler end time: 1772019766.6376297
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler start time: 1772019770.2012014
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler end time: 1772019799.167325
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler start time: 1772019802.82197
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler end time: 1772019829.1358123
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler start time: 1772019832.6039772
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler end time: 1772019859.7021465
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler start time: 1772019863.64599
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler end time: 1772019890.6439242
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler start time: 1772019894.3670862
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler end time: 1772019922.6597226
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler start time: 1772019926.6388342
+[0;36m(EngineCore_DP0 pid=1367715)[0;0m Scheduler end time: 1772019953.3454077
+[ITER 10] time = 30.685s | throughput = 16.29 req/s
+[INFO] Stopping DCGMI monitoring...
+
+====================================
+AVERAGED RESULTS
+====================================
+Average iteration time : 31.561s
+Average throughput     : 15.84 req/s
+====================================
+
+
+Loading tokenizer...
+Building prompts...
+
+[INFO] Batch composition:
+  Family A requests : 495
+  Family B requests : 5
+  Tokens per prompt : 10000
+
+Generated 500 prompts
+
+Initializing vLLM...
+INFO 02-25 17:16:12 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.98, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'lmsys/longchat-13b-16k'}
+INFO 02-25 17:16:13 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 02-25 17:16:13 [model.py:1545] Using max model len 16384
+INFO 02-25 17:16:13 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 02-25 17:16:13 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 17:16:13 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 02-25 17:16:14 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:16:21 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='lmsys/longchat-13b-16k', speculative_config=None, tokenizer='lmsys/longchat-13b-16k', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=lmsys/longchat-13b-16k, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:16:22 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:45101 backend=nccl
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:16:22 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:16:23 [gpu_model_runner.py:3808] Starting to load model lmsys/longchat-13b-16k...
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:16:23 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:16:39 [default_loader.py:291] Loading weights took 15.04 seconds
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:16:40 [gpu_model_runner.py:3905] Model loading took 24.29 GiB memory and 16.376378 seconds
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:16:45 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/99d406db18/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:16:45 [backends.py:704] Dynamo bytecode transform time: 5.27 s
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:16:59 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 7.295 s
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:16:59 [monitor.py:34] torch.compile takes 12.57 s in total
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:17:00 [gpu_worker.py:358] Available KV cache memory: 18.62 GiB
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:17:00 [kv_cache_utils.py:1305] GPU KV cache size: 24,400 tokens
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:17:00 [kv_cache_utils.py:1310] Maximum concurrency for 16,384 tokens per request: 1.49x
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:17:09 [gpu_model_runner.py:4856] Graph capturing finished in 9 secs, took 0.62 GiB
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:17:09 [core.py:273] init engine (profile, create kv cache, warmup model) took 29.29 seconds
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m INFO 02-25 17:17:11 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 17:17:11 [llm.py:350] Supported tasks: ['generate']
+
+==============================
+Warm pass: building KV cache
+==============================
+
+Warm pass complete.
+Starting timed runs...
+
+[INFO] Logging DCGMI output to: dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.99_reqs-500_batch-500_maxnew-50.log
+WARNING 02-25 17:18:03 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 832-b52c65c0, resetting decode stream.
+WARNING 02-25 17:18:08 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 832-b52c65c0, resetting decode stream.
+[ITER 1] time = 30.090s | throughput = 16.62 req/s
+WARNING 02-25 17:18:27 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1037-9eeedb1f, resetting decode stream.
+WARNING 02-25 17:18:41 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1236-b78b19ed, resetting decode stream.
+[ITER 2] time = 31.112s | throughput = 16.07 req/s
+WARNING 02-25 17:19:01 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1737-858e2aae, resetting decode stream.
+[ITER 3] time = 29.522s | throughput = 16.94 req/s
+[ITER 4] time = 29.612s | throughput = 16.88 req/s
+[ITER 5] time = 30.923s | throughput = 16.17 req/s
+WARNING 02-25 17:20:23 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3000-a3a06894, resetting decode stream.
+[ITER 6] time = 30.239s | throughput = 16.54 req/s
+WARNING 02-25 17:21:07 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3603-a610e3dc, resetting decode stream.
+[ITER 7] time = 29.190s | throughput = 17.13 req/s
+[ITER 8] time = 28.207s | throughput = 17.73 req/s
+WARNING 02-25 17:22:00 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4574-9bc4a0ee, resetting decode stream.
+[ITER 9] time = 28.950s | throughput = 17.27 req/s
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler start time: 1772020034.875587
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler end time: 1772020061.6234553
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler start time: 1772020065.188111
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler end time: 1772020091.7122796
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler start time: 1772020096.044945
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler end time: 1772020122.8266695
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler start time: 1772020126.3243
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler end time: 1772020152.3486855
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler start time: 1772020155.7932553
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler end time: 1772020181.9542198
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler start time: 1772020185.606119
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler end time: 1772020212.8848805
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler start time: 1772020216.3998318
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler end time: 1772020243.1204884
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler start time: 1772020246.7568839
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler end time: 1772020272.3123944
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler start time: 1772020275.8838563
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler end time: 1772020300.511556
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler start time: 1772020304.4687343
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler end time: 1772020329.4699712
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler start time: 1772020333.0205793
+[0;36m(EngineCore_DP0 pid=1367945)[0;0m Scheduler end time: 1772020358.8623457
+[ITER 10] time = 29.394s | throughput = 17.01 req/s
+[INFO] Stopping DCGMI monitoring...
+
+====================================
+AVERAGED RESULTS
+====================================
+Average iteration time : 29.724s
+Average throughput     : 16.82 req/s
+====================================
+
+
+Loading tokenizer...
+Building prompts...
+
+[INFO] Batch composition:
+  Family A requests : 499
+  Family B requests : 1
+  Tokens per prompt : 10000
+
+Generated 500 prompts
+
+Initializing vLLM...
+INFO 02-25 17:22:57 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.98, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'lmsys/longchat-13b-16k'}
+INFO 02-25 17:22:58 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 02-25 17:22:58 [model.py:1545] Using max model len 16384
+INFO 02-25 17:22:58 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 02-25 17:22:58 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 17:22:58 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 02-25 17:23:00 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:06 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='lmsys/longchat-13b-16k', speculative_config=None, tokenizer='lmsys/longchat-13b-16k', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=lmsys/longchat-13b-16k, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:08 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:51823 backend=nccl
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:08 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:08 [gpu_model_runner.py:3808] Starting to load model lmsys/longchat-13b-16k...
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:09 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:26 [default_loader.py:291] Loading weights took 15.98 seconds
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:26 [gpu_model_runner.py:3905] Model loading took 24.29 GiB memory and 17.438622 seconds
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:32 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/99d406db18/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:32 [backends.py:704] Dynamo bytecode transform time: 5.30 s
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:46 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 7.314 s
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:46 [monitor.py:34] torch.compile takes 12.62 s in total
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:46 [gpu_worker.py:358] Available KV cache memory: 18.62 GiB
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:47 [kv_cache_utils.py:1305] GPU KV cache size: 24,400 tokens
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:47 [kv_cache_utils.py:1310] Maximum concurrency for 16,384 tokens per request: 1.49x
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:55 [gpu_model_runner.py:4856] Graph capturing finished in 9 secs, took 0.62 GiB
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:55 [core.py:273] init engine (profile, create kv cache, warmup model) took 29.18 seconds
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m INFO 02-25 17:23:57 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 17:23:57 [llm.py:350] Supported tasks: ['generate']
+
+==============================
+Warm pass: building KV cache
+==============================
+
+Warm pass complete.
+Starting timed runs...
+
+[INFO] Logging DCGMI output to: dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.998_reqs-500_batch-500_maxnew-50.log
+[ITER 1] time = 26.831s | throughput = 18.64 req/s
+WARNING 02-25 17:25:14 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 1249-81a17e4b, resetting decode stream.
+[ITER 2] time = 30.056s | throughput = 16.64 req/s
+[ITER 3] time = 13.466s | throughput = 37.13 req/s
+WARNING 02-25 17:25:59 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2062-a3ea5c1b, resetting decode stream.
+[ITER 4] time = 22.100s | throughput = 22.62 req/s
+WARNING 02-25 17:26:31 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2515-813d3828, resetting decode stream.
+[ITER 5] time = 30.418s | throughput = 16.44 req/s
+WARNING 02-25 17:26:53 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3475-a16f9626, resetting decode stream.
+[ITER 6] time = 28.781s | throughput = 17.37 req/s
+[ITER 7] time = 30.181s | throughput = 16.57 req/s
+[ITER 8] time = 30.878s | throughput = 16.19 req/s
+WARNING 02-25 17:28:10 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4732-b88190a3, resetting decode stream.
+WARNING 02-25 17:28:18 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 4754-97db8285, resetting decode stream.
+[ITER 9] time = 31.342s | throughput = 15.95 req/s
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler start time: 1772020441.0652695
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler end time: 1772020468.6671734
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler start time: 1772020472.2680569
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler end time: 1772020495.5159109
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler start time: 1772020499.547484
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler end time: 1772020525.5701928
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler start time: 1772020529.1479843
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler end time: 1772020539.0352495
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler start time: 1772020542.9932146
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler end time: 1772020561.1541126
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler start time: 1772020564.1984813
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler end time: 1772020591.569585
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler start time: 1772020594.5143113
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler end time: 1772020620.336258
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler start time: 1772020624.3363996
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler end time: 1772020650.517241
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler start time: 1772020654.1375358
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler end time: 1772020681.3937452
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler start time: 1772020684.881833
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler end time: 1772020712.7360823
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler start time: 1772020716.3452146
+[0;36m(EngineCore_DP0 pid=1368164)[0;0m Scheduler end time: 1772020741.168184
+[ITER 10] time = 28.430s | throughput = 17.59 req/s
+[INFO] Stopping DCGMI monitoring...
+
+====================================
+AVERAGED RESULTS
+====================================
+Average iteration time : 27.248s
+Average throughput     : 18.35 req/s
+====================================
+
+
+Loading tokenizer...
+Building prompts...
+
+[INFO] Batch composition:
+  Family A requests : 500
+  Family B requests : 0
+  Tokens per prompt : 10000
+
+Generated 500 prompts
+
+Initializing vLLM...
+INFO 02-25 17:29:21 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.98, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'lmsys/longchat-13b-16k'}
+INFO 02-25 17:29:22 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 02-25 17:29:22 [model.py:1545] Using max model len 16384
+INFO 02-25 17:29:22 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 02-25 17:29:22 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 17:29:22 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 02-25 17:29:23 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:29:30 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='lmsys/longchat-13b-16k', speculative_config=None, tokenizer='lmsys/longchat-13b-16k', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=16384, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=lmsys/longchat-13b-16k, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:29:31 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:34341 backend=nccl
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:29:31 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:29:32 [gpu_model_runner.py:3808] Starting to load model lmsys/longchat-13b-16k...
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:29:32 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:29:48 [default_loader.py:291] Loading weights took 15.17 seconds
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:29:49 [gpu_model_runner.py:3905] Model loading took 24.29 GiB memory and 16.517556 seconds
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:29:54 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/99d406db18/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:29:54 [backends.py:704] Dynamo bytecode transform time: 5.22 s
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:30:07 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 7.326 s
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:30:07 [monitor.py:34] torch.compile takes 12.54 s in total
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:30:08 [gpu_worker.py:358] Available KV cache memory: 18.62 GiB
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:30:08 [kv_cache_utils.py:1305] GPU KV cache size: 24,400 tokens
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:30:08 [kv_cache_utils.py:1310] Maximum concurrency for 16,384 tokens per request: 1.49x
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:30:17 [gpu_model_runner.py:4856] Graph capturing finished in 9 secs, took 0.62 GiB
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:30:17 [core.py:273] init engine (profile, create kv cache, warmup model) took 28.20 seconds
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m INFO 02-25 17:30:19 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-25 17:30:19 [llm.py:350] Supported tasks: ['generate']
+
+==============================
+Warm pass: building KV cache
+==============================
+
+Warm pass complete.
+Starting timed runs...
+
+[INFO] Logging DCGMI output to: dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-1.0_reqs-500_batch-500_maxnew-50.log
+WARNING 02-25 17:30:39 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 847-90a53222, resetting decode stream.
+[ITER 1] time = 10.280s | throughput = 48.64 req/s
+[ITER 2] time = 10.308s | throughput = 48.51 req/s
+[ITER 3] time = 10.654s | throughput = 46.93 req/s
+WARNING 02-25 17:31:09 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 2210-84bf79b1, resetting decode stream.
+[ITER 4] time = 10.618s | throughput = 47.09 req/s
+[ITER 5] time = 10.302s | throughput = 48.54 req/s
+WARNING 02-25 17:31:31 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3212-8d057086, resetting decode stream.
+[ITER 6] time = 10.988s | throughput = 45.50 req/s
+WARNING 02-25 17:31:42 [detokenizer.py:248] Encountered invalid prefix detokenization error for request 3934-bdeb1ce6, resetting decode stream.
+[ITER 7] time = 10.458s | throughput = 47.81 req/s
+[ITER 8] time = 10.691s | throughput = 46.77 req/s
+[ITER 9] time = 11.098s | throughput = 45.05 req/s
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler start time: 1772020822.671718
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler end time: 1772020831.2960596
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler start time: 1772020834.8750534
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler end time: 1772020841.5748692
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler start time: 1772020845.162373
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler end time: 1772020851.884799
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler start time: 1772020855.53385
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler end time: 1772020862.5361233
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler start time: 1772020866.4381306
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler end time: 1772020873.1556597
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler start time: 1772020876.871172
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler end time: 1772020883.4541109
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler start time: 1772020887.3048546
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler end time: 1772020894.4557524
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler start time: 1772020898.0311234
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler end time: 1772020904.9166162
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler start time: 1772020908.7668557
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler end time: 1772020915.591798
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler start time: 1772020919.3825521
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler end time: 1772020926.6879013
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler start time: 1772020930.6456866
+[0;36m(EngineCore_DP0 pid=1369235)[0;0m Scheduler end time: 1772020937.2492769
+[ITER 10] time = 10.557s | throughput = 47.36 req/s
+[INFO] Stopping DCGMI monitoring...
+
+====================================
+AVERAGED RESULTS
+====================================
+Average iteration time : 10.595s
+Average throughput     : 47.19 req/s
+====================================
+
+two_family_dcgmi_longchat_logs/dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.002_reqs-500_batch-500_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 16634.354000
+Count    : 156893
+Mean     : 0.106024
+Median   : 0.026000
+P75      : 0.133000
+P90      : 0.345000
+P95      : 0.451000
+P99      : 0.721080
+two_family_dcgmi_longchat_logs/dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.01_reqs-500_batch-500_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 16711.117000
+Count    : 170131
+Mean     : 0.098225
+Median   : 0.027000
+P75      : 0.107000
+P90      : 0.330000
+P95      : 0.425000
+P99      : 0.789000
+two_family_dcgmi_longchat_logs/dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.0_reqs-500_batch-500_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 13720.526000
+Count    : 57295
+Mean     : 0.239472
+Median   : 0.291000
+P75      : 0.357000
+P90      : 0.478000
+P95      : 0.506000
+P99      : 0.533000
+two_family_dcgmi_longchat_logs/dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.1_reqs-500_batch-500_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 18358.288000
+Count    : 218239
+Mean     : 0.084120
+Median   : 0.029000
+P75      : 0.050000
+P90      : 0.300000
+P95      : 0.357000
+P99      : 0.538000
+two_family_dcgmi_longchat_logs/dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.2_reqs-500_batch-500_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 17251.109000
+Count    : 209300
+Mean     : 0.082423
+Median   : 0.029000
+P75      : 0.042000
+P90      : 0.295000
+P95      : 0.369000
+P99      : 0.547000
+two_family_dcgmi_longchat_logs/dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.3_reqs-500_batch-500_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 14847.170000
+Count    : 194913
+Mean     : 0.076173
+Median   : 0.029000
+P75      : 0.042000
+P90      : 0.260000
+P95      : 0.333000
+P99      : 0.515000
+two_family_dcgmi_longchat_logs/dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.4_reqs-500_batch-500_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 12744.033000
+Count    : 181499
+Mean     : 0.070215
+Median   : 0.029000
+P75      : 0.044000
+P90      : 0.245000
+P95      : 0.304000
+P99      : 0.450000
+two_family_dcgmi_longchat_logs/dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.5_reqs-500_batch-500_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 12523.221000
+Count    : 177672
+Mean     : 0.070485
+Median   : 0.030000
+P75      : 0.046000
+P90      : 0.249000
+P95      : 0.303000
+P99      : 0.446000
+two_family_dcgmi_longchat_logs/dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.6_reqs-500_batch-500_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 12138.215000
+Count    : 165079
+Mean     : 0.073530
+Median   : 0.031000
+P75      : 0.049000
+P90      : 0.264000
+P95      : 0.305000
+P99      : 0.444000
+two_family_dcgmi_longchat_logs/dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.7_reqs-500_batch-500_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 11681.777000
+Count    : 153224
+Mean     : 0.076240
+Median   : 0.032000
+P75      : 0.057000
+P90      : 0.274000
+P95      : 0.304000
+P99      : 0.440000
+two_family_dcgmi_longchat_logs/dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.8_reqs-500_batch-500_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 11461.963000
+Count    : 145457
+Mean     : 0.078800
+Median   : 0.032000
+P75      : 0.065000
+P90      : 0.284000
+P95      : 0.304000
+P99      : 0.443000
+two_family_dcgmi_longchat_logs/dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.998_reqs-500_batch-500_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 10890.194000
+Count    : 117633
+Mean     : 0.092578
+Median   : 0.032000
+P75      : 0.120000
+P90      : 0.298000
+P95      : 0.327400
+P99      : 0.480000
+two_family_dcgmi_longchat_logs/dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.99_reqs-500_batch-500_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 11163.378000
+Count    : 130078
+Mean     : 0.085821
+Median   : 0.033000
+P75      : 0.110000
+P90      : 0.293000
+P95      : 0.306000
+P99      : 0.439000
+two_family_dcgmi_longchat_logs/dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-0.9_reqs-500_batch-500_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 11323.557000
+Count    : 137439
+Mean     : 0.082390
+Median   : 0.032000
+P75      : 0.091000
+P90      : 0.289000
+P95      : 0.305000
+P99      : 0.445000
+two_family_dcgmi_longchat_logs/dcgmi_twofamily_model-lmsys_longchat-13b-16k_L-10000_frac-1.0_reqs-500_batch-500_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 9605.760000
+Count    : 41472
+Mean     : 0.231620
+Median   : 0.180000
+P75      : 0.437000
+P90      : 0.588000
+P95      : 0.627000
+P99      : 0.657000

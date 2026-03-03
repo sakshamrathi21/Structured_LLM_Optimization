@@ -1,14 +1,26 @@
 # #!/usr/bin/env bash
-LEN_FACTOR=(0.1 0.2 0.5 1.0 2.0 3.0 5.0 10.0)
-for lf in "${LEN_FACTOR[@]}"; do
-    python vllm_multiple_families_varying_workloads.py --num_families 1 --len_factor "$lf" --multiplier 100 --model_name qwen/qwen2.5-0.5b-instruct
-    python vllm_multiple_families_varying_workloads.py --num_families 2 --len_factor "$lf" --multiplier 50 --model_name qwen/qwen2.5-0.5b-instruct
-    python vllm_multiple_families_varying_workloads.py --num_families 5 --len_factor "$lf" --multiplier 20 --model_name qwen/qwen2.5-0.5b-instruct
-    python vllm_multiple_families_varying_workloads.py --num_families 10 --len_factor "$lf" --multiplier 10 --model_name qwen/qwen2.5-0.5b-instruct
-    python vllm_multiple_families_varying_workloads.py --num_families 20 --len_factor "$lf" --multiplier 5 --model_name qwen/qwen2.5-0.5b-instruct
-    python vllm_multiple_families_varying_workloads.py --num_families 50 --len_factor "$lf" --multiplier 2 --model_name qwen/qwen2.5-0.5b-instruct
-    python vllm_multiple_families_varying_workloads.py --num_families 100 --len_factor "$lf" --multiplier 1 --model_name qwen/qwen2.5-0.5b-instruct
-done
+
+python vllm_multiple_families_varying_workloads.py --len_factor 10 --write_dcgmi --policy fcfs
+
+python vllm_multiple_families_varying_workloads.py --len_factor 10 --write_dcgmi --policy family_load
+
+python vllm_multiple_families_varying_workloads.py --len_factor 10 --write_dcgmi --policy radix_cost
+
+python vllm_multiple_families_varying_workloads.py --len_factor 10 --write_dcgmi --policy chunked_hash_tree
+
+python sglang_multiple_families_varying_workloads.py --len_factor 10 --write_dcgmi --policy dfs-weight
+
+python sglang_multiple_families_varying_workloads.py --len_factor 10 --write_dcgmi --policy lpm
+# LEN_FACTOR=(0.1 0.2 0.5 1.0 2.0 3.0 5.0 10.0)
+# for lf in "${LEN_FACTOR[@]}"; do
+#     python vllm_multiple_families_varying_workloads.py --num_families 1 --len_factor "$lf" --multiplier 100 --model_name qwen/qwen2.5-0.5b-instruct
+#     python vllm_multiple_families_varying_workloads.py --num_families 2 --len_factor "$lf" --multiplier 50 --model_name qwen/qwen2.5-0.5b-instruct
+#     python vllm_multiple_families_varying_workloads.py --num_families 5 --len_factor "$lf" --multiplier 20 --model_name qwen/qwen2.5-0.5b-instruct
+#     python vllm_multiple_families_varying_workloads.py --num_families 10 --len_factor "$lf" --multiplier 10 --model_name qwen/qwen2.5-0.5b-instruct
+#     python vllm_multiple_families_varying_workloads.py --num_families 20 --len_factor "$lf" --multiplier 5 --model_name qwen/qwen2.5-0.5b-instruct
+#     python vllm_multiple_families_varying_workloads.py --num_families 50 --len_factor "$lf" --multiplier 2 --model_name qwen/qwen2.5-0.5b-instruct
+#     python vllm_multiple_families_varying_workloads.py --num_families 100 --len_factor "$lf" --multiplier 1 --model_name qwen/qwen2.5-0.5b-instruct
+# done
 
 # VLLM_SCRIPT="vllm_multiple_families_varying_workloads.py"
 # SGLANG_SCRIPT="sglang_multiple_families_varying_workloads.py"

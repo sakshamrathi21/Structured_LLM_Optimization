@@ -1,0 +1,121 @@
+
+Loading tokenizer...
+Building prompts by family...
+
+[INFO] Prompt composition:
+  Total length (L)          : 10000 tokens
+  Common prefix (f1=0.00)   : 0 tokens
+  Family suffix             : 10000 tokens
+  Number of families        : 8
+  Requests per family       : 100
+  Total requests            : 800
+
+Initializing vLLM...
+INFO 02-27 23:20:33 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_seqs': 800, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 02-27 23:20:34 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 02-27 23:20:34 [model.py:1545] Using max model len 131072
+INFO 02-27 23:20:35 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=8192.
+INFO 02-27 23:20:35 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-27 23:20:35 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 02-27 23:20:37 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:20:44 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:20:46 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:51951 backend=nccl
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:20:46 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:20:46 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:20:47 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:20:51 [default_loader.py:291] Loading weights took 2.77 seconds
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:20:52 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.614904 seconds
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:20:56 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/1eef881998/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:20:56 [backends.py:704] Dynamo bytecode transform time: 4.45 s
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:21:03 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 8192) from the cache, took 1.620 s
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:21:03 [monitor.py:34] torch.compile takes 6.07 s in total
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:21:04 [gpu_worker.py:358] Available KV cache memory: 26.26 GiB
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:21:04 [kv_cache_utils.py:1305] GPU KV cache size: 215,152 tokens
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:21:04 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.64x
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:21:12 [gpu_model_runner.py:4856] Graph capturing finished in 8 secs, took 0.56 GiB
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:21:12 [core.py:273] init engine (profile, create kv cache, warmup model) took 20.57 seconds
+[0;36m(EngineCore_DP0 pid=1573802)[0;0m INFO 02-27 23:21:15 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 02-27 23:21:15 [llm.py:350] Supported tasks: ['generate']
+
+[Warming up KV cache...]
+[Warm-up complete.]
+
+
+============================================================
+Setting: 1 batch x 800 req (all 8 families mixed)
+  Num batches     : 1
+  Batch sizes     : [800]
+  Total requests  : 800
+============================================================
+  [ITER 1] time = 36.037s | throughput = 22.20 req/s
+  [ITER 2] time = 35.760s | throughput = 22.37 req/s
+  [ITER 3] time = 36.467s | throughput = 21.94 req/s
+  --> AVG time = 36.088s | AVG throughput = 22.17 req/s
+
+============================================================
+Setting: 2 batches x 400 req (4 families each)
+  Num batches     : 2
+  Batch sizes     : [400]
+  Total requests  : 800
+============================================================
+  [ITER 1] time = 37.686s | throughput = 21.23 req/s
+  [ITER 2] time = 38.223s | throughput = 20.93 req/s
+  [ITER 3] time = 37.751s | throughput = 21.19 req/s
+  --> AVG time = 37.887s | AVG throughput = 21.12 req/s
+
+============================================================
+Setting: 4 batches x 200 req (2 families each)
+  Num batches     : 4
+  Batch sizes     : [200]
+  Total requests  : 800
+============================================================
+  [ITER 1] time = 39.653s | throughput = 20.17 req/s
+  [ITER 2] time = 38.957s | throughput = 20.54 req/s
+  [ITER 3] time = 39.417s | throughput = 20.30 req/s
+  --> AVG time = 39.342s | AVG throughput = 20.33 req/s
+
+============================================================
+Setting: 8 batches x 100 req (1 family each)
+  Num batches     : 8
+  Batch sizes     : [100]
+  Total requests  : 800
+============================================================
+  [ITER 1] time = 22.542s | throughput = 35.49 req/s
+  [ITER 2] time = 22.603s | throughput = 35.39 req/s
+  [ITER 3] time = 22.388s | throughput = 35.73 req/s
+  --> AVG time = 22.511s | AVG throughput = 35.54 req/s
+
+============================================================
+Setting: 16 batches x 50 req (1 family each)
+  Num batches     : 16
+  Batch sizes     : [50]
+  Total requests  : 800
+============================================================
+  [ITER 1] time = 31.164s | throughput = 25.67 req/s
+  [ITER 2] time = 31.268s | throughput = 25.59 req/s
+  [ITER 3] time = 31.089s | throughput = 25.73 req/s
+  --> AVG time = 31.174s | AVG throughput = 25.66 req/s
+
+============================================================
+Setting: 32 batches x 25 req (1 family each)
+  Num batches     : 32
+  Batch sizes     : [25]
+  Total requests  : 800
+============================================================
+  [ITER 1] time = 51.744s | throughput = 15.46 req/s
+  [ITER 2] time = 51.877s | throughput = 15.42 req/s
+  [ITER 3] time = 51.506s | throughput = 15.53 req/s
+  --> AVG time = 51.709s | AVG throughput = 15.47 req/s
+
+============================================================
+FINAL SUMMARY
+============================================================
+Setting                     Avg Time (s) Avg Throughput (req/s)
+------------------------------------------------------------
+1x800  (8 fam/batch)              36.088                  22.17
+2x400  (4 fam/batch)              37.887                  21.12
+4x200  (2 fam/batch)              39.342                  20.33
+8x100  (1 fam/batch)              22.511                  35.54
+16x50  (1 fam/batch)              31.174                  25.66
+32x25  (1 fam/batch)              51.709                  15.47
+============================================================
