@@ -18,17 +18,17 @@ with open(log_file, "r") as f:
     for line in f:
         start_match = start_pattern.search(line)
         if start_match:
-            start_times.append(float(start_match.group(1)))
+            start_times.append(float(start_match.group(1))*50)
 
 # Plot
 plt.figure()
 # print(fractions)
 plt.plot(fractions, start_times, marker='o')
-plt.xlabel("Batch Size", fontweight="bold", fontsize=15)
-plt.ylabel("Throughput (req/sec)", fontweight="bold", fontsize=15)
-plt.xticks(fontsize=15)
-plt.yticks(fontsize=15)
-plt.ylim(0, max(start_times) + 10)
+plt.xlabel("Batch Size", fontweight="bold", fontsize=20)
+plt.ylabel("Throughput (req/sec)", fontweight="bold", fontsize=20)
+plt.xticks(fontsize=20)
+plt.yticks(fontsize=20)
+plt.ylim(0, max(start_times) + 500)
 plt.tight_layout()
 plt.grid(True)
 # plt.title("Average Scheduler Duration vs Fraction")
