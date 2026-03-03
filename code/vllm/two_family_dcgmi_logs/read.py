@@ -43,17 +43,17 @@ for frac in fractions:
     if len(group) != iters_per_fraction:
         break
     avg_duration = sum(group) / len(group)
-    avg_durations.append(500/avg_duration)
+    avg_durations.append((500/avg_duration)*50)
     idx += iters_per_fraction
 
 # Plot
 plt.figure()
 plt.plot(fractions[:len(avg_durations)], avg_durations, marker='o')
-plt.xlabel("Fraction", fontweight="bold", fontsize=15)
-plt.ylabel("Throughput (req/sec)", fontweight="bold", fontsize=15)
-plt.xticks(fontsize=15)
-plt.yticks(fontsize=15)
-plt.ylim(0, max(avg_durations) + 10)
+plt.xlabel("Fraction", fontweight="bold", fontsize=20)
+plt.ylabel("Throughput (toks/sec)", fontweight="bold", fontsize=20)
+plt.xticks(fontsize=20)
+plt.yticks(fontsize=20)
+plt.ylim(0, max(avg_durations) + 100)
 plt.tight_layout()
 plt.grid(True)
 # plt.title("Average Scheduler Duration vs Fraction")
