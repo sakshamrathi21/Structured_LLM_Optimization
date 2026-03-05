@@ -13,6 +13,8 @@ from system_prompt import queries, system_prompt as sys_prompt
 from vllm import LLM, SamplingParams
 from vllm.config.scheduler import SchedulerPolicy
 
+TOTAL_QUERIES_IN_DB = 100
+
 
 def generate_prefixes(n):
     letters = string.ascii_uppercase
@@ -30,12 +32,25 @@ def build_dcgmi_filename(args):
         f"_rps-{args.req_per_sec}"
         f"_batch-{args.max_batch_size}"
         f"_rand-{args.randomness}"
-        f"_lenf-{args.len_factor}"
+        f"_sptokens-{args.sys_prompt_tokens}"
         f"_policy-{args.policy}"
         f"_maxnew-{args.max_new_tokens}"
         f".log"
     )
     return name
+
+
+def truncate_or_repeat_to_token_length(text, target_tokens, tokenizer):
+    """Truncate or repeat `text` so that it encodes to approximately `target_tokens` tokens."""
+    tokens = tokenizer.encode(text, add_special_tokens=False)
+    if len(tokens) >= target_tokens:
+        # Truncate
+        tokens = tokens[:target_tokens]
+    else:
+        # Repeat until long enough, then truncate
+        repeats = (target_tokens // len(tokens)) + 1
+        tokens = (tokens * repeats)[:target_tokens]
+    return tokenizer.decode(tokens, skip_special_tokens=True)
 
 
 def main():
@@ -47,11 +62,26 @@ def main():
     parser.add_argument("--req_per_sec", type=int, default=None)
     parser.add_argument("--max_batch_size", type=int, default=500)
     parser.add_argument("--randomness", type=int, default=1)
-    parser.add_argument("--len_factor", type=float, default=5.0)
+    parser.add_argument(
+        "--sys_prompt_tokens",
+        type=int,
+        default=500,
+        help="Target system prompt length in tokens (prefix excluded).",
+    )
     parser.add_argument(
         "--policy", type=str, default="fcfs", choices=list(get_args(SchedulerPolicy))
     )
-    parser.add_argument("--multiplier", type=int, default=4)
+    parser.add_argument(
+        "--num_requests",
+        type=int,
+        default=500,
+        help=(
+            "Total number of requests to generate for the experiment. "
+            f"Assumes {TOTAL_QUERIES_IN_DB} queries available in the DB. "
+            "Requests are distributed evenly across families; each family cycles "
+            "through the query pool as many times as needed."
+        ),
+    )
     parser.add_argument("--max_new_tokens", type=int, default=50)
     parser.add_argument("--write_output", action="store_true")
     parser.add_argument(
@@ -62,20 +92,32 @@ def main():
 
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
 
+    # Build system prompt truncated/repeated to the requested token length
+    system_prompt = truncate_or_repeat_to_token_length(
+        sys_prompt, args.sys_prompt_tokens, tokenizer
+    )
+    actual_tokens = len(tokenizer.encode(system_prompt, add_special_tokens=False))
+    print(f"System prompt length: {actual_tokens} tokens (target: {args.sys_prompt_tokens})")
+
     prefixes = generate_prefixes(args.num_families)
+
+    # Distribute num_requests evenly across families.
+    # Each family gets ceil(num_requests / num_families) requests, cycling through
+    # the query pool (capped at TOTAL_QUERIES_IN_DB) as needed.
+    requests_per_family = args.num_requests // args.num_families
+    remainder = args.num_requests % args.num_families  # first `remainder` families get +1
+
+    # Cycle queries list to match TOTAL_QUERIES_IN_DB assumption
+    extended_queries = (queries * ((TOTAL_QUERIES_IN_DB // len(queries)) + 1))[:TOTAL_QUERIES_IN_DB]
+
     prompts = []
     families = []
 
-    m_sys_prompt = sys_prompt
-    if args.len_factor > 1.0:
-        m_sys_prompt *= int(args.len_factor)
-    else:
-        m_sys_prompt = m_sys_prompt[0 : int(len(m_sys_prompt) * args.len_factor)]
+    for idx, prefix in enumerate(prefixes):
+        n = requests_per_family + (1 if idx < remainder else 0)
+        family_queries = (extended_queries * ((n // TOTAL_QUERIES_IN_DB) + 1))[:n]
 
-    system_prompt = m_sys_prompt
-
-    for prefix in prefixes:
-        for q in queries * args.multiplier:
+        for q in family_queries:
             modified_system_prompt = prefix + " " + system_prompt
             chat_messages = [
                 {"role": "system", "content": modified_system_prompt},
@@ -95,6 +137,7 @@ def main():
 
     print(f"Generated {len(prompts)} prompts in total.")
 
+    # Shuffle in chunks of size `randomness`
     paired = list(zip(prompts, families))
     if args.randomness > 0:
         chunked = [
@@ -146,7 +189,6 @@ def main():
                     dcgmi_proc.kill()
 
     else:
-        # Normal run without DCGMI
         llm.generate(
             prompts,
             SamplingParams(temperature=0.7, max_tokens=args.max_new_tokens),
@@ -161,9 +203,10 @@ def main():
     print(
         f"Throughput Test with {args.num_families} families, "
         f"{args.req_per_sec} req/sec and max_batch_size of {args.max_batch_size} "
-        f"(randomness: {args.randomness}) (len factor: {args.len_factor}) "
+        f"(randomness: {args.randomness}) (sys_prompt_tokens: {args.sys_prompt_tokens}) "
         f"(model_name: {args.model_name}) (policy: {args.policy}) "
         f"(max_new_tokens: {args.max_new_tokens}) "
+        f"(num_requests: {args.num_requests}) "
         f"(num_prompts: {len(prompts)}): {throughput}\n"
     )
 
@@ -172,9 +215,10 @@ def main():
             f.write(
                 f"Throughput Test with {args.num_families} families, "
                 f"{args.req_per_sec} req/sec and max_batch_size of {args.max_batch_size} "
-                f"(randomness: {args.randomness}) (len factor: {args.len_factor}) "
+                f"(randomness: {args.randomness}) (sys_prompt_tokens: {args.sys_prompt_tokens}) "
                 f"(model_name: {args.model_name}) (policy: {args.policy}) "
                 f"(max_new_tokens: {args.max_new_tokens}) "
+                f"(num_requests: {args.num_requests}) "
                 f"(num_prompts: {len(prompts)}): {throughput}\n"
             )
 
