@@ -22,7 +22,7 @@ def read_drama(filename):
             try:
                 # if (float(parts[-1])) > 0.35:
                 #     continue
-                drama.append(float(parts[-2]))
+                drama.append(float(parts[-3]))
             except ValueError:
                 continue
 

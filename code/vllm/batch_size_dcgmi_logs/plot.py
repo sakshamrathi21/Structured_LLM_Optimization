@@ -2,7 +2,7 @@ import re
 import matplotlib.pyplot as plt
 
 # Path to your single log file
-LOG_FILE = "tenso"
+LOG_FILE = "small_requests/smocc"
 
 fractions = []
 means = []
@@ -32,10 +32,10 @@ fractions, means = zip(*sorted_data)
 plt.figure()
 plt.plot(fractions, means, marker='o')
 plt.xlabel("Batch Size", fontweight="bold", fontsize=20)
-plt.ylabel("Mean Tensor Core Utilization", fontweight="bold", fontsize=18)
+plt.ylabel("Mean SM Occupancy", fontweight="bold", fontsize=18)
 plt.xticks(fontsize=20)
 plt.yticks(fontsize=20)
 plt.ylim(0, None)
 plt.grid(True)
 plt.tight_layout()
-plt.savefig("../../../results/mean_tenso_vs_batch_size_llama8b.png")
+plt.savefig("../../../results/mean_smocc_vs_batch_size_llama8b_small_requests.png")

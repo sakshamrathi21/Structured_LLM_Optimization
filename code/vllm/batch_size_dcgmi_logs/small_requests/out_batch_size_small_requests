@@ -1,0 +1,811 @@
+Generated 200 prompts in total.
+INFO 03-05 11:04:04 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 2, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 11:04:05 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 11:04:05 [model.py:1545] Using max model len 131072
+INFO 03-05 11:04:05 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 11:04:05 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:04:05 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 11:04:07 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:14 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 4, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:15 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:37839 backend=nccl
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:15 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:16 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:16 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:21 [default_loader.py:291] Loading weights took 2.78 seconds
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:21 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.613206 seconds
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:26 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/25e2fd297a/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:26 [backends.py:704] Dynamo bytecode transform time: 4.47 s
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:31 [backends.py:261] Cache the graph of compile range (1, 32768) for later use
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:35 [backends.py:278] Compiling a graph for compile range (1, 32768) takes 4.10 s
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:35 [monitor.py:34] torch.compile takes 8.56 s in total
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:36 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:36 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:36 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:37 [gpu_model_runner.py:4856] Graph capturing finished in 1 secs, took 0.05 GiB
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:37 [core.py:273] init engine (profile, create kv cache, warmup model) took 15.68 seconds
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m INFO 03-05 11:04:39 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:04:39 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-2_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=10 | total=12090 ns | avg=1209.0 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=20 | total=16269 ns | avg=813.5 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=30 | total=20002 ns | avg=666.7 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=40 | total=24441 ns | avg=611.0 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=50 | total=28342 ns | avg=566.8 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=60 | total=32669 ns | avg=544.5 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=70 | total=34858 ns | avg=498.0 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=80 | total=37445 ns | avg=468.1 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=90 | total=40113 ns | avg=445.7 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=100 | total=42473 ns | avg=424.7 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=110 | total=45146 ns | avg=410.4 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=120 | total=47448 ns | avg=395.4 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=130 | total=49700 ns | avg=382.3 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=140 | total=51892 ns | avg=370.7 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=150 | total=54133 ns | avg=360.9 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=160 | total=56394 ns | avg=352.5 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=170 | total=58789 ns | avg=345.8 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=180 | total=60997 ns | avg=338.9 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=190 | total=63195 ns | avg=332.6 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=200 | total=65401 ns | avg=327.0 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=10 | total=29641 ns | avg=2964.1 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=10 | total=28074 ns | avg=2807.4 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=20 | total=72216 ns | avg=3610.8 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=20 | total=66554 ns | avg=3327.7 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=30 | total=117777 ns | avg=3925.9 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=30 | total=104840 ns | avg=3494.7 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=40 | total=164322 ns | avg=4108.1 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=40 | total=145932 ns | avg=3648.3 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=50 | total=210908 ns | avg=4218.2 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=50 | total=185824 ns | avg=3716.5 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=60 | total=252529 ns | avg=4208.8 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=60 | total=220831 ns | avg=3680.5 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=70 | total=301242 ns | avg=4303.5 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=70 | total=260308 ns | avg=3718.7 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=80 | total=345035 ns | avg=4312.9 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=80 | total=300258 ns | avg=3753.2 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=90 | total=393133 ns | avg=4368.1 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=90 | total=340232 ns | avg=3780.4 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=100 | total=436519 ns | avg=4365.2 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=100 | total=379533 ns | avg=3795.3 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=110 | total=480412 ns | avg=4367.4 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=110 | total=415498 ns | avg=3777.3 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=120 | total=521625 ns | avg=4346.9 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=120 | total=454376 ns | avg=3786.5 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=130 | total=554067 ns | avg=4262.1 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=130 | total=487046 ns | avg=3746.5 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=140 | total=598001 ns | avg=4271.4 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=140 | total=526669 ns | avg=3761.9 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=150 | total=641515 ns | avg=4276.8 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=150 | total=567225 ns | avg=3781.5 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=160 | total=687580 ns | avg=4297.4 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=160 | total=609007 ns | avg=3806.3 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=170 | total=732743 ns | avg=4310.3 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=170 | total=652843 ns | avg=3840.3 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=180 | total=776625 ns | avg=4314.6 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=180 | total=692061 ns | avg=3844.8 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=190 | total=820522 ns | avg=4318.5 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=190 | total=729360 ns | avg=3838.7 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=200 | total=865347 ns | avg=4326.7 ns
+[0;36m(EngineCore_DP0 pid=2156070)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=200 | total=767616 ns | avg=3838.1 ns
+[INFO] Stopping DCGMI monitoring...
+1772688968.1412544 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 2 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 200): 2.253233713383261
+
+Generated 500 prompts in total.
+INFO 03-05 11:06:17 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 5, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 11:06:19 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 11:06:19 [model.py:1545] Using max model len 131072
+INFO 03-05 11:06:19 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 11:06:19 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:06:19 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 11:06:21 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:27 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 8, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:29 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:54851 backend=nccl
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:29 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:29 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:30 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:34 [default_loader.py:291] Loading weights took 2.77 seconds
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:34 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.590244 seconds
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:39 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/b6d2a1660e/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:39 [backends.py:704] Dynamo bytecode transform time: 4.42 s
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:44 [backends.py:261] Cache the graph of compile range (1, 32768) for later use
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:48 [backends.py:278] Compiling a graph for compile range (1, 32768) takes 4.32 s
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:48 [monitor.py:34] torch.compile takes 8.73 s in total
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:49 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:49 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:49 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:51 [gpu_model_runner.py:4856] Graph capturing finished in 1 secs, took 0.06 GiB
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:51 [core.py:273] init engine (profile, create kv cache, warmup model) took 16.20 seconds
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m INFO 03-05 11:06:53 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:06:53 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-5_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=10 | total=11737 ns | avg=1173.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=20 | total=15754 ns | avg=787.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=30 | total=19555 ns | avg=651.8 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=40 | total=23646 ns | avg=591.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=50 | total=27498 ns | avg=550.0 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=60 | total=31416 ns | avg=523.6 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=70 | total=35141 ns | avg=502.0 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=80 | total=38771 ns | avg=484.6 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=90 | total=42580 ns | avg=473.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=100 | total=48780 ns | avg=487.8 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=110 | total=53586 ns | avg=487.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=120 | total=58048 ns | avg=483.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=130 | total=62508 ns | avg=480.8 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=140 | total=66826 ns | avg=477.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=150 | total=71441 ns | avg=476.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=160 | total=76107 ns | avg=475.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=170 | total=80805 ns | avg=475.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=180 | total=85122 ns | avg=472.9 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=190 | total=90050 ns | avg=473.9 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=200 | total=94897 ns | avg=474.5 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=210 | total=99334 ns | avg=473.0 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=220 | total=103685 ns | avg=471.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=230 | total=108114 ns | avg=470.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=240 | total=112445 ns | avg=468.5 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=250 | total=116701 ns | avg=466.8 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=260 | total=121029 ns | avg=465.5 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=270 | total=125280 ns | avg=464.0 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=280 | total=129687 ns | avg=463.2 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=290 | total=135165 ns | avg=466.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=300 | total=137531 ns | avg=458.4 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=310 | total=139835 ns | avg=451.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=320 | total=142409 ns | avg=445.0 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=330 | total=144768 ns | avg=438.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=340 | total=150649 ns | avg=443.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=350 | total=155425 ns | avg=444.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=360 | total=160022 ns | avg=444.5 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=370 | total=165007 ns | avg=446.0 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=380 | total=169609 ns | avg=446.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=390 | total=174202 ns | avg=446.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=400 | total=177089 ns | avg=442.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=410 | total=180110 ns | avg=439.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=420 | total=183497 ns | avg=436.9 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=430 | total=186067 ns | avg=432.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=440 | total=189050 ns | avg=429.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=450 | total=193164 ns | avg=429.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=460 | total=195700 ns | avg=425.4 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=470 | total=198468 ns | avg=422.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=480 | total=203329 ns | avg=423.6 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=490 | total=206106 ns | avg=420.6 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.add_request | calls=500 | total=211318 ns | avg=422.6 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=10 | total=20739 ns | avg=2073.9 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=10 | total=14738 ns | avg=1473.8 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=20 | total=46475 ns | avg=2323.8 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=20 | total=31245 ns | avg=1562.2 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=30 | total=78035 ns | avg=2601.2 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=30 | total=50981 ns | avg=1699.4 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=40 | total=115607 ns | avg=2890.2 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=40 | total=74662 ns | avg=1866.5 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=50 | total=150766 ns | avg=3015.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=50 | total=98399 ns | avg=1968.0 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=60 | total=180990 ns | avg=3016.5 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=60 | total=120336 ns | avg=2005.6 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=70 | total=248498 ns | avg=3550.0 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=70 | total=141084 ns | avg=2015.5 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=80 | total=282287 ns | avg=3528.6 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=80 | total=164553 ns | avg=2056.9 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=90 | total=312799 ns | avg=3475.5 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=90 | total=187188 ns | avg=2079.9 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=100 | total=348577 ns | avg=3485.8 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=100 | total=210296 ns | avg=2103.0 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=110 | total=382287 ns | avg=3475.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=110 | total=232049 ns | avg=2109.5 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=120 | total=414249 ns | avg=3452.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=120 | total=252689 ns | avg=2105.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=130 | total=448541 ns | avg=3450.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=130 | total=294251 ns | avg=2263.5 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=140 | total=485552 ns | avg=3468.2 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=140 | total=317764 ns | avg=2269.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=150 | total=522701 ns | avg=3484.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=150 | total=340465 ns | avg=2269.8 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=160 | total=562263 ns | avg=3514.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=160 | total=379217 ns | avg=2370.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=170 | total=601831 ns | avg=3540.2 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=170 | total=402479 ns | avg=2367.5 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=180 | total=635825 ns | avg=3532.4 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=180 | total=422410 ns | avg=2346.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=190 | total=670754 ns | avg=3530.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=190 | total=443111 ns | avg=2332.2 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=200 | total=698359 ns | avg=3491.8 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=200 | total=459931 ns | avg=2299.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=210 | total=725169 ns | avg=3453.2 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=210 | total=477671 ns | avg=2274.6 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=220 | total=755243 ns | avg=3432.9 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=220 | total=499019 ns | avg=2268.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=230 | total=788492 ns | avg=3428.2 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=230 | total=520484 ns | avg=2263.0 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=240 | total=821494 ns | avg=3422.9 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=240 | total=540191 ns | avg=2250.8 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=250 | total=854081 ns | avg=3416.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=250 | total=561469 ns | avg=2245.9 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=260 | total=882415 ns | avg=3393.9 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=260 | total=582066 ns | avg=2238.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=270 | total=918741 ns | avg=3402.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=270 | total=606979 ns | avg=2248.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=280 | total=947977 ns | avg=3385.6 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=280 | total=626978 ns | avg=2239.2 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=290 | total=978131 ns | avg=3372.9 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=290 | total=647460 ns | avg=2232.6 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=300 | total=1011915 ns | avg=3373.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=300 | total=671595 ns | avg=2238.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=310 | total=1045658 ns | avg=3373.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=310 | total=693386 ns | avg=2236.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=320 | total=1075078 ns | avg=3359.6 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=320 | total=714692 ns | avg=2233.4 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=330 | total=1110314 ns | avg=3364.6 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=330 | total=738642 ns | avg=2238.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=340 | total=1146537 ns | avg=3372.2 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=340 | total=763210 ns | avg=2244.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=350 | total=1186041 ns | avg=3388.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=350 | total=788245 ns | avg=2252.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=360 | total=1222124 ns | avg=3394.8 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=360 | total=811325 ns | avg=2253.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=370 | total=1256204 ns | avg=3395.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=370 | total=835842 ns | avg=2259.0 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=380 | total=1291410 ns | avg=3398.4 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=380 | total=859478 ns | avg=2261.8 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=390 | total=1329061 ns | avg=3407.8 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=390 | total=884092 ns | avg=2266.9 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=400 | total=1362583 ns | avg=3406.5 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=400 | total=905151 ns | avg=2262.9 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=410 | total=1398967 ns | avg=3412.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=410 | total=929918 ns | avg=2268.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=420 | total=1432386 ns | avg=3410.4 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=420 | total=951434 ns | avg=2265.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=430 | total=1464219 ns | avg=3405.2 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=430 | total=972782 ns | avg=2262.3 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=440 | total=1496847 ns | avg=3401.9 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=440 | total=994497 ns | avg=2260.2 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=450 | total=1529149 ns | avg=3398.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=450 | total=1018586 ns | avg=2263.5 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=460 | total=1566584 ns | avg=3405.6 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=460 | total=1063602 ns | avg=2312.2 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=470 | total=1599300 ns | avg=3402.8 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=470 | total=1101666 ns | avg=2344.0 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=480 | total=1635211 ns | avg=3406.7 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=480 | total=1124693 ns | avg=2343.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=490 | total=1667015 ns | avg=3402.1 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=490 | total=1145212 ns | avg=2337.2 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.peek_request | calls=500 | total=1694722 ns | avg=3389.4 ns
+[0;36m(EngineCore_DP0 pid=2156334)[0;0m [PROFILE] FCFSRequestQueue.pop_request | calls=500 | total=1164295 ns | avg=2328.6 ns
+[INFO] Stopping DCGMI monitoring...
+1772689104.459864 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 5 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 500): 5.49112731787165
+
+Generated 1000 prompts in total.
+INFO 03-05 11:08:35 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 10, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 11:08:36 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 11:08:36 [model.py:1545] Using max model len 131072
+INFO 03-05 11:08:37 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 11:08:37 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:08:37 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 11:08:38 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:08:45 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 16, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:08:46 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:44219 backend=nccl
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:08:46 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:08:47 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:08:47 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:08:52 [default_loader.py:291] Loading weights took 2.77 seconds
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:08:52 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.592554 seconds
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:08:57 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/ea704e0f22/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:08:57 [backends.py:704] Dynamo bytecode transform time: 4.39 s
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:09:02 [backends.py:261] Cache the graph of compile range (1, 32768) for later use
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:09:06 [backends.py:278] Compiling a graph for compile range (1, 32768) takes 4.28 s
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:09:06 [monitor.py:34] torch.compile takes 8.66 s in total
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:09:07 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:09:07 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:09:07 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:09:08 [gpu_model_runner.py:4856] Graph capturing finished in 1 secs, took 0.07 GiB
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:09:08 [core.py:273] init engine (profile, create kv cache, warmup model) took 16.34 seconds
+[0;36m(EngineCore_DP0 pid=2156663)[0;0m INFO 03-05 11:09:10 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:09:10 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-10_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772689243.34134 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 10 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 1000): 10.821121376390632
+
+Generated 2000 prompts in total.
+INFO 03-05 11:10:53 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 20, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 11:10:54 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 11:10:54 [model.py:1545] Using max model len 131072
+INFO 03-05 11:10:55 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 11:10:55 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:10:55 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 11:10:56 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:03 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 40, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:05 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:36637 backend=nccl
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:05 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:06 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:07 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:12 [default_loader.py:291] Loading weights took 3.38 seconds
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:12 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 5.422837 seconds
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:17 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/4417e6bd47/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:17 [backends.py:704] Dynamo bytecode transform time: 4.53 s
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:22 [backends.py:261] Cache the graph of compile range (1, 32768) for later use
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:27 [backends.py:278] Compiling a graph for compile range (1, 32768) takes 4.37 s
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:27 [monitor.py:34] torch.compile takes 8.90 s in total
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:28 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:28 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:28 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:30 [gpu_model_runner.py:4856] Graph capturing finished in 2 secs, took 0.11 GiB
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:30 [core.py:273] init engine (profile, create kv cache, warmup model) took 17.43 seconds
+[0;36m(EngineCore_DP0 pid=2157661)[0;0m INFO 03-05 11:11:32 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:11:32 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-20_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772689389.8510156 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 20 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 2000): 20.513510441957667
+
+Generated 5000 prompts in total.
+INFO 03-05 11:13:21 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 50, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 11:13:22 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 11:13:22 [model.py:1545] Using max model len 131072
+INFO 03-05 11:13:22 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 11:13:22 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:13:22 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 11:13:24 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:31 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 96, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:32 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:38561 backend=nccl
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:32 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:33 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:33 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:37 [default_loader.py:291] Loading weights took 2.77 seconds
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:38 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.586186 seconds
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:42 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/0b7eb9680b/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:42 [backends.py:704] Dynamo bytecode transform time: 4.43 s
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:48 [backends.py:261] Cache the graph of compile range (1, 32768) for later use
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:52 [backends.py:278] Compiling a graph for compile range (1, 32768) takes 4.35 s
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:52 [monitor.py:34] torch.compile takes 8.79 s in total
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:53 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:53 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:53 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:56 [gpu_model_runner.py:4856] Graph capturing finished in 2 secs, took 0.16 GiB
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:56 [core.py:273] init engine (profile, create kv cache, warmup model) took 17.74 seconds
+[0;36m(EngineCore_DP0 pid=2158380)[0;0m INFO 03-05 11:13:58 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:13:58 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-50_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772689550.6566525 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 50 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 5000): 44.51247262851148
+
+Generated 7500 prompts in total.
+INFO 03-05 11:15:59 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 75, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 11:16:01 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 11:16:01 [model.py:1545] Using max model len 131072
+INFO 03-05 11:16:01 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 11:16:01 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:16:01 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 11:16:03 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:09 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 144, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:10 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:49489 backend=nccl
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:10 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:11 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:11 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:15 [default_loader.py:291] Loading weights took 2.76 seconds
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:16 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.566832 seconds
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:20 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/fe8b532124/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:20 [backends.py:704] Dynamo bytecode transform time: 4.37 s
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:26 [backends.py:261] Cache the graph of compile range (1, 32768) for later use
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:30 [backends.py:278] Compiling a graph for compile range (1, 32768) takes 4.32 s
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:30 [monitor.py:34] torch.compile takes 8.69 s in total
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:31 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:31 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:31 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:33 [gpu_model_runner.py:4856] Graph capturing finished in 2 secs, took 0.21 GiB
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:33 [core.py:273] init engine (profile, create kv cache, warmup model) took 17.37 seconds
+[0;36m(EngineCore_DP0 pid=2158625)[0;0m INFO 03-05 11:16:35 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:16:35 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-75_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772689742.489641 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 75 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 7500): 51.100770438014045
+
+Generated 10000 prompts in total.
+INFO 03-05 11:19:11 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 100, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 11:19:13 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 11:19:13 [model.py:1545] Using max model len 131072
+INFO 03-05 11:19:13 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 11:19:13 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:19:13 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 11:19:15 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:21 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 200, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:23 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:52031 backend=nccl
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:23 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:24 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:24 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:29 [default_loader.py:291] Loading weights took 2.96 seconds
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:29 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.832022 seconds
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:34 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/9cf4c058d4/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:34 [backends.py:704] Dynamo bytecode transform time: 4.47 s
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:39 [backends.py:261] Cache the graph of compile range (1, 32768) for later use
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:43 [backends.py:278] Compiling a graph for compile range (1, 32768) takes 4.33 s
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:43 [monitor.py:34] torch.compile takes 8.81 s in total
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:44 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:45 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:45 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:47 [gpu_model_runner.py:4856] Graph capturing finished in 3 secs, took 0.27 GiB
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:47 [core.py:273] init engine (profile, create kv cache, warmup model) took 18.07 seconds
+[0;36m(EngineCore_DP0 pid=2158825)[0;0m INFO 03-05 11:19:49 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:19:49 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-100_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772689958.003413 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 100 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 10000): 59.44627492504119
+
+Generated 12500 prompts in total.
+INFO 03-05 11:22:48 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 125, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 11:22:49 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 11:22:49 [model.py:1545] Using max model len 131072
+INFO 03-05 11:22:49 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 11:22:49 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:22:49 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 11:22:51 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:22:57 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 248, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:22:58 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:56237 backend=nccl
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:22:58 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:22:59 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:23:00 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:23:04 [default_loader.py:291] Loading weights took 2.75 seconds
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:23:04 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.563551 seconds
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:23:09 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/af868467b8/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:23:09 [backends.py:704] Dynamo bytecode transform time: 4.42 s
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:23:13 [backends.py:261] Cache the graph of compile range (1, 32768) for later use
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:23:18 [backends.py:278] Compiling a graph for compile range (1, 32768) takes 4.34 s
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:23:18 [monitor.py:34] torch.compile takes 8.76 s in total
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:23:18 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:23:19 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:23:19 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:23:22 [gpu_model_runner.py:4856] Graph capturing finished in 3 secs, took 0.31 GiB
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:23:22 [core.py:273] init engine (profile, create kv cache, warmup model) took 17.40 seconds
+[0;36m(EngineCore_DP0 pid=2159038)[0;0m INFO 03-05 11:23:23 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:23:24 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-125_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772690207.35554 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 125 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 12500): 61.495209870947676
+
+Generated 15000 prompts in total.
+INFO 03-05 11:26:57 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 150, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 11:26:59 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 11:26:59 [model.py:1545] Using max model len 131072
+INFO 03-05 11:26:59 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 11:26:59 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:26:59 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 11:27:01 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:06 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 288, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:08 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:58481 backend=nccl
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:08 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:08 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:09 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:13 [default_loader.py:291] Loading weights took 2.76 seconds
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:13 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.583596 seconds
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:18 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/210899b496/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:18 [backends.py:704] Dynamo bytecode transform time: 4.43 s
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:23 [backends.py:261] Cache the graph of compile range (1, 32768) for later use
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:27 [backends.py:278] Compiling a graph for compile range (1, 32768) takes 4.34 s
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:27 [monitor.py:34] torch.compile takes 8.77 s in total
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:28 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:29 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:29 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:32 [gpu_model_runner.py:4856] Graph capturing finished in 3 secs, took 0.36 GiB
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:32 [core.py:273] init engine (profile, create kv cache, warmup model) took 18.34 seconds
+[0;36m(EngineCore_DP0 pid=2159920)[0;0m INFO 03-05 11:27:34 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:27:34 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-150_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772690486.6464021 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 150 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 15000): 64.58248150464999
+
+Generated 17500 prompts in total.
+INFO 03-05 11:31:37 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 175, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 11:31:38 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 11:31:38 [model.py:1545] Using max model len 131072
+INFO 03-05 11:31:38 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 11:31:38 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:31:38 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 11:31:40 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:31:47 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 336, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:31:48 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:52463 backend=nccl
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:31:48 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:31:49 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:31:50 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:31:54 [default_loader.py:291] Loading weights took 2.73 seconds
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:31:54 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.628725 seconds
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:31:59 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/c3afd6907c/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:31:59 [backends.py:704] Dynamo bytecode transform time: 4.37 s
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:32:04 [backends.py:261] Cache the graph of compile range (1, 32768) for later use
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:32:08 [backends.py:278] Compiling a graph for compile range (1, 32768) takes 4.34 s
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:32:08 [monitor.py:34] torch.compile takes 8.70 s in total
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:32:09 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:32:10 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:32:10 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:32:13 [gpu_model_runner.py:4856] Graph capturing finished in 4 secs, took 0.39 GiB
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:32:13 [core.py:273] init engine (profile, create kv cache, warmup model) took 19.00 seconds
+[0;36m(EngineCore_DP0 pid=2160327)[0;0m INFO 03-05 11:32:15 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:32:15 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-175_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772690797.706358 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 175 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 17500): 66.84643014074837
+
+Generated 20000 prompts in total.
+INFO 03-05 11:36:49 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 200, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 11:36:51 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 11:36:51 [model.py:1545] Using max model len 131072
+INFO 03-05 11:36:51 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 11:36:51 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:36:51 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 11:36:53 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:36:59 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 400, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:01 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:35633 backend=nccl
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:01 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:01 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:02 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:07 [default_loader.py:291] Loading weights took 3.17 seconds
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:07 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 5.180141 seconds
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:12 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/e994c80e66/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:12 [backends.py:704] Dynamo bytecode transform time: 4.44 s
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:16 [backends.py:261] Cache the graph of compile range (1, 32768) for later use
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:20 [backends.py:278] Compiling a graph for compile range (1, 32768) takes 4.11 s
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:20 [monitor.py:34] torch.compile takes 8.55 s in total
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:21 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:22 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:22 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:26 [gpu_model_runner.py:4856] Graph capturing finished in 5 secs, took 0.43 GiB
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:26 [core.py:273] init engine (profile, create kv cache, warmup model) took 18.85 seconds
+[0;36m(EngineCore_DP0 pid=2161236)[0;0m INFO 03-05 11:37:28 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:37:28 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-200_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772691144.73485 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 200 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 20000): 67.59310484237916
+
+Generated 20000 prompts in total.
+INFO 03-05 11:42:35 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 250, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 11:42:36 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 11:42:36 [model.py:1545] Using max model len 131072
+INFO 03-05 11:42:37 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 11:42:37 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:42:37 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 11:42:38 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:42:44 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 496, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:42:45 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:42471 backend=nccl
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:42:45 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:42:46 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:42:46 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:42:51 [default_loader.py:291] Loading weights took 2.78 seconds
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:42:51 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.654243 seconds
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:42:56 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/705e9412de/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:42:56 [backends.py:704] Dynamo bytecode transform time: 4.44 s
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:43:01 [backends.py:261] Cache the graph of compile range (1, 32768) for later use
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:43:05 [backends.py:278] Compiling a graph for compile range (1, 32768) takes 4.34 s
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:43:05 [monitor.py:34] torch.compile takes 8.78 s in total
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:43:06 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:43:06 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:43:06 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:43:11 [gpu_model_runner.py:4856] Graph capturing finished in 5 secs, took 0.50 GiB
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:43:11 [core.py:273] init engine (profile, create kv cache, warmup model) took 19.85 seconds
+[0;36m(EngineCore_DP0 pid=2161476)[0;0m INFO 03-05 11:43:13 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:43:13 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-250_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772691488.5809653 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 250 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 20000): 67.84057924525828
+
+Generated 20000 prompts in total.
+INFO 03-05 11:48:20 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 300, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 11:48:21 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 11:48:21 [model.py:1545] Using max model len 131072
+INFO 03-05 11:48:21 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 11:48:21 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:48:21 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 11:48:23 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:29 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:30 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:51717 backend=nccl
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:30 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:31 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:31 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:36 [default_loader.py:291] Loading weights took 2.77 seconds
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:36 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.611105 seconds
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:41 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/d958023bf7/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:41 [backends.py:704] Dynamo bytecode transform time: 4.49 s
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:50 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 4.091 s
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:50 [monitor.py:34] torch.compile takes 8.58 s in total
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:50 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:51 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:51 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:56 [gpu_model_runner.py:4856] Graph capturing finished in 6 secs, took 0.52 GiB
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:56 [core.py:273] init engine (profile, create kv cache, warmup model) took 20.45 seconds
+[0;36m(EngineCore_DP0 pid=2161829)[0;0m INFO 03-05 11:48:59 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:48:59 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-300_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772691819.3515656 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 300 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 20000): 71.40904876375733
+
+Generated 20000 prompts in total.
+INFO 03-05 11:53:50 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 400, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 11:53:51 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 11:53:51 [model.py:1545] Using max model len 131072
+INFO 03-05 11:53:51 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 11:53:51 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:53:51 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 11:53:53 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:53:59 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:54:01 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:54113 backend=nccl
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:54:01 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:54:01 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:54:02 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:54:06 [default_loader.py:291] Loading weights took 2.77 seconds
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:54:07 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.656130 seconds
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:54:11 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/d958023bf7/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:54:11 [backends.py:704] Dynamo bytecode transform time: 4.53 s
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:54:21 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 4.049 s
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:54:21 [monitor.py:34] torch.compile takes 8.58 s in total
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:54:21 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:54:22 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:54:22 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:54:27 [gpu_model_runner.py:4856] Graph capturing finished in 6 secs, took 0.54 GiB
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:54:27 [core.py:273] init engine (profile, create kv cache, warmup model) took 20.76 seconds
+[0;36m(EngineCore_DP0 pid=2162043)[0;0m INFO 03-05 11:54:30 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:54:30 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-400_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772692135.4178395 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 400 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 20000): 75.42287490752298
+
+Generated 20000 prompts in total.
+INFO 03-05 11:59:07 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 11:59:08 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 11:59:08 [model.py:1545] Using max model len 131072
+INFO 03-05 11:59:09 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 11:59:09 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:59:09 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 11:59:11 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:17 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:18 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:43871 backend=nccl
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:18 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:19 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:20 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:25 [default_loader.py:291] Loading weights took 3.20 seconds
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:25 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 5.398868 seconds
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:30 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/d958023bf7/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:30 [backends.py:704] Dynamo bytecode transform time: 4.35 s
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:38 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 3.900 s
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:38 [monitor.py:34] torch.compile takes 8.25 s in total
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:38 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:39 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:39 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:44 [gpu_model_runner.py:4856] Graph capturing finished in 6 secs, took 0.57 GiB
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:44 [core.py:273] init engine (profile, create kv cache, warmup model) took 19.01 seconds
+[0;36m(EngineCore_DP0 pid=2163254)[0;0m INFO 03-05 11:59:46 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 11:59:46 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-500_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772692445.1650443 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 500 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 20000): 77.423381987104
+
+Generated 20000 prompts in total.
+INFO 03-05 12:04:15 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 600, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 12:04:17 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 12:04:17 [model.py:1545] Using max model len 131072
+INFO 03-05 12:04:17 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 12:04:17 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 12:04:17 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 12:04:18 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:24 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:26 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:54007 backend=nccl
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:26 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:26 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:27 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:31 [default_loader.py:291] Loading weights took 2.77 seconds
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:32 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.567407 seconds
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:36 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/d958023bf7/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:36 [backends.py:704] Dynamo bytecode transform time: 4.43 s
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:46 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 4.078 s
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:46 [monitor.py:34] torch.compile takes 8.51 s in total
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:46 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:47 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:47 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:53 [gpu_model_runner.py:4856] Graph capturing finished in 6 secs, took 0.57 GiB
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:53 [core.py:273] init engine (profile, create kv cache, warmup model) took 21.09 seconds
+[0;36m(EngineCore_DP0 pid=2163462)[0;0m INFO 03-05 12:04:55 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 12:04:55 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-600_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772692752.4246786 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 600 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 20000): 77.75876879912569
+
+Generated 20000 prompts in total.
+INFO 03-05 12:09:24 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 700, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 12:09:25 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 12:09:25 [model.py:1545] Using max model len 131072
+INFO 03-05 12:09:25 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 12:09:25 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 12:09:25 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 12:09:27 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:09:35 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:09:36 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:33563 backend=nccl
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:09:36 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:09:37 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:09:37 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:09:41 [default_loader.py:291] Loading weights took 2.78 seconds
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:09:42 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.627562 seconds
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:09:47 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/d958023bf7/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:09:47 [backends.py:704] Dynamo bytecode transform time: 4.44 s
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:09:55 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 4.050 s
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:09:55 [monitor.py:34] torch.compile takes 8.49 s in total
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:09:56 [gpu_worker.py:358] Available KV cache memory: 26.53 GiB
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:09:56 [kv_cache_utils.py:1305] GPU KV cache size: 217,360 tokens
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:09:56 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:10:04 [gpu_model_runner.py:4856] Graph capturing finished in 7 secs, took 0.57 GiB
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:10:04 [core.py:273] init engine (profile, create kv cache, warmup model) took 21.95 seconds
+[0;36m(EngineCore_DP0 pid=2163786)[0;0m INFO 03-05 12:10:06 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 12:10:06 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-700_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772693061.7236464 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 700 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 20000): 78.44376435288613
+
+Generated 20000 prompts in total.
+INFO 03-05 12:14:33 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 800, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 12:14:34 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 12:14:34 [model.py:1545] Using max model len 131072
+INFO 03-05 12:14:34 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 12:14:34 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 12:14:34 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 12:14:36 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:14:42 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:14:43 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:60841 backend=nccl
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:14:43 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:14:44 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:14:44 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:14:49 [default_loader.py:291] Loading weights took 2.76 seconds
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:14:49 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.617227 seconds
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:14:54 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/d958023bf7/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:14:54 [backends.py:704] Dynamo bytecode transform time: 4.39 s
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:15:03 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 4.076 s
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:15:03 [monitor.py:34] torch.compile takes 8.46 s in total
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:15:04 [gpu_worker.py:358] Available KV cache memory: 26.08 GiB
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:15:04 [kv_cache_utils.py:1305] GPU KV cache size: 213,616 tokens
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:15:04 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.63x
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:15:11 [gpu_model_runner.py:4856] Graph capturing finished in 7 secs, took 0.57 GiB
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:15:11 [core.py:273] init engine (profile, create kv cache, warmup model) took 21.90 seconds
+[0;36m(EngineCore_DP0 pid=2164153)[0;0m INFO 03-05 12:15:13 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 12:15:13 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-800_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772693368.3981054 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 800 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 20000): 78.567034636851
+
+Generated 20000 prompts in total.
+INFO 03-05 12:19:40 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 900, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-05 12:19:42 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-05 12:19:42 [model.py:1545] Using max model len 131072
+INFO 03-05 12:19:42 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-05 12:19:42 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 12:19:42 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-05 12:19:44 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:19:50 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:19:51 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:44399 backend=nccl
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:19:51 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:19:52 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:19:53 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:19:57 [default_loader.py:291] Loading weights took 2.97 seconds
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:19:57 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.807377 seconds
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:20:02 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/d958023bf7/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:20:02 [backends.py:704] Dynamo bytecode transform time: 4.41 s
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:20:11 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 4.061 s
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:20:11 [monitor.py:34] torch.compile takes 8.48 s in total
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:20:12 [gpu_worker.py:358] Available KV cache memory: 25.62 GiB
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:20:12 [kv_cache_utils.py:1305] GPU KV cache size: 209,888 tokens
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:20:12 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.60x
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:20:18 [gpu_model_runner.py:4856] Graph capturing finished in 6 secs, took 0.57 GiB
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:20:18 [core.py:273] init engine (profile, create kv cache, warmup model) took 20.18 seconds
+[0;36m(EngineCore_DP0 pid=2164350)[0;0m INFO 03-05 12:20:19 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-05 12:20:20 [llm.py:350] Supported tasks: ['generate']
+[INFO] Logging DCGMI output to: dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-900_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+[INFO] Stopping DCGMI monitoring...
+1772693669.8057137 Completed all requests.
+Throughput Test with 1 families, None req/sec and max_batch_size of 900 (randomness: 1) (len factor: 0.0) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 50) (num_prompts: 20000): 80.11081429601721
+

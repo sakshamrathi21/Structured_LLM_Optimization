@@ -1,0 +1,209 @@
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-100_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 9949.795000
+Count    : 73398
+Mean     : 0.135559
+Median   : 0.131000
+P75      : 0.137000
+P90      : 0.148000
+P95      : 0.194000
+P99      : 0.208000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-10_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 2884.787000
+Count    : 38935
+Mean     : 0.074092
+Median   : 0.067000
+P75      : 0.077000
+P90      : 0.107000
+P95      : 0.109000
+P99      : 0.122000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-125_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 12373.007000
+Count    : 89790
+Mean     : 0.137799
+Median   : 0.132000
+P75      : 0.134000
+P90      : 0.143000
+P95      : 0.220000
+P99      : 0.241000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-150_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 14207.503000
+Count    : 101952
+Mean     : 0.139355
+Median   : 0.131000
+P75      : 0.135000
+P90      : 0.144000
+P95      : 0.238000
+P99      : 0.291000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-175_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 15836.321000
+Count    : 112910
+Mean     : 0.140256
+Median   : 0.131000
+P75      : 0.137000
+P90      : 0.146000
+P95      : 0.227000
+P99      : 0.327000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-200_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 18796.351000
+Count    : 131070
+Mean     : 0.143407
+Median   : 0.134000
+P75      : 0.141000
+P90      : 0.149000
+P95      : 0.210000
+P99      : 0.377000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-20_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 4680.490000
+Count    : 41857
+Mean     : 0.111821
+Median   : 0.110000
+P75      : 0.115000
+P90      : 0.126000
+P95      : 0.129000
+P99      : 0.132000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-250_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 19812.393000
+Count    : 132348
+Mean     : 0.149699
+Median   : 0.141000
+P75      : 0.144000
+P90      : 0.147000
+P95      : 0.184000
+P99      : 0.421000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-2_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 3414.006000
+Count    : 38849
+Mean     : 0.087879
+Median   : 0.082000
+P75      : 0.084000
+P90      : 0.087000
+P95      : 0.099000
+P99      : 0.225000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-300_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 18626.414000
+Count    : 124752
+Mean     : 0.149308
+Median   : 0.138000
+P75      : 0.140000
+P90      : 0.155000
+P95      : 0.167000
+P99      : 0.462000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-400_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 17712.603000
+Count    : 117495
+Mean     : 0.150752
+Median   : 0.136000
+P75      : 0.147000
+P90      : 0.161000
+P95      : 0.175000
+P99      : 0.543000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-500_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 18061.925000
+Count    : 115563
+Mean     : 0.156295
+Median   : 0.143000
+P75      : 0.157000
+P90      : 0.166000
+P95      : 0.175000
+P99      : 0.559000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-50_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 5882.247000
+Count    : 48204
+Mean     : 0.122028
+Median   : 0.115000
+P75      : 0.135000
+P90      : 0.141000
+P95      : 0.146000
+P99      : 0.156000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-5_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 2706.061000
+Count    : 38383
+Mean     : 0.070502
+Median   : 0.066000
+P75      : 0.070000
+P90      : 0.078000
+P95      : 0.100000
+P99      : 0.110000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-600_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 18277.804000
+Count    : 115900
+Mean     : 0.157703
+Median   : 0.148000
+P75      : 0.166000
+P90      : 0.174000
+P95      : 0.178000
+P99      : 0.596000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-700_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 18365.715000
+Count    : 115047
+Mean     : 0.159637
+Median   : 0.153000
+P75      : 0.169000
+P90      : 0.176000
+P95      : 0.180000
+P99      : 0.629000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-75_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 8664.961000
+Count    : 64519
+Mean     : 0.134301
+Median   : 0.131000
+P75      : 0.136000
+P90      : 0.149000
+P95      : 0.169000
+P99      : 0.179000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-800_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 18397.198000
+Count    : 114340
+Mean     : 0.160899
+Median   : 0.156000
+P75      : 0.175000
+P90      : 0.178000
+P95      : 0.186000
+P99      : 0.672000
+batch_size_dcgmi_logs/small_requests/dcgmi_model-meta-llama_Llama-3.1-8B-Instruct_families-1_rps-None_batch-900_rand-1_lenf-0.0_policy-fcfs_maxnew-50.log
+
+=== User gives out the family IDs ===
+Sum      : 18140.569000
+Count    : 111577
+Mean     : 0.162583
+Median   : 0.158000
+P75      : 0.176000
+P90      : 0.181000
+P95      : 0.193000
+P99      : 0.684000
