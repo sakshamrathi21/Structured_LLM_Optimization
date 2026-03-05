@@ -1,1156 +1,0 @@
-
-Loading tokenizer...
-Building prompts...
-
-[INFO] Prompt composition:
-  Total length (L)          : 5000 tokens
-  Common prefix (f1=0.00) : 0 tokens
-  Family suffix             : 5000 tokens
-  Number of families        : 20
-  Requests per family       : [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
-  Total requests            : 2000
-
-Generated 2000 prompts
-
-Initializing vLLM...
-INFO 02-27 08:46:52 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.75, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'scheduling_policy': 'radix_cost', 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
-INFO 02-27 08:46:53 [model.py:530] Resolved architecture: LlamaForCausalLM
-INFO 02-27 08:46:53 [model.py:1545] Using max model len 131072
-INFO 02-27 08:46:53 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=8192.
-INFO 02-27 08:46:53 [vllm.py:632] Asynchronous scheduling is enabled.
-INFO 02-27 08:46:53 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
-WARNING 02-27 08:46:55 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:01 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:02 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:44643 backend=nccl
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:02 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:03 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:03 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m Loading safetensors checkpoint shards:   0% Completed | 0/4 [00:00<?, ?it/s]
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m Loading safetensors checkpoint shards:  25% Completed | 1/4 [00:00<00:00,  5.02it/s]
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m Loading safetensors checkpoint shards:  50% Completed | 2/4 [00:00<00:01,  1.93it/s]
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m Loading safetensors checkpoint shards:  75% Completed | 3/4 [00:01<00:00,  1.51it/s]
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:02<00:00,  1.39it/s]
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:02<00:00,  1.55it/s]
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m 
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:07 [default_loader.py:291] Loading weights took 2.65 seconds
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:08 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.491802 seconds
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:12 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/1eef881998/rank_0_0/backbone for vLLM's torch.compile
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:12 [backends.py:704] Dynamo bytecode transform time: 4.38 s
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:19 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 8192) from the cache, took 1.498 s
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:19 [monitor.py:34] torch.compile takes 5.88 s in total
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:20 [gpu_worker.py:358] Available KV cache memory: 18.16 GiB
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:20 [kv_cache_utils.py:1305] GPU KV cache size: 148,720 tokens
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:20 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.13x
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):   0%|          | 0/51 [00:00<?, ?it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):   4%|▍         | 2/51 [00:00<00:03, 14.31it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):   8%|▊         | 4/51 [00:00<00:03, 14.67it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  12%|█▏        | 6/51 [00:00<00:03, 14.95it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  16%|█▌        | 8/51 [00:00<00:02, 14.91it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  20%|█▉        | 10/51 [00:00<00:02, 15.75it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  24%|██▎       | 12/51 [00:00<00:02, 16.09it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  27%|██▋       | 14/51 [00:00<00:02, 15.83it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  31%|███▏      | 16/51 [00:01<00:02, 16.20it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  37%|███▋      | 19/51 [00:01<00:01, 17.95it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  43%|████▎     | 22/51 [00:01<00:01, 18.90it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  47%|████▋     | 24/51 [00:01<00:01, 18.74it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  53%|█████▎    | 27/51 [00:01<00:01, 19.74it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  59%|█████▉    | 30/51 [00:01<00:01, 20.45it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  65%|██████▍   | 33/51 [00:01<00:00, 20.48it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  71%|███████   | 36/51 [00:01<00:00, 21.20it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  76%|███████▋  | 39/51 [00:02<00:00, 21.40it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  82%|████████▏ | 42/51 [00:02<00:00, 21.31it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  88%|████████▊ | 45/51 [00:02<00:00, 19.76it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  92%|█████████▏| 47/51 [00:02<00:00, 18.67it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  96%|█████████▌| 49/51 [00:02<00:00, 18.15it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE): 100%|██████████| 51/51 [00:02<00:00, 16.65it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE): 100%|██████████| 51/51 [00:02<00:00, 18.10it/s]
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m Capturing CUDA graphs (decode, FULL):   0%|          | 0/50 [00:00<?, ?it/s]Capturing CUDA graphs (decode, FULL):   4%|▍         | 2/50 [00:00<00:04, 11.36it/s]Capturing CUDA graphs (decode, FULL):   8%|▊         | 4/50 [00:00<00:03, 12.13it/s]Capturing CUDA graphs (decode, FULL):  12%|█▏        | 6/50 [00:00<00:03, 12.61it/s]Capturing CUDA graphs (decode, FULL):  16%|█▌        | 8/50 [00:00<00:03, 13.03it/s]Capturing CUDA graphs (decode, FULL):  20%|██        | 10/50 [00:00<00:03, 13.29it/s]Capturing CUDA graphs (decode, FULL):  24%|██▍       | 12/50 [00:00<00:02, 13.60it/s]Capturing CUDA graphs (decode, FULL):  28%|██▊       | 14/50 [00:01<00:02, 13.88it/s]Capturing CUDA graphs (decode, FULL):  32%|███▏      | 16/50 [00:01<00:02, 14.34it/s]Capturing CUDA graphs (decode, FULL):  36%|███▌      | 18/50 [00:01<00:02, 14.96it/s]Capturing CUDA graphs (decode, FULL):  40%|████      | 20/50 [00:01<00:01, 15.19it/s]Capturing CUDA graphs (decode, FULL):  44%|████▍     | 22/50 [00:01<00:01, 15.45it/s]Capturing CUDA graphs (decode, FULL):  48%|████▊     | 24/50 [00:01<00:01, 15.31it/s]Capturing CUDA graphs (decode, FULL):  52%|█████▏    | 26/50 [00:01<00:01, 15.58it/s]Capturing CUDA graphs (decode, FULL):  56%|█████▌    | 28/50 [00:01<00:01, 15.60it/s]Capturing CUDA graphs (decode, FULL):  60%|██████    | 30/50 [00:02<00:01, 15.81it/s]Capturing CUDA graphs (decode, FULL):  64%|██████▍   | 32/50 [00:02<00:01, 15.96it/s]Capturing CUDA graphs (decode, FULL):  68%|██████▊   | 34/50 [00:02<00:00, 16.08it/s]Capturing CUDA graphs (decode, FULL):  72%|███████▏  | 36/50 [00:02<00:00, 16.07it/s]Capturing CUDA graphs (decode, FULL):  76%|███████▌  | 38/50 [00:02<00:00, 15.91it/s]Capturing CUDA graphs (decode, FULL):  80%|████████  | 40/50 [00:02<00:00, 15.86it/s]Capturing CUDA graphs (decode, FULL):  84%|████████▍ | 42/50 [00:02<00:00, 16.10it/s]Capturing CUDA graphs (decode, FULL):  88%|████████▊ | 44/50 [00:02<00:00, 16.19it/s]Capturing CUDA graphs (decode, FULL):  92%|█████████▏| 46/50 [00:03<00:00, 16.17it/s]Capturing CUDA graphs (decode, FULL):  96%|█████████▌| 48/50 [00:03<00:00, 16.35it/s]Capturing CUDA graphs (decode, FULL): 100%|██████████| 50/50 [00:03<00:00, 16.53it/s]Capturing CUDA graphs (decode, FULL): 100%|██████████| 50/50 [00:03<00:00, 15.19it/s]
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:27 [gpu_model_runner.py:4856] Graph capturing finished in 7 secs, took 0.56 GiB
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:27 [core.py:273] init engine (profile, create kv cache, warmup model) took 18.96 seconds
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m INFO 02-27 08:47:29 [vllm.py:632] Asynchronous scheduling is enabled.
-INFO 02-27 08:47:29 [llm.py:350] Supported tasks: ['generate']
-Starting timed runs...
-
-Adding requests:   0%|          | 0/2000 [00:00<?, ?it/s]Adding requests:   1%|          | 16/2000 [00:00<00:12, 153.49it/s]Adding requests:   2%|▏         | 33/2000 [00:00<00:12, 162.60it/s]Adding requests:   3%|▎         | 51/2000 [00:00<00:11, 167.24it/s]Adding requests:   3%|▎         | 69/2000 [00:00<00:11, 170.55it/s]Adding requests:   4%|▍         | 87/2000 [00:00<00:11, 172.50it/s]Adding requests:   5%|▌         | 105/2000 [00:00<00:10, 172.70it/s]Adding requests:   6%|▌         | 123/2000 [00:00<00:10, 171.15it/s]Adding requests:   7%|▋         | 141/2000 [00:00<00:10, 171.90it/s]Adding requests:   8%|▊         | 159/2000 [00:00<00:10, 172.78it/s]Adding requests:   9%|▉         | 177/2000 [00:01<00:10, 173.22it/s]Adding requests:  10%|▉         | 195/2000 [00:01<00:10, 171.90it/s]Adding requests:  11%|█         | 213/2000 [00:01<00:10, 172.94it/s]Adding requests:  12%|█▏        | 231/2000 [00:01<00:10, 174.16it/s]Adding requests:  12%|█▏        | 249/2000 [00:01<00:10, 174.24it/s]Adding requests:  13%|█▎        | 267/2000 [00:01<00:10, 172.16it/s]Adding requests:  14%|█▍        | 285/2000 [00:01<00:09, 173.52it/s]Adding requests:  15%|█▌        | 303/2000 [00:01<00:09, 173.87it/s]Adding requests:  16%|█▌        | 321/2000 [00:01<00:09, 174.83it/s]Adding requests:  17%|█▋        | 339/2000 [00:01<00:09, 174.42it/s]Adding requests:  18%|█▊        | 360/2000 [00:02<00:08, 184.10it/s]Adding requests:  19%|█▉        | 385/2000 [00:02<00:07, 203.23it/s]Adding requests:  21%|██        | 411/2000 [00:02<00:07, 218.29it/s]Adding requests:  22%|██▏       | 436/2000 [00:02<00:06, 226.95it/s]Adding requests:  23%|██▎       | 462/2000 [00:02<00:06, 235.28it/s]Adding requests:  24%|██▍       | 488/2000 [00:02<00:06, 240.91it/s]Adding requests:  26%|██▌       | 514/2000 [00:02<00:06, 243.66it/s]Adding requests:  27%|██▋       | 540/2000 [00:02<00:05, 247.26it/s]Adding requests:  28%|██▊       | 566/2000 [00:02<00:05, 249.11it/s]Adding requests:  30%|██▉       | 591/2000 [00:02<00:05, 249.28it/s]Adding requests:  31%|███       | 617/2000 [00:03<00:05, 251.17it/s]Adding requests:  32%|███▏      | 643/2000 [00:03<00:05, 252.63it/s]Adding requests:  33%|███▎      | 669/2000 [00:03<00:05, 251.19it/s]Adding requests:  35%|███▍      | 695/2000 [00:03<00:05, 252.20it/s]Adding requests:  36%|███▌      | 721/2000 [00:03<00:05, 252.23it/s]Adding requests:  37%|███▋      | 747/2000 [00:03<00:04, 252.48it/s]Adding requests:  39%|███▊      | 773/2000 [00:03<00:04, 253.18it/s]Adding requests:  40%|███▉      | 799/2000 [00:03<00:05, 240.15it/s]Adding requests:  41%|████▏     | 825/2000 [00:03<00:04, 244.53it/s]Adding requests:  43%|████▎     | 851/2000 [00:04<00:04, 247.79it/s]Adding requests:  44%|████▍     | 876/2000 [00:04<00:04, 247.95it/s]Adding requests:  45%|████▌     | 902/2000 [00:04<00:04, 249.63it/s]Adding requests:  46%|████▋     | 928/2000 [00:04<00:04, 250.69it/s]Adding requests:  48%|████▊     | 954/2000 [00:04<00:04, 250.14it/s]Adding requests:  49%|████▉     | 980/2000 [00:04<00:04, 251.40it/s]Adding requests:  50%|█████     | 1006/2000 [00:04<00:03, 252.55it/s]Adding requests:  52%|█████▏    | 1032/2000 [00:04<00:03, 251.29it/s]Adding requests:  53%|█████▎    | 1058/2000 [00:04<00:03, 253.11it/s]Adding requests:  54%|█████▍    | 1084/2000 [00:04<00:03, 252.20it/s]Adding requests:  56%|█████▌    | 1110/2000 [00:05<00:03, 252.89it/s]Adding requests:  57%|█████▋    | 1136/2000 [00:05<00:03, 252.87it/s]Adding requests:  58%|█████▊    | 1162/2000 [00:05<00:03, 250.88it/s]Adding requests:  59%|█████▉    | 1188/2000 [00:05<00:03, 251.90it/s]Adding requests:  61%|██████    | 1214/2000 [00:05<00:03, 252.48it/s]Adding requests:  62%|██████▏   | 1240/2000 [00:05<00:03, 251.20it/s]Adding requests:  63%|██████▎   | 1266/2000 [00:05<00:02, 251.71it/s]Adding requests:  65%|██████▍   | 1292/2000 [00:05<00:02, 253.44it/s]Adding requests:  66%|██████▌   | 1318/2000 [00:05<00:02, 251.17it/s]Adding requests:  67%|██████▋   | 1344/2000 [00:05<00:02, 251.65it/s]Adding requests:  68%|██████▊   | 1370/2000 [00:06<00:02, 249.10it/s]Adding requests:  70%|██████▉   | 1396/2000 [00:06<00:02, 250.17it/s]Adding requests:  71%|███████   | 1422/2000 [00:06<00:02, 250.54it/s]Adding requests:  72%|███████▏  | 1448/2000 [00:06<00:02, 249.48it/s]Adding requests:  74%|███████▎  | 1474/2000 [00:06<00:02, 250.73it/s]Adding requests:  75%|███████▌  | 1500/2000 [00:06<00:01, 250.74it/s]Adding requests:  76%|███████▋  | 1526/2000 [00:06<00:01, 249.71it/s]Adding requests:  78%|███████▊  | 1552/2000 [00:06<00:01, 250.26it/s]Adding requests:  79%|███████▉  | 1578/2000 [00:06<00:01, 248.79it/s]Adding requests:  80%|████████  | 1604/2000 [00:07<00:01, 249.25it/s]Adding requests:  82%|████████▏ | 1630/2000 [00:07<00:01, 249.45it/s]Adding requests:  83%|████████▎ | 1655/2000 [00:07<00:01, 236.35it/s]Adding requests:  84%|████████▍ | 1681/2000 [00:07<00:01, 240.65it/s]Adding requests:  85%|████████▌ | 1706/2000 [00:07<00:01, 242.33it/s]Adding requests:  87%|████████▋ | 1732/2000 [00:07<00:01, 245.57it/s]Adding requests:  88%|████████▊ | 1757/2000 [00:07<00:00, 246.54it/s]Adding requests:  89%|████████▉ | 1782/2000 [00:07<00:00, 246.31it/s]Adding requests:  90%|█████████ | 1807/2000 [00:07<00:00, 247.17it/s]Adding requests:  92%|█████████▏| 1832/2000 [00:07<00:00, 248.00it/s]Adding requests:  93%|█████████▎| 1857/2000 [00:08<00:00, 247.22it/s]Adding requests:  94%|█████████▍| 1883/2000 [00:08<00:00, 248.20it/s]Adding requests:  95%|█████████▌| 1908/2000 [00:08<00:00, 247.53it/s]Adding requests:  97%|█████████▋| 1933/2000 [00:08<00:00, 248.08it/s]Adding requests:  98%|█████████▊| 1959/2000 [00:08<00:00, 249.41it/s]Adding requests:  99%|█████████▉| 1984/2000 [00:08<00:00, 248.02it/s]Adding requests: 100%|██████████| 2000/2000 [00:08<00:00, 231.54it/s]
-Processed prompts:   0%|          | 0/2000 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:   1%|▏         | 27/2000 [00:00<00:07, 250.78it/s, est. speed input: 953590.99 toks/s, output: 12541.39 toks/s]Processed prompts:   3%|▎         | 53/2000 [00:00<00:19, 99.98it/s, est. speed input: 418447.24 toks/s, output: 5505.25 toks/s]  Processed prompts:   3%|▎         | 68/2000 [00:00<00:24, 80.15it/s, est. speed input: 346259.72 toks/s, output: 4555.71 toks/s][0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 1.0
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 2.5
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 4.333333333333333
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 5.25
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 5.8
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 6.166666666666667
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 6.714285714285714
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 7.25
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 7.777777777777778
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 8.2
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 8.545454545454545
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 8.833333333333334
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 9.076923076923077
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 9.285714285714286
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 9.533333333333333
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 9.875
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 10.352941176470589
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 10.833333333333334
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 11.263157894736842
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 11.75
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 12.19047619047619
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 12.590909090909092
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 13.043478260869565
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 13.541666666666666
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 14.04
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 14.5
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 15.0
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 15.5
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 16.06896551724138
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 16.7
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 17.387096774193548
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 18.0625
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 18.818181818181817
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 19.529411764705884
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 20.228571428571428
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 20.88888888888889
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 21.54054054054054
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 22.210526315789473
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 22.897435897435898
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 23.55
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 24.24390243902439
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 24.928571428571427
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 25.627906976744185
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 26.34090909090909
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 27.044444444444444
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 27.73913043478261
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 28.404255319148938
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 29.0625
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 29.714285714285715
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 30.38
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 31.03921568627451
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 31.71153846153846
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 32.35849056603774
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 32.925925925925924
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 33.472727272727276
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 34.0
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 34.54385964912281
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 35.10344827586207
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 35.66101694915254
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 36.2
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 36.75409836065574
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 37.29032258064516
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 37.84126984126984
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 38.375
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 38.90769230769231
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 39.42424242424242
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 39.8955223880597
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 40.338235294117645
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 40.78260869565217
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 41.22857142857143
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 41.67605633802817
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 42.15277777777778
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 42.657534246575345
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 43.12162162162162
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 43.54666666666667
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 43.94736842105263
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 44.33766233766234
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 44.69230769230769
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 45.0253164556962
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 45.3125
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 45.55555555555556
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 45.75609756097561
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 45.93975903614458
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.07142857142857
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.2
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.31395348837209
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.42528735632184
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.52272727272727
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.59550561797753
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.644444444444446
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.69230769230769
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.70652173913044
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.70967741935484
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.691489361702125
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.65263157894737
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.604166666666664
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.54639175257732
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.48979591836735
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.42424242424242
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.35
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.257425742574256
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.15686274509804
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.029126213592235
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 45.875
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 45.714285714285715
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: Processed prompts:   4%|▍         | 79/2000 [00:00<00:23, 80.26it/s, est. speed input: 340057.64 toks/s, output: 4474.31 toks/s]Processed prompts:   4%|▍         | 89/2000 [00:01<00:27, 69.36it/s, est. speed input: 311274.76 toks/s, output: 4095.43 toks/s]Processed prompts:   5%|▌         | 101/2000 [00:03<02:20, 13.47it/s, est. speed input: 104544.47 toks/s, output: 1375.56 toks/s]Processed prompts:  10%|█         | 201/2000 [00:05<00:54, 33.24it/s, est. speed input: 140592.84 toks/s, output: 1845.23 toks/s]45.556603773584904
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 45.401869158878505
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 45.23148148148148
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 45.027522935779814
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 44.80909090909091
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 44.585585585585584
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 44.348214285714285
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 44.11504424778761
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 43.86842105263158
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 43.62608695652174
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 43.37931034482759
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 43.12820512820513
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 42.88135593220339
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 42.621848739495796
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 42.35
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 42.074380165289256
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 41.778688524590166
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 41.46341463414634
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 41.935483870967744
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 42.4
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 42.857142857142854
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 43.30708661417323
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 43.75
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 44.18604651162791
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 44.61538461538461
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 45.038167938931295
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 45.45454545454545
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 45.86466165413534
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.26865671641791
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 46.666666666666664
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 47.05882352941177
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 47.44525547445255
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 47.82608695652174
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 48.201438848920866
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 48.57142857142857
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 48.93617021276596
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 49.29577464788732
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 49.65034965034965
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 50.0
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 50.3448275862069
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 50.68493150684932
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 51.02040816326531
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 51.351351351351354
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 51.67785234899329
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 52.0
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 52.317880794701985
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 52.63157894736842
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 52.94117647058823
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 53.246753246753244
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 53.54838709677419
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 53.84615384615385
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 54.140127388535035
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 54.43037974683544
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 54.716981132075475
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 55.0
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 55.27950310559006
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 55.55555555555556
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 55.828220858895705
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 56.09756097560975
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 56.36363636363637
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 56.626506024096386
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 56.88622754491018
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 57.142857142857146
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 57.396449704142015
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 57.64705882352941
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 57.89473684210526
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 58.13953488372093
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 58.38150289017341
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 58.62068965517241
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 58.857142857142854
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 59.09090909090909
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 59.32203389830509
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 59.550561797752806
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 59.77653631284916
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 60.0
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 60.22099447513812
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 60.43956043956044
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 60.65573770491803
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 60.869565217391305
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 61.08108108108108
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 61.29032258064516
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 61.49732620320856
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 61.702127659574465
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 61.904761904761905
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 62.10526315789474
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 62.303664921465966
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 62.5
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 62.69430051813472
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 62.88659793814433
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 63.07692307692308
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 63.265306122448976
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 63.45177664974619
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 63.63636363636363
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 63.81909547738694
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 64.0
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 64.17910447761194
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 64.35148514851485
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 64.52216748768473
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 64.69117647058823
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 64.85853658536585
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 65.02427184466019
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 65.18840579710145
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 65.35096153846153
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 65.51196172248804
-Processed prompts:  10%|█         | 207/2000 [00:06<01:03, 28.08it/s, est. speed input: 128053.68 toks/s, output: 1678.84 toks/s]Processed prompts:  15%|█▌        | 301/2000 [00:08<00:51, 33.07it/s, est. speed input: 132624.81 toks/s, output: 1740.72 toks/s][0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 65.67142857142858
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 65.82938388625593
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 65.98584905660377
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 66.14084507042253
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 66.28971962616822
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 66.43720930232558
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 66.58333333333333
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 66.72811059907833
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 66.87155963302752
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 67.01369863013699
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 67.15454545454546
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 67.29411764705883
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 67.43243243243244
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 67.5695067264574
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 67.70535714285714
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 67.84
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 67.98230088495575
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 68.12334801762114
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 68.26315789473684
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 68.40174672489083
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 68.5391304347826
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 68.67532467532467
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 68.8103448275862
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 68.94420600858369
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 69.07692307692308
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 69.20851063829787
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 69.33898305084746
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 69.46835443037975
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 69.59663865546219
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 69.72384937238493
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 69.85
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 69.97510373443983
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 70.09917355371901
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 70.22222222222223
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 70.34426229508196
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 70.46530612244898
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 70.58536585365853
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 70.70445344129554
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 70.8225806451613
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 70.93975903614458
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 71.056
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 71.17131474103586
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 71.28571428571429
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 71.39920948616601
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 71.51181102362204
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 71.62352941176471
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 71.734375
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 71.8443579766537
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 71.95348837209302
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 72.06177606177606
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 72.16923076923077
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 72.27586206896552
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 72.38167938931298
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 72.48669201520913
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 72.5909090909091
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 72.69433962264151
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 72.796992481203
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 72.89887640449439
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 73.0
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 73.1003717472119
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 73.2
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 73.2988929889299
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 73.3970588235294
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 73.49450549450549
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 73.5912408759124
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 73.68727272727273
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 73.78260869565217
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 73.87725631768953
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 73.97122302158273
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 74.06451612903226
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 74.15714285714286
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 74.2491103202847
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 74.34042553191489
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 74.43109540636043
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 74.52112676056338
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 74.61052631578947
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 74.6993006993007
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 74.78745644599303
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 74.875
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 74.96193771626298
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 75.04827586206896
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 75.1340206185567
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 75.21917808219177
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 75.3037542662116
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 75.38775510204081
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 75.47118644067797
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 75.55405405405405
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 75.63636363636364
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 75.71812080536913
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 75.79933110367892
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 75.88
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 75.96013289036544
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 76.03973509933775
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 76.11881188118812
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 76.19736842105263
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 76.27540983606558
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 76.3529411764706
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 76.42996742671009
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 76.50649350649351
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 76.58252427184466
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 76.65806451612903
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 76.73311897106109
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 76.8076923076923
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: Processed prompts:  20%|██        | 401/2000 [00:11<00:44, 35.97it/s, est. speed input: 136914.09 toks/s, output: 1798.05 toks/s]Processed prompts:  25%|██▌       | 501/2000 [00:13<00:40, 37.24it/s, est. speed input: 139227.02 toks/s, output: 1829.03 toks/s]76.8817891373802
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 76.95541401273886
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 77.02857142857142
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 77.10126582278481
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 77.17350157728707
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 77.24528301886792
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 77.31661442006269
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 77.3875
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 77.45794392523365
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 77.527950310559
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 77.59752321981424
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 77.66666666666667
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 77.73538461538462
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 77.8036809815951
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 77.86850152905198
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 77.9359756097561
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 78.0030395136778
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 78.06969696969696
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 78.13595166163142
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 78.20180722891567
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 78.26726726726727
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 78.33233532934132
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 78.39701492537313
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 78.46130952380952
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 78.52522255192878
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 78.58875739644971
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 78.65191740412979
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 78.71470588235294
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 78.77712609970675
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 78.8391812865497
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 78.90087463556851
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 78.96220930232558
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.0231884057971
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.08381502890174
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.14409221902017
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.20402298850574
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.26361031518624
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.32285714285715
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.38176638176638
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.4403409090909
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.4985835694051
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.55649717514125
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.61408450704225
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.67134831460675
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.72829131652661
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.78491620111731
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.84122562674095
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.89722222222223
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 79.95290858725762
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.00828729281768
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.0633608815427
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.11813186813187
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.17260273972603
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.22677595628416
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.28065395095368
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.33423913043478
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.38753387533875
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.44054054054054
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.49326145552561
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.54569892473118
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.59785522788204
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.64973262032086
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.70133333333334
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.75265957446808
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.80371352785146
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.85449735449735
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.90501319261213
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 80.95526315789473
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.00524934383202
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.05497382198953
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.10443864229765
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.15364583333333
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.2025974025974
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.25129533678756
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.29974160206719
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.3479381443299
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.39588688946016
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.44358974358974
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.49104859335038
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.53826530612245
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.5852417302799
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.63197969543147
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.67848101265822
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.72474747474747
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.77078085642317
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.81658291457286
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.86215538847118
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.9075
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.95261845386534
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 81.99751243781094
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.04218362282879
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.08663366336634
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.13086419753087
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.17487684729063
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.21867321867322
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.26225490196079
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.30562347188264
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.34878048780487
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.39172749391727
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.43446601941747
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.47699757869249
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.51932367149759
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.56144578313253
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m Processed prompts:  30%|███       | 601/2000 [00:16<00:36, 38.02it/s, est. speed input: 140907.84 toks/s, output: 1851.52 toks/s]Processed prompts:  35%|███▌      | 701/2000 [00:18<00:33, 38.49it/s, est. speed input: 142129.38 toks/s, output: 1867.86 toks/s]current batch size: 82.60336538461539
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.64508393285372
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.6866028708134
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.72792362768496
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.76904761904763
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.80997624703087
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.85071090047393
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.89125295508275
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.93160377358491
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 82.97176470588235
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.01173708920187
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.05152224824356
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.0911214953271
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.13053613053613
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.16976744186047
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.20881670533643
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.24768518518519
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.2863741339492
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.32488479262673
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.3632183908046
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.40137614678899
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.43935926773456
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.4771689497717
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.51480637813212
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.55227272727272
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.58956916099773
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.62669683257919
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.66365688487585
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.70045045045045
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.7370786516854
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.77354260089686
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.80984340044743
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.84598214285714
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.88195991091314
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.91777777777777
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.95343680709534
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 83.98893805309734
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.0242825607064
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.05947136563877
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.0945054945055
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.12938596491227
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.16411378555799
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.19868995633188
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.23311546840958
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.26739130434783
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.30151843817788
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.33549783549783
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.36933045356372
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.40301724137932
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.43655913978495
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.46995708154506
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.5032119914347
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.53632478632478
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.56929637526652
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.60212765957446
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.63481953290871
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.66737288135593
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.69978858350952
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.73206751054852
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.7642105263158
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.79621848739495
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.82809224318659
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.85983263598327
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.89144050104385
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.92291666666667
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.95426195426195
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 84.98547717842324
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.01656314699792
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.04752066115702
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.07835051546392
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.10905349794238
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.13963039014374
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.17008196721312
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.20040899795501
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.23061224489796
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.26069246435846
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.29065040650407
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.32048681541582
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.3502024291498
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.37979797979798
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.40927419354838
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.43863179074447
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.46787148594377
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.49699398797596
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.526
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.55489021956087
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.58366533864542
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.61232604373757
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.64087301587301
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.66930693069307
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.69762845849803
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.7258382642998
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.75393700787401
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.7819253438114
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.80980392156863
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.8375733855186
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.865234375
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.89278752436647
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.92023346303502
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.94757281553397
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 85.9748062015504
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.00193423597679
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.02895752895753
-Processed prompts:  40%|████      | 801/2000 [00:21<00:31, 38.59it/s, est. speed input: 142771.62 toks/s, output: 1876.59 toks/s]Processed prompts:  45%|████▌     | 901/2000 [00:23<00:28, 38.65it/s, est. speed input: 143269.33 toks/s, output: 1883.29 toks/s][0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.05587668593449
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.08269230769231
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.10940499040306
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.1360153256705
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.16252390057362
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.18893129770993
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.21523809523809
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.24144486692015
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.26755218216319
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.29356060606061
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.3194706994329
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.34528301886793
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.37099811676083
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.39661654135338
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.42213883677299
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.44756554307116
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.47289719626168
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.4981343283582
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.52327746741155
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.54832713754647
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.57328385899814
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.59814814814816
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.62292051756008
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.64760147601476
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.67219152854511
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.6966911764706
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.72110091743119
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.74542124542124
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.76965265082266
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.79379562043796
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.81785063752277
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.84181818181818
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.86569872958258
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.88949275362319
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.91320072332731
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.93682310469315
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.96036036036035
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 86.98381294964028
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.00718132854578
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.0304659498208
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.05366726296958
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.07678571428572
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.09982174688056
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.12277580071175
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.14564831261102
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.16843971631205
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.19115044247788
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.21378091872792
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.2363315696649
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.25880281690141
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.28119507908612
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.30350877192983
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.32574430823118
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.3479020979021
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.36998254799302
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.39198606271778
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.41391304347826
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.43576388888889
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.4575389948007
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.47923875432527
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.50086355785838
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.52241379310345
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.54388984509467
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.56529209621993
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.58662092624357
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.60787671232876
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.62905982905983
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.65017064846417
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.67120954003407
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.6921768707483
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.71307300509338
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.73389830508475
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.75465313028765
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.77533783783784
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.79595278246205
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.81649831649831
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.83697478991597
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.85738255033557
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.87772194304857
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.89799331103679
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.91819699499165
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.93833333333333
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.95840266222962
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.97840531561462
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 87.9983416252073
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.01821192052981
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.03801652892562
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.05775577557756
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.07742998352553
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.0970394736842
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.11658456486043
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.1360655737705
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.15548281505728
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.17483660130719
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.19412724306689
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.21335504885994
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.23252032520325
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.25162337662337
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.27066450567261
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.28964401294499
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.30856219709209
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.32741935483871
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m Processed prompts:  50%|█████     | 1001/2000 [00:26<00:25, 38.78it/s, est. speed input: 143770.32 toks/s, output: 1890.01 toks/s]Processed prompts:  55%|█████▌    | 1101/2000 [00:29<00:23, 38.69it/s, est. speed input: 144001.15 toks/s, output: 1893.16 toks/s]current batch size: 88.34621578099839
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.36495176848875
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.38362760834671
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.40224358974359
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.4208
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.43929712460064
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.45773524720893
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.47611464968153
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.49443561208267
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.51269841269841
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.53090332805071
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.54905063291139
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.56714060031595
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.58517350157729
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.60314960629921
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.62106918238993
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.63893249607536
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.65673981191223
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.67449139280126
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.6921875
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.70982839313572
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.72741433021807
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.74494556765163
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.76242236024845
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.77984496124031
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.79721362229103
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.8145285935085
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.83179012345678
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.84899845916794
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.86615384615385
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.88325652841782
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.90030674846626
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.91730474732006
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.934250764526
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.95114503816794
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.96798780487805
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 88.98477929984779
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.0015197568389
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.01820940819424
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.03484848484848
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.05143721633888
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.06797583081571
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.08446455505279
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.10090361445783
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.1172932330827
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.13363363363364
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.14992503748125
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.16616766467065
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.18236173393124
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.19850746268656
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.21460506706408
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.23065476190476
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.24665676077267
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.26261127596439
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.27851851851852
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.29437869822485
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.31019202363368
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.3259587020649
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.34167893961708
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.35735294117647
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.37298091042584
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.38856304985337
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.40409956076135
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.41959064327486
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.43503649635036
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.45043731778425
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.46579330422125
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.4811046511628
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.49637155297533
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.51159420289855
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.52677279305354
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.54190751445087
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.55699855699855
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.57204610951008
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.58705035971224
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.60201149425288
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.61692969870874
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.63180515759312
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.64663805436338
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.66142857142857
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.67617689015692
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.69088319088318
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.70554765291607
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.72017045454545
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.73475177304965
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.74929178470255
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.76379066478076
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.77824858757062
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.79266572637518
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.80704225352113
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.82137834036568
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.83567415730337
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.8499298737728
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.86414565826331
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.87832167832168
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.89245810055866
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.90655509065552
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.92061281337047
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.9346314325452
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.9486111111111
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.9625520110957
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.9764542936288
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 89.99031811894882
-Processed prompts:  60%|██████    | 1201/2000 [00:31<00:20, 38.82it/s, est. speed input: 144374.72 toks/s, output: 1898.16 toks/s]Processed prompts:  65%|██████▌   | 1301/2000 [00:34<00:17, 38.83it/s, est. speed input: 144627.25 toks/s, output: 1901.60 toks/s][0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.00414364640883
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.01793103448276
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.03168044077135
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.04539202200826
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.05906593406593
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.0727023319616
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.08630136986301
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.0998632010944
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.11338797814207
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.1268758526603
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.14032697547684
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.15374149659864
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.16711956521739
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.18046132971506
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.19376693766938
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.20703653585927
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.22027027027028
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.23346828609986
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.2466307277628
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.25975773889637
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.27284946236558
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.28590604026846
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.29892761394102
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.31191432396251
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.32486631016043
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.33778371161549
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.35066666666667
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.3635153129161
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.37632978723404
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.38911022576362
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.40185676392574
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.41456953642384
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.42724867724868
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.43989431968296
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.45250659630607
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.46508563899869
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.47763157894737
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.49014454664915
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.50262467191601
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.51507208387942
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.52748691099477
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.53986928104575
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.55221932114883
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.5645371577575
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.57682291666667
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.5890767230169
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.6012987012987
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.61348897535667
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.62564766839378
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.63777490297542
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.64987080103359
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.66193548387096
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.67396907216495
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.68597168597168
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.69794344473007
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.70988446726572
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.72179487179487
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.73367477592829
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.74552429667519
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.757343550447
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.76913265306122
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.78089171974523
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.79262086513995
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.80432020330369
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.81598984771574
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.8276299112801
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.83924050632912
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.85082174462705
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.86237373737374
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.87389659520807
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.8853904282116
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.89685534591194
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.90829145728644
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.91969887076537
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.93107769423558
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.9424280350438
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.95375
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.96504369538077
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.97630922693267
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.98754669987547
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 90.99875621890547
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.00993788819876
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.0210918114144
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.03221809169764
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.04331683168317
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.05438813349815
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.06543209876543
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.07644882860666
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.08743842364532
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.09840098400984
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.10933660933661
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.12024539877301
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.13112745098039
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.14198286413709
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.15281173594133
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.16361416361417
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.17439024390244
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.18514007308161
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.19586374695864
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.20656136087484
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.21723300970874
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.2278787878788
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m Processed prompts:  70%|███████   | 1401/2000 [00:36<00:15, 38.84it/s, est. speed input: 144834.53 toks/s, output: 1904.42 toks/s]Processed prompts:  75%|███████▌  | 1501/2000 [00:39<00:12, 38.70it/s, est. speed input: 144902.52 toks/s, output: 1905.40 toks/s]current batch size: 91.23849878934625
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.2490931076179
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.25966183574879
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.270205066345
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.28072289156627
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.29121540312876
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.3016826923077
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.31212484993998
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.32254196642685
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.33293413173652
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.3433014354067
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.3536439665472
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.36396181384248
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.37425506555424
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.38452380952381
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.3947681331748
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.40498812351544
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.41518386714117
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.42535545023696
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.43550295857987
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.44562647754137
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.45572609208973
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.46580188679245
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.47585394581861
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.48588235294118
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.49588719153937
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.50586854460094
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.51582649472451
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.52576112412179
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.53567251461989
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.54556074766356
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.55542590431739
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.56526806526807
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.57508731082655
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.58488372093024
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.59465737514518
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.60440835266822
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.61413673232909
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.6238425925926
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.63352601156069
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.64318706697459
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.65282583621683
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.66244239631337
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.67203682393556
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.6816091954023
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.69115958668198
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.7006880733945
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.71019473081328
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.71967963386727
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.72914285714286
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.73858447488584
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.74800456100343
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.75740318906605
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.76678043230945
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.77613636363637
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.78547105561861
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.79478458049887
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.80407701019253
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.8133484162896
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.8225988700565
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.83182844243792
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.84103720405862
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.85022522522523
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.85939257592801
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.86853932584269
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.87766554433222
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.88677130044843
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.89585666293394
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.90492170022371
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.91396648044693
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.92299107142857
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.93199554069119
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.94097995545657
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.94994438264739
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.9588888888889
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.96781354051055
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.97671840354768
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.98560354374308
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 91.99446902654867
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.00331491712707
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.0121412803532
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.02094818081588
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.02973568281938
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.03850385038504
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.04725274725274
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.05598243688254
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.06469298245614
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.07338444687842
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.082056892779
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.09071038251366
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.09934497816595
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.10796074154852
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.11655773420479
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.12513601741023
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.13369565217391
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.14223669923996
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.15075921908894
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.15926327193932
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.16774891774892
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.17621621621622
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.18466522678186
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.19309600863
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.20150862068965
-Processed prompts:  80%|████████  | 1601/2000 [00:41<00:10, 38.76it/s, est. speed input: 145084.30 toks/s, output: 1907.81 toks/s]Processed prompts:  85%|████████▌ | 1701/2000 [00:44<00:07, 38.44it/s, est. speed input: 144981.92 toks/s, output: 1906.54 toks/s][0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.20990312163617
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.21827956989247
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.2266380236305
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.23497854077253
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.2433011789925
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.25160599571734
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.25989304812835
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.2681623931624
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.27641408751334
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.28464818763327
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.29179978700745
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.3
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.30818278427205
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.31634819532908
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.32449628844114
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.33262711864407
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.34074074074074
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.34883720930233
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.35691657866948
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.36497890295358
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.37302423603793
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.38105263157895
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.38906414300736
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.3970588235294
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.40503672612802
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.41299790356395
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.42094240837696
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.42887029288703
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.4367816091954
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.4446764091858
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.45255474452554
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.46041666666666
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.46826222684703
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.47609147609148
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.48390446521287
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.49170124481327
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.49948186528498
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.5072463768116
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.51499482936919
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.52272727272727
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.53044375644996
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.53814432989691
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.54582904222451
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.55349794238683
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.56115107913669
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.56878850102669
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.57641025641026
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.58401639344262
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.59160696008189
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.59918200408998
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.6067415730337
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.61428571428571
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.62181447502549
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.62932790224032
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.63682604272636
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.64430894308943
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.6517766497462
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.65922920892496
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.66666666666667
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.67408906882591
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.68149646107179
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.68888888888888
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.6962663975782
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.70362903225806
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.71097683786506
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.71830985915493
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.72562814070352
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.73293172690764
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.74022066198596
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.74749498997996
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.75475475475476
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.762
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.76923076923077
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.77644710578842
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.78364905284147
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.79083665338645
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.79800995024875
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.8051689860835
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.81231380337637
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.81944444444444
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.82656095143706
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.83366336633664
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.84075173095944
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.84782608695652
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.85488647581441
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.86193293885601
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.86896551724138
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.8759842519685
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.88298918387414
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.88998035363458
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.89695780176643
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.90392156862745
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.91087169441724
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.91780821917808
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.9247311827957
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.931640625
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.93853658536585
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.94541910331384
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.95228821811101
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.9591439688716
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.96598639455782
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.97281553398058
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: Processed prompts:  90%|█████████ | 1801/2000 [00:47<00:05, 38.43it/s, est. speed input: 145035.55 toks/s, output: 1907.28 toks/s]Processed prompts:  95%|█████████▌| 1901/2000 [00:49<00:02, 38.61it/s, est. speed input: 145206.87 toks/s, output: 1909.55 toks/s]Processed prompts: 100%|██████████| 2000/2000 [00:49<00:00, 38.61it/s, est. speed input: 152591.48 toks/s, output: 2006.71 toks/s]Processed prompts: 100%|██████████| 2000/2000 [00:49<00:00, 40.15it/s, est. speed input: 152591.48 toks/s, output: 2006.71 toks/s]
-92.97963142580019
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.98643410852713
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 92.99322362052276
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.0
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.00676328502415
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.01351351351352
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.02025072324011
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.02697495183044
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.03368623676612
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.04038461538461
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.04707012487992
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.05374280230326
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.06040268456375
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.06704980842912
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.07368421052631
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.08030592734225
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.08691499522445
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.09351145038168
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.10009532888465
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.10666666666667
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.11322549952426
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.11977186311788
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.12630579297246
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.13282732447819
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.13933649289099
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.14583333333333
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.1523178807947
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.15879017013232
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.16525023607177
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.17169811320754
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.17813383600377
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.18455743879473
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.19096895578551
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.19736842105263
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.2037558685446
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.21013133208255
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.21649484536083
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.22284644194757
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.22918615528532
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.23551401869159
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.24183006535948
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.2481343283582
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.25442684063374
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.26070763500931
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.26697674418605
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.27323420074349
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.2794800371402
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.28571428571429
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.29193697868396
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.29814814814814
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.30434782608695
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.3105360443623
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.31671283471837
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.32287822878229
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.32903225806452
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.33517495395948
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.34130634774608
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.34742647058823
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.35353535353535
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.35963302752293
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.36480293308891
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.36996336996337
-[0;36m(EngineCore_DP0 pid=1512504)[0;0m current batch size: 93.28453796889295
-[rank0]:[W227 08:48:28.666317680 ProcessGroupNCCL.cpp:1524] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
-[ITER 1] time = 58.530s | throughput = 34.17 req/s
-
-====================================
-AVERAGED RESULTS
-====================================
-Average iteration time : 58.530s
-Average throughput     : 34.17 req/s
-====================================
-

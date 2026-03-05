@@ -1,276 +1,0 @@
-
-Loading tokenizer...
-Building prompts...
-
-[INFO] Prompt composition:
-  Total length (L)          : 5000 tokens
-  Common prefix (f1=0.00) : 0 tokens
-  Family suffix             : 5000 tokens
-  Number of families        : 2
-  Requests per family       : [2000, 0]
-  Total requests            : 2000
-
-Generated 2000 prompts
-
-Initializing vLLM...
-INFO 02-27 08:32:15 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.75, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
-INFO 02-27 08:32:16 [model.py:530] Resolved architecture: LlamaForCausalLM
-INFO 02-27 08:32:16 [model.py:1545] Using max model len 131072
-INFO 02-27 08:32:17 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=8192.
-INFO 02-27 08:32:17 [vllm.py:632] Asynchronous scheduling is enabled.
-INFO 02-27 08:32:17 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
-WARNING 02-27 08:32:19 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:25 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:27 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:37739 backend=nccl
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:27 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:27 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:28 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m Loading safetensors checkpoint shards:   0% Completed | 0/4 [00:00<?, ?it/s]
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m Loading safetensors checkpoint shards:  25% Completed | 1/4 [00:00<00:00,  4.54it/s]
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m Loading safetensors checkpoint shards:  50% Completed | 2/4 [00:01<00:01,  1.67it/s]
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m Loading safetensors checkpoint shards:  75% Completed | 3/4 [00:02<00:00,  1.28it/s]
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:03<00:00,  1.18it/s]
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:03<00:00,  1.32it/s]
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m 
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:33 [default_loader.py:291] Loading weights took 3.13 seconds
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:33 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 5.085632 seconds
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:38 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/1eef881998/rank_0_0/backbone for vLLM's torch.compile
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:38 [backends.py:704] Dynamo bytecode transform time: 4.40 s
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:44 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 8192) from the cache, took 1.691 s
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:44 [monitor.py:34] torch.compile takes 6.09 s in total
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:45 [gpu_worker.py:358] Available KV cache memory: 18.16 GiB
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:46 [kv_cache_utils.py:1305] GPU KV cache size: 148,720 tokens
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:46 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.13x
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):   0%|          | 0/51 [00:00<?, ?it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):   4%|▍         | 2/51 [00:00<00:03, 13.44it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):   8%|▊         | 4/51 [00:00<00:03, 13.04it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  12%|█▏        | 6/51 [00:00<00:03, 13.13it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  16%|█▌        | 8/51 [00:00<00:03, 13.22it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  20%|█▉        | 10/51 [00:00<00:02, 13.69it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  24%|██▎       | 12/51 [00:00<00:02, 14.02it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  27%|██▋       | 14/51 [00:01<00:02, 14.14it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  31%|███▏      | 16/51 [00:01<00:02, 14.19it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  35%|███▌      | 18/51 [00:01<00:02, 14.93it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  39%|███▉      | 20/51 [00:01<00:01, 15.71it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  45%|████▌     | 23/51 [00:01<00:01, 17.40it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  49%|████▉     | 25/51 [00:01<00:01, 17.90it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  55%|█████▍    | 28/51 [00:01<00:01, 19.18it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  61%|██████    | 31/51 [00:01<00:01, 19.34it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  67%|██████▋   | 34/51 [00:02<00:00, 20.40it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  73%|███████▎  | 37/51 [00:02<00:00, 21.30it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  78%|███████▊  | 40/51 [00:02<00:00, 21.06it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  84%|████████▍ | 43/51 [00:02<00:00, 20.86it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  90%|█████████ | 46/51 [00:02<00:00, 21.20it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  96%|█████████▌| 49/51 [00:02<00:00, 20.94it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE): 100%|██████████| 51/51 [00:02<00:00, 17.83it/s]
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m Capturing CUDA graphs (decode, FULL):   0%|          | 0/50 [00:00<?, ?it/s]Capturing CUDA graphs (decode, FULL):   4%|▍         | 2/50 [00:00<00:03, 13.05it/s]Capturing CUDA graphs (decode, FULL):   8%|▊         | 4/50 [00:00<00:03, 13.80it/s]Capturing CUDA graphs (decode, FULL):  12%|█▏        | 6/50 [00:00<00:03, 14.01it/s]Capturing CUDA graphs (decode, FULL):  16%|█▌        | 8/50 [00:00<00:03, 13.95it/s]Capturing CUDA graphs (decode, FULL):  20%|██        | 10/50 [00:00<00:02, 14.20it/s]Capturing CUDA graphs (decode, FULL):  24%|██▍       | 12/50 [00:00<00:02, 14.37it/s]Capturing CUDA graphs (decode, FULL):  28%|██▊       | 14/50 [00:00<00:02, 14.46it/s]Capturing CUDA graphs (decode, FULL):  32%|███▏      | 16/50 [00:01<00:02, 14.79it/s]Capturing CUDA graphs (decode, FULL):  36%|███▌      | 18/50 [00:01<00:02, 15.32it/s]Capturing CUDA graphs (decode, FULL):  40%|████      | 20/50 [00:01<00:01, 15.71it/s]Capturing CUDA graphs (decode, FULL):  44%|████▍     | 22/50 [00:01<00:01, 15.88it/s]Capturing CUDA graphs (decode, FULL):  48%|████▊     | 24/50 [00:01<00:01, 16.03it/s]Capturing CUDA graphs (decode, FULL):  52%|█████▏    | 26/50 [00:01<00:01, 16.14it/s]Capturing CUDA graphs (decode, FULL):  56%|█████▌    | 28/50 [00:01<00:01, 16.13it/s]Capturing CUDA graphs (decode, FULL):  60%|██████    | 30/50 [00:01<00:01, 16.11it/s]Capturing CUDA graphs (decode, FULL):  64%|██████▍   | 32/50 [00:02<00:01, 16.11it/s]Capturing CUDA graphs (decode, FULL):  68%|██████▊   | 34/50 [00:02<00:00, 16.26it/s]Capturing CUDA graphs (decode, FULL):  72%|███████▏  | 36/50 [00:02<00:00, 16.38it/s]Capturing CUDA graphs (decode, FULL):  76%|███████▌  | 38/50 [00:02<00:00, 16.36it/s]Capturing CUDA graphs (decode, FULL):  80%|████████  | 40/50 [00:02<00:00, 16.42it/s]Capturing CUDA graphs (decode, FULL):  84%|████████▍ | 42/50 [00:02<00:00, 16.47it/s]Capturing CUDA graphs (decode, FULL):  88%|████████▊ | 44/50 [00:02<00:00, 16.45it/s]Capturing CUDA graphs (decode, FULL):  92%|█████████▏| 46/50 [00:02<00:00, 16.59it/s]Capturing CUDA graphs (decode, FULL):  96%|█████████▌| 48/50 [00:03<00:00, 16.83it/s]Capturing CUDA graphs (decode, FULL): 100%|██████████| 50/50 [00:03<00:00, 17.09it/s]Capturing CUDA graphs (decode, FULL): 100%|██████████| 50/50 [00:03<00:00, 15.79it/s]
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:52 [gpu_model_runner.py:4856] Graph capturing finished in 7 secs, took 0.56 GiB
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:52 [core.py:273] init engine (profile, create kv cache, warmup model) took 19.37 seconds
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m INFO 02-27 08:32:54 [vllm.py:632] Asynchronous scheduling is enabled.
-INFO 02-27 08:32:55 [llm.py:350] Supported tasks: ['generate']
-Starting timed runs...
-
-Adding requests:   0%|          | 0/2000 [00:00<?, ?it/s]Adding requests:   1%|          | 13/2000 [00:00<00:15, 129.55it/s]Adding requests:   2%|▏         | 32/2000 [00:00<00:12, 162.94it/s]Adding requests:   3%|▎         | 51/2000 [00:00<00:11, 174.62it/s]Adding requests:   4%|▎         | 71/2000 [00:00<00:10, 181.00it/s]Adding requests:   5%|▍         | 91/2000 [00:00<00:10, 184.70it/s]Adding requests:   6%|▌         | 110/2000 [00:00<00:10, 184.03it/s]Adding requests:   6%|▋         | 130/2000 [00:00<00:10, 186.24it/s]Adding requests:   8%|▊         | 150/2000 [00:00<00:09, 187.72it/s]Adding requests:   8%|▊         | 170/2000 [00:00<00:09, 188.57it/s]Adding requests:  10%|▉         | 190/2000 [00:01<00:09, 189.20it/s]Adding requests:  10%|█         | 209/2000 [00:01<00:09, 187.94it/s]Adding requests:  11%|█▏        | 229/2000 [00:01<00:09, 188.71it/s]Adding requests:  12%|█▏        | 248/2000 [00:01<00:09, 188.73it/s]Adding requests:  13%|█▎        | 268/2000 [00:01<00:09, 187.75it/s]Adding requests:  14%|█▍        | 287/2000 [00:01<00:09, 187.59it/s]Adding requests:  15%|█▌        | 306/2000 [00:01<00:08, 188.23it/s]Adding requests:  16%|█▋        | 325/2000 [00:01<00:08, 188.60it/s]Adding requests:  17%|█▋        | 344/2000 [00:01<00:08, 187.17it/s]Adding requests:  18%|█▊        | 363/2000 [00:01<00:08, 187.65it/s]Adding requests:  19%|█▉        | 382/2000 [00:02<00:08, 187.95it/s]Adding requests:  20%|██        | 401/2000 [00:02<00:08, 186.80it/s]Adding requests:  21%|██        | 420/2000 [00:02<00:08, 187.27it/s]Adding requests:  22%|██▏       | 439/2000 [00:02<00:08, 187.93it/s]Adding requests:  23%|██▎       | 464/2000 [00:02<00:07, 205.05it/s]Adding requests:  25%|██▍       | 491/2000 [00:02<00:06, 222.35it/s]Adding requests:  26%|██▌       | 518/2000 [00:02<00:06, 236.34it/s]Adding requests:  27%|██▋       | 545/2000 [00:02<00:05, 245.04it/s]Adding requests:  29%|██▊       | 573/2000 [00:02<00:05, 252.80it/s]Adding requests:  30%|███       | 601/2000 [00:02<00:05, 258.09it/s]Adding requests:  31%|███▏      | 628/2000 [00:03<00:05, 259.55it/s]Adding requests:  33%|███▎      | 655/2000 [00:03<00:05, 261.63it/s]Adding requests:  34%|███▍      | 682/2000 [00:03<00:04, 263.75it/s]Adding requests:  35%|███▌      | 709/2000 [00:03<00:04, 265.56it/s]Adding requests:  37%|███▋      | 736/2000 [00:03<00:04, 266.53it/s]Adding requests:  38%|███▊      | 763/2000 [00:03<00:04, 254.39it/s]Adding requests:  40%|███▉      | 791/2000 [00:03<00:04, 259.02it/s]Adding requests:  41%|████      | 818/2000 [00:03<00:04, 260.23it/s]Adding requests:  42%|████▏     | 845/2000 [00:03<00:04, 262.09it/s]Adding requests:  44%|████▎     | 873/2000 [00:04<00:04, 264.61it/s]Adding requests:  45%|████▌     | 900/2000 [00:04<00:04, 262.36it/s]Adding requests:  46%|████▋     | 928/2000 [00:04<00:04, 264.73it/s]Adding requests:  48%|████▊     | 955/2000 [00:04<00:03, 264.43it/s]Adding requests:  49%|████▉     | 982/2000 [00:04<00:03, 265.29it/s]Adding requests:  50%|█████     | 1009/2000 [00:04<00:03, 263.99it/s]Adding requests:  52%|█████▏    | 1036/2000 [00:04<00:03, 263.54it/s]Adding requests:  53%|█████▎    | 1063/2000 [00:04<00:03, 256.63it/s]Adding requests:  55%|█████▍    | 1090/2000 [00:04<00:03, 257.90it/s]Adding requests:  56%|█████▌    | 1117/2000 [00:04<00:03, 260.56it/s]Adding requests:  57%|█████▋    | 1144/2000 [00:05<00:03, 259.80it/s]Adding requests:  59%|█████▊    | 1171/2000 [00:05<00:03, 262.09it/s]Adding requests:  60%|█████▉    | 1198/2000 [00:05<00:03, 262.79it/s]Adding requests:  61%|██████▏   | 1225/2000 [00:05<00:02, 261.73it/s]Adding requests:  63%|██████▎   | 1252/2000 [00:05<00:02, 263.41it/s]Adding requests:  64%|██████▍   | 1279/2000 [00:05<00:03, 237.82it/s]Adding requests:  65%|██████▌   | 1306/2000 [00:05<00:02, 245.57it/s]Adding requests:  67%|██████▋   | 1333/2000 [00:05<00:02, 250.65it/s]Adding requests:  68%|██████▊   | 1360/2000 [00:05<00:02, 255.34it/s]Adding requests:  69%|██████▉   | 1387/2000 [00:06<00:02, 257.77it/s]Adding requests:  71%|███████   | 1414/2000 [00:06<00:02, 259.84it/s]Adding requests:  72%|███████▏  | 1441/2000 [00:06<00:02, 262.02it/s]Adding requests:  73%|███████▎  | 1468/2000 [00:06<00:02, 261.58it/s]Adding requests:  75%|███████▍  | 1495/2000 [00:06<00:01, 263.61it/s]Adding requests:  76%|███████▌  | 1522/2000 [00:06<00:01, 263.02it/s]Adding requests:  77%|███████▋  | 1549/2000 [00:06<00:01, 262.94it/s]Adding requests:  79%|███████▉  | 1576/2000 [00:06<00:01, 264.36it/s]Adding requests:  80%|████████  | 1603/2000 [00:06<00:01, 262.58it/s]Adding requests:  82%|████████▏ | 1630/2000 [00:06<00:01, 263.91it/s]Adding requests:  83%|████████▎ | 1657/2000 [00:07<00:01, 261.09it/s]Adding requests:  84%|████████▍ | 1684/2000 [00:07<00:01, 262.47it/s]Adding requests:  86%|████████▌ | 1711/2000 [00:07<00:01, 262.22it/s]Adding requests:  87%|████████▋ | 1738/2000 [00:07<00:00, 263.42it/s]Adding requests:  88%|████████▊ | 1765/2000 [00:07<00:00, 260.52it/s]Adding requests:  90%|████████▉ | 1792/2000 [00:07<00:00, 262.26it/s]Adding requests:  91%|█████████ | 1819/2000 [00:07<00:00, 262.19it/s]Adding requests:  92%|█████████▏| 1846/2000 [00:07<00:00, 236.12it/s]Adding requests:  94%|█████████▎| 1873/2000 [00:07<00:00, 243.43it/s]Adding requests:  95%|█████████▌| 1900/2000 [00:07<00:00, 250.09it/s]Adding requests:  96%|█████████▋| 1926/2000 [00:08<00:00, 252.64it/s]Adding requests:  98%|█████████▊| 1953/2000 [00:08<00:00, 256.36it/s]Adding requests:  99%|█████████▉| 1979/2000 [00:08<00:00, 256.73it/s]Adding requests: 100%|██████████| 2000/2000 [00:08<00:00, 238.79it/s]
-Processed prompts:   0%|          | 0/2000 [00:00<?, ?it/s, est. speed input: 0.00 toks/s, output: 0.00 toks/s]Processed prompts:   0%|          | 1/2000 [00:01<48:25,  1.45s/it, est. speed input: 2614.40 toks/s, output: 34.40 toks/s]Processed prompts:   0%|          | 2/2000 [00:01<21:55,  1.52it/s, est. speed input: 4888.13 toks/s, output: 64.31 toks/s]Processed prompts:   1%|          | 18/2000 [00:01<01:46, 18.55it/s, est. speed input: 40280.77 toks/s, output: 529.90 toks/s]Processed prompts:   5%|▌         | 104/2000 [00:01<00:15, 122.62it/s, est. speed input: 213746.30 toks/s, output: 2811.96 toks/s]Processed prompts:   9%|▊         | 172/2000 [00:02<00:13, 140.23it/s, est. speed input: 288756.04 toks/s, output: 3798.74 toks/s]Processed prompts:  13%|█▎        | 251/2000 [00:02<00:10, 168.52it/s, est. speed input: 364359.46 toks/s, output: 4792.26 toks/s]Processed prompts:  16%|█▋        | 326/2000 [00:03<00:09, 176.43it/s, est. speed input: 411523.18 toks/s, output: 5412.91 toks/s]Processed prompts:  20%|█▉        | 397/2000 [00:03<00:08, 181.93it/s, est. speed input: 446751.71 toks/s, output: 5876.47 toks/s]Processed prompts:  25%|██▍       | 496/2000 [00:03<00:06, 214.95it/s, est. speed input: 507514.11 toks/s, output: 6675.93 toks/s]Processed prompts:  26%|██▌       | 520/2000 [00:08<00:44, 33.22it/s, est. speed input: 224364.43 toks/s, output: 2951.39 toks/s] [0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 1.0
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 9.0
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 40.333333333333336
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 73.0
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 108.2
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 144.16666666666666
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 180.0
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 219.375
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 250.55555555555554
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 275.5
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 295.90909090909093
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 312.9166666666667
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 327.3076923076923
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 339.64285714285717
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 350.3333333333333
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 359.6875
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 367.94117647058823
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 375.27777777777777
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 381.8421052631579
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 387.75
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 393.0952380952381
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 397.95454545454544
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 402.39130434782606
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 406.4583333333333
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 410.2
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 413.65384615384613
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 416.85185185185185
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 419.82142857142856
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 422.58620689655174
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 425.1666666666667
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 427.5806451612903
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 429.84375
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 431.969696969697
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 433.97058823529414
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 435.85714285714283
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 437.6388888888889
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 439.3243243243243
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 440.92105263157896
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 442.43589743589746
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 443.875
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 445.2439024390244
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 446.54761904761904
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 447.7906976744186
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 448.97727272727275
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 450.1111111111111
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 451.19565217391306
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 452.2340425531915
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 453.2291666666667
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 454.18367346938777
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 455.1
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 455.98039215686276
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 456.8269230769231
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 457.64150943396226
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 458.4259259259259
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 459.1818181818182
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 459.9107142857143
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 460.6140350877193
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 461.2931034482759
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 461.9491525423729
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 462.5833333333333
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 463.1967213114754
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 463.7903225806452
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 464.36507936507934
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 464.921875
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 465.46153846153845
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 465.9848484848485
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 466.4925373134328
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 466.9852941176471
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 467.463768115942
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 467.92857142857144
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 468.38028169014086
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 468.81944444444446
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 469.24657534246575
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 469.6621621621622
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 470.06666666666666
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 470.4605263157895
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 470.84415584415586
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 471.21794871794873
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 471.5822784810127
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 471.9375
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 472.28395061728395
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 472.6219512195122
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 472.95180722891564
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 473.2738095238095
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 473.5882352941176
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 473.8953488372093
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 474.1954022988506
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 474.4886363636364
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 474.7752808988764
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 475.05555555555554
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 475.3296703296703
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 475.5978260869565
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 475.86021505376345
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 476.1170212765957
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 476.36842105263156
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 476.6145833333333
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 476.8556701030928
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 477.09183673469386
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 477.32323232323233
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 477.55
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 477.7722772277228
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 477.9901960784314
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 478.20388349514565
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 478.41346153846155
-Processed prompts:  30%|███       | 604/2000 [00:08<00:27, 51.59it/s, est. speed input: 255976.26 toks/s, output: 3367.27 toks/s]Processed prompts:  34%|███▎      | 672/2000 [00:09<00:20, 65.15it/s, est. speed input: 272077.33 toks/s, output: 3579.11 toks/s]Processed prompts:  38%|███▊      | 751/2000 [00:09<00:14, 85.46it/s, est. speed input: 292960.09 toks/s, output: 3853.87 toks/s]Processed prompts:  41%|████▏     | 826/2000 [00:10<00:11, 102.89it/s, est. speed input: 309415.69 toks/s, output: 4070.37 toks/s]Processed prompts:  45%|████▍     | 897/2000 [00:10<00:09, 119.41it/s, est. speed input: 324210.96 toks/s, output: 4265.03 toks/s]Processed prompts:  50%|████▉     | 996/2000 [00:10<00:06, 153.22it/s, est. speed input: 348800.52 toks/s, output: 4588.55 toks/s]Processed prompts:  51%|█████     | 1020/2000 [00:16<00:29, 32.88it/s, est. speed input: 241818.23 toks/s, output: 3181.19 toks/s]Processed prompts:  55%|█████▌    | 1104/2000 [00:16<00:17, 49.84it/s, est. speed input: 259105.33 toks/s, output: 3408.63 toks/s]Processed prompts:  59%|█████▊    | 1173/2000 [00:16<00:13, 62.83it/s, est. speed input: 268227.45 toks/s, output: 3528.53 toks/s]Processed prompts:  63%|██████▎   | 1252/2000 [00:16<00:09, 81.97it/s, est. speed input: 280166.35 toks/s, output: 3685.60 toks/s]Processed prompts:  66%|██████▋   | 1326/2000 [00:17<00:06, 98.40it/s, est. speed input: 289746.71 toks/s, output: 3811.66 toks/s]Processed prompts:  70%|██████▉   | 1397/2000 [00:17<00:05, 113.68it/s, est. speed input: 298521.33 toks/s, output: 3927.10 toks/s]Processed prompts:  75%|███████▍  | 1496/2000 [00:18<00:03, 146.08it/s, est. speed input: 313524.20 toks/s, output: 4124.49 toks/s][0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 478.6190476190476
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 478.8207547169811
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 479.01869158878503
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 479.212962962963
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 479.4036697247706
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 479.59090909090907
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 479.77477477477476
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 479.95535714285717
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 480.13274336283183
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 480.3070175438597
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 480.4782608695652
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 480.6465517241379
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 480.8119658119658
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 480.97457627118644
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 481.1344537815126
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 481.2916666666667
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 481.44628099173553
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 481.5983606557377
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 481.7479674796748
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 481.89516129032256
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 482.04
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 482.1825396825397
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 482.3228346456693
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 482.4609375
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 482.5968992248062
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 482.7307692307692
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 482.8625954198473
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 482.99242424242425
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 483.1203007518797
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 483.24626865671644
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 483.3703703703704
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 483.49264705882354
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 483.6131386861314
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 483.731884057971
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 483.84892086330933
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 483.9642857142857
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 484.07801418439715
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 484.1901408450704
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 484.3006993006993
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 484.40972222222223
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 484.51724137931035
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 484.6232876712329
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 484.7278911564626
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 484.8310810810811
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 484.93288590604027
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 485.03333333333336
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 485.1324503311258
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 485.23026315789474
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 485.3267973856209
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 485.4220779220779
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 485.51612903225805
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 485.60897435897436
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 485.70063694267515
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 485.7911392405063
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 485.8805031446541
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 485.96875
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 486.055900621118
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 486.141975308642
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 486.2269938650307
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 486.3109756097561
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 486.3939393939394
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 486.4759036144578
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 486.5568862275449
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 486.63690476190476
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 486.71597633136093
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 486.79411764705884
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 486.87134502923976
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 486.94767441860466
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 487.02312138728325
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 487.0977011494253
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 487.1714285714286
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 487.2443181818182
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 487.316384180791
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 487.3876404494382
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 487.4581005586592
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 487.52777777777777
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 487.5966850828729
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 487.66483516483515
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 487.73224043715845
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 487.79891304347825
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 487.86486486486484
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 487.9301075268817
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 487.9946524064171
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.0585106382979
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.1216931216931
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.1842105263158
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.24607329842934
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.3072916666667
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.36787564766837
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.42783505154637
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.4871794871795
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.5459183673469
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.6040609137056
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.66161616161617
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.7185929648241
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.775
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.83084577114425
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.88613861386136
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.9408866995074
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.9950980392157
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 489.0439024390244
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 489.0145631067961
-Processed prompts:  76%|███████▌  | 1519/2000 [00:23<00:14, 32.32it/s, est. speed input: 247166.42 toks/s, output: 3251.54 toks/s] Processed prompts:  84%|████████▎ | 1674/2000 [00:23<00:05, 63.96it/s, est. speed input: 270399.66 toks/s, output: 3557.12 toks/s]Processed prompts:  93%|█████████▎| 1868/2000 [00:23<00:01, 119.02it/s, est. speed input: 300458.46 toks/s, output: 3952.58 toks/s]Processed prompts: 100%|██████████| 2000/2000 [00:23<00:00, 119.02it/s, est. speed input: 321138.98 toks/s, output: 4224.66 toks/s]Processed prompts: 100%|██████████| 2000/2000 [00:23<00:00, 84.50it/s, est. speed input: 321138.98 toks/s, output: 4224.66 toks/s] 
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 488.57004830917873
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 487.7932692307692
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 486.64593301435406
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 485.16190476190474
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 483.3554502369668
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 481.0990566037736
-[0;36m(EngineCore_DP0 pid=1510198)[0;0m current batch size: 478.84037558685446
-[rank0]:[W227 08:33:27.717878845 ProcessGroupNCCL.cpp:1524] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
-[ITER 1] time = 32.110s | throughput = 62.29 req/s
-
-====================================
-AVERAGED RESULTS
-====================================
-Average iteration time : 32.110s
-Average throughput     : 62.29 req/s
-====================================
-
