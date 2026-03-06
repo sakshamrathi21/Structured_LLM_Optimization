@@ -65,7 +65,7 @@ def main():
     parser.add_argument(
         "--sys_prompt_tokens",
         type=int,
-        default=500,
+        default=5000,
         help="Target system prompt length in tokens (prefix excluded).",
     )
     parser.add_argument(
@@ -201,7 +201,7 @@ def main():
 
     print(time.time(), "Completed all requests.")
     print(
-        f"Throughput Test with {args.num_families} families, "
+        f"vllm: Throughput Test with {args.num_families} families, "
         f"{args.req_per_sec} req/sec and max_batch_size of {args.max_batch_size} "
         f"(randomness: {args.randomness}) (sys_prompt_tokens: {args.sys_prompt_tokens}) "
         f"(model_name: {args.model_name}) (policy: {args.policy}) "
@@ -213,7 +213,7 @@ def main():
     if args.write_output:
         with open("vllm_multiple_families_varying_workloads_output.txt", "a") as f:
             f.write(
-                f"Throughput Test with {args.num_families} families, "
+                f"vllm: Throughput Test with {args.num_families} families, "
                 f"{args.req_per_sec} req/sec and max_batch_size of {args.max_batch_size} "
                 f"(randomness: {args.randomness}) (sys_prompt_tokens: {args.sys_prompt_tokens}) "
                 f"(model_name: {args.model_name}) (policy: {args.policy}) "

@@ -1,17 +1,13 @@
 #include "chunked_hash_tree.hpp"
-#include <xxhash.h>
-#include <algorithm>
-#include <iostream>
 
 ChunkedHashTree::ChunkedHashTree(uint32_t chunk) 
     : chunk_size(chunk), cache_valid(false) 
 {
-    // Reserve capacity for common use cases
-    request_hashes.reserve(1024);
-    missing_cache.reserve(1024);
-    hash_to_waiting.reserve(4096);
+    request_hashes.reserve(8192);
+    missing_cache.reserve(8192);
+    hash_to_waiting.reserve(8192);
     working_set.reserve(4096);
-    hash_ref_counts.reserve(4096);
+    hash_ref_counts.reserve(8192);
 }
 
 uint64_t ChunkedHashTree::pack_key(uint32_t level, uint64_t hash) 
@@ -90,28 +86,23 @@ std::pair<uint32_t, int> ChunkedHashTree::find_best_request() {
             continue;
         }
         
-        // Skip if request no longer exists
         auto it = missing_cache.find(top.request_id);
         if (it == missing_cache.end()) {
             continue;
         }
         
-        // Skip if this heap entry is stale (missing count has changed)
         if (it->second != top.missing) {
             continue;
         }
         
-        // Found the best request - cache it and return
         cached_best_request = {top.request_id, top.missing};
         cache_valid = true;
         
-        // Put it back in the heap since we're not activating it yet
         waiting_heap.push(top);
         
         return cached_best_request.value();
     }
     
-    // No valid request found
     cached_best_request = {0, 0};
     cache_valid = true;
     return {0, 0};
@@ -138,7 +129,6 @@ ChunkedHashTree::activate_request(uint32_t request_id)
         if (hash_ref_counts[key]++ == 0) {
             working_set.insert(key);
             
-            // Update all waiting requests that are affected by this new hash
             auto waiting_it = hash_to_waiting.find(key);
             if (waiting_it != hash_to_waiting.end()) {
                 for (auto w : waiting_it->second) {
@@ -153,8 +143,7 @@ ChunkedHashTree::activate_request(uint32_t request_id)
     }
     
     missing_cache.erase(request_id);
-    
-    // Invalidate cache since working set changed
+
     invalidate_cache();
 
     return {added, (uint32_t)hashes.size()};
@@ -168,10 +157,8 @@ void ChunkedHashTree::remove(uint32_t request_id) {
             uint64_t key = pack_key(level, hashes[level]);
             auto map_it = hash_to_waiting.find(key);
             if (map_it != hash_to_waiting.end()) {
-                // O(1) erase with unordered_set instead of O(n) vector scan
                 map_it->second.erase(request_id);
                 
-                // Clean up empty sets
                 if (map_it->second.empty()) {
                     hash_to_waiting.erase(map_it);
                 }
@@ -182,7 +169,6 @@ void ChunkedHashTree::remove(uint32_t request_id) {
     request_hashes.erase(request_id);
     missing_cache.erase(request_id);
     
-    // Invalidate cache since we removed a request
     invalidate_cache();
 }
 
@@ -206,7 +192,6 @@ ChunkedHashTree::finish_request(uint32_t request_id) {
             working_set.erase(key);
             hash_ref_counts.erase(key);
             
-            // Update all waiting requests that are affected by this eviction
             auto waiting_it = hash_to_waiting.find(key);
             if (waiting_it != hash_to_waiting.end()) {
                 for (auto w : waiting_it->second) {
@@ -221,7 +206,6 @@ ChunkedHashTree::finish_request(uint32_t request_id) {
     
     remove(request_id);
     
-    // Invalidate cache since working set changed
     invalidate_cache();
     
     return {evicted, (uint32_t)hashes.size()};

@@ -1,87 +1,1985 @@
-System prompt length: 500 tokens (target: 500)
-Generated 1000 prompts in total.
-INFO 03-05 17:12:36 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
-INFO 03-05 17:12:37 [model.py:530] Resolved architecture: LlamaForCausalLM
-INFO 03-05 17:12:37 [model.py:1545] Using max model len 131072
-INFO 03-05 17:12:38 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
-INFO 03-05 17:12:38 [vllm.py:632] Asynchronous scheduling is enabled.
-INFO 03-05 17:12:38 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
-WARNING 03-05 17:12:40 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:12:46 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:12:47 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:41405 backend=nccl
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:12:47 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:12:48 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:12:48 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:12:53 [default_loader.py:291] Loading weights took 2.77 seconds
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:12:53 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.610315 seconds
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:12:58 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/d958023bf7/rank_0_0/backbone for vLLM's torch.compile
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:12:58 [backends.py:704] Dynamo bytecode transform time: 4.40 s
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:13:07 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 3.878 s
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:13:07 [monitor.py:34] torch.compile takes 8.28 s in total
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:13:07 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:13:08 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:13:08 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:13:13 [gpu_model_runner.py:4856] Graph capturing finished in 6 secs, took 0.57 GiB
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:13:13 [core.py:273] init engine (profile, create kv cache, warmup model) took 20.20 seconds
-[0;36m(EngineCore_DP0 pid=2187742)[0;0m INFO 03-05 17:13:15 [vllm.py:632] Asynchronous scheduling is enabled.
-INFO 03-05 17:13:15 [llm.py:350] Supported tasks: ['generate']
-1772711912.5980542 Completed all requests.
-Throughput Test with 5 families, 1 req/sec and max_batch_size of 500 (randomness: 1) (sys_prompt_tokens: 500) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 100) (num_requests: 1000) (num_prompts: 1000): 1.0907637039271316
+System prompt length: 9993 tokens (target: 10000)
+Generated 100 prompts in total.
+INFO 03-06 15:28:36 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-06 15:28:38 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-06 15:28:38 [model.py:1545] Using max model len 131072
+INFO 03-06 15:28:38 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-06 15:28:38 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-06 15:28:38 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-06 15:28:40 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:28:46 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:28:48 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:58967 backend=nccl
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:28:48 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:28:48 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:28:49 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:28:53 [default_loader.py:291] Loading weights took 2.79 seconds
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:28:54 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.588202 seconds
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:28:58 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/d958023bf7/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:28:58 [backends.py:704] Dynamo bytecode transform time: 4.44 s
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:29:07 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 4.061 s
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:29:07 [monitor.py:34] torch.compile takes 8.50 s in total
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:29:07 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:29:08 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:29:08 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:29:14 [gpu_model_runner.py:4856] Graph capturing finished in 6 secs, took 0.57 GiB
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:29:14 [core.py:273] init engine (profile, create kv cache, warmup model) took 20.53 seconds
+[0;36m(EngineCore_DP0 pid=2258636)[0;0m INFO 03-06 15:29:16 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-06 15:29:16 [llm.py:350] Supported tasks: ['generate']
+1772791324.486073 Completed all requests.
+Throughput Test with 50 families, 1 req/sec and max_batch_size of 500 (randomness: 1) (sys_prompt_tokens: 10000) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: fcfs) (max_new_tokens: 200) (num_requests: 100) (num_prompts: 100): 0.595844987906985
 
-System prompt length: 500 tokens (target: 500)
-Generated 1000 prompts in total.
-INFO 03-05 17:28:42 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'scheduling_policy': 'chunked_hash_tree', 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
-INFO 03-05 17:28:43 [model.py:530] Resolved architecture: LlamaForCausalLM
-INFO 03-05 17:28:43 [model.py:1545] Using max model len 131072
-INFO 03-05 17:28:43 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
-INFO 03-05 17:28:43 [vllm.py:632] Asynchronous scheduling is enabled.
-INFO 03-05 17:28:43 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
-WARNING 03-05 17:28:45 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:28:52 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:28:53 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:49305 backend=nccl
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:28:53 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:28:53 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:28:54 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:28:58 [default_loader.py:291] Loading weights took 2.77 seconds
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:28:59 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.640279 seconds
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:29:03 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/d958023bf7/rank_0_0/backbone for vLLM's torch.compile
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:29:03 [backends.py:704] Dynamo bytecode transform time: 4.37 s
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:29:12 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 4.074 s
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:29:12 [monitor.py:34] torch.compile takes 8.45 s in total
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:29:13 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:29:13 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:29:13 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:29:19 [gpu_model_runner.py:4856] Graph capturing finished in 6 secs, took 0.57 GiB
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:29:19 [core.py:273] init engine (profile, create kv cache, warmup model) took 19.97 seconds
-[0;36m(EngineCore_DP0 pid=2188817)[0;0m INFO 03-05 17:29:21 [vllm.py:632] Asynchronous scheduling is enabled.
-INFO 03-05 17:29:21 [llm.py:350] Supported tasks: ['generate']
-1772712944.3476093 Completed all requests.
-Throughput Test with 5 families, 1 req/sec and max_batch_size of 500 (randomness: 1) (sys_prompt_tokens: 500) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: chunked_hash_tree) (max_new_tokens: 100) (num_requests: 1000) (num_prompts: 1000): 1.017217396305183
+System prompt length: 9993 tokens (target: 10000)
+Generated 100 prompts in total.
+INFO 03-06 15:32:13 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'scheduling_policy': 'chunked_hash_tree', 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-06 15:32:14 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-06 15:32:14 [model.py:1545] Using max model len 131072
+INFO 03-06 15:32:15 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-06 15:32:15 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-06 15:32:15 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-06 15:32:16 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:22 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:24 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:47671 backend=nccl
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:24 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:24 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:25 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:29 [default_loader.py:291] Loading weights took 2.78 seconds
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:30 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.600586 seconds
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:34 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/d958023bf7/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:34 [backends.py:704] Dynamo bytecode transform time: 4.52 s
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:43 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 4.117 s
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:43 [monitor.py:34] torch.compile takes 8.63 s in total
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:44 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:44 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:44 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:50 [gpu_model_runner.py:4856] Graph capturing finished in 6 secs, took 0.57 GiB
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:50 [core.py:273] init engine (profile, create kv cache, warmup model) took 20.65 seconds
+[0;36m(EngineCore_DP0 pid=2259087)[0;0m INFO 03-06 15:32:52 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-06 15:32:52 [llm.py:350] Supported tasks: ['generate']
+1772791609.8195205 Completed all requests.
+Throughput Test with 50 families, 1 req/sec and max_batch_size of 500 (randomness: 1) (sys_prompt_tokens: 10000) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: chunked_hash_tree) (max_new_tokens: 200) (num_requests: 100) (num_prompts: 100): 0.4218336147881338
 
-System prompt length: 500 tokens (target: 500)
-Generated 1000 prompts in total.
-INFO 03-05 17:45:54 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'scheduling_policy': 'family_load', 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
-INFO 03-05 17:45:55 [model.py:530] Resolved architecture: LlamaForCausalLM
-INFO 03-05 17:45:55 [model.py:1545] Using max model len 131072
-INFO 03-05 17:45:55 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
-INFO 03-05 17:45:55 [vllm.py:632] Asynchronous scheduling is enabled.
-INFO 03-05 17:45:55 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
-WARNING 03-05 17:45:57 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:03 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:05 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:53313 backend=nccl
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:05 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:05 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:06 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:10 [default_loader.py:291] Loading weights took 2.76 seconds
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:11 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.914639 seconds
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:16 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/d958023bf7/rank_0_0/backbone for vLLM's torch.compile
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:16 [backends.py:704] Dynamo bytecode transform time: 4.40 s
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:23 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 3.947 s
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:23 [monitor.py:34] torch.compile takes 8.34 s in total
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:24 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:24 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:24 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:30 [gpu_model_runner.py:4856] Graph capturing finished in 6 secs, took 0.57 GiB
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:30 [core.py:273] init engine (profile, create kv cache, warmup model) took 19.01 seconds
-[0;36m(EngineCore_DP0 pid=2189017)[0;0m INFO 03-05 17:46:32 [vllm.py:632] Asynchronous scheduling is enabled.
-INFO 03-05 17:46:32 [llm.py:350] Supported tasks: ['generate']
+System prompt length: 9993 tokens (target: 10000)
+Generated 100 prompts in total.
+INFO 03-06 15:36:59 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'scheduling_policy': 'family_load', 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-06 15:37:00 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-06 15:37:00 [model.py:1545] Using max model len 131072
+INFO 03-06 15:37:01 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-06 15:37:01 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-06 15:37:01 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-06 15:37:02 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:09 [core.py:97] Initializing a V1 LLM engine (v0.14.0rc2.dev10+gfefce4980) with config: model='meta-llama/Llama-3.1-8B-Instruct', speculative_config=None, tokenizer='meta-llama/Llama-3.1-8B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=0, served_model_name=meta-llama/Llama-3.1-8B-Instruct, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'compile_ranges_split_points': [32768], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': True}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:10 [parallel_state.py:1214] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://10.129.2.126:39303 backend=nccl
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:10 [parallel_state.py:1425] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:11 [gpu_model_runner.py:3808] Starting to load model meta-llama/Llama-3.1-8B-Instruct...
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:11 [cuda.py:351] Using FLASH_ATTN attention backend out of potential backends: ('FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION')
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:16 [default_loader.py:291] Loading weights took 2.76 seconds
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:16 [gpu_model_runner.py:3905] Model loading took 14.99 GiB memory and 4.582768 seconds
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:21 [backends.py:644] Using cache directory: /home/saksham/.cache/vllm/torch_compile_cache/d958023bf7/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:21 [backends.py:704] Dynamo bytecode transform time: 4.98 s
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:31 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 32768) from the cache, took 4.122 s
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:31 [monitor.py:34] torch.compile takes 9.10 s in total
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:31 [gpu_worker.py:358] Available KV cache memory: 26.6 GiB
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:32 [kv_cache_utils.py:1305] GPU KV cache size: 217,872 tokens
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:32 [kv_cache_utils.py:1310] Maximum concurrency for 131,072 tokens per request: 1.66x
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:38 [gpu_model_runner.py:4856] Graph capturing finished in 7 secs, took 0.57 GiB
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:39 [core.py:273] init engine (profile, create kv cache, warmup model) took 22.43 seconds
+[0;36m(EngineCore_DP0 pid=2259595)[0;0m INFO 03-06 15:37:41 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-06 15:37:41 [llm.py:350] Supported tasks: ['generate']
+1772791876.8585148 Completed all requests.
+vllm: Throughput Test with 50 families, 1 req/sec and max_batch_size of 500 (randomness: 1) (sys_prompt_tokens: 10000) (model_name: meta-llama/Llama-3.1-8B-Instruct) (policy: family_load) (max_new_tokens: 200) (num_requests: 100) (num_prompts: 100): 0.46384561956742987
+
+System prompt length: 9993 tokens (target: 10000)
+Generated 100 prompts in total.
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+hello
+calc_prio 1772791904.9521394
+[PROFILE] SchedulePolicy.calc_priority | calls=1 | total=11246 ns | avg=11246.0 ns
+calc_prio 1772791905.8252056
+[PROFILE] SchedulePolicy.calc_priority | calls=2 | total=23985 ns | avg=11992.5 ns
+calc_prio 1772791905.8545654
+[PROFILE] SchedulePolicy.calc_priority | calls=3 | total=33993 ns | avg=11331.0 ns
+calc_prio 1772791907.180131
+[PROFILE] SchedulePolicy.calc_priority | calls=4 | total=45017 ns | avg=11254.2 ns
+calc_prio 1772791907.1991227
+[PROFILE] SchedulePolicy.calc_priority | calls=5 | total=53233 ns | avg=10646.6 ns
+calc_prio 1772791907.8662033
+[PROFILE] SchedulePolicy.calc_priority | calls=6 | total=61055 ns | avg=10175.8 ns
+calc_prio 1772791908.5771868
+[PROFILE] SchedulePolicy.calc_priority | calls=7 | total=67745 ns | avg=9677.9 ns
+calc_prio 1772791909.2308497
+[PROFILE] SchedulePolicy.calc_priority | calls=8 | total=75537 ns | avg=9442.1 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=5 | total=35202 ns | avg=7040.4 ns
+calc_prio 1772791910.9886968
+[PROFILE] SchedulePolicy.calc_priority | calls=9 | total=85102 ns | avg=9455.8 ns
+calc_prio 1772791911.0252335
+[PROFILE] SchedulePolicy.calc_priority | calls=10 | total=92613 ns | avg=9261.3 ns
+calc_prio 1772791911.6758332
+[PROFILE] SchedulePolicy.calc_priority | calls=11 | total=103679 ns | avg=9425.4 ns
+calc_prio 1772791912.79924
+[PROFILE] SchedulePolicy.calc_priority | calls=12 | total=113048 ns | avg=9420.7 ns
+calc_prio 1772791912.8359854
+[PROFILE] SchedulePolicy.calc_priority | calls=13 | total=120124 ns | avg=9240.3 ns
+calc_prio 1772791913.4529104
+[PROFILE] SchedulePolicy.calc_priority | calls=14 | total=130249 ns | avg=9303.5 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=10 | total=63520 ns | avg=6352.0 ns
+calc_prio 1772791915.219497
+[PROFILE] SchedulePolicy.calc_priority | calls=15 | total=138906 ns | avg=9260.4 ns
+calc_prio 1772791915.2563052
+[PROFILE] SchedulePolicy.calc_priority | calls=16 | total=146401 ns | avg=9150.1 ns
+calc_prio 1772791915.8952985
+[PROFILE] SchedulePolicy.calc_priority | calls=17 | total=154640 ns | avg=9096.5 ns
+calc_prio 1772791917.0792239
+[PROFILE] SchedulePolicy.calc_priority | calls=18 | total=163807 ns | avg=9100.4 ns
+calc_prio 1772791917.1156552
+[PROFILE] SchedulePolicy.calc_priority | calls=19 | total=170857 ns | avg=8992.5 ns
+calc_prio 1772791917.7346299
+[PROFILE] SchedulePolicy.calc_priority | calls=20 | total=182402 ns | avg=9120.1 ns
+calc_prio 1772791919.7411497
+[PROFILE] SchedulePolicy.calc_priority | calls=21 | total=190504 ns | avg=9071.6 ns
+calc_prio 1772791919.7776082
+[PROFILE] SchedulePolicy.calc_priority | calls=22 | total=197253 ns | avg=8966.0 ns
+calc_prio 1772791920.4446306
+[PROFILE] SchedulePolicy.calc_priority | calls=23 | total=205070 ns | avg=8916.1 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=15 | total=92617 ns | avg=6174.5 ns
+calc_prio 1772791922.7910066
+[PROFILE] SchedulePolicy.calc_priority | calls=24 | total=214766 ns | avg=8948.6 ns
+calc_prio 1772791922.827331
+[PROFILE] SchedulePolicy.calc_priority | calls=25 | total=222580 ns | avg=8903.2 ns
+calc_prio 1772791923.4798365
+[PROFILE] SchedulePolicy.calc_priority | calls=26 | total=230179 ns | avg=8853.0 ns
+calc_prio 1772791924.9704921
+[PROFILE] SchedulePolicy.calc_priority | calls=27 | total=238215 ns | avg=8822.8 ns
+calc_prio 1772791925.0066226
+[PROFILE] SchedulePolicy.calc_priority | calls=28 | total=245234 ns | avg=8758.4 ns
+calc_prio 1772791925.6552186
+[PROFILE] SchedulePolicy.calc_priority | calls=29 | total=256417 ns | avg=8842.0 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=20 | total=116634 ns | avg=5831.7 ns
+calc_prio 1772791927.4989939
+[PROFILE] SchedulePolicy.calc_priority | calls=30 | total=267642 ns | avg=8921.4 ns
+calc_prio 1772791927.5363076
+[PROFILE] SchedulePolicy.calc_priority | calls=31 | total=277506 ns | avg=8951.8 ns
+calc_prio 1772791928.2116666
+[PROFILE] SchedulePolicy.calc_priority | calls=32 | total=285899 ns | avg=8934.3 ns
+calc_prio 1772791929.3207145
+[PROFILE] SchedulePolicy.calc_priority | calls=33 | total=294916 ns | avg=8936.8 ns
+calc_prio 1772791929.3577719
+[PROFILE] SchedulePolicy.calc_priority | calls=34 | total=301850 ns | avg=8877.9 ns
+calc_prio 1772791930.006339
+[PROFILE] SchedulePolicy.calc_priority | calls=35 | total=313069 ns | avg=8944.8 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=25 | total=145392 ns | avg=5815.7 ns
+calc_prio 1772791932.10071
+[PROFILE] SchedulePolicy.calc_priority | calls=36 | total=321811 ns | avg=8939.2 ns
+calc_prio 1772791932.1369393
+[PROFILE] SchedulePolicy.calc_priority | calls=37 | total=329430 ns | avg=8903.5 ns
+calc_prio 1772791932.8165755
+[PROFILE] SchedulePolicy.calc_priority | calls=38 | total=339301 ns | avg=8929.0 ns
+calc_prio 1772791934.3913655
+[PROFILE] SchedulePolicy.calc_priority | calls=39 | total=348993 ns | avg=8948.5 ns
+calc_prio 1772791934.4276311
+[PROFILE] SchedulePolicy.calc_priority | calls=40 | total=356990 ns | avg=8924.8 ns
+calc_prio 1772791935.083315
+[PROFILE] SchedulePolicy.calc_priority | calls=41 | total=364273 ns | avg=8884.7 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=30 | total=164124 ns | avg=5470.8 ns
+calc_prio 1772791936.4871533
+[PROFILE] SchedulePolicy.calc_priority | calls=42 | total=372350 ns | avg=8865.5 ns
+calc_prio 1772791936.5235655
+[PROFILE] SchedulePolicy.calc_priority | calls=43 | total=379378 ns | avg=8822.7 ns
+calc_prio 1772791937.1664598
+[PROFILE] SchedulePolicy.calc_priority | calls=44 | total=388270 ns | avg=8824.3 ns
+calc_prio 1772791938.6410291
+[PROFILE] SchedulePolicy.calc_priority | calls=45 | total=397347 ns | avg=8829.9 ns
+calc_prio 1772791938.6777918
+[PROFILE] SchedulePolicy.calc_priority | calls=46 | total=404342 ns | avg=8790.0 ns
+calc_prio 1772791939.3319368
+[PROFILE] SchedulePolicy.calc_priority | calls=47 | total=411488 ns | avg=8755.1 ns
+calc_prio 1772791940.9464428
+[PROFILE] SchedulePolicy.calc_priority | calls=48 | total=419911 ns | avg=8748.1 ns
+calc_prio 1772791940.9831805
+[PROFILE] SchedulePolicy.calc_priority | calls=49 | total=427622 ns | avg=8727.0 ns
+calc_prio 1772791941.6485486
+[PROFILE] SchedulePolicy.calc_priority | calls=50 | total=435216 ns | avg=8704.3 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=35 | total=192070 ns | avg=5487.7 ns
+calc_prio 1772791944.7864738
+[PROFILE] SchedulePolicy.calc_priority | calls=51 | total=444684 ns | avg=8719.3 ns
+calc_prio 1772791944.8229902
+[PROFILE] SchedulePolicy.calc_priority | calls=52 | total=452763 ns | avg=8707.0 ns
+calc_prio 1772791945.5075834
+[PROFILE] SchedulePolicy.calc_priority | calls=53 | total=459770 ns | avg=8674.9 ns
+calc_prio 1772791947.0517344
+[PROFILE] SchedulePolicy.calc_priority | calls=54 | total=469265 ns | avg=8690.1 ns
+calc_prio 1772791947.0881848
+[PROFILE] SchedulePolicy.calc_priority | calls=55 | total=476635 ns | avg=8666.1 ns
+calc_prio 1772791947.7515416
+[PROFILE] SchedulePolicy.calc_priority | calls=56 | total=485943 ns | avg=8677.6 ns
+calc_prio 1772791949.5570095
+[PROFILE] SchedulePolicy.calc_priority | calls=57 | total=494157 ns | avg=8669.4 ns
+calc_prio 1772791949.5944445
+[PROFILE] SchedulePolicy.calc_priority | calls=58 | total=503149 ns | avg=8675.0 ns
+calc_prio 1772791950.276845
+[PROFILE] SchedulePolicy.calc_priority | calls=59 | total=511791 ns | avg=8674.4 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=40 | total=219651 ns | avg=5491.3 ns
+calc_prio 1772791951.4846373
+[PROFILE] SchedulePolicy.calc_priority | calls=60 | total=520939 ns | avg=8682.3 ns
+calc_prio 1772791951.521084
+[PROFILE] SchedulePolicy.calc_priority | calls=61 | total=527371 ns | avg=8645.4 ns
+calc_prio 1772791952.1675568
+[PROFILE] SchedulePolicy.calc_priority | calls=62 | total=537364 ns | avg=8667.2 ns
+calc_prio 1772791953.4959238
+[PROFILE] SchedulePolicy.calc_priority | calls=63 | total=546021 ns | avg=8667.0 ns
+calc_prio 1772791953.5322814
+[PROFILE] SchedulePolicy.calc_priority | calls=64 | total=553310 ns | avg=8645.5 ns
+calc_prio 1772791954.183088
+[PROFILE] SchedulePolicy.calc_priority | calls=65 | total=563840 ns | avg=8674.5 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=45 | total=248262 ns | avg=5516.9 ns
+calc_prio 1772791955.783225
+[PROFILE] SchedulePolicy.calc_priority | calls=66 | total=572993 ns | avg=8681.7 ns
+calc_prio 1772791955.8194008
+[PROFILE] SchedulePolicy.calc_priority | calls=67 | total=580541 ns | avg=8664.8 ns
+calc_prio 1772791956.4630704
+[PROFILE] SchedulePolicy.calc_priority | calls=68 | total=587870 ns | avg=8645.1 ns
+calc_prio 1772791957.9082541
+[PROFILE] SchedulePolicy.calc_priority | calls=69 | total=596315 ns | avg=8642.2 ns
+calc_prio 1772791957.944431
+[PROFILE] SchedulePolicy.calc_priority | calls=70 | total=603169 ns | avg=8616.7 ns
+calc_prio 1772791958.5978696
+[PROFILE] SchedulePolicy.calc_priority | calls=71 | total=613464 ns | avg=8640.3 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=50 | total=272919 ns | avg=5458.4 ns
+calc_prio 1772791960.17792
+[PROFILE] SchedulePolicy.calc_priority | calls=72 | total=623420 ns | avg=8658.6 ns
+calc_prio 1772791960.2145305
+[PROFILE] SchedulePolicy.calc_priority | calls=73 | total=630856 ns | avg=8641.9 ns
+calc_prio 1772791960.88296
+[PROFILE] SchedulePolicy.calc_priority | calls=74 | total=640595 ns | avg=8656.7 ns
+calc_prio 1772791962.8294756
+[PROFILE] SchedulePolicy.calc_priority | calls=75 | total=650528 ns | avg=8673.7 ns
+calc_prio 1772791962.8659008
+[PROFILE] SchedulePolicy.calc_priority | calls=76 | total=657801 ns | avg=8655.3 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=55 | total=301701 ns | avg=5485.5 ns
+calc_prio 1772791963.5534353
+[PROFILE] SchedulePolicy.calc_priority | calls=77 | total=666170 ns | avg=8651.6 ns
+calc_prio 1772791965.012795
+[PROFILE] SchedulePolicy.calc_priority | calls=78 | total=674740 ns | avg=8650.5 ns
+calc_prio 1772791965.0490575
+[PROFILE] SchedulePolicy.calc_priority | calls=79 | total=682343 ns | avg=8637.3 ns
+calc_prio 1772791965.71204
+[PROFILE] SchedulePolicy.calc_priority | calls=80 | total=693036 ns | avg=8663.0 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=60 | total=320997 ns | avg=5349.9 ns
+calc_prio 1772791967.4569442
+[PROFILE] SchedulePolicy.calc_priority | calls=81 | total=703644 ns | avg=8687.0 ns
+calc_prio 1772791967.4934046
+[PROFILE] SchedulePolicy.calc_priority | calls=82 | total=710931 ns | avg=8669.9 ns
+calc_prio 1772791968.1797154
+[PROFILE] SchedulePolicy.calc_priority | calls=83 | total=721342 ns | avg=8690.9 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=65 | total=351564 ns | avg=5408.7 ns
+calc_prio 1772791969.3282228
+[PROFILE] SchedulePolicy.calc_priority | calls=84 | total=730335 ns | avg=8694.5 ns
+calc_prio 1772791969.3655372
+[PROFILE] SchedulePolicy.calc_priority | calls=85 | total=738149 ns | avg=8684.1 ns
+calc_prio 1772791970.024491
+[PROFILE] SchedulePolicy.calc_priority | calls=86 | total=745007 ns | avg=8662.9 ns
+calc_prio 1772791971.287381
+[PROFILE] SchedulePolicy.calc_priority | calls=87 | total=753577 ns | avg=8661.8 ns
+calc_prio 1772791971.3240068
+[PROFILE] SchedulePolicy.calc_priority | calls=88 | total=760424 ns | avg=8641.2 ns
+calc_prio 1772791971.9772756
+[PROFILE] SchedulePolicy.calc_priority | calls=89 | total=767259 ns | avg=8620.9 ns
+calc_prio 1772791973.9475958
+[PROFILE] SchedulePolicy.calc_priority | calls=90 | total=775238 ns | avg=8613.8 ns
+calc_prio 1772791973.983915
+[PROFILE] SchedulePolicy.calc_priority | calls=91 | total=782599 ns | avg=8600.0 ns
+calc_prio 1772791974.6747174
+[PROFILE] SchedulePolicy.calc_priority | calls=92 | total=790891 ns | avg=8596.6 ns
+calc_prio 1772791976.5449395
+[PROFILE] SchedulePolicy.calc_priority | calls=93 | total=800440 ns | avg=8606.9 ns
+calc_prio 1772791976.5813725
+[PROFILE] SchedulePolicy.calc_priority | calls=94 | total=808555 ns | avg=8601.6 ns
+calc_prio 1772791977.270813
+[PROFILE] SchedulePolicy.calc_priority | calls=95 | total=816113 ns | avg=8590.7 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=70 | total=379720 ns | avg=5424.6 ns
+calc_prio 1772791979.892045
+[PROFILE] SchedulePolicy.calc_priority | calls=96 | total=825445 ns | avg=8598.4 ns
+calc_prio 1772791979.928327
+[PROFILE] SchedulePolicy.calc_priority | calls=97 | total=832776 ns | avg=8585.3 ns
+calc_prio 1772791980.614585
+[PROFILE] SchedulePolicy.calc_priority | calls=98 | total=842830 ns | avg=8600.3 ns
+calc_prio 1772791982.8316197
+[PROFILE] SchedulePolicy.calc_priority | calls=99 | total=852399 ns | avg=8610.1 ns
+calc_prio 1772791982.86796
+[PROFILE] SchedulePolicy.calc_priority | calls=100 | total=860292 ns | avg=8602.9 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=75 | total=403504 ns | avg=5380.1 ns
+calc_prio 1772791983.556707
+[PROFILE] SchedulePolicy.calc_priority | calls=101 | total=868061 ns | avg=8594.7 ns
+calc_prio 1772791984.8163102
+[PROFILE] SchedulePolicy.calc_priority | calls=102 | total=877255 ns | avg=8600.5 ns
+calc_prio 1772791984.8525698
+[PROFILE] SchedulePolicy.calc_priority | calls=103 | total=884931 ns | avg=8591.6 ns
+calc_prio 1772791985.4996502
+[PROFILE] SchedulePolicy.calc_priority | calls=104 | total=892241 ns | avg=8579.2 ns
+calc_prio 1772791987.133368
+[PROFILE] SchedulePolicy.calc_priority | calls=105 | total=901491 ns | avg=8585.6 ns
+calc_prio 1772791987.1693983
+[PROFILE] SchedulePolicy.calc_priority | calls=106 | total=908224 ns | avg=8568.2 ns
+calc_prio 1772791987.8432095
+[PROFILE] SchedulePolicy.calc_priority | calls=107 | total=915638 ns | avg=8557.4 ns
+calc_prio 1772791989.276719
+[PROFILE] SchedulePolicy.calc_priority | calls=108 | total=923171 ns | avg=8547.9 ns
+calc_prio 1772791989.312882
+[PROFILE] SchedulePolicy.calc_priority | calls=109 | total=930127 ns | avg=8533.3 ns
+calc_prio 1772791989.9722984
+[PROFILE] SchedulePolicy.calc_priority | calls=110 | total=937017 ns | avg=8518.3 ns
+calc_prio 1772791991.2744188
+[PROFILE] SchedulePolicy.calc_priority | calls=111 | total=948182 ns | avg=8542.2 ns
+calc_prio 1772791991.3108132
+[PROFILE] SchedulePolicy.calc_priority | calls=112 | total=956039 ns | avg=8536.1 ns
+calc_prio 1772791991.9676182
+[PROFILE] SchedulePolicy.calc_priority | calls=113 | total=963683 ns | avg=8528.2 ns
+calc_prio 1772791993.9231555
+[PROFILE] SchedulePolicy.calc_priority | calls=114 | total=972135 ns | avg=8527.5 ns
+calc_prio 1772791993.9595044
+[PROFILE] SchedulePolicy.calc_priority | calls=115 | total=978967 ns | avg=8512.8 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=80 | total=431258 ns | avg=5390.7 ns
+calc_prio 1772791994.6560483
+[PROFILE] SchedulePolicy.calc_priority | calls=116 | total=987456 ns | avg=8512.6 ns
+calc_prio 1772791995.871863
+[PROFILE] SchedulePolicy.calc_priority | calls=117 | total=995038 ns | avg=8504.6 ns
+calc_prio 1772791995.9083288
+[PROFILE] SchedulePolicy.calc_priority | calls=118 | total=1002108 ns | avg=8492.4 ns
+calc_prio 1772791996.5706437
+[PROFILE] SchedulePolicy.calc_priority | calls=119 | total=1012451 ns | avg=8508.0 ns
+calc_prio 1772791998.4069319
+[PROFILE] SchedulePolicy.calc_priority | calls=120 | total=1021419 ns | avg=8511.8 ns
+calc_prio 1772791998.443184
+[PROFILE] SchedulePolicy.calc_priority | calls=121 | total=1028327 ns | avg=8498.6 ns
+calc_prio 1772791999.1354988
+[PROFILE] SchedulePolicy.calc_priority | calls=122 | total=1035627 ns | avg=8488.7 ns
+calc_prio 1772792000.4014342
+[PROFILE] SchedulePolicy.calc_priority | calls=123 | total=1044891 ns | avg=8495.0 ns
+calc_prio 1772792000.4378262
+[PROFILE] SchedulePolicy.calc_priority | calls=124 | total=1052107 ns | avg=8484.7 ns
+calc_prio 1772792001.0979161
+[PROFILE] SchedulePolicy.calc_priority | calls=125 | total=1059643 ns | avg=8477.1 ns
+calc_prio 1772792002.869744
+[PROFILE] SchedulePolicy.calc_priority | calls=126 | total=1067139 ns | avg=8469.4 ns
+calc_prio 1772792002.905677
+[PROFILE] SchedulePolicy.calc_priority | calls=127 | total=1073851 ns | avg=8455.5 ns
+calc_prio 1772792003.5960226
+[PROFILE] SchedulePolicy.calc_priority | calls=128 | total=1084274 ns | avg=8470.9 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=85 | total=455845 ns | avg=5362.9 ns
+calc_prio 1772792005.2262623
+[PROFILE] SchedulePolicy.calc_priority | calls=129 | total=1093543 ns | avg=8477.1 ns
+calc_prio 1772792005.2625823
+[PROFILE] SchedulePolicy.calc_priority | calls=130 | total=1100726 ns | avg=8467.1 ns
+calc_prio 1772792005.9411614
+[PROFILE] SchedulePolicy.calc_priority | calls=131 | total=1108203 ns | avg=8459.6 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=90 | total=471778 ns | avg=5242.0 ns
+calc_prio 1772792007.9205468
+[PROFILE] SchedulePolicy.calc_priority | calls=132 | total=1118266 ns | avg=8471.7 ns
+calc_prio 1772792007.9568233
+[PROFILE] SchedulePolicy.calc_priority | calls=133 | total=1126143 ns | avg=8467.2 ns
+calc_prio 1772792008.6564553
+[PROFILE] SchedulePolicy.calc_priority | calls=134 | total=1133516 ns | avg=8459.1 ns
+calc_prio 1772792010.513701
+[PROFILE] SchedulePolicy.calc_priority | calls=135 | total=1141271 ns | avg=8453.9 ns
+calc_prio 1772792010.5500646
+[PROFILE] SchedulePolicy.calc_priority | calls=136 | total=1148322 ns | avg=8443.5 ns
+calc_prio 1772792011.2286747
+[PROFILE] SchedulePolicy.calc_priority | calls=137 | total=1158677 ns | avg=8457.5 ns
+calc_prio 1772792013.2345405
+[PROFILE] SchedulePolicy.calc_priority | calls=138 | total=1168334 ns | avg=8466.2 ns
+calc_prio 1772792013.2710445
+[PROFILE] SchedulePolicy.calc_priority | calls=139 | total=1176101 ns | avg=8461.2 ns
+calc_prio 1772792013.9704316
+[PROFILE] SchedulePolicy.calc_priority | calls=140 | total=1186373 ns | avg=8474.1 ns
+calc_prio 1772792015.2098644
+[PROFILE] SchedulePolicy.calc_priority | calls=141 | total=1196589 ns | avg=8486.4 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=95 | total=494232 ns | avg=5202.4 ns
+calc_prio 1772792015.2475638
+[PROFILE] SchedulePolicy.calc_priority | calls=142 | total=1204612 ns | avg=8483.2 ns
+calc_prio 1772792015.9063091
+[PROFILE] SchedulePolicy.calc_priority | calls=143 | total=1215349 ns | avg=8498.9 ns
+calc_prio 1772792018.2674906
+[PROFILE] SchedulePolicy.calc_priority | calls=144 | total=1224982 ns | avg=8506.8 ns
+calc_prio 1772792018.3037791
+[PROFILE] SchedulePolicy.calc_priority | calls=145 | total=1231890 ns | avg=8495.8 ns
+calc_prio 1772792018.9856982
+[PROFILE] SchedulePolicy.calc_priority | calls=146 | total=1239940 ns | avg=8492.7 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=100 | total=523068 ns | avg=5230.7 ns
+calc_prio 1772792020.1625187
+[PROFILE] SchedulePolicy.calc_priority | calls=147 | total=1249109 ns | avg=8497.3 ns
+calc_prio 1772792020.1995168
+[PROFILE] SchedulePolicy.calc_priority | calls=148 | total=1256260 ns | avg=8488.2 ns
+calc_prio 1772792020.8748581
+[PROFILE] SchedulePolicy.calc_priority | calls=149 | total=1263178 ns | avg=8477.7 ns
+calc_prio 1772792022.6228878
+[PROFILE] SchedulePolicy.calc_priority | calls=150 | total=1275092 ns | avg=8500.6 ns
+calc_prio 1772792022.6590974
+[PROFILE] SchedulePolicy.calc_priority | calls=151 | total=1282691 ns | avg=8494.6 ns
+calc_prio 1772792023.3290007
+[PROFILE] SchedulePolicy.calc_priority | calls=152 | total=1290340 ns | avg=8489.1 ns
+calc_prio 1772792025.3131092
+[PROFILE] SchedulePolicy.calc_priority | calls=153 | total=1298962 ns | avg=8489.9 ns
+calc_prio 1772792025.3496408
+[PROFILE] SchedulePolicy.calc_priority | calls=154 | total=1307210 ns | avg=8488.4 ns
+calc_prio 1772792026.0511537
+[PROFILE] SchedulePolicy.calc_priority | calls=155 | total=1314549 ns | avg=8481.0 ns
+calc_prio 1772792028.026305
+[PROFILE] SchedulePolicy.calc_priority | calls=156 | total=1322625 ns | avg=8478.4 ns
+calc_prio 1772792028.0627508
+[PROFILE] SchedulePolicy.calc_priority | calls=157 | total=1330356 ns | avg=8473.6 ns
+calc_prio 1772792028.7626858
+[PROFILE] SchedulePolicy.calc_priority | calls=158 | total=1338196 ns | avg=8469.6 ns
+calc_prio 1772792029.9618752
+[PROFILE] SchedulePolicy.calc_priority | calls=159 | total=1344677 ns | avg=8457.1 ns
+calc_prio 1772792029.9981577
+[PROFILE] SchedulePolicy.calc_priority | calls=160 | total=1351768 ns | avg=8448.5 ns
+calc_prio 1772792030.661535
+[PROFILE] SchedulePolicy.calc_priority | calls=161 | total=1359113 ns | avg=8441.7 ns
+calc_prio 1772792032.2311914
+[PROFILE] SchedulePolicy.calc_priority | calls=162 | total=1367364 ns | avg=8440.5 ns
+calc_prio 1772792032.2675364
+[PROFILE] SchedulePolicy.calc_priority | calls=163 | total=1374859 ns | avg=8434.7 ns
+calc_prio 1772792032.9410923
+[PROFILE] SchedulePolicy.calc_priority | calls=164 | total=1382183 ns | avg=8427.9 ns
+calc_prio 1772792035.356064
+[PROFILE] SchedulePolicy.calc_priority | calls=165 | total=1390609 ns | avg=8427.9 ns
+calc_prio 1772792035.392091
+[PROFILE] SchedulePolicy.calc_priority | calls=166 | total=1399219 ns | avg=8429.0 ns
+calc_prio 1772792036.0679905
+[PROFILE] SchedulePolicy.calc_priority | calls=167 | total=1407823 ns | avg=8430.1 ns
+calc_prio 1772792037.3420234
+[PROFILE] SchedulePolicy.calc_priority | calls=168 | total=1415606 ns | avg=8426.2 ns
+calc_prio 1772792037.3786805
+[PROFILE] SchedulePolicy.calc_priority | calls=169 | total=1422582 ns | avg=8417.6 ns
+calc_prio 1772792038.0363564
+[PROFILE] SchedulePolicy.calc_priority | calls=170 | total=1429582 ns | avg=8409.3 ns
+calc_prio 1772792039.9777248
+[PROFILE] SchedulePolicy.calc_priority | calls=171 | total=1437372 ns | avg=8405.7 ns
+calc_prio 1772792040.012774
+[PROFILE] SchedulePolicy.calc_priority | calls=172 | total=1445142 ns | avg=8402.0 ns
+calc_prio 1772792040.7125058
+[PROFILE] SchedulePolicy.calc_priority | calls=173 | total=1452610 ns | avg=8396.6 ns
+calc_prio 1772792041.4669898
+[PROFILE] SchedulePolicy.calc_priority | calls=174 | total=1461225 ns | avg=8397.8 ns
+calc_prio 1772792042.1997926
+[PROFILE] SchedulePolicy.calc_priority | calls=175 | total=1468565 ns | avg=8391.8 ns
+calc_prio 1772792043.598455
+[PROFILE] SchedulePolicy.calc_priority | calls=176 | total=1475747 ns | avg=8384.9 ns
+calc_prio 1772792044.468909
+[PROFILE] SchedulePolicy.calc_priority | calls=177 | total=1482819 ns | avg=8377.5 ns
+calc_prio 1772792044.5048628
+[PROFILE] SchedulePolicy.calc_priority | calls=178 | total=1489906 ns | avg=8370.3 ns
+calc_prio 1772792045.2083917
+[PROFILE] SchedulePolicy.calc_priority | calls=179 | total=1497483 ns | avg=8365.8 ns
+calc_prio 1772792047.1824448
+[PROFILE] SchedulePolicy.calc_priority | calls=180 | total=1505138 ns | avg=8361.9 ns
+calc_prio 1772792047.2193847
+[PROFILE] SchedulePolicy.calc_priority | calls=181 | total=1512242 ns | avg=8354.9 ns
+calc_prio 1772792047.9010494
+[PROFILE] SchedulePolicy.calc_priority | calls=182 | total=1520589 ns | avg=8354.9 ns
+calc_prio 1772792048.6534805
+[PROFILE] SchedulePolicy.calc_priority | calls=183 | total=1528563 ns | avg=8352.8 ns
+calc_prio 1772792049.3964949
+[PROFILE] SchedulePolicy.calc_priority | calls=184 | total=1536866 ns | avg=8352.5 ns
+calc_prio 1772792050.7987266
+[PROFILE] SchedulePolicy.calc_priority | calls=185 | total=1544484 ns | avg=8348.6 ns
+calc_prio 1772792050.9417236
+[PROFILE] SchedulePolicy.calc_priority | calls=186 | total=1550881 ns | avg=8338.1 ns
+calc_prio 1772792050.9778688
+[PROFILE] SchedulePolicy.calc_priority | calls=187 | total=1558098 ns | avg=8332.1 ns
+calc_prio 1772792051.6367488
+[PROFILE] SchedulePolicy.calc_priority | calls=188 | total=1565868 ns | avg=8329.1 ns
+calc_prio 1772792053.4620109
+[PROFILE] SchedulePolicy.calc_priority | calls=189 | total=1574059 ns | avg=8328.4 ns
+calc_prio 1772792053.49846
+[PROFILE] SchedulePolicy.calc_priority | calls=190 | total=1581445 ns | avg=8323.4 ns
+calc_prio 1772792054.1977615
+[PROFILE] SchedulePolicy.calc_priority | calls=191 | total=1589045 ns | avg=8319.6 ns
+calc_prio 1772792055.422299
+[PROFILE] SchedulePolicy.calc_priority | calls=192 | total=1597152 ns | avg=8318.5 ns
+calc_prio 1772792055.4586108
+[PROFILE] SchedulePolicy.calc_priority | calls=193 | total=1604864 ns | avg=8315.4 ns
+calc_prio 1772792056.1198137
+[PROFILE] SchedulePolicy.calc_priority | calls=194 | total=1611895 ns | avg=8308.7 ns
+calc_prio 1772792057.514124
+[PROFILE] SchedulePolicy.calc_priority | calls=195 | total=1619511 ns | avg=8305.2 ns
+calc_prio 1772792057.5500264
+[PROFILE] SchedulePolicy.calc_priority | calls=196 | total=1627136 ns | avg=8301.7 ns
+calc_prio 1772792058.2114277
+[PROFILE] SchedulePolicy.calc_priority | calls=197 | total=1634279 ns | avg=8295.8 ns
+calc_prio 1772792059.9500816
+[PROFILE] SchedulePolicy.calc_priority | calls=198 | total=1642067 ns | avg=8293.3 ns
+calc_prio 1772792059.9860005
+[PROFILE] SchedulePolicy.calc_priority | calls=199 | total=1649972 ns | avg=8291.3 ns
+calc_prio 1772792060.677496
+[PROFILE] SchedulePolicy.calc_priority | calls=200 | total=1657548 ns | avg=8287.7 ns
+calc_prio 1772792062.247481
+[PROFILE] SchedulePolicy.calc_priority | calls=201 | total=1665333 ns | avg=8285.2 ns
+calc_prio 1772792062.2834623
+[PROFILE] SchedulePolicy.calc_priority | calls=202 | total=1672315 ns | avg=8278.8 ns
+calc_prio 1772792062.9596329
+[PROFILE] SchedulePolicy.calc_priority | calls=203 | total=1725502 ns | avg=8500.0 ns
+calc_prio 1772792064.4471238
+[PROFILE] SchedulePolicy.calc_priority | calls=204 | total=1732270 ns | avg=8491.5 ns
+calc_prio 1772792064.483063
+[PROFILE] SchedulePolicy.calc_priority | calls=205 | total=1739899 ns | avg=8487.3 ns
+calc_prio 1772792065.1482737
+[PROFILE] SchedulePolicy.calc_priority | calls=206 | total=1747587 ns | avg=8483.4 ns
+calc_prio 1772792067.0691977
+[PROFILE] SchedulePolicy.calc_priority | calls=207 | total=1756632 ns | avg=8486.1 ns
+calc_prio 1772792067.1056075
+[PROFILE] SchedulePolicy.calc_priority | calls=208 | total=1763708 ns | avg=8479.4 ns
+calc_prio 1772792067.80569
+[PROFILE] SchedulePolicy.calc_priority | calls=209 | total=1771869 ns | avg=8477.8 ns
+calc_prio 1772792069.3480506
+[PROFILE] SchedulePolicy.calc_priority | calls=210 | total=1781072 ns | avg=8481.3 ns
+calc_prio 1772792069.3842552
+[PROFILE] SchedulePolicy.calc_priority | calls=211 | total=1787642 ns | avg=8472.2 ns
+calc_prio 1772792070.05439
+[PROFILE] SchedulePolicy.calc_priority | calls=212 | total=1795221 ns | avg=8468.0 ns
+calc_prio 1772792072.0215385
+[PROFILE] SchedulePolicy.calc_priority | calls=213 | total=1803450 ns | avg=8466.9 ns
+calc_prio 1772792072.0569322
+[PROFILE] SchedulePolicy.calc_priority | calls=214 | total=1811050 ns | avg=8462.9 ns
+calc_prio 1772792072.7565079
+[PROFILE] SchedulePolicy.calc_priority | calls=215 | total=1818935 ns | avg=8460.2 ns
+calc_prio 1772792073.5091918
+[PROFILE] SchedulePolicy.calc_priority | calls=216 | total=1827119 ns | avg=8458.9 ns
+calc_prio 1772792074.2506392
+[PROFILE] SchedulePolicy.calc_priority | calls=217 | total=1834176 ns | avg=8452.4 ns
+calc_prio 1772792075.6535456
+[PROFILE] SchedulePolicy.calc_priority | calls=218 | total=1841017 ns | avg=8445.0 ns
+calc_prio 1772792076.5044358
+[PROFILE] SchedulePolicy.calc_priority | calls=219 | total=1848957 ns | avg=8442.7 ns
+calc_prio 1772792076.5403965
+[PROFILE] SchedulePolicy.calc_priority | calls=220 | total=1856455 ns | avg=8438.4 ns
+calc_prio 1772792077.2304106
+[PROFILE] SchedulePolicy.calc_priority | calls=221 | total=1864253 ns | avg=8435.5 ns
+calc_prio 1772792078.6852763
+[PROFILE] SchedulePolicy.calc_priority | calls=222 | total=1871678 ns | avg=8431.0 ns
+calc_prio 1772792078.7215195
+[PROFILE] SchedulePolicy.calc_priority | calls=223 | total=1879127 ns | avg=8426.6 ns
+calc_prio 1772792079.385547
+[PROFILE] SchedulePolicy.calc_priority | calls=224 | total=1886687 ns | avg=8422.7 ns
+calc_prio 1772792080.5534313
+[PROFILE] SchedulePolicy.calc_priority | calls=225 | total=1893786 ns | avg=8416.8 ns
+calc_prio 1772792080.5902555
+[PROFILE] SchedulePolicy.calc_priority | calls=226 | total=1901066 ns | avg=8411.8 ns
+calc_prio 1772792081.2658772
+[PROFILE] SchedulePolicy.calc_priority | calls=227 | total=1908579 ns | avg=8407.8 ns
+calc_prio 1772792082.69958
+[PROFILE] SchedulePolicy.calc_priority | calls=228 | total=1916546 ns | avg=8405.9 ns
+calc_prio 1772792082.7353864
+[PROFILE] SchedulePolicy.calc_priority | calls=229 | total=1923669 ns | avg=8400.3 ns
+calc_prio 1772792083.4003015
+[PROFILE] SchedulePolicy.calc_priority | calls=230 | total=1931178 ns | avg=8396.4 ns
+calc_prio 1772792084.9782255
+[PROFILE] SchedulePolicy.calc_priority | calls=231 | total=1939602 ns | avg=8396.5 ns
+calc_prio 1772792085.014358
+[PROFILE] SchedulePolicy.calc_priority | calls=232 | total=1947666 ns | avg=8395.1 ns
+calc_prio 1772792085.6839228
+[PROFILE] SchedulePolicy.calc_priority | calls=233 | total=1955208 ns | avg=8391.5 ns
+calc_prio 1772792087.95215
+[PROFILE] SchedulePolicy.calc_priority | calls=234 | total=1963084 ns | avg=8389.2 ns
+calc_prio 1772792087.9883273
+[PROFILE] SchedulePolicy.calc_priority | calls=235 | total=1970839 ns | avg=8386.5 ns
+calc_prio 1772792088.6827574
+[PROFILE] SchedulePolicy.calc_priority | calls=236 | total=1978375 ns | avg=8382.9 ns
+calc_prio 1772792090.4789963
+[PROFILE] SchedulePolicy.calc_priority | calls=237 | total=1986100 ns | avg=8380.2 ns
+calc_prio 1772792090.5149841
+[PROFILE] SchedulePolicy.calc_priority | calls=238 | total=1993543 ns | avg=8376.2 ns
+calc_prio 1772792091.211008
+[PROFILE] SchedulePolicy.calc_priority | calls=239 | total=2001731 ns | avg=8375.4 ns
+calc_prio 1772792092.5139906
+[PROFILE] SchedulePolicy.calc_priority | calls=240 | total=2009150 ns | avg=8371.5 ns
+calc_prio 1772792092.9463217
+[PROFILE] SchedulePolicy.calc_priority | calls=241 | total=2015641 ns | avg=8363.7 ns
+calc_prio 1772792092.982378
+[PROFILE] SchedulePolicy.calc_priority | calls=242 | total=2022754 ns | avg=8358.5 ns
+calc_prio 1772792093.6577802
+[PROFILE] SchedulePolicy.calc_priority | calls=243 | total=2029682 ns | avg=8352.6 ns
+calc_prio 1772792096.1917908
+[PROFILE] SchedulePolicy.calc_priority | calls=244 | total=2037797 ns | avg=8351.6 ns
+calc_prio 1772792096.2284112
+[PROFILE] SchedulePolicy.calc_priority | calls=245 | total=2045600 ns | avg=8349.4 ns
+calc_prio 1772792096.9135497
+[PROFILE] SchedulePolicy.calc_priority | calls=246 | total=2053271 ns | avg=8346.6 ns
+calc_prio 1772792099.2139978
+[PROFILE] SchedulePolicy.calc_priority | calls=247 | total=2061783 ns | avg=8347.3 ns
+calc_prio 1772792099.24993
+[PROFILE] SchedulePolicy.calc_priority | calls=248 | total=2070086 ns | avg=8347.1 ns
+calc_prio 1772792099.9442317
+[PROFILE] SchedulePolicy.calc_priority | calls=249 | total=2078009 ns | avg=8345.4 ns
+calc_prio 1772792101.4451158
+[PROFILE] SchedulePolicy.calc_priority | calls=250 | total=2086487 ns | avg=8345.9 ns
+calc_prio 1772792101.4811943
+[PROFILE] SchedulePolicy.calc_priority | calls=251 | total=2094441 ns | avg=8344.4 ns
+calc_prio 1772792102.1525028
+[PROFILE] SchedulePolicy.calc_priority | calls=252 | total=2101771 ns | avg=8340.4 ns
+calc_prio 1772792103.640422
+[PROFILE] SchedulePolicy.calc_priority | calls=253 | total=2109200 ns | avg=8336.8 ns
+calc_prio 1772792103.6765056
+[PROFILE] SchedulePolicy.calc_priority | calls=254 | total=2116663 ns | avg=8333.3 ns
+calc_prio 1772792104.3398573
+[PROFILE] SchedulePolicy.calc_priority | calls=255 | total=2124097 ns | avg=8329.8 ns
+calc_prio 1772792105.531429
+[PROFILE] SchedulePolicy.calc_priority | calls=256 | total=2131447 ns | avg=8326.0 ns
+calc_prio 1772792105.568078
+[PROFILE] SchedulePolicy.calc_priority | calls=257 | total=2138602 ns | avg=8321.4 ns
+calc_prio 1772792106.2404299
+[PROFILE] SchedulePolicy.calc_priority | calls=258 | total=2145784 ns | avg=8317.0 ns
+calc_prio 1772792108.0595362
+[PROFILE] SchedulePolicy.calc_priority | calls=259 | total=2153651 ns | avg=8315.3 ns
+calc_prio 1772792108.0954967
+[PROFILE] SchedulePolicy.calc_priority | calls=260 | total=2161271 ns | avg=8312.6 ns
+calc_prio 1772792108.7746892
+[PROFILE] SchedulePolicy.calc_priority | calls=261 | total=2170960 ns | avg=8317.9 ns
+calc_prio 1772792109.9627364
+[PROFILE] SchedulePolicy.calc_priority | calls=262 | total=2179798 ns | avg=8319.8 ns
+calc_prio 1772792110.0000713
+[PROFILE] SchedulePolicy.calc_priority | calls=263 | total=2186843 ns | avg=8315.0 ns
+calc_prio 1772792110.6669047
+[PROFILE] SchedulePolicy.calc_priority | calls=264 | total=2193936 ns | avg=8310.4 ns
+calc_prio 1772792113.6964102
+[PROFILE] SchedulePolicy.calc_priority | calls=265 | total=2202558 ns | avg=8311.5 ns
+calc_prio 1772792113.7326207
+[PROFILE] SchedulePolicy.calc_priority | calls=266 | total=2210079 ns | avg=8308.6 ns
+calc_prio 1772792114.434561
+[PROFILE] SchedulePolicy.calc_priority | calls=267 | total=2217484 ns | avg=8305.2 ns
+calc_prio 1772792116.1598253
+[PROFILE] SchedulePolicy.calc_priority | calls=268 | total=2224680 ns | avg=8301.0 ns
+calc_prio 1772792116.1958055
+[PROFILE] SchedulePolicy.calc_priority | calls=269 | total=2231602 ns | avg=8295.9 ns
+calc_prio 1772792116.8916533
+[PROFILE] SchedulePolicy.calc_priority | calls=270 | total=2242374 ns | avg=8305.1 ns
+calc_prio 1772792118.2313204
+[PROFILE] SchedulePolicy.calc_priority | calls=271 | total=2250463 ns | avg=8304.3 ns
+calc_prio 1772792118.2672274
+[PROFILE] SchedulePolicy.calc_priority | calls=272 | total=2256969 ns | avg=8297.7 ns
+calc_prio 1772792118.926642
+[PROFILE] SchedulePolicy.calc_priority | calls=273 | total=2263970 ns | avg=8292.9 ns
+calc_prio 1772792120.11706
+sglang: Throughput: 0.42418198307399096 req/s
+System prompt length: 9993 tokens (target: 10000)
+Generated 100 prompts in total.
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+hello
+calc_prio 1772792168.4408276
+calc_prio2 1772792168.4409776
+[PROFILE] SchedulePolicy.calc_priority | calls=1 | total=155772 ns | avg=155772.0 ns
+calc_prio 1772792169.2813427
+calc_prio2 1772792169.2821913
+[PROFILE] SchedulePolicy.calc_priority | calls=2 | total=1011997 ns | avg=505998.5 ns
+calc_prio 1772792169.3111944
+calc_prio2 1772792169.3120205
+[PROFILE] SchedulePolicy.calc_priority | calls=3 | total=1843610 ns | avg=614536.7 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=5 | total=30218 ns | avg=6043.6 ns
+calc_prio 1772792170.64765
+calc_prio2 1772792170.6483746
+[PROFILE] SchedulePolicy.calc_priority | calls=4 | total=2574876 ns | avg=643719.0 ns
+calc_prio 1772792170.667225
+calc_prio2 1772792170.668014
+[PROFILE] SchedulePolicy.calc_priority | calls=5 | total=3369381 ns | avg=673876.2 ns
+calc_prio 1772792171.3350623
+calc_prio2 1772792171.3354056
+[PROFILE] SchedulePolicy.calc_priority | calls=6 | total=3718189 ns | avg=619698.2 ns
+calc_prio 1772792173.433143
+calc_prio2 1772792173.4346151
+[PROFILE] SchedulePolicy.calc_priority | calls=7 | total=5196810 ns | avg=742401.4 ns
+calc_prio 1772792173.4759088
+calc_prio2 1772792173.4773717
+[PROFILE] SchedulePolicy.calc_priority | calls=8 | total=6666815 ns | avg=833351.9 ns
+calc_prio 1772792174.1223617
+calc_prio2 1772792174.1236024
+[PROFILE] SchedulePolicy.calc_priority | calls=9 | total=7912976 ns | avg=879219.6 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=10 | total=51490 ns | avg=5149.0 ns
+calc_prio 1772792176.0822563
+calc_prio2 1772792176.0838513
+[PROFILE] SchedulePolicy.calc_priority | calls=10 | total=9514572 ns | avg=951457.2 ns
+calc_prio 1772792176.1184475
+calc_prio2 1772792176.1195006
+[PROFILE] SchedulePolicy.calc_priority | calls=11 | total=10572270 ns | avg=961115.5 ns
+calc_prio 1772792176.7499504
+calc_prio2 1772792176.7514853
+[PROFILE] SchedulePolicy.calc_priority | calls=12 | total=12114013 ns | avg=1009501.1 ns
+calc_prio 1772792178.7431686
+calc_prio2 1772792178.7444856
+[PROFILE] SchedulePolicy.calc_priority | calls=13 | total=13438760 ns | avg=1033750.8 ns
+calc_prio 1772792178.779277
+calc_prio2 1772792178.7804132
+[PROFILE] SchedulePolicy.calc_priority | calls=14 | total=14579994 ns | avg=1041428.1 ns
+calc_prio 1772792179.4108744
+calc_prio2 1772792179.41205
+[PROFILE] SchedulePolicy.calc_priority | calls=15 | total=15761216 ns | avg=1050747.7 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=15 | total=72483 ns | avg=4832.2 ns
+calc_prio 1772792180.5769668
+calc_prio2 1772792180.5785847
+[PROFILE] SchedulePolicy.calc_priority | calls=16 | total=17385368 ns | avg=1086585.5 ns
+calc_prio 1772792180.6685927
+calc_prio2 1772792180.670044
+[PROFILE] SchedulePolicy.calc_priority | calls=17 | total=18842410 ns | avg=1108377.1 ns
+calc_prio 1772792180.7048242
+calc_prio2 1772792180.7060807
+[PROFILE] SchedulePolicy.calc_priority | calls=18 | total=20103816 ns | avg=1116878.7 ns
+calc_prio 1772792181.3263621
+calc_prio2 1772792181.3280654
+[PROFILE] SchedulePolicy.calc_priority | calls=19 | total=21813725 ns | avg=1148090.8 ns
+calc_prio 1772792182.6738496
+calc_prio2 1772792182.6758468
+[PROFILE] SchedulePolicy.calc_priority | calls=20 | total=23816863 ns | avg=1190843.1 ns
+calc_prio 1772792182.7100275
+calc_prio2 1772792182.711689
+[PROFILE] SchedulePolicy.calc_priority | calls=21 | total=25483745 ns | avg=1213511.7 ns
+calc_prio 1772792183.3352485
+calc_prio2 1772792183.3367286
+[PROFILE] SchedulePolicy.calc_priority | calls=22 | total=26971628 ns | avg=1225983.1 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=20 | total=97378 ns | avg=4868.9 ns
+calc_prio 1772792184.7096488
+calc_prio2 1772792184.7120464
+[PROFILE] SchedulePolicy.calc_priority | calls=23 | total=29375775 ns | avg=1277207.6 ns
+calc_prio 1772792184.7458534
+calc_prio2 1772792184.7479541
+[PROFILE] SchedulePolicy.calc_priority | calls=24 | total=31482541 ns | avg=1311772.5 ns
+calc_prio 1772792185.3724291
+calc_prio2 1772792185.3745003
+[PROFILE] SchedulePolicy.calc_priority | calls=25 | total=33560104 ns | avg=1342404.2 ns
+calc_prio 1772792186.5269597
+calc_prio2 1772792186.529276
+[PROFILE] SchedulePolicy.calc_priority | calls=26 | total=35883407 ns | avg=1380131.0 ns
+calc_prio 1772792186.5636976
+calc_prio2 1772792186.5657833
+[PROFILE] SchedulePolicy.calc_priority | calls=27 | total=37974813 ns | avg=1406474.6 ns
+calc_prio 1772792187.1977592
+calc_prio2 1772792187.2003777
+[PROFILE] SchedulePolicy.calc_priority | calls=28 | total=40600814 ns | avg=1450029.1 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=25 | total=120297 ns | avg=4811.9 ns
+calc_prio 1772792188.6437566
+calc_prio2 1772792188.6464393
+[PROFILE] SchedulePolicy.calc_priority | calls=29 | total=43291020 ns | avg=1492793.8 ns
+calc_prio 1772792188.6801305
+calc_prio2 1772792188.6823318
+[PROFILE] SchedulePolicy.calc_priority | calls=30 | total=45498025 ns | avg=1516600.8 ns
+calc_prio 1772792189.3221278
+calc_prio2 1772792189.3245425
+[PROFILE] SchedulePolicy.calc_priority | calls=31 | total=47917990 ns | avg=1545741.6 ns
+calc_prio 1772792191.4223056
+calc_prio2 1772792191.4245095
+[PROFILE] SchedulePolicy.calc_priority | calls=32 | total=50128973 ns | avg=1566530.4 ns
+calc_prio 1772792191.8312287
+calc_prio2 1772792191.8335524
+[PROFILE] SchedulePolicy.calc_priority | calls=33 | total=52459349 ns | avg=1589677.2 ns
+calc_prio 1772792191.8672395
+calc_prio2 1772792191.869502
+[PROFILE] SchedulePolicy.calc_priority | calls=34 | total=54727813 ns | avg=1609641.6 ns
+calc_prio 1772792192.535327
+calc_prio2 1772792192.537554
+[PROFILE] SchedulePolicy.calc_priority | calls=35 | total=56961763 ns | avg=1627478.9 ns
+calc_prio 1772792194.3546684
+calc_prio2 1772792194.3576462
+[PROFILE] SchedulePolicy.calc_priority | calls=36 | total=59946486 ns | avg=1665180.2 ns
+calc_prio 1772792194.3908815
+calc_prio2 1772792194.3935814
+[PROFILE] SchedulePolicy.calc_priority | calls=37 | total=62652545 ns | avg=1693312.0 ns
+calc_prio 1772792195.068798
+calc_prio2 1772792195.0714476
+[PROFILE] SchedulePolicy.calc_priority | calls=38 | total=65308028 ns | avg=1718632.3 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=30 | total=143759 ns | avg=4792.0 ns
+calc_prio 1772792196.8677156
+calc_prio2 1772792196.8761654
+[PROFILE] SchedulePolicy.calc_priority | calls=39 | total=73767375 ns | avg=1891471.2 ns
+calc_prio 1772792196.9040897
+calc_prio2 1772792196.9075403
+[PROFILE] SchedulePolicy.calc_priority | calls=40 | total=77225195 ns | avg=1930629.9 ns
+calc_prio 1772792197.5845466
+calc_prio2 1772792197.5889962
+[PROFILE] SchedulePolicy.calc_priority | calls=41 | total=81682540 ns | avg=1992257.1 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=35 | total=164924 ns | avg=4712.1 ns
+calc_prio 1772792198.8641717
+calc_prio2 1772792198.868774
+[PROFILE] SchedulePolicy.calc_priority | calls=42 | total=86291614 ns | avg=2054562.2 ns
+calc_prio 1772792198.898087
+calc_prio2 1772792198.9023676
+[PROFILE] SchedulePolicy.calc_priority | calls=43 | total=90578633 ns | avg=2106479.8 ns
+calc_prio 1772792199.5337248
+calc_prio2 1772792199.5382254
+[PROFILE] SchedulePolicy.calc_priority | calls=44 | total=95087311 ns | avg=2161075.2 ns
+calc_prio 1772792200.2761424
+calc_prio2 1772792200.2806895
+[PROFILE] SchedulePolicy.calc_priority | calls=45 | total=99641954 ns | avg=2214265.6 ns
+calc_prio 1772792200.9950838
+calc_prio2 1772792201.0005612
+[PROFILE] SchedulePolicy.calc_priority | calls=46 | total=105127707 ns | avg=2285384.9 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=40 | total=187237 ns | avg=4680.9 ns
+calc_prio 1772792203.1224964
+calc_prio2 1772792203.1285217
+[PROFILE] SchedulePolicy.calc_priority | calls=47 | total=111161187 ns | avg=2365131.6 ns
+calc_prio 1772792203.1586018
+calc_prio2 1772792203.1640463
+[PROFILE] SchedulePolicy.calc_priority | calls=48 | total=116612673 ns | avg=2429430.7 ns
+calc_prio 1772792203.846942
+calc_prio2 1772792203.8528492
+[PROFILE] SchedulePolicy.calc_priority | calls=49 | total=122528153 ns | avg=2500574.6 ns
+calc_prio 1772792205.3116426
+calc_prio2 1772792205.3178146
+[PROFILE] SchedulePolicy.calc_priority | calls=50 | total=128708331 ns | avg=2574166.6 ns
+calc_prio 1772792205.3535595
+calc_prio2 1772792205.3589082
+[PROFILE] SchedulePolicy.calc_priority | calls=51 | total=134065028 ns | avg=2628726.0 ns
+calc_prio 1772792206.006055
+calc_prio2 1772792206.0114088
+[PROFILE] SchedulePolicy.calc_priority | calls=52 | total=139426192 ns | avg=2681272.9 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=45 | total=212435 ns | avg=4720.8 ns
+calc_prio 1772792207.8387213
+calc_prio2 1772792207.845491
+[PROFILE] SchedulePolicy.calc_priority | calls=53 | total=146251740 ns | avg=2759466.8 ns
+calc_prio 1772792209.4076447
+calc_prio2 1772792209.4140253
+[PROFILE] SchedulePolicy.calc_priority | calls=54 | total=152641525 ns | avg=2826694.9 ns
+calc_prio 1772792209.4439883
+calc_prio2 1772792209.4500992
+[PROFILE] SchedulePolicy.calc_priority | calls=55 | total=158759908 ns | avg=2886543.8 ns
+calc_prio 1772792210.121535
+calc_prio2 1772792210.1287827
+[PROFILE] SchedulePolicy.calc_priority | calls=56 | total=166016777 ns | avg=2964585.3 ns
+calc_prio 1772792212.1853602
+calc_prio2 1772792212.1924973
+[PROFILE] SchedulePolicy.calc_priority | calls=57 | total=173162420 ns | avg=3037937.2 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=50 | total=232369 ns | avg=4647.4 ns
+calc_prio 1772792212.502151
+calc_prio2 1772792212.5090008
+[PROFILE] SchedulePolicy.calc_priority | calls=58 | total=180020519 ns | avg=3103802.1 ns
+calc_prio 1772792212.5387425
+calc_prio2 1772792212.5453408
+[PROFILE] SchedulePolicy.calc_priority | calls=59 | total=186626253 ns | avg=3163156.8 ns
+calc_prio 1772792213.2142344
+calc_prio2 1772792213.22703
+[PROFILE] SchedulePolicy.calc_priority | calls=60 | total=199431942 ns | avg=3323865.7 ns
+calc_prio 1772792214.9719474
+calc_prio2 1772792214.9781563
+[PROFILE] SchedulePolicy.calc_priority | calls=61 | total=205648828 ns | avg=3371292.3 ns
+calc_prio 1772792215.008118
+calc_prio2 1772792215.0141578
+[PROFILE] SchedulePolicy.calc_priority | calls=62 | total=211696645 ns | avg=3414462.0 ns
+calc_prio 1772792215.6619751
+calc_prio2 1772792215.6681104
+[PROFILE] SchedulePolicy.calc_priority | calls=63 | total=217838819 ns | avg=3457759.0 ns
+calc_prio 1772792216.9684823
+calc_prio2 1772792216.9809296
+[PROFILE] SchedulePolicy.calc_priority | calls=64 | total=230296438 ns | avg=3598381.8 ns
+calc_prio 1772792217.0051572
+calc_prio2 1772792217.0107784
+[PROFILE] SchedulePolicy.calc_priority | calls=65 | total=235925163 ns | avg=3629617.9 ns
+calc_prio 1772792217.65027
+calc_prio2 1772792217.6560016
+[PROFILE] SchedulePolicy.calc_priority | calls=66 | total=241663449 ns | avg=3661567.4 ns
+calc_prio 1772792219.0002396
+calc_prio2 1772792219.0062025
+[PROFILE] SchedulePolicy.calc_priority | calls=67 | total=247633904 ns | avg=3696028.4 ns
+calc_prio 1772792219.3865628
+calc_prio2 1772792219.3989625
+[PROFILE] SchedulePolicy.calc_priority | calls=68 | total=260044980 ns | avg=3824190.9 ns
+calc_prio 1772792219.4238594
+calc_prio2 1772792219.4297924
+[PROFILE] SchedulePolicy.calc_priority | calls=69 | total=265986485 ns | avg=3854876.6 ns
+calc_prio 1772792220.1020236
+calc_prio2 1772792220.1077824
+[PROFILE] SchedulePolicy.calc_priority | calls=70 | total=271754129 ns | avg=3882201.8 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=55 | total=257876 ns | avg=4688.7 ns
+calc_prio 1772792222.2494552
+calc_prio2 1772792222.2558665
+[PROFILE] SchedulePolicy.calc_priority | calls=71 | total=278174083 ns | avg=3917944.8 ns
+calc_prio 1772792222.4085758
+calc_prio2 1772792222.4204242
+[PROFILE] SchedulePolicy.calc_priority | calls=72 | total=290032250 ns | avg=4028225.7 ns
+calc_prio 1772792222.4452124
+calc_prio2 1772792222.4507413
+[PROFILE] SchedulePolicy.calc_priority | calls=73 | total=295568410 ns | avg=4048882.3 ns
+calc_prio 1772792223.136694
+calc_prio2 1772792223.1430914
+[PROFILE] SchedulePolicy.calc_priority | calls=74 | total=301974582 ns | avg=4080737.6 ns
+calc_prio 1772792225.3702533
+calc_prio2 1772792225.3769684
+[PROFILE] SchedulePolicy.calc_priority | calls=75 | total=308698203 ns | avg=4115976.0 ns
+calc_prio 1772792225.4065466
+calc_prio2 1772792225.4129996
+[PROFILE] SchedulePolicy.calc_priority | calls=76 | total=315159246 ns | avg=4146832.2 ns
+calc_prio 1772792226.1081858
+calc_prio2 1772792226.114317
+[PROFILE] SchedulePolicy.calc_priority | calls=77 | total=321298828 ns | avg=4172712.1 ns
+calc_prio 1772792227.5849633
+calc_prio2 1772792227.5912166
+[PROFILE] SchedulePolicy.calc_priority | calls=78 | total=327561064 ns | avg=4199500.8 ns
+calc_prio 1772792227.9282842
+calc_prio2 1772792227.9346058
+[PROFILE] SchedulePolicy.calc_priority | calls=79 | total=333890173 ns | avg=4226457.9 ns
+calc_prio 1772792227.964501
+calc_prio2 1772792227.9707482
+[PROFILE] SchedulePolicy.calc_priority | calls=80 | total=340144386 ns | avg=4251804.8 ns
+calc_prio 1772792228.6298678
+calc_prio2 1772792228.643495
+[PROFILE] SchedulePolicy.calc_priority | calls=81 | total=353782220 ns | avg=4367681.7 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=60 | total=284416 ns | avg=4740.3 ns
+calc_prio 1772792230.9372795
+calc_prio2 1772792230.9441655
+[PROFILE] SchedulePolicy.calc_priority | calls=82 | total=360677053 ns | avg=4398500.6 ns
+calc_prio 1772792231.1415923
+calc_prio2 1772792231.1483536
+[PROFILE] SchedulePolicy.calc_priority | calls=83 | total=367446254 ns | avg=4427063.3 ns
+calc_prio 1772792231.6422794
+calc_prio2 1772792231.6490014
+[PROFILE] SchedulePolicy.calc_priority | calls=84 | total=374175825 ns | avg=4454474.1 ns
+calc_prio 1772792231.678358
+calc_prio2 1772792231.6850865
+[PROFILE] SchedulePolicy.calc_priority | calls=85 | total=380911609 ns | avg=4481313.0 ns
+calc_prio 1772792232.3719094
+calc_prio2 1772792232.3787067
+[PROFILE] SchedulePolicy.calc_priority | calls=86 | total=387717882 ns | avg=4508347.5 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=65 | total=302805 ns | avg=4658.5 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=70 | total=323530 ns | avg=4621.9 ns
+calc_prio 1772792234.3548486
+calc_prio2 1772792234.3644664
+[PROFILE] SchedulePolicy.calc_priority | calls=87 | total=397344138 ns | avg=4567174.0 ns
+calc_prio 1772792234.390948
+calc_prio2 1772792234.4003332
+[PROFILE] SchedulePolicy.calc_priority | calls=88 | total=406738035 ns | avg=4622023.1 ns
+calc_prio 1772792235.1055534
+calc_prio2 1772792235.1143403
+[PROFILE] SchedulePolicy.calc_priority | calls=89 | total=415534882 ns | avg=4668931.3 ns
+calc_prio 1772792237.3981369
+calc_prio2 1772792237.4065344
+[PROFILE] SchedulePolicy.calc_priority | calls=90 | total=423940603 ns | avg=4710451.1 ns
+calc_prio 1772792237.4352365
+calc_prio2 1772792237.4434536
+[PROFILE] SchedulePolicy.calc_priority | calls=91 | total=432165893 ns | avg=4749075.7 ns
+calc_prio 1772792238.1332595
+calc_prio2 1772792238.1476934
+[PROFILE] SchedulePolicy.calc_priority | calls=92 | total=446639800 ns | avg=4854780.4 ns
+calc_prio 1772792239.2273505
+calc_prio2 1772792239.2355883
+[PROFILE] SchedulePolicy.calc_priority | calls=93 | total=454886175 ns | avg=4891249.2 ns
+calc_prio 1772792239.551154
+calc_prio2 1772792239.5593147
+[PROFILE] SchedulePolicy.calc_priority | calls=94 | total=463055101 ns | avg=4926118.1 ns
+calc_prio 1772792239.587349
+calc_prio2 1772792239.5953922
+[PROFILE] SchedulePolicy.calc_priority | calls=95 | total=471105736 ns | avg=4959007.7 ns
+calc_prio 1772792240.2485266
+calc_prio2 1772792240.2566311
+[PROFILE] SchedulePolicy.calc_priority | calls=96 | total=479218214 ns | avg=4991856.4 ns
+calc_prio 1772792241.9550037
+calc_prio2 1772792241.963134
+[PROFILE] SchedulePolicy.calc_priority | calls=97 | total=487357272 ns | avg=5024301.8 ns
+calc_prio 1772792241.9911327
+calc_prio2 1772792241.9990137
+[PROFILE] SchedulePolicy.calc_priority | calls=98 | total=495245905 ns | avg=5053529.6 ns
+calc_prio 1772792242.673984
+calc_prio2 1772792242.6819186
+[PROFILE] SchedulePolicy.calc_priority | calls=99 | total=503189974 ns | avg=5082727.0 ns
+calc_prio 1772792244.0781925
+calc_prio2 1772792244.0866666
+[PROFILE] SchedulePolicy.calc_priority | calls=100 | total=511672438 ns | avg=5116724.4 ns
+calc_prio 1772792244.8714883
+calc_prio2 1772792244.8795128
+[PROFILE] SchedulePolicy.calc_priority | calls=101 | total=519705323 ns | avg=5145597.3 ns
+calc_prio 1772792244.907636
+calc_prio2 1772792244.9150355
+[PROFILE] SchedulePolicy.calc_priority | calls=102 | total=527111775 ns | avg=5167762.5 ns
+calc_prio 1772792245.6046681
+calc_prio2 1772792245.6120653
+[PROFILE] SchedulePolicy.calc_priority | calls=103 | total=534516844 ns | avg=5189483.9 ns
+calc_prio 1772792247.4853623
+calc_prio2 1772792247.49278
+[PROFILE] SchedulePolicy.calc_priority | calls=104 | total=541945261 ns | avg=5211012.1 ns
+calc_prio 1772792247.5282238
+calc_prio2 1772792247.5354948
+[PROFILE] SchedulePolicy.calc_priority | calls=105 | total=549225670 ns | avg=5230720.7 ns
+calc_prio 1772792248.1971772
+calc_prio2 1772792248.2043755
+[PROFILE] SchedulePolicy.calc_priority | calls=106 | total=556431336 ns | avg=5249352.2 ns
+calc_prio 1772792249.583674
+calc_prio2 1772792249.591234
+[PROFILE] SchedulePolicy.calc_priority | calls=107 | total=564000232 ns | avg=5271030.2 ns
+calc_prio 1772792250.106578
+calc_prio2 1772792250.1140344
+[PROFILE] SchedulePolicy.calc_priority | calls=108 | total=571464390 ns | avg=5291336.9 ns
+calc_prio 1772792250.143068
+calc_prio2 1772792250.1503284
+[PROFILE] SchedulePolicy.calc_priority | calls=109 | total=578733649 ns | avg=5309483.0 ns
+calc_prio 1772792250.838147
+calc_prio2 1772792250.845347
+[PROFILE] SchedulePolicy.calc_priority | calls=110 | total=585940639 ns | avg=5326733.1 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=75 | total=349593 ns | avg=4661.2 ns
+calc_prio 1772792252.2836392
+calc_prio2 1772792252.2916355
+[PROFILE] SchedulePolicy.calc_priority | calls=111 | total=593944976 ns | avg=5350855.6 ns
+calc_prio 1772792252.3197303
+calc_prio2 1772792252.3271387
+[PROFILE] SchedulePolicy.calc_priority | calls=112 | total=601361337 ns | avg=5369297.7 ns
+calc_prio 1772792252.9934711
+calc_prio2 1772792253.0011678
+[PROFILE] SchedulePolicy.calc_priority | calls=113 | total=609066366 ns | avg=5389967.8 ns
+calc_prio 1772792254.8667724
+calc_prio2 1772792254.8747213
+[PROFILE] SchedulePolicy.calc_priority | calls=114 | total=617024056 ns | avg=5412491.7 ns
+calc_prio 1772792254.902869
+calc_prio2 1772792254.9103668
+[PROFILE] SchedulePolicy.calc_priority | calls=115 | total=624530289 ns | avg=5430698.2 ns
+calc_prio 1772792255.5763876
+calc_prio2 1772792255.5839384
+[PROFILE] SchedulePolicy.calc_priority | calls=116 | total=632089932 ns | avg=5449051.1 ns
+calc_prio 1772792257.083088
+calc_prio2 1772792257.0911484
+[PROFILE] SchedulePolicy.calc_priority | calls=117 | total=640159243 ns | avg=5471446.5 ns
+calc_prio 1772792257.651483
+calc_prio2 1772792257.6594033
+[PROFILE] SchedulePolicy.calc_priority | calls=118 | total=648088533 ns | avg=5492275.7 ns
+calc_prio 1772792257.6878421
+calc_prio2 1772792257.6955202
+[PROFILE] SchedulePolicy.calc_priority | calls=119 | total=655774480 ns | avg=5510709.9 ns
+calc_prio 1772792258.387175
+calc_prio2 1772792258.3947911
+[PROFILE] SchedulePolicy.calc_priority | calls=120 | total=663398662 ns | avg=5528322.2 ns
+calc_prio 1772792259.6288834
+calc_prio2 1772792259.6368613
+[PROFILE] SchedulePolicy.calc_priority | calls=121 | total=671387439 ns | avg=5548656.5 ns
+calc_prio 1772792259.6718254
+calc_prio2 1772792259.6845934
+[PROFILE] SchedulePolicy.calc_priority | calls=122 | total=684165757 ns | avg=5607916.0 ns
+calc_prio 1772792260.325647
+calc_prio2 1772792260.3333535
+[PROFILE] SchedulePolicy.calc_priority | calls=123 | total=691879666 ns | avg=5625037.9 ns
+calc_prio 1772792261.9855986
+calc_prio2 1772792261.9932952
+[PROFILE] SchedulePolicy.calc_priority | calls=124 | total=699584185 ns | avg=5641807.9 ns
+calc_prio 1772792262.0274916
+calc_prio2 1772792262.034757
+[PROFILE] SchedulePolicy.calc_priority | calls=125 | total=706859698 ns | avg=5654877.6 ns
+calc_prio 1772792262.7086694
+calc_prio2 1772792262.7161975
+[PROFILE] SchedulePolicy.calc_priority | calls=126 | total=714395323 ns | avg=5669804.2 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=80 | total=376862 ns | avg=4710.8 ns
+calc_prio 1772792264.441593
+calc_prio2 1772792264.4496481
+[PROFILE] SchedulePolicy.calc_priority | calls=127 | total=722459607 ns | avg=5688658.3 ns
+calc_prio 1772792264.4781556
+calc_prio2 1772792264.4855902
+[PROFILE] SchedulePolicy.calc_priority | calls=128 | total=729903508 ns | avg=5702371.2 ns
+calc_prio 1772792265.142575
+calc_prio2 1772792265.150369
+[PROFILE] SchedulePolicy.calc_priority | calls=129 | total=737706028 ns | avg=5718651.4 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=85 | total=398519 ns | avg=4688.5 ns
+calc_prio 1772792267.1435614
+calc_prio2 1772792267.151862
+[PROFILE] SchedulePolicy.calc_priority | calls=130 | total=746014872 ns | avg=5738575.9 ns
+calc_prio 1772792267.4393146
+calc_prio2 1772792267.4479501
+[PROFILE] SchedulePolicy.calc_priority | calls=131 | total=754658641 ns | avg=5760753.0 ns
+calc_prio 1772792267.7578113
+calc_prio2 1772792267.7727294
+[PROFILE] SchedulePolicy.calc_priority | calls=132 | total=769587785 ns | avg=5830210.5 ns
+calc_prio 1772792267.7944417
+calc_prio2 1772792267.802347
+[PROFILE] SchedulePolicy.calc_priority | calls=133 | total=777501065 ns | avg=5845872.7 ns
+calc_prio 1772792268.487744
+calc_prio2 1772792268.4957068
+[PROFILE] SchedulePolicy.calc_priority | calls=134 | total=785471962 ns | avg=5861731.1 ns
+calc_prio 1772792270.4231102
+calc_prio2 1772792270.4328065
+[PROFILE] SchedulePolicy.calc_priority | calls=135 | total=795178301 ns | avg=5890209.6 ns
+calc_prio 1772792270.4594932
+calc_prio2 1772792270.492412
+[PROFILE] SchedulePolicy.calc_priority | calls=136 | total=828107877 ns | avg=6089028.5 ns
+calc_prio 1772792271.1440144
+calc_prio2 1772792271.1530573
+[PROFILE] SchedulePolicy.calc_priority | calls=137 | total=837159259 ns | avg=6110651.5 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=90 | total=424128 ns | avg=4712.5 ns
+calc_prio 1772792272.6049905
+calc_prio2 1772792272.614369
+[PROFILE] SchedulePolicy.calc_priority | calls=138 | total=846546042 ns | avg=6134391.6 ns
+calc_prio 1772792273.6060278
+calc_prio2 1772792273.6166437
+[PROFILE] SchedulePolicy.calc_priority | calls=139 | total=857171762 ns | avg=6166703.3 ns
+calc_prio 1772792273.6421826
+calc_prio2 1772792273.658301
+[PROFILE] SchedulePolicy.calc_priority | calls=140 | total=873300553 ns | avg=6237861.1 ns
+calc_prio 1772792274.3260362
+calc_prio2 1772792274.3366709
+[PROFILE] SchedulePolicy.calc_priority | calls=141 | total=883944889 ns | avg=6269112.7 ns
+calc_prio 1772792276.0176885
+calc_prio2 1772792276.0279171
+[PROFILE] SchedulePolicy.calc_priority | calls=142 | total=894182383 ns | avg=6297059.0 ns
+calc_prio 1772792276.0540884
+calc_prio2 1772792276.0637743
+[PROFILE] SchedulePolicy.calc_priority | calls=143 | total=903876350 ns | avg=6320813.6 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=95 | total=447305 ns | avg=4708.5 ns
+calc_prio 1772792276.7199476
+calc_prio2 1772792276.7299519
+[PROFILE] SchedulePolicy.calc_priority | calls=144 | total=913889021 ns | avg=6346451.5 ns
+calc_prio 1772792278.7401795
+calc_prio2 1772792278.7496984
+[PROFILE] SchedulePolicy.calc_priority | calls=145 | total=923417179 ns | avg=6368394.3 ns
+calc_prio 1772792278.7773492
+calc_prio2 1772792278.7866404
+[PROFILE] SchedulePolicy.calc_priority | calls=146 | total=932715905 ns | avg=6388465.1 ns
+calc_prio 1772792279.4636817
+calc_prio2 1772792279.479272
+[PROFILE] SchedulePolicy.calc_priority | calls=147 | total=948316222 ns | avg=6451130.8 ns
+calc_prio 1772792280.5739584
+calc_prio2 1772792280.5840535
+[PROFILE] SchedulePolicy.calc_priority | calls=148 | total=958420412 ns | avg=6475813.6 ns
+calc_prio 1772792280.7159865
+calc_prio2 1772792280.7258234
+[PROFILE] SchedulePolicy.calc_priority | calls=149 | total=968266575 ns | avg=6498433.4 ns
+calc_prio 1772792280.7528853
+calc_prio2 1772792280.7623832
+[PROFILE] SchedulePolicy.calc_priority | calls=150 | total=977774772 ns | avg=6518498.5 ns
+calc_prio 1772792281.4115226
+calc_prio2 1772792281.42721
+[PROFILE] SchedulePolicy.calc_priority | calls=151 | total=993472525 ns | avg=6579288.2 ns
+calc_prio 1772792282.9786913
+calc_prio2 1772792282.9889033
+[PROFILE] SchedulePolicy.calc_priority | calls=152 | total=1003694317 ns | avg=6603252.1 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=100 | total=470709 ns | avg=4707.1 ns
+calc_prio 1772792283.5712006
+calc_prio2 1772792283.581987
+[PROFILE] SchedulePolicy.calc_priority | calls=153 | total=1014488595 ns | avg=6630644.4 ns
+calc_prio 1772792283.6075757
+calc_prio2 1772792283.6177642
+[PROFILE] SchedulePolicy.calc_priority | calls=154 | total=1024685612 ns | avg=6653802.7 ns
+calc_prio 1772792284.3065436
+calc_prio2 1772792284.3231997
+[PROFILE] SchedulePolicy.calc_priority | calls=155 | total=1041352085 ns | avg=6718400.5 ns
+calc_prio 1772792285.9058325
+calc_prio2 1772792285.9157212
+[PROFILE] SchedulePolicy.calc_priority | calls=156 | total=1051252300 ns | avg=6738796.8 ns
+calc_prio 1772792286.4523523
+calc_prio2 1772792286.4621747
+[PROFILE] SchedulePolicy.calc_priority | calls=157 | total=1061083410 ns | avg=6758493.1 ns
+calc_prio 1772792286.497851
+calc_prio2 1772792286.5076292
+[PROFILE] SchedulePolicy.calc_priority | calls=158 | total=1070870091 ns | avg=6777658.8 ns
+calc_prio 1772792286.534344
+calc_prio2 1772792286.5501058
+[PROFILE] SchedulePolicy.calc_priority | calls=159 | total=1086642853 ns | avg=6834231.8 ns
+calc_prio 1772792287.2371438
+calc_prio2 1772792287.2466066
+[PROFILE] SchedulePolicy.calc_priority | calls=160 | total=1096114880 ns | avg=6850718.0 ns
+calc_prio 1772792288.7864046
+calc_prio2 1772792288.795504
+[PROFILE] SchedulePolicy.calc_priority | calls=161 | total=1105223069 ns | avg=6864739.6 ns
+calc_prio 1772792288.82317
+calc_prio2 1772792288.8319485
+[PROFILE] SchedulePolicy.calc_priority | calls=162 | total=1114009092 ns | avg=6876599.3 ns
+calc_prio 1772792289.488781
+calc_prio2 1772792289.5035517
+[PROFILE] SchedulePolicy.calc_priority | calls=163 | total=1128791175 ns | avg=6925099.2 ns
+calc_prio 1772792291.2896388
+calc_prio2 1772792291.2987046
+[PROFILE] SchedulePolicy.calc_priority | calls=164 | total=1137866460 ns | avg=6938210.1 ns
+calc_prio 1772792291.326598
+calc_prio2 1772792291.3353322
+[PROFILE] SchedulePolicy.calc_priority | calls=165 | total=1146608602 ns | avg=6949143.0 ns
+calc_prio 1772792292.0237188
+calc_prio2 1772792292.0324204
+[PROFILE] SchedulePolicy.calc_priority | calls=166 | total=1155318035 ns | avg=6959747.2 ns
+calc_prio 1772792293.1289697
+calc_prio2 1772792293.137744
+[PROFILE] SchedulePolicy.calc_priority | calls=167 | total=1164100857 ns | avg=6970663.8 ns
+calc_prio 1772792294.0212662
+calc_prio2 1772792294.035999
+[PROFILE] SchedulePolicy.calc_priority | calls=168 | total=1178843567 ns | avg=7016926.0 ns
+calc_prio 1772792294.057678
+calc_prio2 1772792294.0660021
+[PROFILE] SchedulePolicy.calc_priority | calls=169 | total=1187177025 ns | avg=7024716.1 ns
+calc_prio 1772792294.7598224
+calc_prio2 1772792294.7683454
+[PROFILE] SchedulePolicy.calc_priority | calls=170 | total=1195708461 ns | avg=7033579.2 ns
+calc_prio 1772792297.0815542
+calc_prio2 1772792297.089689
+[PROFILE] SchedulePolicy.calc_priority | calls=171 | total=1203852815 ns | avg=7040074.9 ns
+calc_prio 1772792297.6962554
+calc_prio2 1772792297.7099557
+[PROFILE] SchedulePolicy.calc_priority | calls=172 | total=1217563704 ns | avg=7078858.7 ns
+calc_prio 1772792297.7326396
+calc_prio2 1772792297.7402904
+[PROFILE] SchedulePolicy.calc_priority | calls=173 | total=1225223248 ns | avg=7082215.3 ns
+calc_prio 1772792298.419193
+calc_prio2 1772792298.4267805
+[PROFILE] SchedulePolicy.calc_priority | calls=174 | total=1232818356 ns | avg=7085163.0 ns
+calc_prio 1772792300.4771154
+calc_prio2 1772792300.4844255
+[PROFILE] SchedulePolicy.calc_priority | calls=175 | total=1240135984 ns | avg=7086491.3 ns
+calc_prio 1772792300.513558
+calc_prio2 1772792300.520674
+[PROFILE] SchedulePolicy.calc_priority | calls=176 | total=1247259187 ns | avg=7086699.9 ns
+calc_prio 1772792301.2079723
+calc_prio2 1772792301.2209547
+[PROFILE] SchedulePolicy.calc_priority | calls=177 | total=1260251101 ns | avg=7120062.7 ns
+calc_prio 1772792302.5276773
+calc_prio2 1772792302.5349443
+[PROFILE] SchedulePolicy.calc_priority | calls=178 | total=1267526481 ns | avg=7120935.3 ns
+calc_prio 1772792302.6869876
+calc_prio2 1772792302.6940093
+[PROFILE] SchedulePolicy.calc_priority | calls=179 | total=1274556181 ns | avg=7120425.6 ns
+calc_prio 1772792302.7232356
+calc_prio2 1772792302.7297964
+[PROFILE] SchedulePolicy.calc_priority | calls=180 | total=1281123647 ns | avg=7117353.6 ns
+calc_prio 1772792303.3947659
+calc_prio2 1772792303.4015458
+[PROFILE] SchedulePolicy.calc_priority | calls=181 | total=1287910635 ns | avg=7115528.4 ns
+calc_prio 1772792305.233999
+calc_prio2 1772792305.2403123
+[PROFILE] SchedulePolicy.calc_priority | calls=182 | total=1294231082 ns | avg=7111159.8 ns
+calc_prio 1772792305.27603
+calc_prio2 1772792305.2819483
+[PROFILE] SchedulePolicy.calc_priority | calls=183 | total=1300158571 ns | avg=7104691.6 ns
+calc_prio 1772792305.946114
+calc_prio2 1772792305.9521015
+[PROFILE] SchedulePolicy.calc_priority | calls=184 | total=1306152851 ns | avg=7098656.8 ns
+calc_prio 1772792307.951408
+calc_prio2 1772792307.9568865
+[PROFILE] SchedulePolicy.calc_priority | calls=185 | total=1311645125 ns | avg=7089973.6 ns
+calc_prio 1772792308.3154678
+calc_prio2 1772792308.320944
+[PROFILE] SchedulePolicy.calc_priority | calls=186 | total=1317128513 ns | avg=7081336.1 ns
+calc_prio 1772792309.0893474
+calc_prio2 1772792309.094764
+[PROFILE] SchedulePolicy.calc_priority | calls=187 | total=1322553185 ns | avg=7072476.9 ns
+calc_prio 1772792309.1256258
+calc_prio2 1772792309.1305141
+[PROFILE] SchedulePolicy.calc_priority | calls=188 | total=1327447590 ns | avg=7060891.4 ns
+calc_prio 1772792309.8223991
+calc_prio2 1772792309.8276396
+[PROFILE] SchedulePolicy.calc_priority | calls=189 | total=1332695877 ns | avg=7051300.9 ns
+calc_prio 1772792311.5325134
+calc_prio2 1772792311.5372248
+[PROFILE] SchedulePolicy.calc_priority | calls=190 | total=1337414733 ns | avg=7039024.9 ns
+calc_prio 1772792311.5685544
+calc_prio2 1772792311.5728204
+[PROFILE] SchedulePolicy.calc_priority | calls=191 | total=1341686539 ns | avg=7024536.9 ns
+calc_prio 1772792312.229083
+calc_prio2 1772792312.233377
+[PROFILE] SchedulePolicy.calc_priority | calls=192 | total=1345986447 ns | avg=7010346.1 ns
+calc_prio 1772792314.235646
+calc_prio2 1772792314.2397563
+[PROFILE] SchedulePolicy.calc_priority | calls=193 | total=1350104321 ns | avg=6995359.2 ns
+calc_prio 1772792314.7820833
+calc_prio2 1772792314.7889569
+[PROFILE] SchedulePolicy.calc_priority | calls=194 | total=1356988214 ns | avg=6994784.6 ns
+calc_prio 1772792314.8192477
+calc_prio2 1772792314.822751
+[PROFILE] SchedulePolicy.calc_priority | calls=195 | total=1360497393 ns | avg=6976909.7 ns
+calc_prio 1772792315.5153937
+calc_prio2 1772792315.5191388
+[PROFILE] SchedulePolicy.calc_priority | calls=196 | total=1364250662 ns | avg=6960462.6 ns
+calc_prio 1772792317.0700808
+calc_prio2 1772792317.0733438
+[PROFILE] SchedulePolicy.calc_priority | calls=197 | total=1367521172 ns | avg=6941731.8 ns
+calc_prio 1772792318.1639967
+calc_prio2 1772792318.1672158
+[PROFILE] SchedulePolicy.calc_priority | calls=198 | total=1370747283 ns | avg=6922966.1 ns
+calc_prio 1772792318.3689752
+calc_prio2 1772792318.3721268
+[PROFILE] SchedulePolicy.calc_priority | calls=199 | total=1373905461 ns | avg=6904047.5 ns
+calc_prio 1772792318.4049115
+calc_prio2 1772792318.4079177
+[PROFILE] SchedulePolicy.calc_priority | calls=200 | total=1376917790 ns | avg=6884589.0 ns
+calc_prio 1772792319.0908585
+calc_prio2 1772792319.093843
+[PROFILE] SchedulePolicy.calc_priority | calls=201 | total=1379908553 ns | avg=6865216.7 ns
+calc_prio 1772792320.3883069
+calc_prio2 1772792320.3913732
+[PROFILE] SchedulePolicy.calc_priority | calls=202 | total=1382983119 ns | avg=6846451.1 ns
+calc_prio 1772792320.424418
+calc_prio2 1772792320.427294
+[PROFILE] SchedulePolicy.calc_priority | calls=203 | total=1385864674 ns | avg=6826919.6 ns
+calc_prio 1772792321.0900676
+calc_prio2 1772792321.0929768
+[PROFILE] SchedulePolicy.calc_priority | calls=204 | total=1388780753 ns | avg=6807748.8 ns
+calc_prio 1772792324.0911527
+calc_prio2 1772792324.094126
+[PROFILE] SchedulePolicy.calc_priority | calls=205 | total=1391760357 ns | avg=6789074.9 ns
+calc_prio 1772792324.1273878
+calc_prio2 1772792324.1298008
+[PROFILE] SchedulePolicy.calc_priority | calls=206 | total=1394179449 ns | avg=6767861.4 ns
+calc_prio 1772792324.8288367
+calc_prio2 1772792324.8314288
+[PROFILE] SchedulePolicy.calc_priority | calls=207 | total=1396777879 ns | avg=6747719.2 ns
+calc_prio 1772792327.1073623
+calc_prio2 1772792327.1095018
+[PROFILE] SchedulePolicy.calc_priority | calls=208 | total=1398924322 ns | avg=6725597.7 ns
+calc_prio 1772792327.1435382
+calc_prio2 1772792327.1454563
+[PROFILE] SchedulePolicy.calc_priority | calls=209 | total=1400848381 ns | avg=6702623.8 ns
+calc_prio 1772792327.8492842
+calc_prio2 1772792327.8511806
+sglang: Throughput: 0.5489774525595676 req/s
+System prompt length: 9993 tokens (target: 10000)
+Generated 100 prompts in total.
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+[Gloo] Rank 0 is connected to 0 peer ranks. Expected number of connected peer ranks is : 0
+hello
+calc_prio 1772792377.8941627
+calc_prio2 1772792377.8942955
+[PROFILE] SchedulePolicy.calc_priority | calls=1 | total=137567 ns | avg=137567.0 ns
+calc_prio 1772792378.767197
+calc_prio2 1772792378.7673764
+[PROFILE] SchedulePolicy.calc_priority | calls=2 | total=323366 ns | avg=161683.0 ns
+calc_prio 1772792378.7956743
+calc_prio2 1772792378.7958636
+[PROFILE] SchedulePolicy.calc_priority | calls=3 | total=517744 ns | avg=172581.3 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=5 | total=29566 ns | avg=5913.2 ns
+calc_prio 1772792380.1166518
+calc_prio2 1772792380.1181412
+[PROFILE] SchedulePolicy.calc_priority | calls=4 | total=2013611 ns | avg=503402.8 ns
+calc_prio 1772792380.1381295
+calc_prio2 1772792380.1395876
+[PROFILE] SchedulePolicy.calc_priority | calls=5 | total=3477304 ns | avg=695460.8 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=10 | total=38457 ns | avg=3845.7 ns
+calc_prio 1772792380.7993593
+calc_prio2 1772792380.8010151
+[PROFILE] SchedulePolicy.calc_priority | calls=6 | total=5140022 ns | avg=856670.3 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=15 | total=60514 ns | avg=4034.3 ns
+calc_prio 1772792382.9612947
+calc_prio2 1772792382.9638677
+[PROFILE] SchedulePolicy.calc_priority | calls=7 | total=7720626 ns | avg=1102946.6 ns
+calc_prio 1772792382.9979184
+calc_prio2 1772792383.0003297
+[PROFILE] SchedulePolicy.calc_priority | calls=8 | total=10138883 ns | avg=1267360.4 ns
+calc_prio 1772792383.6518736
+calc_prio2 1772792383.6545656
+[PROFILE] SchedulePolicy.calc_priority | calls=9 | total=12838798 ns | avg=1426533.1 ns
+calc_prio 1772792385.634184
+calc_prio2 1772792385.6408048
+[PROFILE] SchedulePolicy.calc_priority | calls=10 | total=19469740 ns | avg=1946974.0 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=20 | total=82161 ns | avg=4108.1 ns
+calc_prio 1772792385.671595
+calc_prio2 1772792385.6742136
+[PROFILE] SchedulePolicy.calc_priority | calls=11 | total=22095501 ns | avg=2008681.9 ns
+calc_prio 1772792386.3253477
+calc_prio2 1772792386.3281074
+[PROFILE] SchedulePolicy.calc_priority | calls=12 | total=24862536 ns | avg=2071878.0 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=25 | total=109429 ns | avg=4377.2 ns
+calc_prio 1772792387.904179
+calc_prio2 1772792387.9090526
+[PROFILE] SchedulePolicy.calc_priority | calls=13 | total=29743211 ns | avg=2287939.3 ns
+calc_prio 1772792387.9409795
+calc_prio2 1772792387.9448187
+[PROFILE] SchedulePolicy.calc_priority | calls=14 | total=33588343 ns | avg=2399167.4 ns
+calc_prio 1772792388.5710557
+calc_prio2 1772792388.5806074
+[PROFILE] SchedulePolicy.calc_priority | calls=15 | total=43149496 ns | avg=2876633.1 ns
+calc_prio 1772792389.7524633
+calc_prio2 1772792389.75593
+[PROFILE] SchedulePolicy.calc_priority | calls=16 | total=46624032 ns | avg=2914002.0 ns
+calc_prio 1772792390.4786642
+calc_prio2 1772792390.482968
+[PROFILE] SchedulePolicy.calc_priority | calls=17 | total=50934829 ns | avg=2996166.4 ns
+calc_prio 1772792390.5128694
+calc_prio2 1772792390.5167377
+[PROFILE] SchedulePolicy.calc_priority | calls=18 | total=54809386 ns | avg=3044965.9 ns
+calc_prio 1772792391.1283488
+calc_prio2 1772792391.1325257
+[PROFILE] SchedulePolicy.calc_priority | calls=19 | total=58993856 ns | avg=3104939.8 ns
+calc_prio 1772792391.8509912
+calc_prio2 1772792391.8548765
+[PROFILE] SchedulePolicy.calc_priority | calls=20 | total=62885571 ns | avg=3144278.5 ns
+calc_prio 1772792392.548903
+calc_prio2 1772792392.5530648
+[PROFILE] SchedulePolicy.calc_priority | calls=21 | total=67053490 ns | avg=3193023.3 ns
+calc_prio 1772792394.173266
+calc_prio2 1772792394.184155
+[PROFILE] SchedulePolicy.calc_priority | calls=22 | total=77952965 ns | avg=3543316.6 ns
+calc_prio 1772792394.2111132
+calc_prio2 1772792394.2150886
+[PROFILE] SchedulePolicy.calc_priority | calls=23 | total=81935354 ns | avg=3562406.7 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=30 | total=137095 ns | avg=4569.8 ns
+calc_prio 1772792394.8381834
+calc_prio2 1772792394.842536
+[PROFILE] SchedulePolicy.calc_priority | calls=24 | total=86294518 ns | avg=3595604.9 ns
+calc_prio 1772792396.3517804
+calc_prio2 1772792396.356493
+[PROFILE] SchedulePolicy.calc_priority | calls=25 | total=91014894 ns | avg=3640595.8 ns
+calc_prio 1772792396.388208
+calc_prio2 1772792396.3928878
+[PROFILE] SchedulePolicy.calc_priority | calls=26 | total=95706643 ns | avg=3681024.7 ns
+calc_prio 1772792397.0316591
+calc_prio2 1772792397.036412
+[PROFILE] SchedulePolicy.calc_priority | calls=27 | total=100468876 ns | avg=3721069.5 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=35 | total=162864 ns | avg=4653.3 ns
+calc_prio 1772792398.163453
+calc_prio2 1772792398.1683507
+[PROFILE] SchedulePolicy.calc_priority | calls=28 | total=105375402 ns | avg=3763407.2 ns
+calc_prio 1772792398.4603887
+calc_prio2 1772792398.465546
+[PROFILE] SchedulePolicy.calc_priority | calls=29 | total=110539224 ns | avg=3811697.4 ns
+calc_prio 1772792398.4970055
+calc_prio2 1772792398.5020127
+[PROFILE] SchedulePolicy.calc_priority | calls=30 | total=115552656 ns | avg=3851755.2 ns
+calc_prio 1772792399.1325576
+calc_prio2 1772792399.144316
+[PROFILE] SchedulePolicy.calc_priority | calls=31 | total=127320591 ns | avg=4107115.8 ns
+calc_prio 1772792401.6606703
+calc_prio2 1772792401.666333
+[PROFILE] SchedulePolicy.calc_priority | calls=32 | total=132993234 ns | avg=4156038.6 ns
+calc_prio 1772792401.6980963
+calc_prio2 1772792401.7034526
+[PROFILE] SchedulePolicy.calc_priority | calls=33 | total=138356438 ns | avg=4192619.3 ns
+calc_prio 1772792402.3584359
+calc_prio2 1772792402.364571
+[PROFILE] SchedulePolicy.calc_priority | calls=34 | total=144500168 ns | avg=4250004.9 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=40 | total=190504 ns | avg=4762.6 ns
+calc_prio 1772792403.0938497
+calc_prio2 1772792403.09997
+[PROFILE] SchedulePolicy.calc_priority | calls=35 | total=150628274 ns | avg=4303665.0 ns
+calc_prio 1772792403.8020573
+calc_prio2 1772792403.8082612
+[PROFILE] SchedulePolicy.calc_priority | calls=36 | total=156840861 ns | avg=4356690.6 ns
+calc_prio 1772792405.1435876
+calc_prio2 1772792405.1503541
+[PROFILE] SchedulePolicy.calc_priority | calls=37 | total=163614846 ns | avg=4422022.9 ns
+calc_prio 1772792405.9445164
+calc_prio2 1772792405.9575715
+[PROFILE] SchedulePolicy.calc_priority | calls=38 | total=176681103 ns | avg=4649502.7 ns
+calc_prio 1772792405.9821653
+calc_prio2 1772792405.9887137
+[PROFILE] SchedulePolicy.calc_priority | calls=39 | total=183238999 ns | avg=4698435.9 ns
+calc_prio 1772792406.6577663
+calc_prio2 1772792406.6649218
+[PROFILE] SchedulePolicy.calc_priority | calls=40 | total=190403336 ns | avg=4760083.4 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=45 | total=213257 ns | avg=4739.0 ns
+calc_prio 1772792408.160137
+calc_prio2 1772792408.1675055
+[PROFILE] SchedulePolicy.calc_priority | calls=41 | total=197781056 ns | avg=4823928.2 ns
+calc_prio 1772792408.1971018
+calc_prio2 1772792408.210682
+[PROFILE] SchedulePolicy.calc_priority | calls=42 | total=211370918 ns | avg=5032640.9 ns
+calc_prio 1772792408.8432176
+calc_prio2 1772792408.8497748
+[PROFILE] SchedulePolicy.calc_priority | calls=43 | total=217935455 ns | avg=5068266.4 ns
+calc_prio 1772792410.5136406
+calc_prio2 1772792410.5209084
+[PROFILE] SchedulePolicy.calc_priority | calls=44 | total=225211553 ns | avg=5118444.4 ns
+calc_prio 1772792410.7862053
+calc_prio2 1772792410.7936332
+[PROFILE] SchedulePolicy.calc_priority | calls=45 | total=232647456 ns | avg=5169943.5 ns
+calc_prio 1772792410.828111
+calc_prio2 1772792410.8349538
+[PROFILE] SchedulePolicy.calc_priority | calls=46 | total=239499322 ns | avg=5206507.0 ns
+calc_prio 1772792411.4876544
+calc_prio2 1772792411.4945483
+[PROFILE] SchedulePolicy.calc_priority | calls=47 | total=246401273 ns | avg=5242580.3 ns
+calc_prio 1772792412.688005
+calc_prio2 1772792412.6961892
+[PROFILE] SchedulePolicy.calc_priority | calls=48 | total=254593950 ns | avg=5304040.6 ns
+calc_prio 1772792412.724777
+calc_prio2 1772792412.7324817
+[PROFILE] SchedulePolicy.calc_priority | calls=49 | total=262306092 ns | avg=5353185.6 ns
+calc_prio 1772792413.3656065
+calc_prio2 1772792413.3730996
+[PROFILE] SchedulePolicy.calc_priority | calls=50 | total=269810016 ns | avg=5396200.3 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=50 | total=237856 ns | avg=4757.1 ns
+calc_prio 1772792415.0635757
+calc_prio2 1772792415.0714593
+[PROFILE] SchedulePolicy.calc_priority | calls=51 | total=277704001 ns | avg=5445176.5 ns
+calc_prio 1772792415.1007786
+calc_prio2 1772792415.10964
+[PROFILE] SchedulePolicy.calc_priority | calls=52 | total=286574337 ns | avg=5511044.9 ns
+calc_prio 1772792415.7765417
+calc_prio2 1772792415.7851834
+[PROFILE] SchedulePolicy.calc_priority | calls=53 | total=295226732 ns | avg=5570315.7 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=55 | total=257363 ns | avg=4679.3 ns
+calc_prio 1772792417.0179582
+calc_prio2 1772792417.0271306
+[PROFILE] SchedulePolicy.calc_priority | calls=54 | total=304408116 ns | avg=5637187.3 ns
+calc_prio 1772792417.0545964
+calc_prio2 1772792417.0640526
+[PROFILE] SchedulePolicy.calc_priority | calls=55 | total=313872405 ns | avg=5706771.0 ns
+calc_prio 1772792417.6994836
+calc_prio2 1772792417.7153811
+[PROFILE] SchedulePolicy.calc_priority | calls=56 | total=329780213 ns | avg=5888932.4 ns
+calc_prio 1772792419.4745033
+calc_prio2 1772792419.4840522
+[PROFILE] SchedulePolicy.calc_priority | calls=57 | total=339338611 ns | avg=5953309.0 ns
+calc_prio 1772792419.5113604
+calc_prio2 1772792419.5205765
+[PROFILE] SchedulePolicy.calc_priority | calls=58 | total=348562489 ns | avg=6009698.1 ns
+calc_prio 1772792421.027603
+calc_prio2 1772792421.042811
+[PROFILE] SchedulePolicy.calc_priority | calls=59 | total=363780573 ns | avg=6165772.4 ns
+calc_prio 1772792421.0645168
+calc_prio2 1772792421.0732088
+[PROFILE] SchedulePolicy.calc_priority | calls=60 | total=372481980 ns | avg=6208033.0 ns
+calc_prio 1772792421.7137764
+calc_prio2 1772792421.7232428
+[PROFILE] SchedulePolicy.calc_priority | calls=61 | total=381956060 ns | avg=6261574.8 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=60 | total=285417 ns | avg=4756.9 ns
+calc_prio 1772792423.7936215
+calc_prio2 1772792423.803144
+[PROFILE] SchedulePolicy.calc_priority | calls=62 | total=391487458 ns | avg=6314313.8 ns
+calc_prio 1772792423.8302603
+calc_prio2 1772792423.8394966
+[PROFILE] SchedulePolicy.calc_priority | calls=63 | total=400732540 ns | avg=6360834.0 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=65 | total=304636 ns | avg=4686.7 ns
+calc_prio 1772792424.514535
+calc_prio2 1772792424.5251765
+[PROFILE] SchedulePolicy.calc_priority | calls=64 | total=411383326 ns | avg=6427864.5 ns
+calc_prio 1772792426.1967144
+calc_prio2 1772792426.207341
+[PROFILE] SchedulePolicy.calc_priority | calls=65 | total=422018862 ns | avg=6492597.9 ns
+calc_prio 1772792426.2333243
+calc_prio2 1772792426.2434568
+[PROFILE] SchedulePolicy.calc_priority | calls=66 | total=432159591 ns | avg=6547872.6 ns
+calc_prio 1772792426.911835
+calc_prio2 1772792426.929149
+[PROFILE] SchedulePolicy.calc_priority | calls=67 | total=449483875 ns | avg=6708714.6 ns
+calc_prio 1772792428.4674327
+calc_prio2 1772792428.4785514
+[PROFILE] SchedulePolicy.calc_priority | calls=68 | total=460612538 ns | avg=6773713.8 ns
+calc_prio 1772792428.604583
+calc_prio2 1772792428.6156254
+[PROFILE] SchedulePolicy.calc_priority | calls=69 | total=471664904 ns | avg=6835723.2 ns
+calc_prio 1772792428.6411517
+calc_prio2 1772792428.6520987
+[PROFILE] SchedulePolicy.calc_priority | calls=70 | total=482620128 ns | avg=6894573.3 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=70 | total=323925 ns | avg=4627.5 ns
+calc_prio 1772792429.2908988
+calc_prio2 1772792429.3026412
+[PROFILE] SchedulePolicy.calc_priority | calls=71 | total=494370856 ns | avg=6962969.8 ns
+calc_prio 1772792430.932686
+calc_prio2 1772792430.945511
+[PROFILE] SchedulePolicy.calc_priority | calls=72 | total=507205513 ns | avg=7044521.0 ns
+calc_prio 1772792431.7513144
+calc_prio2 1772792431.764563
+[PROFILE] SchedulePolicy.calc_priority | calls=73 | total=520463692 ns | avg=7129639.6 ns
+calc_prio 1772792431.7880194
+calc_prio2 1772792431.8009868
+[PROFILE] SchedulePolicy.calc_priority | calls=74 | total=533440694 ns | avg=7208658.0 ns
+calc_prio 1772792432.4657142
+calc_prio2 1772792432.4852653
+[PROFILE] SchedulePolicy.calc_priority | calls=75 | total=553002188 ns | avg=7373362.5 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=75 | total=350669 ns | avg=4675.6 ns
+calc_prio 1772792434.3805513
+calc_prio2 1772792434.3946283
+[PROFILE] SchedulePolicy.calc_priority | calls=76 | total=567088839 ns | avg=7461695.2 ns
+calc_prio 1772792434.4172149
+calc_prio2 1772792434.4308648
+[PROFILE] SchedulePolicy.calc_priority | calls=77 | total=580747565 ns | avg=7542176.2 ns
+calc_prio 1772792435.105514
+calc_prio2 1772792435.1261086
+[PROFILE] SchedulePolicy.calc_priority | calls=78 | total=601353655 ns | avg=7709662.2 ns
+calc_prio 1772792436.5407672
+calc_prio2 1772792436.5548294
+[PROFILE] SchedulePolicy.calc_priority | calls=79 | total=615425756 ns | avg=7790199.4 ns
+calc_prio 1772792436.5773616
+calc_prio2 1772792436.590962
+[PROFILE] SchedulePolicy.calc_priority | calls=80 | total=629034946 ns | avg=7862936.8 ns
+calc_prio 1772792437.2435348
+calc_prio2 1772792437.2572668
+[PROFILE] SchedulePolicy.calc_priority | calls=81 | total=642777365 ns | avg=7935523.0 ns
+calc_prio 1772792439.035912
+calc_prio2 1772792439.0501459
+[PROFILE] SchedulePolicy.calc_priority | calls=82 | total=657022067 ns | avg=8012464.2 ns
+calc_prio 1772792439.0726018
+calc_prio2 1772792439.094082
+[PROFILE] SchedulePolicy.calc_priority | calls=83 | total=678512970 ns | avg=8174855.1 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=80 | total=375378 ns | avg=4692.2 ns
+calc_prio 1772792439.7351747
+calc_prio2 1772792439.7494752
+[PROFILE] SchedulePolicy.calc_priority | calls=84 | total=692822989 ns | avg=8247892.7 ns
+calc_prio 1772792441.1602166
+calc_prio2 1772792441.1742206
+[PROFILE] SchedulePolicy.calc_priority | calls=85 | total=706835775 ns | avg=8315715.0 ns
+calc_prio 1772792441.3193166
+calc_prio2 1772792441.340654
+[PROFILE] SchedulePolicy.calc_priority | calls=86 | total=728183555 ns | avg=8467250.6 ns
+calc_prio 1772792441.358274
+calc_prio2 1772792441.3720233
+[PROFILE] SchedulePolicy.calc_priority | calls=87 | total=741941468 ns | avg=8528062.9 ns
+calc_prio 1772792442.028114
+calc_prio2 1772792442.0417323
+[PROFILE] SchedulePolicy.calc_priority | calls=88 | total=755569001 ns | avg=8586011.4 ns
+calc_prio 1772792443.8842814
+calc_prio2 1772792443.906223
+[PROFILE] SchedulePolicy.calc_priority | calls=89 | total=777520868 ns | avg=8736189.5 ns
+calc_prio 1772792443.9238288
+calc_prio2 1772792443.9377406
+[PROFILE] SchedulePolicy.calc_priority | calls=90 | total=791442028 ns | avg=8793800.3 ns
+calc_prio 1772792444.617255
+calc_prio2 1772792444.6316998
+[PROFILE] SchedulePolicy.calc_priority | calls=91 | total=805897881 ns | avg=8856020.7 ns
+calc_prio 1772792446.333469
+calc_prio2 1772792446.3490796
+[PROFILE] SchedulePolicy.calc_priority | calls=92 | total=821518718 ns | avg=8929551.3 ns
+calc_prio 1772792446.3700926
+calc_prio2 1772792446.3851979
+[PROFILE] SchedulePolicy.calc_priority | calls=93 | total=836632446 ns | avg=8996047.8 ns
+calc_prio 1772792447.0249383
+calc_prio2 1772792447.0723083
+[PROFILE] SchedulePolicy.calc_priority | calls=94 | total=884013140 ns | avg=9404395.1 ns
+calc_prio 1772792449.1315136
+calc_prio2 1772792449.1457052
+[PROFILE] SchedulePolicy.calc_priority | calls=95 | total=898214262 ns | avg=9454887.0 ns
+calc_prio 1772792449.9056728
+calc_prio2 1772792449.9198596
+[PROFILE] SchedulePolicy.calc_priority | calls=96 | total=912409931 ns | avg=9504270.1 ns
+calc_prio 1772792449.9424067
+calc_prio2 1772792449.9560442
+[PROFILE] SchedulePolicy.calc_priority | calls=97 | total=926056349 ns | avg=9546972.7 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=85 | total=402320 ns | avg=4733.2 ns
+calc_prio 1772792450.630497
+calc_prio2 1772792450.6449401
+[PROFILE] SchedulePolicy.calc_priority | calls=98 | total=940508353 ns | avg=9597024.0 ns
+calc_prio 1772792452.4523804
+calc_prio2 1772792452.466364
+[PROFILE] SchedulePolicy.calc_priority | calls=99 | total=954500499 ns | avg=9641419.2 ns
+calc_prio 1772792453.203451
+calc_prio2 1772792453.2173893
+[PROFILE] SchedulePolicy.calc_priority | calls=100 | total=968448298 ns | avg=9684483.0 ns
+calc_prio 1772792453.8180816
+calc_prio2 1772792453.8327792
+[PROFILE] SchedulePolicy.calc_priority | calls=101 | total=983155837 ns | avg=9734216.2 ns
+calc_prio 1772792453.8547392
+calc_prio2 1772792453.8689034
+[PROFILE] SchedulePolicy.calc_priority | calls=102 | total=997328965 ns | avg=9777735.0 ns
+calc_prio 1772792454.5504498
+calc_prio2 1772792454.5648136
+[PROFILE] SchedulePolicy.calc_priority | calls=103 | total=1011705271 ns | avg=9822381.3 ns
+calc_prio 1772792456.2723932
+calc_prio2 1772792456.2873733
+[PROFILE] SchedulePolicy.calc_priority | calls=104 | total=1026696223 ns | avg=9872079.1 ns
+calc_prio 1772792456.3098798
+calc_prio2 1772792456.3245432
+[PROFILE] SchedulePolicy.calc_priority | calls=105 | total=1041368979 ns | avg=9917799.8 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=90 | total=430484 ns | avg=4783.2 ns
+calc_prio 1772792456.9684775
+calc_prio2 1772792456.9906912
+[PROFILE] SchedulePolicy.calc_priority | calls=106 | total=1063592708 ns | avg=10033893.5 ns
+calc_prio 1772792458.7151222
+calc_prio2 1772792458.730105
+[PROFILE] SchedulePolicy.calc_priority | calls=107 | total=1078585644 ns | avg=10080239.7 ns
+calc_prio 1772792458.751956
+calc_prio2 1772792458.7666965
+[PROFILE] SchedulePolicy.calc_priority | calls=108 | total=1093335351 ns | avg=10123475.5 ns
+calc_prio 1772792459.4145863
+calc_prio2 1772792459.4370582
+[PROFILE] SchedulePolicy.calc_priority | calls=109 | total=1115817566 ns | avg=10236858.4 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=95 | total=456313 ns | avg=4803.3 ns
+calc_prio 1772792460.6669343
+calc_prio2 1772792460.6827583
+[PROFILE] SchedulePolicy.calc_priority | calls=110 | total=1131652113 ns | avg=10287746.5 ns
+calc_prio 1772792461.099904
+calc_prio2 1772792461.1157722
+[PROFILE] SchedulePolicy.calc_priority | calls=111 | total=1147530922 ns | avg=10338116.4 ns
+calc_prio 1772792461.3726249
+calc_prio2 1772792461.3950262
+[PROFILE] SchedulePolicy.calc_priority | calls=112 | total=1169943845 ns | avg=10445927.2 ns
+calc_prio 1772792461.4124882
+calc_prio2 1772792461.4277263
+[PROFILE] SchedulePolicy.calc_priority | calls=113 | total=1185191366 ns | avg=10488419.2 ns
+calc_prio 1772792462.1081042
+calc_prio2 1772792462.12354
+[PROFILE] SchedulePolicy.calc_priority | calls=114 | total=1200636798 ns | avg=10531901.7 ns
+calc_prio 1772792465.1308882
+calc_prio2 1772792465.1471655
+[PROFILE] SchedulePolicy.calc_priority | calls=115 | total=1216924158 ns | avg=10581949.2 ns
+calc_prio 1772792465.167584
+calc_prio2 1772792465.1833723
+[PROFILE] SchedulePolicy.calc_priority | calls=116 | total=1232722321 ns | avg=10626916.6 ns
+[PROFILE] Scheduler._add_request_to_queue | calls=100 | total=484331 ns | avg=4843.3 ns
+calc_prio 1772792465.8640957
+calc_prio2 1772792465.8867915
+[PROFILE] SchedulePolicy.calc_priority | calls=117 | total=1255427962 ns | avg=10730153.5 ns
+calc_prio 1772792467.361754
+calc_prio2 1772792467.377074
+[PROFILE] SchedulePolicy.calc_priority | calls=118 | total=1270757666 ns | avg=10769132.8 ns
+calc_prio 1772792467.4549844
+calc_prio2 1772792467.470619
+[PROFILE] SchedulePolicy.calc_priority | calls=119 | total=1286401720 ns | avg=10810098.5 ns
+calc_prio 1772792467.4986584
+calc_prio2 1772792467.513575
+[PROFILE] SchedulePolicy.calc_priority | calls=120 | total=1301329947 ns | avg=10844416.2 ns
+calc_prio 1772792468.1363256
+calc_prio2 1772792468.151454
+[PROFILE] SchedulePolicy.calc_priority | calls=121 | total=1316468178 ns | avg=10879902.3 ns
+calc_prio 1772792470.2767882
+calc_prio2 1772792470.298419
+[PROFILE] SchedulePolicy.calc_priority | calls=122 | total=1338109683 ns | avg=10968112.2 ns
+calc_prio 1772792470.3160684
+calc_prio2 1772792470.3305733
+[PROFILE] SchedulePolicy.calc_priority | calls=123 | total=1352623869 ns | avg=10996942.0 ns
+calc_prio 1772792470.9863877
+calc_prio2 1772792471.0007422
+[PROFILE] SchedulePolicy.calc_priority | calls=124 | total=1366987529 ns | avg=11024093.0 ns
+calc_prio 1772792472.259833
+calc_prio2 1772792472.2809532
+[PROFILE] SchedulePolicy.calc_priority | calls=125 | total=1388117380 ns | avg=11104939.0 ns
+calc_prio 1772792473.8524659
+calc_prio2 1772792473.8670433
+[PROFILE] SchedulePolicy.calc_priority | calls=126 | total=1402705025 ns | avg=11132579.6 ns
+calc_prio 1772792473.8891006
+calc_prio2 1772792473.9034872
+[PROFILE] SchedulePolicy.calc_priority | calls=127 | total=1417101780 ns | avg=11158281.7 ns
+calc_prio 1772792474.6172688
+calc_prio2 1772792474.6315699
+[PROFILE] SchedulePolicy.calc_priority | calls=128 | total=1431413203 ns | avg=11182915.6 ns
+calc_prio 1772792476.5882053
+calc_prio2 1772792476.6020405
+[PROFILE] SchedulePolicy.calc_priority | calls=129 | total=1445257876 ns | avg=11203549.4 ns
+calc_prio 1772792476.6247988
+calc_prio2 1772792476.6381848
+[PROFILE] SchedulePolicy.calc_priority | calls=130 | total=1458653146 ns | avg=11220408.8 ns
+calc_prio 1772792477.3081887
+calc_prio2 1772792477.3218157
+[PROFILE] SchedulePolicy.calc_priority | calls=131 | total=1472290314 ns | avg=11238857.4 ns
+calc_prio 1772792479.025324
+calc_prio2 1772792479.0382738
+[PROFILE] SchedulePolicy.calc_priority | calls=132 | total=1485250053 ns | avg=11251894.3 ns
+calc_prio 1772792480.1412582
+calc_prio2 1772792480.1541703
+[PROFILE] SchedulePolicy.calc_priority | calls=133 | total=1498171539 ns | avg=11264447.7 ns
+calc_prio 1772792480.8014605
+calc_prio2 1772792480.8147948
+[PROFILE] SchedulePolicy.calc_priority | calls=134 | total=1511515515 ns | avg=11279966.5 ns
+calc_prio 1772792480.8383136
+calc_prio2 1772792480.8507116
+[PROFILE] SchedulePolicy.calc_priority | calls=135 | total=1523922360 ns | avg=11288313.8 ns
+calc_prio 1772792481.5367236
+calc_prio2 1772792481.5494528
+[PROFILE] SchedulePolicy.calc_priority | calls=136 | total=1536660125 ns | avg=11298971.5 ns
+calc_prio 1772792483.008285
+calc_prio2 1772792483.0205433
+[PROFILE] SchedulePolicy.calc_priority | calls=137 | total=1548928471 ns | avg=11306047.2 ns
+calc_prio 1772792483.0459964
+calc_prio2 1772792483.0580244
+[PROFILE] SchedulePolicy.calc_priority | calls=138 | total=1560967159 ns | avg=11311356.2 ns
+calc_prio 1772792483.727534
+calc_prio2 1772792483.739764
+[PROFILE] SchedulePolicy.calc_priority | calls=139 | total=1573205872 ns | avg=11318027.9 ns
+calc_prio 1772792485.0663154
+calc_prio2 1772792485.0783484
+[PROFILE] SchedulePolicy.calc_priority | calls=140 | total=1585248594 ns | avg=11323204.2 ns
+calc_prio 1772792485.102898
+calc_prio2 1772792485.1146915
+[PROFILE] SchedulePolicy.calc_priority | calls=141 | total=1597057554 ns | avg=11326649.3 ns
+calc_prio 1772792485.7603648
+calc_prio2 1772792485.772228
+[PROFILE] SchedulePolicy.calc_priority | calls=142 | total=1608930107 ns | avg=11330493.7 ns
+calc_prio 1772792487.290102
+calc_prio2 1772792487.3021245
+[PROFILE] SchedulePolicy.calc_priority | calls=143 | total=1620962916 ns | avg=11335405.0 ns
+calc_prio 1772792487.4499128
+calc_prio2 1772792487.46177
+[PROFILE] SchedulePolicy.calc_priority | calls=144 | total=1632828870 ns | avg=11339089.4 ns
+calc_prio 1772792487.4859622
+calc_prio2 1772792487.49738
+[PROFILE] SchedulePolicy.calc_priority | calls=145 | total=1644254823 ns | avg=11339688.4 ns
+calc_prio 1772792488.175443
+calc_prio2 1772792488.1934175
+[PROFILE] SchedulePolicy.calc_priority | calls=146 | total=1662239677 ns | avg=11385203.3 ns
+calc_prio 1772792488.9280682
+calc_prio2 1772792488.9384103
+[PROFILE] SchedulePolicy.calc_priority | calls=147 | total=1672590564 ns | avg=11378167.1 ns
+calc_prio 1772792489.7189908
+calc_prio2 1772792489.7295632
+[PROFILE] SchedulePolicy.calc_priority | calls=148 | total=1683171926 ns | avg=11372783.3 ns
+calc_prio 1772792490.4215844
+calc_prio2 1772792490.432378
+[PROFILE] SchedulePolicy.calc_priority | calls=149 | total=1693974591 ns | avg=11368957.0 ns
+calc_prio 1772792491.6945288
+calc_prio2 1772792491.704899
+[PROFILE] SchedulePolicy.calc_priority | calls=150 | total=1704353686 ns | avg=11362357.9 ns
+calc_prio 1772792491.9530299
+calc_prio2 1772792491.9633603
+[PROFILE] SchedulePolicy.calc_priority | calls=151 | total=1714693323 ns | avg=11355584.9 ns
+calc_prio 1772792491.989761
+calc_prio2 1772792491.9995146
+[PROFILE] SchedulePolicy.calc_priority | calls=152 | total=1724455894 ns | avg=11345104.6 ns
+calc_prio 1772792492.650538
+calc_prio2 1772792492.6669931
+[PROFILE] SchedulePolicy.calc_priority | calls=153 | total=1740922623 ns | avg=11378579.2 ns
+calc_prio 1772792494.4021356
+calc_prio2 1772792494.4117014
+[PROFILE] SchedulePolicy.calc_priority | calls=154 | total=1750497662 ns | avg=11366867.9 ns
+calc_prio 1772792494.72224
+calc_prio2 1772792494.7318752
+[PROFILE] SchedulePolicy.calc_priority | calls=155 | total=1760141727 ns | avg=11355753.1 ns
+calc_prio 1772792495.2683966
+calc_prio2 1772792495.277874
+[PROFILE] SchedulePolicy.calc_priority | calls=156 | total=1769627929 ns | avg=11343768.8 ns
+calc_prio 1772792495.4049692
+calc_prio2 1772792495.4211347
+[PROFILE] SchedulePolicy.calc_priority | calls=157 | total=1785803742 ns | avg=11374546.1 ns
+calc_prio 1772792495.4416907
+calc_prio2 1772792495.4510224
+[PROFILE] SchedulePolicy.calc_priority | calls=158 | total=1795143872 ns | avg=11361670.1 ns
+calc_prio 1772792496.127677
+calc_prio2 1772792496.1369357
+[PROFILE] SchedulePolicy.calc_priority | calls=159 | total=1804411740 ns | avg=11348501.5 ns
+calc_prio 1772792497.855228
+calc_prio2 1772792497.864464
+[PROFILE] SchedulePolicy.calc_priority | calls=160 | total=1813656570 ns | avg=11335353.6 ns
+calc_prio 1772792497.8917222
+calc_prio2 1772792497.900403
+[PROFILE] SchedulePolicy.calc_priority | calls=161 | total=1822345495 ns | avg=11318916.1 ns
+calc_prio 1772792498.5832367
+calc_prio2 1772792498.5923462
+[PROFILE] SchedulePolicy.calc_priority | calls=162 | total=1831464661 ns | avg=11305337.4 ns
+calc_prio 1772792500.68338
+calc_prio2 1772792500.6918063
+[PROFILE] SchedulePolicy.calc_priority | calls=163 | total=1839901087 ns | avg=11287736.7 ns
+calc_prio 1772792500.7204123
+calc_prio2 1772792500.728406
+[PROFILE] SchedulePolicy.calc_priority | calls=164 | total=1847903197 ns | avg=11267702.4 ns
+calc_prio 1772792501.418422
+calc_prio2 1772792501.4266448
+[PROFILE] SchedulePolicy.calc_priority | calls=165 | total=1856133430 ns | avg=11249293.5 ns
+calc_prio 1772792502.948357
+calc_prio2 1772792502.9562228
+[PROFILE] SchedulePolicy.calc_priority | calls=166 | total=1864008573 ns | avg=11228967.3 ns
+calc_prio 1772792503.7234902
+calc_prio2 1772792503.731214
+[PROFILE] SchedulePolicy.calc_priority | calls=167 | total=1871740454 ns | avg=11208026.7 ns
+calc_prio 1772792503.760383
+calc_prio2 1772792503.7674716
+[PROFILE] SchedulePolicy.calc_priority | calls=168 | total=1878837459 ns | avg=11183556.3 ns
+calc_prio 1772792504.4652505
+calc_prio2 1772792504.4725263
+[PROFILE] SchedulePolicy.calc_priority | calls=169 | total=1886120649 ns | avg=11160477.2 ns
+calc_prio 1772792506.332498
+calc_prio2 1772792506.3650641
+[PROFILE] SchedulePolicy.calc_priority | calls=170 | total=1918699195 ns | avg=11286465.9 ns
+calc_prio 1772792506.382452
+calc_prio2 1772792506.3890626
+[PROFILE] SchedulePolicy.calc_priority | calls=171 | total=1925317339 ns | avg=11259165.7 ns
+calc_prio 1772792507.0548432
+calc_prio2 1772792507.0615427
+[PROFILE] SchedulePolicy.calc_priority | calls=172 | total=1932024210 ns | avg=11232698.9 ns
+calc_prio 1772792508.801535
+calc_prio2 1772792508.8076644
+[PROFILE] SchedulePolicy.calc_priority | calls=173 | total=1938162061 ns | avg=11203248.9 ns
+calc_prio 1772792508.8380477
+calc_prio2 1772792508.84363
+[PROFILE] SchedulePolicy.calc_priority | calls=174 | total=1943750672 ns | avg=11170980.9 ns
+calc_prio 1772792509.505187
+calc_prio2 1772792509.5177612
+[PROFILE] SchedulePolicy.calc_priority | calls=175 | total=1956335329 ns | avg=11179059.0 ns
+calc_prio 1772792511.0971248
+calc_prio2 1772792511.1026201
+[PROFILE] SchedulePolicy.calc_priority | calls=176 | total=1961838765 ns | avg=11146811.2 ns
+calc_prio 1772792511.5101404
+calc_prio2 1772792511.515621
+[PROFILE] SchedulePolicy.calc_priority | calls=177 | total=1967326773 ns | avg=11114840.5 ns
+calc_prio 1772792511.6921515
+calc_prio2 1772792511.6974163
+[PROFILE] SchedulePolicy.calc_priority | calls=178 | total=1972598486 ns | avg=11082014.0 ns
+calc_prio 1772792511.7603889
+calc_prio2 1772792511.7658143
+[PROFILE] SchedulePolicy.calc_priority | calls=179 | total=1978030713 ns | avg=11050450.9 ns
+calc_prio 1772792511.7970471
+calc_prio2 1772792511.8018215
+[PROFILE] SchedulePolicy.calc_priority | calls=180 | total=1982812047 ns | avg=11015622.5 ns
+calc_prio 1772792512.497064
+calc_prio2 1772792512.5091481
+[PROFILE] SchedulePolicy.calc_priority | calls=181 | total=1994905506 ns | avg=11021577.4 ns
+calc_prio 1772792513.977503
+calc_prio2 1772792513.9822373
+[PROFILE] SchedulePolicy.calc_priority | calls=182 | total=1999649146 ns | avg=10987083.2 ns
+calc_prio 1772792514.015013
+calc_prio2 1772792514.0190942
+[PROFILE] SchedulePolicy.calc_priority | calls=183 | total=2003736634 ns | avg=10949380.5 ns
+calc_prio 1772792514.695092
+calc_prio2 1772792514.6992905
+[PROFILE] SchedulePolicy.calc_priority | calls=184 | total=2007941425 ns | avg=10912725.1 ns
+calc_prio 1772792517.0101182
+calc_prio2 1772792517.0139673
+[PROFILE] SchedulePolicy.calc_priority | calls=185 | total=2011798090 ns | avg=10874584.3 ns
+calc_prio 1772792517.4199505
+calc_prio2 1772792517.423791
+[PROFILE] SchedulePolicy.calc_priority | calls=186 | total=2015646080 ns | avg=10836806.9 ns
+calc_prio 1772792517.8978465
+calc_prio2 1772792517.901747
+[PROFILE] SchedulePolicy.calc_priority | calls=187 | total=2019553095 ns | avg=10799749.2 ns
+calc_prio 1772792517.9412026
+calc_prio2 1772792517.944587
+[PROFILE] SchedulePolicy.calc_priority | calls=188 | total=2022946551 ns | avg=10760354.0 ns
+calc_prio 1772792518.637784
+calc_prio2 1772792518.6413693
+[PROFILE] SchedulePolicy.calc_priority | calls=189 | total=2026538023 ns | avg=10722423.4 ns
+calc_prio 1772792520.2349172
+calc_prio2 1772792520.2380493
+[PROFILE] SchedulePolicy.calc_priority | calls=190 | total=2029677770 ns | avg=10682514.6 ns
+calc_prio 1772792520.2716913
+calc_prio2 1772792520.2745807
+[PROFILE] SchedulePolicy.calc_priority | calls=191 | total=2032573440 ns | avg=10641745.8 ns
+calc_prio 1772792520.9324358
+calc_prio2 1772792520.935331
+[PROFILE] SchedulePolicy.calc_priority | calls=192 | total=2035474930 ns | avg=10601431.9 ns
+calc_prio 1772792522.7384534
+calc_prio2 1772792522.7413971
+[PROFILE] SchedulePolicy.calc_priority | calls=193 | total=2038424714 ns | avg=10561786.1 ns
+calc_prio 1772792523.6719358
+calc_prio2 1772792523.6751726
+[PROFILE] SchedulePolicy.calc_priority | calls=194 | total=2041672219 ns | avg=10524083.6 ns
+calc_prio 1772792523.7091253
+calc_prio2 1772792523.7122707
+[PROFILE] SchedulePolicy.calc_priority | calls=195 | total=2044825838 ns | avg=10486286.3 ns
+calc_prio 1772792524.4097662
+calc_prio2 1772792524.4127092
+[PROFILE] SchedulePolicy.calc_priority | calls=196 | total=2047778848 ns | avg=10447851.3 ns
+calc_prio 1772792526.2252874
+calc_prio2 1772792526.2282398
+[PROFILE] SchedulePolicy.calc_priority | calls=197 | total=2050739775 ns | avg=10409846.6 ns
+calc_prio 1772792526.2622876
+calc_prio2 1772792526.2650316
+[PROFILE] SchedulePolicy.calc_priority | calls=198 | total=2053491358 ns | avg=10371168.5 ns
+calc_prio 1772792526.9651217
+calc_prio2 1772792526.967927
+[PROFILE] SchedulePolicy.calc_priority | calls=199 | total=2056306534 ns | avg=10333198.7 ns
+calc_prio 1772792528.2108235
+calc_prio2 1772792528.213738
+[PROFILE] SchedulePolicy.calc_priority | calls=200 | total=2059232866 ns | avg=10296164.3 ns
+calc_prio 1772792528.2485447
+calc_prio2 1772792528.251155
+[PROFILE] SchedulePolicy.calc_priority | calls=201 | total=2061853761 ns | avg=10257978.9 ns
+calc_prio 1772792528.910358
+calc_prio2 1772792528.9129398
+[PROFILE] SchedulePolicy.calc_priority | calls=202 | total=2064444545 ns | avg=10220022.5 ns
+calc_prio 1772792530.5725372
+calc_prio2 1772792530.5752122
+[PROFILE] SchedulePolicy.calc_priority | calls=203 | total=2067129998 ns | avg=10182906.4 ns
+calc_prio 1772792530.6103811
+calc_prio2 1772792530.6128159
+[PROFILE] SchedulePolicy.calc_priority | calls=204 | total=2069573431 ns | avg=10144967.8 ns
+calc_prio 1772792531.2999759
+calc_prio2 1772792531.3023806
+[PROFILE] SchedulePolicy.calc_priority | calls=205 | total=2071986339 ns | avg=10107250.4 ns
+calc_prio 1772792532.5973132
+calc_prio2 1772792532.6003466
+[PROFILE] SchedulePolicy.calc_priority | calls=206 | total=2075030817 ns | avg=10072965.1 ns
+calc_prio 1772792532.6396751
+calc_prio2 1772792532.642313
+[PROFILE] SchedulePolicy.calc_priority | calls=207 | total=2077677752 ns | avg=10037090.6 ns
+calc_prio 1772792533.3014812
+calc_prio2 1772792533.3042183
+[PROFILE] SchedulePolicy.calc_priority | calls=208 | total=2080424514 ns | avg=10002040.9 ns
+calc_prio 1772792535.1654212
+calc_prio2 1772792535.1678438
+sglang: Throughput: 0.5510752621948968 req/s
+System prompt length: 9993 tokens (target: 10000)
+Generated 200 prompts in total.
+INFO 03-06 15:52:50 [utils.py:256] non-default args: {'enable_prefix_caching': True, 'gpu_memory_utilization': 0.95, 'max_num_batched_tokens': 32768, 'max_num_seqs': 500, 'disable_log_stats': True, 'enable_chunked_prefill': True, 'model': 'meta-llama/Llama-3.1-8B-Instruct'}
+INFO 03-06 15:52:51 [model.py:530] Resolved architecture: LlamaForCausalLM
+INFO 03-06 15:52:51 [model.py:1545] Using max model len 131072
+INFO 03-06 15:52:51 [scheduler.py:229] Chunked prefill is enabled with max_num_batched_tokens=32768.
+INFO 03-06 15:52:51 [vllm.py:632] Asynchronous scheduling is enabled.
+INFO 03-06 15:52:51 [vllm.py:639] Disabling NCCL for DP synchronization when using async scheduling.
+WARNING 03-06 15:52:53 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized

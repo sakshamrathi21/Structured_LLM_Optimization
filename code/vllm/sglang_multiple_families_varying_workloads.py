@@ -190,12 +190,12 @@ def main():
     end_time = time.time()
 
     throughput = len(prompts) / (end_time - start_time)
-    print("Throughput:", throughput, "req/s")
+    print("sglang: Throughput:", throughput, "req/s")
 
     if args.write_output:
         with open("vllm_multiple_families_varying_workloads_output.txt", "a") as f:
             f.write(
-                f"Throughput Test | families={args.num_families} | "
+                f"sglang: Throughput Test | families={args.num_families} | "
                 f"req/s={args.req_per_sec} | max_batch={args.max_batch_size} | "
                 f"randomness={args.randomness} | sys_prompt_tokens={args.sys_prompt_tokens} | "
                 f"model={args.model_name} | max_new_tokens={args.max_new_tokens} | "
