@@ -54,11 +54,19 @@ nsys profile --trace=cuda --gpu-metrics-device=all ./read
 nsys export --t sqlite -o report1.sqlite report1.nsys-rep
 sqlite3 report1.sqlite "
 SELECT 
-    AVG(CAST(json_extract(data, '$.\"DRAM Read Throughput\"') AS REAL)) as avg_dram_read,
-    MAX(CAST(json_extract(data, '$.\"DRAM Read Throughput\"') AS REAL)) as peak_dram_read
+    AVG(CAST(json_extract(data, '$.\"DRAM Read Throughput\"') AS REAL)) AS avg_dram_read,
+    MAX(CAST(json_extract(data, '$.\"DRAM Read Throughput\"') AS REAL)) AS peak_dram_read
+FROM GENERIC_EVENTS
+WHERE json_extract(data, '$.\"DRAM Read Throughput\"') IS NOT NULL
+  AND (CAST(json_extract(data, '$.\"DRAM Read Throughput\"') AS REAL) > 0 
+       OR CAST(json_extract(data, '$.\"DRAM Write Throughput\"') AS REAL) > 0);
+
+SELECT 
+    SUM(CAST(json_extract(data, '$.\"DRAM Read Throughput\"') AS REAL)) AS total_dram_read
 FROM GENERIC_EVENTS
 WHERE json_extract(data, '$.\"DRAM Read Throughput\"') IS NOT NULL
   AND (CAST(json_extract(data, '$.\"DRAM Read Throughput\"') AS REAL) > 0 
        OR CAST(json_extract(data, '$.\"DRAM Write Throughput\"') AS REAL) > 0);
 "
+rm report1.sqlite report1.nsys-rep
 ```

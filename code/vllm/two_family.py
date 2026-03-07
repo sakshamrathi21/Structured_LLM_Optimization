@@ -158,7 +158,7 @@ def main():
     parser.add_argument("--model", type=str, default="meta-llama/Llama-3.1-8B-Instruct")
 
     parser.add_argument(
-        "--L", type=int, default=1200, help="exact system prompt token length"
+        "--L", type=int, default=5000, help="exact system prompt token length"
     )
 
     parser.add_argument(
