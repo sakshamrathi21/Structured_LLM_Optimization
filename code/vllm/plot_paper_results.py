@@ -32,11 +32,11 @@ X_AXIS   = "req/s"         # column to use as X axis
 # Leave empty [] to use the full DataFrame.
 FILTERS  = [
     # ("engine",   "vllm"),
-    ("families", 5),
-    ("sys_prompt_tokens", 500),
+    ("families", 50),
+    ("sys_prompt_tokens", 10000),
 ]
 
-OUTPUT_PATH = "../../results/throughput_vs_req_s_length_500_families_5.png"   # where to save the figure
+OUTPUT_PATH = "../../results/throughput_vs_req_s_length_10000_families_50.png"   # where to save the figure
 
 # ─────────────────────────────────────────────
 
