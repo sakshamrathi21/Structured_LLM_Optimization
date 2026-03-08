@@ -4,9 +4,9 @@ VLLM_SCRIPT="vllm_multiple_families_varying_workloads.py"
 SGLANG_SCRIPT="sglang_multiple_families_varying_workloads.py"
 PY_BIN="/home/saksham/CS496/code/vllm/.venv/bin/python"                        
 
-LEN_FACTOR=(10000)
-REQ_PER_SEC_S=(50 75 100 200 300 400 500)
-NUM_FAMILIES=(50)
+LEN_FACTOR=(100 500 1000)
+REQ_PER_SEC_S=(1 2 5 10 20 50 75 100)
+NUM_FAMILIES=(5)
 MIN_REQUESTS=1000 
 MAX_REQUESTS=2000
 for lf in "${LEN_FACTOR[@]}"; do
