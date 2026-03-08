@@ -211,15 +211,12 @@ def main():
     )
 
     if args.write_output:
-        with open("vllm_multiple_families_varying_workloads_output.txt", "a") as f:
+        with open("paper_eval_results.csv", "a") as f:
             f.write(
-                f"vllm: Throughput Test with {args.num_families} families, "
-                f"{args.req_per_sec} req/sec and max_batch_size of {args.max_batch_size} "
-                f"(randomness: {args.randomness}) (sys_prompt_tokens: {args.sys_prompt_tokens}) "
-                f"(model_name: {args.model_name}) (policy: {args.policy}) "
-                f"(max_new_tokens: {args.max_new_tokens}) "
-                f"(num_requests: {args.num_requests}) "
-                f"(num_prompts: {len(prompts)}): {throughput}\n"
+                f"vllm,{args.num_families},{args.req_per_sec},{args.max_batch_size},"
+                f"{args.randomness},{args.sys_prompt_tokens},{args.model_name},"
+                f"{args.policy},{args.max_new_tokens},{args.num_requests},"
+                f"{len(prompts)},{throughput*args.max_new_tokens}\n"
             )
 
 
