@@ -215,8 +215,7 @@ def main():
             f.write(
                 f"vllm,{args.num_families},{args.req_per_sec},{args.max_batch_size},"
                 f"{args.randomness},{args.sys_prompt_tokens},{args.model_name},"
-                f"{args.policy},{args.max_new_tokens},{args.num_requests},"
-                f"{len(prompts)},{throughput*args.max_new_tokens}\n"
+                f"{args.max_new_tokens},{args.num_requests},{len(prompts)},{throughput*args.max_new_tokens},{args.policy}\n"
             )
 
 

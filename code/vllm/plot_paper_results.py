@@ -24,7 +24,7 @@ from pathlib import Path
 
 CSV_PATH = "/home/saksham/CS496/code/vllm/paper_eval_results.csv"          # path to your CSV file
 
-X_AXIS   = "req/s"         # column to use as X axis
+X_AXIS   = "max_new_tokens"         # column to use as X axis
                                # e.g. "req/s", "max_batch", "max_new_tokens",
                                #      "num_requests", "families", ...
 
@@ -33,10 +33,10 @@ X_AXIS   = "req/s"         # column to use as X axis
 FILTERS  = [
     # ("engine",   "vllm"),
     ("families", 5),
-    ("sys_prompt_tokens", 100),
+    ("sys_prompt_tokens", 5000),
 ]
 
-OUTPUT_PATH = "../../results/throughput_vs_req_s_length_100_families_5.png"   # where to save the figure
+OUTPUT_PATH = "../../results/throughput_vs_max_new_tokens_length_5000_families_5.png"   # where to save the figure
 
 # ─────────────────────────────────────────────
 
@@ -50,6 +50,7 @@ def load_and_filter(csv_path: str, filters: list[tuple]) -> pd.DataFrame:
             raise ValueError(f"Filter column '{col}' not found. Available: {list(df.columns)}")
         df = df[df[col] == val]
         print(f"  After filter ({col} == {val!r}): {len(df)} rows remain.")
+    print(df.head())
     df["policy"] = df["engine"] + ":" + df["policy"]  # combine for legend
     return df
 
