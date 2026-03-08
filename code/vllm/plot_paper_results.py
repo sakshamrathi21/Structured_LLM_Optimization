@@ -32,11 +32,11 @@ X_AXIS   = "req/s"         # column to use as X axis
 # Leave empty [] to use the full DataFrame.
 FILTERS  = [
     # ("engine",   "vllm"),
-    ("families", 50),
-    ("sys_prompt_tokens", 10000),
+    ("families", 5),
+    ("sys_prompt_tokens", 100),
 ]
 
-OUTPUT_PATH = "../../results/throughput_vs_req_s_length_10000_families_50.png"   # where to save the figure
+OUTPUT_PATH = "../../results/throughput_vs_req_s_length_100_families_5.png"   # where to save the figure
 
 # ─────────────────────────────────────────────
 
@@ -50,6 +50,7 @@ def load_and_filter(csv_path: str, filters: list[tuple]) -> pd.DataFrame:
             raise ValueError(f"Filter column '{col}' not found. Available: {list(df.columns)}")
         df = df[df[col] == val]
         print(f"  After filter ({col} == {val!r}): {len(df)} rows remain.")
+    df["policy"] = df["engine"] + ":" + df["policy"]  # combine for legend
     return df
 
 
