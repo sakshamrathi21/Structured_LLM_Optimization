@@ -1,0 +1,13 @@
+engine,families,req/s,max_batch,randomness,sys_prompt_tokens,model,max_new_tokens,num_requests,num_prompts,throughput,policy
+vllm,5,None,500,1,5000,qwen/qwen2.5-0.5b-instruct,200,5000,5000,5973.186120642033,fcfs
+vllm,5,None,500,1,5000,qwen/qwen2.5-0.5b-instruct,200,5000,5000,14026.035645411897,chunked_hash_tree_heuristic
+vllm,5,None,500,1,5000,qwen/qwen2.5-0.5b-instruct,200,5000,5000,14087.813284810926,family_load
+sglang,5,None,500,1,5000,qwen/qwen2.5-0.5b-instruct,200,5000,5000,5132.619973464075,fcfs
+sglang,5,None,500,1,5000,qwen/qwen2.5-0.5b-instruct,200,5000,5000,696.7037798077994,lpm
+sglang,5,None,500,1,5000,qwen/qwen2.5-0.5b-instruct,200,5000,5000,525.0696942255928,dfs-weight
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,908.9668758439819,fcfs
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,3835.8636506083217,chunked_hash_tree_heuristic
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,3866.154819338605,family_load
+sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,1396.4219943809946,fcfs
+sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,758.6646496835931,lpm
+sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,710.4951916537997,dfs-weight
