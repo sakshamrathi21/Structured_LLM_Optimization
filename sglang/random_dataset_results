@@ -1,0 +1,252 @@
+Backend: sglang
+Traffic request rate: 100.0
+Max request concurrency: not set
+Successful requests: 10000
+Benchmark duration (s): 118.73
+Total input tokens: 155143
+Total generated tokens: 150819
+Total generated tokens (retokenized): 150805
+Request throughput (req/s): 84.23
+Input token throughput (tok/s): 1306.73
+Output token throughput (tok/s): 1270.31
+Total token throughput (tok/s): 2577.03
+Concurrency: 468.22
+Mean E2E Latency (ms): 5558.97
+Median E2E Latency (ms): 5331.48
+Mean TTFT (ms): 137.14
+Median TTFT (ms): 93.68
+P99 TTFT (ms): 568.66
+Mean ITL (ms): 385.02
+Median ITL (ms): 176.46
+P95 ITL (ms): 1540.46
+P99 ITL (ms): 3281.31
+Max ITL (ms): 4490.98
+
+
+Backend: sglang
+Traffic request rate: 200.0
+Max request concurrency: not set
+Successful requests: 10000
+Benchmark duration (s): 69.80
+Total input tokens: 155143
+Total generated tokens: 150819
+Total generated tokens (retokenized): 150807
+Request throughput (req/s): 143.28
+Input token throughput (tok/s): 2222.82
+Output token throughput (tok/s): 2160.87
+Total token throughput (tok/s): 4383.69
+Concurrency: 1479.20
+Mean E2E Latency (ms): 10324.16
+Median E2E Latency (ms): 9670.37
+Mean TTFT (ms): 344.93
+Median TTFT (ms): 121.86
+P99 TTFT (ms): 1320.22
+Mean ITL (ms): 708.66
+Median ITL (ms): 278.04
+P95 ITL (ms): 3101.92
+P99 ITL (ms): 3868.93
+Max ITL (ms): 4710.55
+
+
+Backend: sglang
+Traffic request rate: 300.0
+Max request concurrency: not set
+Successful requests: 10000
+Benchmark duration (s): 54.93
+Total input tokens: 155143
+Total generated tokens: 150819
+Total generated tokens (retokenized): 150808
+Request throughput (req/s): 182.05
+Input token throughput (tok/s): 2824.41
+Output token throughput (tok/s): 2745.69
+Total token throughput (tok/s): 5570.10
+Concurrency: 1640.03
+Mean E2E Latency (ms): 9008.57   
+Median E2E Latency (ms): 8541.76   
+Mean TTFT (ms): 520.47    
+Median TTFT (ms): 441.86    
+P99 TTFT (ms): 1365.70   
+Mean ITL (ms): 602.77 
+Median ITL (ms): 295.21 
+P95 ITL (ms): 1693.12 
+P99 ITL (ms): 2106.05   
+Max ITL (ms): 3618.80
+
+
+Backend: sglang
+Traffic request rate: 400.0
+Max request concurrency: not set
+Successful requests: 10000
+Benchmark duration (s): 47.30
+Total input tokens: 155143    
+Total generated tokens: 150819    
+Total generated tokens (retokenized): 150812    
+Request throughput (req/s): 211.44    
+Input token throughput (tok/s): 3280.32   
+Output token throughput (tok/s): 3188.89   
+Total token throughput (tok/s): 6469.21   
+Concurrency: 1842.05   
+Mean E2E Latency (ms): 8711.98   
+Median E2E Latency (ms): 8307.19   
+Mean TTFT (ms): 1018.69   
+Median TTFT (ms): 1101.32   
+P99 TTFT (ms): 2150.69   
+Mean ITL (ms): 546.32    
+Median ITL (ms): 511.35    
+P95 ITL (ms): 1252.32   
+P99 ITL (ms): 2014.46   
+Max ITL (ms): 2872.96   
+
+
+
+Backend: sglang    
+Traffic request rate: 500.0     
+Max request concurrency: not set   
+Successful requests: 10000     
+Benchmark duration (s): 45.88     
+Total input tokens: 155143    
+Total generated tokens: 150819    
+Total generated tokens (retokenized): 150810    
+Request throughput (req/s): 217.95    
+Input token throughput (tok/s): 3381.31   
+Output token throughput (tok/s): 3287.07   
+Total token throughput (tok/s): 6668.38   
+Concurrency: 2335.98   
+Mean E2E Latency (ms): 10718.06  
+Median E2E Latency (ms): 10695.21  
+Mean TTFT (ms): 3033.74   
+Median TTFT (ms): 3400.33   
+P99 TTFT (ms): 6119.34   
+Mean ITL (ms): 545.86    
+Median ITL (ms): 533.15    
+P95 ITL (ms): 1331.17   
+P99 ITL (ms): 2085.61   
+Max ITL (ms): 2513.72   
+
+
+Backend: sglang    
+Traffic request rate: 600.0     
+Max request concurrency: not set   
+Successful requests: 10000     
+Benchmark duration (s): 45.09     
+Total input tokens: 155143    
+Total generated tokens: 150819    
+Total generated tokens (retokenized): 150812    
+Request throughput (req/s): 221.80    
+Input token throughput (tok/s): 3441.08   
+Output token throughput (tok/s): 3345.17   
+Total token throughput (tok/s): 6786.25   
+Concurrency: 2584.57   
+Mean E2E Latency (ms): 11652.67  
+Median E2E Latency (ms): 12101.86  
+Mean TTFT (ms): 4119.78   
+Median TTFT (ms): 4403.08   
+P99 TTFT (ms): 8889.99   
+Mean ITL (ms): 534.93    
+Median ITL (ms): 525.08    
+P95 ITL (ms): 1361.67   
+P99 ITL (ms): 1952.90   
+Max ITL (ms): 2093.78   
+
+
+Backend: sglang    
+Traffic request rate: 700.0     
+Max request concurrency: not set   
+Successful requests: 10000     
+Benchmark duration (s): 43.14     
+Total input tokens: 155143    
+Total generated tokens: 150819    
+Total generated tokens (retokenized): 150809    
+Request throughput (req/s): 231.79    
+Input token throughput (tok/s): 3596.02   
+Output token throughput (tok/s): 3495.79   
+Total token throughput (tok/s): 7091.81   
+Concurrency: 2852.10   
+Mean E2E Latency (ms): 12304.84  
+Median E2E Latency (ms): 12885.43  
+Mean TTFT (ms): 4969.02   
+Median TTFT (ms): 5510.75   
+P99 TTFT (ms): 10502.34  
+Mean ITL (ms): 520.94    
+Median ITL (ms): 517.02    
+P95 ITL (ms): 1284.44   
+P99 ITL (ms): 1521.94   
+Max ITL (ms): 2170.16   
+
+
+Backend: sglang    
+Traffic request rate: 800.0     
+Max request concurrency: not set   
+Successful requests: 10000     
+Benchmark duration (s): 43.91     
+Total input tokens: 155143    
+Total generated tokens: 150819    
+Total generated tokens (retokenized): 150802    
+Request throughput (req/s): 227.72    
+Input token throughput (tok/s): 3532.87   
+Output token throughput (tok/s): 3434.41   
+Total token throughput (tok/s): 6967.28   
+Concurrency: 3369.96   
+Mean E2E Latency (ms): 14798.88  
+Median E2E Latency (ms): 15416.15  
+Mean TTFT (ms): 7287.20   
+Median TTFT (ms): 7329.17   
+P99 TTFT (ms): 16588.61  
+Mean ITL (ms): 533.43    
+Median ITL (ms): 561.00    
+P95 ITL (ms): 972.09    
+P99 ITL (ms): 1546.62   
+Max ITL (ms): 2159.54   
+
+
+Backend: sglang    
+Traffic request rate: 900.0     
+Max request concurrency: not set   
+Successful requests: 10000     
+Benchmark duration (s): 44.39     
+Total input tokens: 155143    
+Total generated tokens: 150819    
+Total generated tokens (retokenized): 150809    
+Request throughput (req/s): 225.28    
+Input token throughput (tok/s): 3495.03   
+Output token throughput (tok/s): 3397.62   
+Total token throughput (tok/s): 6892.64   
+Concurrency: 3417.75   
+Mean E2E Latency (ms): 15171.27  
+Median E2E Latency (ms): 15872.81  
+Mean TTFT (ms): 7563.53   
+Median TTFT (ms): 7742.62   
+P99 TTFT (ms): 15634.77  
+Mean ITL (ms): 541.17    
+Median ITL (ms): 532.12    
+P95 ITL (ms): 1263.18   
+P99 ITL (ms): 1650.42   
+Max ITL (ms): 4257.03   
+
+
+Backend: sglang    
+Traffic request rate: 1000.0    
+Max request concurrency: not set   
+Successful requests: 10000     
+Benchmark duration (s): 44.29     
+Total input tokens: 155143    
+Total generated tokens: 150819    
+Total generated tokens (retokenized): 150813    
+Request throughput (req/s): 225.76    
+Input token throughput (tok/s): 3502.56   
+Output token throughput (tok/s): 3404.94   
+Total token throughput (tok/s): 6907.49   
+Concurrency: 3619.97   
+Mean E2E Latency (ms): 16034.39  
+Median E2E Latency (ms): 16718.17  
+Mean TTFT (ms): 8431.03   
+Median TTFT (ms): 8231.16   
+P99 TTFT (ms): 19022.81  
+Mean ITL (ms): 539.96    
+Median ITL (ms): 533.82    
+P95 ITL (ms): 1184.92   
+P99 ITL (ms): 1639.54   
+Max ITL (ms): 4178.26   
+
+
+
