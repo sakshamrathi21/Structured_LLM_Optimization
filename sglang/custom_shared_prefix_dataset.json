@@ -1,0 +1,822 @@
+[
+  {
+    "id": 0,
+    "user": "What is the main goal of MLFQ scheduling?"
+  },
+  {
+    "id": 1,
+    "user": "Who first described the MLFQ scheduler and in what system?"
+  },
+  {
+    "id": 2,
+    "user": "What are the two primary problems MLFQ tries to solve?"
+  },
+  {
+    "id": 3,
+    "user": "Why can’t SJF or STCF be directly applied in practice?"
+  },
+  {
+    "id": 4,
+    "user": "Why is Round Robin bad for turnaround time?"
+  },
+  {
+    "id": 5,
+    "user": "What is the crux question behind MLFQ scheduling?"
+  },
+  {
+    "id": 6,
+    "user": "How does MLFQ attempt to predict job behavior?"
+  },
+  {
+    "id": 7,
+    "user": "What does 'learning from history' mean in MLFQ?"
+  },
+  {
+    "id": 8,
+    "user": "Why does MLFQ use multiple queues?"
+  },
+  {
+    "id": 9,
+    "user": "How are jobs assigned to queues in MLFQ?"
+  },
+  {
+    "id": 10,
+    "user": "What is Rule 1 of MLFQ?"
+  },
+  {
+    "id": 11,
+    "user": "What is Rule 2 of MLFQ?"
+  },
+  {
+    "id": 12,
+    "user": "How does MLFQ handle jobs with equal priority?"
+  },
+  {
+    "id": 13,
+    "user": "How does MLFQ decide which job runs first?"
+  },
+  {
+    "id": 14,
+    "user": "Why do interactive jobs usually retain high priority?"
+  },
+  {
+    "id": 15,
+    "user": "Why are CPU-intensive jobs demoted in MLFQ?"
+  },
+  {
+    "id": 16,
+    "user": "What is a job’s allotment in MLFQ?"
+  },
+  {
+    "id": 17,
+    "user": "What happens if a job uses up its allotment?"
+  },
+  {
+    "id": 18,
+    "user": "What happens if a job relinquishes the CPU early?"
+  },
+  {
+    "id": 19,
+    "user": "What happens to a single long-running job in MLFQ?"
+  },
+  {
+    "id": 20,
+    "user": "How does MLFQ approximate SJF?"
+  },
+  {
+    "id": 21,
+    "user": "How are short jobs favored in MLFQ?"
+  },
+  {
+    "id": 22,
+    "user": "What happens when an interactive job frequently gives up the CPU?"
+  },
+  {
+    "id": 23,
+    "user": "Why does MLFQ risk starvation of long-running jobs?"
+  },
+  {
+    "id": 24,
+    "user": "What is gaming the scheduler in MLFQ?"
+  },
+  {
+    "id": 25,
+    "user": "How can a job game the scheduler under old rules?"
+  },
+  {
+    "id": 26,
+    "user": "What is the effect of priority boost in MLFQ?"
+  },
+  {
+    "id": 27,
+    "user": "What problem does Rule 5 solve?"
+  },
+  {
+    "id": 28,
+    "user": "How often should priority boosts occur?"
+  },
+  {
+    "id": 29,
+    "user": "Why are such constants called 'voodoo constants'?"
+  },
+  {
+    "id": 30,
+    "user": "What is Ousterhout’s Law?"
+  },
+  {
+    "id": 31,
+    "user": "How can better accounting prevent gaming in MLFQ?"
+  },
+  {
+    "id": 32,
+    "user": "What is the updated Rule 4 for MLFQ?"
+  },
+  {
+    "id": 33,
+    "user": "Why does MLFQ need better accounting?"
+  },
+  {
+    "id": 34,
+    "user": "What is starvation in MLFQ?"
+  },
+  {
+    "id": 35,
+    "user": "How can MLFQ adapt to a job changing behavior over time?"
+  },
+  {
+    "id": 36,
+    "user": "How many queues are typically used in MLFQ?"
+  },
+  {
+    "id": 37,
+    "user": "Why are higher-priority queues given shorter time slices?"
+  },
+  {
+    "id": 38,
+    "user": "Why are lower-priority queues given longer time slices?"
+  },
+  {
+    "id": 39,
+    "user": "What is the Solaris MLFQ implementation called?"
+  },
+  {
+    "id": 40,
+    "user": "How many queues does Solaris TS typically use?"
+  },
+  {
+    "id": 41,
+    "user": "What does FreeBSD use instead of exact rules?"
+  },
+  {
+    "id": 42,
+    "user": "What is decay-usage scheduling?"
+  },
+  {
+    "id": 43,
+    "user": "Why might some queues be reserved for OS work?"
+  },
+  {
+    "id": 44,
+    "user": "What does the 'nice' utility do in scheduling?"
+  },
+  {
+    "id": 45,
+    "user": "What is the purpose of advice in scheduling?"
+  },
+  {
+    "id": 46,
+    "user": "How does MLFQ handle both interactive and CPU-bound jobs?"
+  },
+  {
+    "id": 47,
+    "user": "What is the fundamental advantage of MLFQ?"
+  },
+  {
+    "id": 48,
+    "user": "Which real systems implement MLFQ variants?"
+  },
+  {
+    "id": 49,
+    "user": "How does MLFQ balance fairness with performance?"
+  },
+  {
+    "id": 50,
+    "user": "Why does MLFQ not require a priori job knowledge?"
+  },
+  {
+    "id": 51,
+    "user": "What is turnaround time in scheduling?"
+  },
+  {
+    "id": 52,
+    "user": "What is response time in scheduling?"
+  },
+  {
+    "id": 53,
+    "user": "How does MLFQ optimize turnaround time?"
+  },
+  {
+    "id": 54,
+    "user": "How does MLFQ minimize response time?"
+  },
+  {
+    "id": 55,
+    "user": "What is the Compatible Time-Sharing System (CTSS)?"
+  },
+  {
+    "id": 56,
+    "user": "What later system refined MLFQ after CTSS?"
+  },
+  {
+    "id": 57,
+    "user": "Why was Corbato awarded the Turing Award?"
+  },
+  {
+    "id": 58,
+    "user": "What is the significance of Multics in MLFQ history?"
+  },
+  {
+    "id": 59,
+    "user": "Why does MLFQ assume new jobs might be short?"
+  },
+  {
+    "id": 60,
+    "user": "What happens to long jobs over time in MLFQ?"
+  },
+  {
+    "id": 61,
+    "user": "How does MLFQ avoid interactive job starvation?"
+  },
+  {
+    "id": 62,
+    "user": "Why is starvation dangerous in a scheduling system?"
+  },
+  {
+    "id": 63,
+    "user": "Why is security relevant in scheduling policies?"
+  },
+  {
+    "id": 64,
+    "user": "How can malicious users exploit scheduling?"
+  },
+  {
+    "id": 65,
+    "user": "What is the difference between Rule 4a and Rule 4b?"
+  },
+  {
+    "id": 66,
+    "user": "Why were Rules 4a and 4b merged into Rule 4?"
+  },
+  {
+    "id": 67,
+    "user": "How does I/O affect priority in MLFQ?"
+  },
+  {
+    "id": 68,
+    "user": "Why should relinquishing CPU not always reset allotment?"
+  },
+  {
+    "id": 69,
+    "user": "What happens in MLFQ if a process mixes CPU and I/O phases?"
+  },
+  {
+    "id": 70,
+    "user": "Why must scheduling be secure against attacks?"
+  },
+  {
+    "id": 71,
+    "user": "What happens when priority boost is too frequent?"
+  },
+  {
+    "id": 72,
+    "user": "What happens when priority boost is too infrequent?"
+  },
+  {
+    "id": 73,
+    "user": "Why is finding the right S value difficult?"
+  },
+  {
+    "id": 74,
+    "user": "How does machine learning help tune scheduling?"
+  },
+  {
+    "id": 75,
+    "user": "What does Figure 8.2 illustrate?"
+  },
+  {
+    "id": 76,
+    "user": "What does Figure 8.3 illustrate?"
+  },
+  {
+    "id": 77,
+    "user": "What does Figure 8.4 show with and without boosts?"
+  },
+  {
+    "id": 78,
+    "user": "What does Figure 8.5 show about gaming?"
+  },
+  {
+    "id": 79,
+    "user": "What does Figure 8.6 demonstrate about time slices?"
+  },
+  {
+    "id": 80,
+    "user": "How does MLFQ differ from fixed-priority scheduling?"
+  },
+  {
+    "id": 81,
+    "user": "Why is round robin used within queues?"
+  },
+  {
+    "id": 82,
+    "user": "How does MLFQ ensure fairness?"
+  },
+  {
+    "id": 83,
+    "user": "What happens to a job after being boosted?"
+  },
+  {
+    "id": 84,
+    "user": "How does MLFQ handle mixed workloads?"
+  },
+  {
+    "id": 85,
+    "user": "What is the role of history in MLFQ?"
+  },
+  {
+    "id": 86,
+    "user": "Why does MLFQ provide good responsiveness?"
+  },
+  {
+    "id": 87,
+    "user": "How does MLFQ prevent monopolization of CPU?"
+  },
+  {
+    "id": 88,
+    "user": "Why does the OS rarely know job length?"
+  },
+  {
+    "id": 89,
+    "user": "Why must MLFQ adapt dynamically?"
+  },
+  {
+    "id": 90,
+    "user": "What is the advantage of multiple queues vs one?"
+  },
+  {
+    "id": 91,
+    "user": "What is an allotment relative to time slice?"
+  },
+  {
+    "id": 92,
+    "user": "How do queue lengths affect performance?"
+  },
+  {
+    "id": 93,
+    "user": "Why is administrator tuning important in MLFQ?"
+  },
+  {
+    "id": 94,
+    "user": "What is the relationship between MLFQ and SJF?"
+  },
+  {
+    "id": 95,
+    "user": "How does MLFQ approximate STCF?"
+  },
+  {
+    "id": 96,
+    "user": "What is the general principle behind feedback in scheduling?"
+  },
+  {
+    "id": 97,
+    "user": "Why is advice optional for OS to follow?"
+  },
+  {
+    "id": 98,
+    "user": "What are the five final rules of MLFQ?"
+  },
+  {
+    "id": 99,
+    "user": "How does MLFQ prevent monopolization of CPU?"
+  },
+  {
+    "id": 100,
+    "user": "How does MLFQ differ from priority aging?"
+  },
+  {
+    "id": 101,
+    "user": "What trade-off does MLFQ make between fairness and efficiency?"
+  },
+  {
+    "id": 102,
+    "user": "Why is feedback crucial for dynamic priority adjustment?"
+  },
+  {
+    "id": 103,
+    "user": "How does MLFQ treat newly arriving jobs compared to old ones?"
+  },
+  {
+    "id": 104,
+    "user": "Why can a newly arrived job preempt a running job in MLFQ?"
+  },
+  {
+    "id": 105,
+    "user": "What happens if multiple new jobs arrive simultaneously?"
+  },
+  {
+    "id": 106,
+    "user": "How can quantum length impact system responsiveness in MLFQ?"
+  },
+  {
+    "id": 107,
+    "user": "What determines the number of queues in an MLFQ system?"
+  },
+  {
+    "id": 108,
+    "user": "How do lower queues affect overall throughput?"
+  },
+  {
+    "id": 109,
+    "user": "Why does MLFQ require timer interrupts for proper operation?"
+  },
+  {
+    "id": 110,
+    "user": "How does MLFQ interact with context switching overhead?"
+  },
+  {
+    "id": 111,
+    "user": "What is the benefit of exponential queue time slices in MLFQ?"
+  },
+  {
+    "id": 112,
+    "user": "Why are higher queues granted shorter quanta?"
+  },
+  {
+    "id": 113,
+    "user": "What information does MLFQ use to infer CPU-bound behavior?"
+  },
+  {
+    "id": 114,
+    "user": "How does MLFQ prioritize I/O-bound processes?"
+  },
+  {
+    "id": 115,
+    "user": "Why does MLFQ sometimes reset all priorities periodically?"
+  },
+  {
+    "id": 116,
+    "user": "What performance metric does MLFQ primarily optimize?"
+  },
+  {
+    "id": 117,
+    "user": "Why might MLFQ violate strict fairness?"
+  },
+  {
+    "id": 118,
+    "user": "How does MLFQ adapt to changing workloads?"
+  },
+  {
+    "id": 119,
+    "user": "What distinguishes interactive and batch workloads in MLFQ?"
+  },
+  {
+    "id": 120,
+    "user": "Why can frequent priority boosting hurt throughput?"
+  },
+  {
+    "id": 121,
+    "user": "How can an operating system tune MLFQ parameters automatically?"
+  },
+  {
+    "id": 122,
+    "user": "What heuristics guide MLFQ queue promotion and demotion?"
+  },
+  {
+    "id": 123,
+    "user": "Why is queue starvation a form of priority inversion?"
+  },
+  {
+    "id": 124,
+    "user": "What happens if the boost interval is shorter than the quantum?"
+  },
+  {
+    "id": 125,
+    "user": "How does MLFQ behave under heavy I/O workloads?"
+  },
+  {
+    "id": 126,
+    "user": "Why is feedback scheduling called a 'learning algorithm'?"
+  },
+  {
+    "id": 127,
+    "user": "What is the connection between MLFQ and adaptive scheduling?"
+  },
+  {
+    "id": 128,
+    "user": "How does MLFQ compare to proportional share scheduling?"
+  },
+  {
+    "id": 129,
+    "user": "What is the theoretical limit of responsiveness in MLFQ?"
+  },
+  {
+    "id": 130,
+    "user": "How can MLFQ scheduling cause unfairness between CPU-bound tasks?"
+  },
+  {
+    "id": 131,
+    "user": "Why must MLFQ track recent CPU usage per process?"
+  },
+  {
+    "id": 132,
+    "user": "How is the 'recent CPU' metric updated in FreeBSD's scheduler?"
+  },
+  {
+    "id": 133,
+    "user": "Why might MLFQ require kernel accounting support?"
+  },
+  {
+    "id": 134,
+    "user": "How can starvation be mitigated without full priority boosts?"
+  },
+  {
+    "id": 135,
+    "user": "Why does a fixed time quantum hurt short interactive tasks?"
+  },
+  {
+    "id": 136,
+    "user": "What is the effect of too many queues in MLFQ?"
+  },
+  {
+    "id": 137,
+    "user": "How can queue merging improve MLFQ efficiency?"
+  },
+  {
+    "id": 138,
+    "user": "Why does Linux not use pure MLFQ anymore?"
+  },
+  {
+    "id": 139,
+    "user": "What scheduling class in Linux approximates MLFQ behavior?"
+  },
+  {
+    "id": 140,
+    "user": "Why is MLFQ considered a non-preemptive policy between boosts?"
+  },
+  {
+    "id": 141,
+    "user": "What are the trade-offs between deterministic and heuristic boosts?"
+  },
+  {
+    "id": 142,
+    "user": "Why does MLFQ sometimes need manual retuning?"
+  },
+  {
+    "id": 143,
+    "user": "How can user 'nice' values interact with MLFQ levels?"
+  },
+  {
+    "id": 144,
+    "user": "What does aging accomplish differently from boosting?"
+  },
+  {
+    "id": 145,
+    "user": "Why can boosting reset the system’s learned behavior?"
+  },
+  {
+    "id": 146,
+    "user": "How does MLFQ handle processes with unpredictable I/O?"
+  },
+  {
+    "id": 147,
+    "user": "Why does queue depth affect context switch frequency?"
+  },
+  {
+    "id": 148,
+    "user": "How can time slice granularity impact throughput in MLFQ?"
+  },
+  {
+    "id": 149,
+    "user": "Why must MLFQ prevent CPU monopolization by compute jobs?"
+  },
+  {
+    "id": 150,
+    "user": "What happens if all jobs are long and CPU-bound?"
+  },
+  {
+    "id": 151,
+    "user": "Why does MLFQ perform better for mixed workloads?"
+  },
+  {
+    "id": 152,
+    "user": "How can MLFQ scheduling affect cache locality?"
+  },
+  {
+    "id": 153,
+    "user": "Why might MLFQ require hardware timer precision?"
+  },
+  {
+    "id": 154,
+    "user": "How does load average influence queue movement?"
+  },
+  {
+    "id": 155,
+    "user": "What makes tuning MLFQ empirically challenging?"
+  },
+  {
+    "id": 156,
+    "user": "Why is simulation useful for designing MLFQ parameters?"
+  },
+  {
+    "id": 157,
+    "user": "What role does user interactivity play in MLFQ design?"
+  },
+  {
+    "id": 158,
+    "user": "Why can a static priority scheme underperform MLFQ?"
+  },
+  {
+    "id": 159,
+    "user": "What is the complexity of MLFQ queue selection?"
+  },
+  {
+    "id": 160,
+    "user": "How can priority inversion be detected in MLFQ?"
+  },
+  {
+    "id": 161,
+    "user": "Why must MLFQ include fairness counters?"
+  },
+  {
+    "id": 162,
+    "user": "What role does quantum expiration play in feedback accuracy?"
+  },
+  {
+    "id": 163,
+    "user": "How can CPU bursts be predicted heuristically in MLFQ?"
+  },
+  {
+    "id": 164,
+    "user": "Why does MLFQ sometimes revert to RR scheduling within queues?"
+  },
+  {
+    "id": 165,
+    "user": "How can hybrid schedulers combine MLFQ and lottery scheduling?"
+  },
+  {
+    "id": 166,
+    "user": "What are the limitations of using MLFQ in real-time systems?"
+  },
+  {
+    "id": 167,
+    "user": "Why might an OS replace MLFQ with a CFS-like model?"
+  },
+  {
+    "id": 168,
+    "user": "How does MLFQ affect power efficiency in CPUs?"
+  },
+  {
+    "id": 169,
+    "user": "Why can longer quanta improve throughput but harm latency?"
+  },
+  {
+    "id": 170,
+    "user": "How does MLFQ scheduling impact system fairness under load?"
+  },
+  {
+    "id": 171,
+    "user": "What is the trade-off between adaptability and predictability in MLFQ?"
+  },
+  {
+    "id": 172,
+    "user": "Why are decay-based priority systems considered more stable?"
+  },
+  {
+    "id": 173,
+    "user": "What metrics determine MLFQ success for user workloads?"
+  },
+  {
+    "id": 174,
+    "user": "Why do interactive processes benefit from frequent relinquishment?"
+  },
+  {
+    "id": 175,
+    "user": "How does MLFQ recover from misclassification of jobs?"
+  },
+  {
+    "id": 176,
+    "user": "What makes MLFQ non-deterministic compared to static scheduling?"
+  },
+  {
+    "id": 177,
+    "user": "Why can time slicing reduce starvation but increase overhead?"
+  },
+  {
+    "id": 178,
+    "user": "How can priority boosts mimic human 'patience decay' models?"
+  },
+  {
+    "id": 179,
+    "user": "Why can over-tuning cause oscillations in MLFQ performance?"
+  },
+  {
+    "id": 180,
+    "user": "How can feedback lag lead to poor queue assignment?"
+  },
+  {
+    "id": 181,
+    "user": "Why is the concept of 'recent history' crucial in MLFQ?"
+  },
+  {
+    "id": 182,
+    "user": "What is the impact of CPU burst variance on MLFQ accuracy?"
+  },
+  {
+    "id": 183,
+    "user": "How can priority decay prevent starvation without full boosts?"
+  },
+  {
+    "id": 184,
+    "user": "Why might I/O wait times be included in priority computation?"
+  },
+  {
+    "id": 185,
+    "user": "What makes MLFQ ideal for desktop workloads?"
+  },
+  {
+    "id": 186,
+    "user": "Why is MLFQ less suitable for predictable embedded systems?"
+  },
+  {
+    "id": 187,
+    "user": "What aspects of MLFQ can be learned by reinforcement learning?"
+  },
+  {
+    "id": 188,
+    "user": "How does MLFQ differ from deadline scheduling?"
+  },
+  {
+    "id": 189,
+    "user": "Why can MLFQ mimic SJF in the long run?"
+  },
+  {
+    "id": 190,
+    "user": "How can adaptive quanta improve scheduling stability?"
+  },
+  {
+    "id": 191,
+    "user": "Why must context switch overhead be measured in MLFQ tuning?"
+  },
+  {
+    "id": 192,
+    "user": "How can user behavior analytics improve MLFQ heuristics?"
+  },
+  {
+    "id": 193,
+    "user": "Why does MLFQ rely heavily on empirical constants?"
+  },
+  {
+    "id": 194,
+    "user": "What are the open research questions about MLFQ tuning?"
+  },
+  {
+    "id": 195,
+    "user": "Why is MLFQ used as a teaching example in OS textbooks?"
+  },
+  {
+    "id": 196,
+    "user": "How can modern cloud schedulers generalize MLFQ concepts?"
+  },
+  {
+    "id": 197,
+    "user": "Why is MLFQ still relevant in multiprocessor environments?"
+  },
+  {
+    "id": 198,
+    "user": "How can per-core MLFQ scheduling differ from global scheduling?"
+  },
+  {
+    "id": 199,
+    "user": "What role does cache sharing play in MLFQ design?"
+  },
+  {
+    "id": 200,
+    "user": "How can kernel developers benchmark MLFQ performance?"
+  },
+  {
+    "id": 201,
+    "user": "Why might containerized workloads require modified MLFQ rules?"
+  },
+  {
+    "id": 202,
+    "user": "What is the relationship between load balancing and MLFQ fairness?"
+  },
+  {
+    "id": 203,
+    "user": "Why is per-thread priority tracking harder in MLFQ systems?"
+  },
+  {
+    "id": 204,
+    "user": "How do hybrid schedulers combine MLFQ with priority inheritance?"
+  }
+]
