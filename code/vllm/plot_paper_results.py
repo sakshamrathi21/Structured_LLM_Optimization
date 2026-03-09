@@ -114,6 +114,8 @@ def plot_throughput(
     # set fontsize of ticks
     ax.tick_params(axis="both", which="major", labelsize=15)
     # ax.set_title(f"Throughput vs. {x_axis.replace('_', ' ').title()}", fontsize=14, fontweight="bold")
+    # position legend to be top-right, but inside the plot area
+    # ax.legend(loc="upper left", fontsize=15)
     ax.legend(fontsize=15)
     ax.yaxis.set_minor_locator(ticker.AutoMinorLocator())
     ax.grid(axis="y", linestyle="--", alpha=0.5)
