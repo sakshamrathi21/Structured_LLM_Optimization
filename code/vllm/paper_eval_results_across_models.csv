@@ -11,3 +11,4 @@ vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,3866.15481
 sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,1396.4219943809946,fcfs
 sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,758.6646496835931,lpm
 sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,710.4951916537997,dfs-weight
+vllm,5,None,500,1,5000,lmsys/longchat-13b-16k,200,2500,2500,156.71788820626168,fcfs
