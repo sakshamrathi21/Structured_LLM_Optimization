@@ -24,7 +24,7 @@ from pathlib import Path
 
 CSV_PATH = "/home/saksham/CS496/code/vllm/paper_eval_results.csv"          # path to your CSV file
 
-X_AXIS   = "max_new_tokens"         # column to use as X axis
+X_AXIS   = "families"         # column to use as X axis
                                # e.g. "req/s", "max_batch", "max_new_tokens",
                                #      "num_requests", "families", ...
 
@@ -32,11 +32,11 @@ X_AXIS   = "max_new_tokens"         # column to use as X axis
 # Leave empty [] to use the full DataFrame.
 FILTERS  = [
     # ("engine",   "vllm"),
-    ("families", 5),
     ("sys_prompt_tokens", 5000),
+    ("num_requests", 7500)
 ]
 
-OUTPUT_PATH = "../../results/throughput_vs_max_new_tokens_length_5000_families_5.png"   # where to save the figure
+OUTPUT_PATH = "../../results/throughput_vs_families_length_5000.png"   # where to save the figure
 
 # ─────────────────────────────────────────────
 
