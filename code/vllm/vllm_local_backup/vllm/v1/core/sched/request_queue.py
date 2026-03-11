@@ -736,13 +736,13 @@ class RadixCostRequestQueue_RL(RequestQueue):
             requests_waiting=requests_waiting
         )
 
-        print(f"[RL Decision] batch_size={current_batch_size}, "
-              f"chunks_before={chunks_before}, chunks_after={chunks_after}, "
-              f"requests_waiting={requests_waiting}, decision={'ADD' if decision else 'SKIP'}")
+        # print(f"[RL Decision] batch_size={current_batch_size}, "
+        #       f"chunks_before={chunks_before}, chunks_after={chunks_after}, "
+        #       f"requests_waiting={requests_waiting}, decision={'ADD' if decision else 'SKIP'}")
 
-        if hasattr(self.scheduler, 'epsilon'):
-            print(f"[RL Stats] epsilon={self.scheduler.epsilon:.3f}, "
-                  f"steps={self.scheduler.step_count}")
+        # if hasattr(self.scheduler, 'epsilon'):
+        #     print(f"[RL Stats] epsilon={self.scheduler.epsilon:.3f}, "
+        #           f"steps={self.scheduler.step_count}")
 
         self.decisions_made.append({
             'batch_size': current_batch_size,
@@ -915,6 +915,8 @@ class FamilyLoadRequestQueue(RequestQueue):
     # @log_cycles
     def add_request(self, request: Request) -> None:
         family_id = request.all_token_ids[26]
+        # family id should be hash of the first 50 tokens
+        family_id = hash(tuple(request.all_token_ids[:50]))
         if family_id not in self.family_requests:
             self.family_requests[family_id] = deque()
         self.family_requests[family_id].append(request)
@@ -936,7 +938,8 @@ class FamilyLoadRequestQueue(RequestQueue):
 
     # @log_cycles
     def prepend_request(self, request: Request) -> None:
-        family_id = request.all_token_ids[26]
+        # family_id = request.all_token_ids[26]
+        family_id = hash(tuple(request.all_token_ids[:50]))
         if family_id not in self.family_requests:
             self.family_requests[family_id] = deque()
         self.family_requests[family_id].appendleft(request)
