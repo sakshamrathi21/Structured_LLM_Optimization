@@ -21,9 +21,6 @@ private:
     // requests inserted but not yet activated (waiting)
     std::unordered_set<uint32_t> waiting_requests;
 
-    // keys in the KV cache right now
-    std::unordered_set<uint64_t> working_set;
-
     // ref-count per packed key (level, hash)
     std::unordered_map<uint64_t, uint32_t> hash_ref_counts;
 

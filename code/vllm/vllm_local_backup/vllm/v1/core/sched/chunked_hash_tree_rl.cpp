@@ -1,22 +1,13 @@
 #include "chunked_hash_tree_rl.hpp"
 
-// ---------------------------------------------------------------------------
-// Construction
-// ---------------------------------------------------------------------------
-
 ChunkedHashTree_RL::ChunkedHashTree_RL(uint32_t chunk)
     : chunk_size(chunk), shared_chain_length(0), cache_valid(false)
 {
     request_hashes.reserve(8192);
     hash_to_waiting.reserve(8192);
-    working_set.reserve(4096);
     hash_ref_counts.reserve(8192);
     shared_prefix_chain.reserve(256);
 }
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 uint64_t ChunkedHashTree_RL::pack_key(uint32_t level, uint64_t hash) const
 {
@@ -28,10 +19,6 @@ void ChunkedHashTree_RL::invalidate_cache()
     cache_valid = false;
     cached_best_request.reset();
 }
-
-// ---------------------------------------------------------------------------
-// Shared-prefix chain maintenance  (identical logic to ChunkedHashTree_RL_RL)
-// ---------------------------------------------------------------------------
 
 void ChunkedHashTree_RL::recompute_shared_chain()
 {
@@ -85,14 +72,12 @@ void ChunkedHashTree_RL::update_chain_on_activate(uint32_t request_id)
 
     const auto& hashes = it->second;
 
-    // First active request: the chain IS its hashes
     if (active_requests.size() == 1) {
         shared_prefix_chain = hashes;
         shared_chain_length = (uint32_t)hashes.size();
         return;
     }
 
-    // Intersect with existing chain
     uint32_t new_len = 0;
     for (uint32_t level = 0; level < shared_chain_length && level < hashes.size(); ++level) {
         if (hashes[level] == shared_prefix_chain[level]) {
@@ -119,8 +104,6 @@ void ChunkedHashTree_RL::update_chain_on_finish(uint32_t request_id)
         return;
     }
 
-    // The finished request might have been the shortest/most restrictive.
-    // Try to *extend* the chain among remaining active requests.
     uint32_t max_possible = UINT32_MAX;
     for (auto req_id : active_requests) {
         auto req_it = request_hashes.find(req_id);
@@ -156,11 +139,6 @@ void ChunkedHashTree_RL::update_chain_on_finish(uint32_t request_id)
     }
 }
 
-// ---------------------------------------------------------------------------
-// New cost helpers
-// ---------------------------------------------------------------------------
-
-// How many levels of the shared prefix chain does `request_id` match?
 uint32_t ChunkedHashTree_RL::compute_chain_length_with_request(uint32_t request_id) const
 {
     auto it = request_hashes.find(request_id);
@@ -185,7 +163,6 @@ uint32_t ChunkedHashTree_RL::compute_chain_length_with_request(uint32_t request_
     return match;
 }
 
-// How many *waiting* requests share the hash at `level` in the shared prefix chain?
 uint32_t ChunkedHashTree_RL::count_waiters_at_level(uint32_t level) const
 {
     if (level >= shared_chain_length) return 0;
@@ -203,10 +180,6 @@ uint32_t ChunkedHashTree_RL::count_waiters_at_level(uint32_t level) const
 
     return count;
 }
-
-// ---------------------------------------------------------------------------
-// Core API
-// ---------------------------------------------------------------------------
 
 uint32_t ChunkedHashTree_RL::insert(uint32_t request_id, const std::vector<uint32_t>& tokens)
 {
@@ -228,15 +201,6 @@ uint32_t ChunkedHashTree_RL::insert(uint32_t request_id, const std::vector<uint3
     return (uint32_t)tokens.size();
 }
 
-// ---------------------------------------------------------------------------
-// find_best_request  — the new cost function
-//
-// Walk DOWN the shared prefix chain from the deepest level to 0.
-// At each level, look for any waiting request that has that hash at that level.
-// Return the first one we find, plus waiter count at that level.
-// If nothing matches even at level 0, fall back to any waiting request.
-// ---------------------------------------------------------------------------
-
 std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> ChunkedHashTree_RL::find_best_request()
 {
     if (cache_valid && cached_best_request.has_value()) return cached_best_request.value();
@@ -249,14 +213,12 @@ std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> ChunkedHashTree_RL::find_best
 
     uint32_t chunks_before = shared_chain_length;
 
-    // Walk from deepest shared level down to 0
     for (int32_t level = (int32_t)shared_chain_length - 1; level >= 0; --level) {
         uint64_t key = pack_key((uint32_t)level, shared_prefix_chain[(uint32_t)level]);
 
         auto it = hash_to_waiting.find(key);
         if (it == hash_to_waiting.end()) continue;
 
-        // Pick any waiting (non-active) request at this level
         uint32_t chosen = 0;
         for (auto req_id : it->second) {
             if (!active_requests.count(req_id) && waiting_requests.count(req_id)) {
@@ -267,10 +229,8 @@ std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> ChunkedHashTree_RL::find_best
 
         if (chosen == 0) continue;
 
-        // How long would the chain be after scheduling this request?
         uint32_t chunks_after = compute_chain_length_with_request(chosen);
 
-        // How many other waiters also benefit from this level?
         uint32_t waiters = count_waiters_at_level((uint32_t)level);
 
         cached_best_request = {chosen, chunks_before, chunks_after, waiters};
@@ -278,8 +238,6 @@ std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> ChunkedHashTree_RL::find_best
         return cached_best_request.value();
     }
 
-    // No waiting request shares any level of the shared chain.
-    // Fall back: return any waiting request (0 overlap).
     uint32_t fallback = *waiting_requests.begin();
     uint32_t chunks_after = compute_chain_length_with_request(fallback);
     uint32_t waiters = 0;
@@ -288,10 +246,6 @@ std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> ChunkedHashTree_RL::find_best
     cache_valid = true;
     return cached_best_request.value();
 }
-
-// ---------------------------------------------------------------------------
-// activate_request
-// ---------------------------------------------------------------------------
 
 std::pair<uint32_t, uint32_t> ChunkedHashTree_RL::activate_request(uint32_t request_id)
 {
@@ -308,7 +262,6 @@ std::pair<uint32_t, uint32_t> ChunkedHashTree_RL::activate_request(uint32_t requ
     for (uint32_t level = 0; level < (uint32_t)hashes.size(); ++level) {
         uint64_t key = pack_key(level, hashes[level]);
         if (hash_ref_counts[key]++ == 0) {
-            working_set.insert(key);
             added++;
         }
     }
@@ -318,10 +271,6 @@ std::pair<uint32_t, uint32_t> ChunkedHashTree_RL::activate_request(uint32_t requ
 
     return {added, (uint32_t)hashes.size()};
 }
-
-// ---------------------------------------------------------------------------
-// finish_request
-// ---------------------------------------------------------------------------
 
 std::pair<uint32_t, uint32_t> ChunkedHashTree_RL::finish_request(uint32_t request_id)
 {
@@ -337,7 +286,6 @@ std::pair<uint32_t, uint32_t> ChunkedHashTree_RL::finish_request(uint32_t reques
         uint64_t key = pack_key(level, hashes[level]);
         auto rc_it = hash_ref_counts.find(key);
         if (rc_it != hash_ref_counts.end() && --rc_it->second == 0) {
-            working_set.erase(key);
             hash_ref_counts.erase(rc_it);
             evicted++;
         }
@@ -345,7 +293,6 @@ std::pair<uint32_t, uint32_t> ChunkedHashTree_RL::finish_request(uint32_t reques
 
     update_chain_on_finish(request_id);
 
-    // Clean up mappings
     for (uint32_t level = 0; level < (uint32_t)hashes.size(); ++level) {
         uint64_t key = pack_key(level, hashes[level]);
         auto map_it = hash_to_waiting.find(key);
@@ -362,10 +309,6 @@ std::pair<uint32_t, uint32_t> ChunkedHashTree_RL::finish_request(uint32_t reques
 
     return {evicted, (uint32_t)hashes.size()};
 }
-
-// ---------------------------------------------------------------------------
-// remove  (evict a waiting request before it is ever activated)
-// ---------------------------------------------------------------------------
 
 void ChunkedHashTree_RL::remove(uint32_t request_id)
 {
@@ -389,10 +332,6 @@ void ChunkedHashTree_RL::remove(uint32_t request_id)
 
     invalidate_cache();
 }
-
-// ---------------------------------------------------------------------------
-// compute_hashes
-// ---------------------------------------------------------------------------
 
 std::vector<uint64_t>
 ChunkedHashTree_RL::compute_hashes(const std::vector<uint32_t>& tokens)
