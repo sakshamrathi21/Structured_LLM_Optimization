@@ -207,7 +207,7 @@ def main():
         f"(model_name: {args.model_name}) (policy: {args.policy}) "
         f"(max_new_tokens: {args.max_new_tokens}) "
         f"(num_requests: {args.num_requests}) "
-        f"(num_prompts: {len(prompts)}): {throughput}\n"
+        f"(num_prompts: {len(prompts)}): {throughput*args.max_new_tokens}\n"
     )
 
     if args.write_output:

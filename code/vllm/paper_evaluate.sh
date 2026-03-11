@@ -11,13 +11,19 @@ MAX_NEW_TOKENS=(1 2 5 10 20 50 100 200 300 400 500)
 MODELS=(qwen/qwen2.5-0.5b-instruct meta-llama/Llama-3.1-8B-Instruct lmsys/longchat-13b-16k)
 MODELS=(lmsys/longchat-13b-16k)
 
-VLLM_POLICIES=(fcfs chunked_hash_tree_heuristic family_load)
+VLLM_POLICIES=(fcfs chunked_hash_tree_heuristic chunked_hash_tree_bandit)
 SGLANG_POLICIES=(fcfs lpm dfs-weight)
 
 MIN_REQUESTS=1000
 MAX_REQUESTS=5000
 
-for fam in "${NUM_FAMILIES[@]}"; do
+for req in "${REQ_PER_SEC_S[@]}"; do
+    NUM_REQUESTS=$((req * 500))
+    if [ $NUM_REQUESTS -lt $MIN_REQUESTS ]; then
+        NUM_REQUESTS=$MIN_REQUESTS
+    elif [ $NUM_REQUESTS -gt $MAX_REQUESTS ]; then
+        NUM_REQUESTS=$MAX_REQUESTS
+    fi
 
     # Run VLLM policies
     for policy in "${VLLM_POLICIES[@]}"; do
@@ -25,21 +31,21 @@ for fam in "${NUM_FAMILIES[@]}"; do
             --policy "$policy" \
             --max_batch_size 500 \
             --write_output \
-            --num_requests 7500 \
+            --num_requests "$NUM_REQUESTS" \
             --max_new_tokens 200 \
-            --num_families "$fam" \
-            --sys_prompt_tokens 5000
+            --num_families 5 \
+            --sys_prompt_tokens 5000 --req_per_sec "$req"
     done
 
     # Run SGLang policies
     for policy in "${SGLANG_POLICIES[@]}"; do
         $PY_BIN "$SGLANG_SCRIPT" \
-            --policy "$policy" \
+           --policy "$policy" \
             --max_batch_size 500 \
             --write_output \
-            --num_requests 7500 \
+            --num_requests "$NUM_REQUESTS" \
             --max_new_tokens 200 \
-            --num_families "$fam" \
-            --sys_prompt_tokens 5000
+            --num_families 5 \
+            --sys_prompt_tokens 5000 --req_per_sec "$req"
     done
 done

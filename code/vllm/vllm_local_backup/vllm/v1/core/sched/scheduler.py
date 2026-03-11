@@ -826,6 +826,8 @@ class Scheduler(SchedulerInterface):
             )
             scheduler_output.ec_connector_metadata = ec_meta
 
+        print(f"Scheduler stats; running batch size: {len(self.running)}, current time: {time.time()}")
+
         with record_function_or_nullcontext("schedule: update_after_schedule"):
             self._update_after_schedule(scheduler_output)
         return scheduler_output

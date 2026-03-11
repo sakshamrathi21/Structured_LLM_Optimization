@@ -190,7 +190,7 @@ def main():
     end_time = time.time()
 
     throughput = len(prompts) / (end_time - start_time)
-    print("sglang: Throughput:", throughput, "req/s")
+    print("sglang: Throughput:", throughput*args.max_new_tokens, "toks/s")
 
     if args.write_output:
         with open("paper_eval_results.csv", "a") as f:
