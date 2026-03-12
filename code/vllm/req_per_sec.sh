@@ -14,7 +14,8 @@ MAX_NEW_TOKENS=(1 2 5 10 20 50 100 200 300 400 500)
 MODELS=(qwen/qwen2.5-0.5b-instruct meta-llama/Llama-3.1-8B-Instruct lmsys/longchat-13b-16k)
 MODELS=(lmsys/longchat-13b-16k)
 
-VLLM_POLICIES=(fcfs chunked_hash_tree_heuristic chunked_hash_tree_bandit)
+# VLLM_POLICIES=(fcfs chunked_hash_tree_heuristic chunked_hash_tree_bandit)
+VLLM_POLICIES=(chunked_hash_tree_bandit)
 SGLANG_POLICIES=(fcfs lpm dfs-weight)
 
 MIN_REQUESTS=1000
@@ -48,20 +49,20 @@ for req in "${REQ_PER_SEC_S[@]}"; do
             > "$LOG_FILE" 2>&1
     done
 
-    # Run SGLang policies
-    for policy in "${SGLANG_POLICIES[@]}"; do
-        source ~/.bashrc
-        LOG_FILE="${LOG_DIR}/sglang_${policy}_rps${req}_req${NUM_REQUESTS}_tok200_fam5_sys5000_${TIMESTAMP}.log"
+    # # Run SGLang policies
+    # for policy in "${SGLANG_POLICIES[@]}"; do
+    #     source ~/.bashrc
+    #     LOG_FILE="${LOG_DIR}/sglang_${policy}_rps${req}_req${NUM_REQUESTS}_tok200_fam5_sys5000_${TIMESTAMP}.log"
 
-        $PY_BIN "$SGLANG_SCRIPT" \
-            --policy "$policy" \
-            --max_batch_size 500 \
-            --write_output \
-            --num_requests "$NUM_REQUESTS" \
-            --max_new_tokens 200 \
-            --num_families 5 \
-            --sys_prompt_tokens 5000 \
-            --req_per_sec "$req" \
-            > "$LOG_FILE" 2>&1
-    done
+    #     $PY_BIN "$SGLANG_SCRIPT" \
+    #         --policy "$policy" \
+    #         --max_batch_size 500 \
+    #         --write_output \
+    #         --num_requests "$NUM_REQUESTS" \
+    #         --max_new_tokens 200 \
+    #         --num_families 5 \
+    #         --sys_prompt_tokens 5000 \
+    #         --req_per_sec "$req" \
+    #         > "$LOG_FILE" 2>&1
+    # done
 done
