@@ -125,12 +125,12 @@ def make_plot(metric_key, ylabel, title, outpath):
             ax.plot(xs, ys, marker="o", linewidth=2.2, markersize=6,
                     color=color, label=label)
 
-    ax.set_xlabel("Req / sec", fontsize=15)
-    ax.set_ylabel(ylabel, fontsize=15)
-    ax.set_xticklabels(ax.get_xticks(), fontsize=15)
+    ax.set_xlabel("Req / sec", fontsize=18)
+    ax.set_ylabel(ylabel, fontsize=20)
+    ax.set_xticklabels(ax.get_xticks(), fontsize=18)
 
     # truncate the y-axis tick labels to 4 decimal places for better visualization
-    ax.set_yticklabels([f"{y:.2f}" for y in ax.get_yticks()], fontsize=15)
+    ax.set_yticklabels([f"{y:.2f}" for y in ax.get_yticks()], fontsize=18)
     if metric_key == "throughput":
         ax.legend(fontsize=15, framealpha=0.3,
                 loc="upper left", ncol=1)
