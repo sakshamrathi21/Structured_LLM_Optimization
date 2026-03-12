@@ -736,9 +736,9 @@ class RadixCostRequestQueue_RL(RequestQueue):
             requests_waiting=requests_waiting
         )
 
-        # print(f"[RL Decision] batch_size={current_batch_size}, "
-        #       f"chunks_before={chunks_before}, chunks_after={chunks_after}, "
-        #       f"requests_waiting={requests_waiting}, decision={'ADD' if decision else 'SKIP'}")
+        print(f"[RL Decision] batch_size={current_batch_size}, "
+              f"chunks_before={chunks_before}, chunks_after={chunks_after}, "
+              f"requests_waiting={requests_waiting}, decision={'ADD' if decision else 'SKIP'}")
 
         # if hasattr(self.scheduler, 'epsilon'):
         #     print(f"[RL Stats] epsilon={self.scheduler.epsilon:.3f}, "

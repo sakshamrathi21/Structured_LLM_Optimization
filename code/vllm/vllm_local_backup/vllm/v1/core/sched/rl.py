@@ -230,7 +230,7 @@ class ContextualBanditScheduler:
         
         exploration_bonus = self.c * np.sqrt(np.log(self.total_steps + 1) / count)
 
-        # print(f"State: {state}, Action: {'Add' if action else 'Skip'}, Count: {count}, Avg Reward: {avg_reward:.4f}, Exploration Bonus: {exploration_bonus:.4f}, UCB Score: {avg_reward + exploration_bonus:.4f}")
+        print(f"State: {state}, Action: {'Add' if action else 'Skip'}, Count: {count}, Avg Reward: {avg_reward:.4f}, Exploration Bonus: {exploration_bonus:.4f}, UCB Score: {avg_reward + exploration_bonus:.4f}")
         
         return avg_reward + exploration_bonus
     
