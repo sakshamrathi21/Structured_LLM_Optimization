@@ -377,3 +377,9 @@ sglang,20,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,166.4
 vllm,50,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,590.1110582887595,fcfs
 vllm,50,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,3023.414308910852,chunked_hash_tree_heuristic
 vllm,50,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,3031.6662876021283,chunked_hash_tree_bandit
+sglang,50,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,142.47673186717788,fcfs
+sglang,50,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,364.9457685014504,lpm
+sglang,50,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,378.27282951737584,dfs-weight
+vllm,100,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,280.3840392102699,fcfs
+vllm,100,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,2348.9325832140235,chunked_hash_tree_heuristic
+vllm,100,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,2361.755855370286,chunked_hash_tree_bandit
