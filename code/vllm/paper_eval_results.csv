@@ -425,3 +425,5 @@ sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,50,5000,5000,1167.5165
 vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,100,5000,5000,859.9121708938455,fcfs
 vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,100,5000,5000,3427.910478006806,chunked_hash_tree_heuristic
 vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,100,5000,5000,3369.2608514190765,chunked_hash_tree_bandit
+sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,100,5000,5000,1597.7657780136262,fcfs
+sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,100,5000,5000,962.0889401622239,lpm
