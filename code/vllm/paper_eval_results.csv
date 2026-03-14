@@ -383,3 +383,6 @@ sglang,50,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,378.2
 vllm,100,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,280.3840392102699,fcfs
 vllm,100,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,2348.9325832140235,chunked_hash_tree_heuristic
 vllm,100,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,2361.755855370286,chunked_hash_tree_bandit
+sglang,100,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,135.0675785877274,fcfs
+sglang,100,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,327.11208977590735,lpm
+sglang,100,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,349.4137621123067,dfs-weight
