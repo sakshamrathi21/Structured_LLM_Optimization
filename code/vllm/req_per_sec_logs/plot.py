@@ -102,7 +102,7 @@ PALETTE = [
     "#F4A261", "#8338EC", "#06D6A0", "#FB5607",
     "#3A86FF", "#FF006E",
 ]
-
+all_rps = sorted({rps for policy in data.values() for rps in policy})
 def make_plot(metric_key, ylabel, title, outpath):
     fig, ax = plt.subplots(figsize=(10, 6))
 

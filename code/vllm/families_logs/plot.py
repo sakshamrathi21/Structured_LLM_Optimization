@@ -102,6 +102,8 @@ PALETTE = [
     "#3A86FF", "#FF006E",
 ]
 
+all_fams = sorted({rps for policy in data for rps in data[policy]})
+
 def make_plot(metric_key, ylabel, title, outpath):
     fig, ax = plt.subplots(figsize=(10, 6))
 
@@ -112,32 +114,38 @@ def make_plot(metric_key, ylabel, title, outpath):
         color = next(color_cycle)
         rps_vals = sorted(data[label].keys())
         xs, ys = [], []
+
         for rps in rps_vals:
             v = data[label][rps].get(metric_key)
             if v is not None:
                 xs.append(rps)
-                # truncate the v value to 4 decimal places for better visualization
                 if isinstance(v, float):
                     v = round(v, 4)
                 ys.append(v)
+
         if xs:
             ax.plot(xs, ys, marker="o", linewidth=2.2, markersize=6,
                     color=color, label=label)
 
+    # automatically scale x axis
+    ax.set_xscale("log")
+    ax.set_xticks(all_fams)
+    ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
+
     ax.set_xlabel("Number of Prefix Groups", fontsize=18)
     ax.set_ylabel(ylabel, fontsize=20)
-    ax.set_xticklabels(ax.get_xticks(), fontsize=18)
 
-    # truncate the y-axis tick labels to 4 decimal places for better visualization
-    ax.set_yticklabels([f"{y:.2f}" for y in ax.get_yticks()], fontsize=18)
+    ax.tick_params(axis="both", labelsize=18)
+
     if metric_key == "throughput":
-        ax.legend(fontsize=15, framealpha=0.3, ncol=1)
+        ax.legend(fontsize=15, framealpha=0.3)
+
     ax.grid(True, linewidth=0.7, linestyle="--")
 
     plt.tight_layout()
-    fig.savefig(outpath, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
+    fig.savefig(outpath, dpi=150, bbox_inches="tight",
+                facecolor=fig.get_facecolor())
     plt.close(fig)
-    print(f"Saved: {outpath}")
 
 # ── Generate plots ──────────────────────────────────────────────────────────
 OUT = os.path.expanduser("../../../results/families_plots")
@@ -146,16 +154,16 @@ os.makedirs(OUT, exist_ok=True)
 make_plot("throughput",
           "Throughput (toks/s)",
           "Throughput vs Request Rate",
-          os.path.join(OUT, "throughput_vs_rps.png"))
+          os.path.join(OUT, "throughput_vs_fam.png"))
 
 make_plot("avg_batch",
           "Avg Running Batch Size",
           "Average Running Batch Size vs Request Rate",
-          os.path.join(OUT, "avg_batch_vs_rps.png"))
+          os.path.join(OUT, "avg_batch_vs_fam.png"))
 
 make_plot("avg_diff",
           "Time Between Tokens",
           "Average Consecutive Scheduler Timestamp Diff vs Request Rate",
-          os.path.join(OUT, "avg_timediff_vs_rps.png"))
+          os.path.join(OUT, "avg_timediff_vs_fam.png"))
 
 print("\nDone! Plots written to:", OUT)
