@@ -126,11 +126,13 @@ def make_plot(metric_key, ylabel, title, outpath):
         ax.plot(xs, ys, marker="o", linewidth=2.2,
                 markersize=6, color=color, label=label)
 
+    ax.set_xscale("log")
     ax.set_xlabel("Number of Decode Tokens", fontsize=18)
     ax.set_ylabel(ylabel, fontsize=20)
 
     # dynamic ticks
     ax.set_xticks(all_tokens)
+    ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
 
     # proper tick formatting
     ax.tick_params(axis="both", labelsize=18)
