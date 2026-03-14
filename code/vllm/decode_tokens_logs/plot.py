@@ -105,7 +105,7 @@ PALETTE = [
 all_tokens = sorted({tok for policy in data.values() for tok in policy})
 
 def make_plot(metric_key, ylabel, title, outpath):
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(12, 6))
 
     color_cycle = iter(PALETTE)
     policies = sorted(data.keys())
@@ -132,6 +132,7 @@ def make_plot(metric_key, ylabel, title, outpath):
 
     # dynamic ticks
     ax.set_xticks(all_tokens)
+    ax.set_xticklabels(all_tokens, rotation=30)
     ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
 
     # proper tick formatting
