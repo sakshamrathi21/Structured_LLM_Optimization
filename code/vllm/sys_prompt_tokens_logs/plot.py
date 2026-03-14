@@ -159,16 +159,16 @@ os.makedirs(OUT, exist_ok=True)
 make_plot("throughput",
           "Throughput (toks/s)",
           "Throughput vs Request Rate",
-          os.path.join(OUT, "throughput_vs_tok.png"))
+          os.path.join(OUT, "throughput_vs_sys_prompt_tokens.png"))
 
 make_plot("avg_batch",
           "Avg Running Batch Size",
           "Average Running Batch Size vs Request Rate",
-          os.path.join(OUT, "avg_batch_vs_tok.png"))
+          os.path.join(OUT, "avg_batch_vs_sys_prompt_tokens.png"))
 
 make_plot("avg_diff",
           "Time Between Tokens",
           "Average Consecutive Scheduler Timestamp Diff vs Request Rate",
-          os.path.join(OUT, "avg_timediff_vs_tok.png"))
+          os.path.join(OUT, "avg_timediff_vs_sys_prompt_tokens.png"))
 
 print("\nDone! Plots written to:", OUT)
