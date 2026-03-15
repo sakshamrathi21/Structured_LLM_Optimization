@@ -18,26 +18,26 @@
 \input{abstract}
  
 
-\maketitle % should come after the abstract
+\maketitle
  
 \textcolor{red}{
 \textbf{Current organization of the paper:}
 \begin{itemize}
     \item \textbf{Title} - the following things should come up in the title in some form - homogenity, LLM serving, shared prefix workloads, chunked hash tree, RL, feather.
-    \item \textbf{Abstract} - highlight about LLM inference, key challenges, ideas, along with numbers of throughput improvements
+    \item \textbf{Abstract} - highlight about LLM inference and shared prefix workloads, key challenges, ideas, along with numbers of throughput improvements
     \item \textbf{Introduction}
     \item \textbf{Background}
-    \item \textbf{Motivation} - actual dram read throughput numbers
+    \item \textbf{Motivation} - if possible, add actual dram read throughput numbers
     \item \textbf{Design and Implementation} 
-    \item \textbf{Evaluation} - \sout{details about the experimental setup, such as workloads picked, average sequence lengths, poisson process, baselines to compare with, metrics chosen.} Then final results on all the metrics - throughput and different types of latencies (exclude TTFT, because not relevant). after this observations about the results (why and in what all sweet zones we are much much better). Important - present DRAM related numbers for naive vllm and after we did our changes. Can also present average batch sizes, for example a homo batch of 25 performs better than a hetero batch of size 400. Also highlight stuff related to kv cache eviction, which is already done in batchllm, for example. run on other gpus and add results in appendix if lack of space. also for different models to compare stuff.  comparison when we remove some kind of component from our approach? for example, what if we use token radix tree instead of chunked hash tree, can present cycles taken by individual functions, along with throughput improvements. What if we don't stop the batch at the right time - low workload, we will have hetero batches, which will perform worse. What if we don't have an RL model - we are not falling back to fcfs, in low request rate settings, our batch sizes would be much much smaller, and hence throughput might be slightly lower. 
-    \item \textbf{Conclusions} - what are the future steps? 
-    \item \textbf{Appendix} - can move unncecessary algorithms, family load request queue as the theoretical baseline which helped us improve? Any kind of not-so-important results.
+    \item \textbf{Evaluation} - final results on all the metrics - throughput and different types of latencies. after this, observations about the results (why and in what all sweet zones we are much much better). Important - present DRAM related numbers for naive vllm and after we did our changes. Present average batch size numbers too. Also highlight stuff related to kv cache eviction, which is already done in batchllm, for example. run on other gpus and add results in appendix if lack of space. compare with PAT on a cloud GPU. also for different models to compare stuff.  comparison when we remove some kind of component from our approach? for example, what if we use token radix tree instead of chunked hash tree, can present cycles taken by individual functions, along with throughput improvements. What if we don't stop the batch at the right time - low workload, we will have hetero batches, which will perform worse. What if we don't have an RL model - we are not falling back to fcfs, in low request rate settings, our batch sizes would be much much smaller, and hence throughput might be slightly lower (basically both micro-benchmarks and ablation studies). 
+    \item \textbf{Conclusions} - brief summary of the insights, design and results achieved. what are the future steps in these directions? 
+    \item \textbf{Appendix} - can move unncecessary algorithms, family load request queue as the theoretical baseline which helped us improve? Any kind of not-so-important results. f1-f2 heatmap plots.
 \end{itemize}
 }
 
 \textcolor[RGB]{128,0,128}{Rough proposed page limits after shrinking for the final draft:
 \begin{itemize}
-    \item Abstract and Intro: 1.5 pages, individual distribution: ((0.3-0.4), (1.1,1.2))
+    \item Abstract and Intro: 1.5 pages
     \item Background: 1 page
     \item Motivation: 2.5 - 3 pages
     \item Design and Implementation: 2.5 - 3 pages
@@ -58,12 +58,8 @@
 
 \input{conclusion}
 
-
-
-% use the ACM bibliography style
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
-
 
 \input{appendix}
 
