@@ -7,14 +7,14 @@ PY_BIN="/home/saksham/CS496/code/vllm/.venv/bin/python"
 LOG_DIR="sys_prompt_tokens_logs"
 mkdir -p "$LOG_DIR"
 
-LEN_FACTOR=(100 200 500 1000 2000 3000 4000 5000 10000)
+LEN_FACTOR=(100 200 500 1000 2000)
 REQ_PER_SEC_S=(1 2 5 10 20 50 75 100)
 NUM_FAMILIES=(50 100)
 MAX_NEW_TOKENS=(1 2 5 10 20 50 100 200 300 400 500)
 MODELS=(qwen/qwen2.5-0.5b-instruct meta-llama/Llama-3.1-8B-Instruct lmsys/longchat-13b-16k)
 
-VLLM_POLICIES=(fcfs chunked_hash_tree_heuristic chunked_hash_tree_bandit)
-SGLANG_POLICIES=(fcfs lpm dfs-weight)
+VLLM_POLICIES=(chunked_hash_tree_heuristic chunked_hash_tree_bandit)
+SGLANG_POLICIES=()
 
 MIN_REQUESTS=1000
 MAX_REQUESTS=10000
