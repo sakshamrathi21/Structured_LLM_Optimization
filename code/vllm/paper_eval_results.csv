@@ -499,3 +499,9 @@ vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,3650.46108
 sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,1423.7656560884898,fcfs
 sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,702.0258321355208,lpm
 sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,718.87376493312,dfs-weight
+vllm,5,None,500,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,515.5830157200508,fcfs
+vllm,5,None,500,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,3161.93579038244,chunked_hash_tree_heuristic
+vllm,5,None,500,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,2868.699842843097,chunked_hash_tree_bandit
+sglang,5,None,500,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,124.19399407605458,fcfs
+sglang,5,None,500,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,385.10990381936654,lpm
+sglang,5,None,500,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,303.66840260124565,dfs-weight
