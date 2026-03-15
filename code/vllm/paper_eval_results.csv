@@ -520,3 +520,11 @@ vllm,5,None,500,1,5000,qwen/qwen2.5-0.5b-instruct,200,5000,5000,13505.8579377079
 vllm,5,None,500,1,5000,qwen/qwen2.5-0.5b-instruct,200,5000,5000,13746.331291767638,chunked_hash_tree_bandit
 sglang,5,None,500,1,5000,qwen/qwen2.5-0.5b-instruct,200,5000,5000,5279.872190331433,fcfs
 sglang,5,None,500,1,5000,qwen/qwen2.5-0.5b-instruct,200,5000,5000,651.667223209283,lpm
+sglang,5,None,500,1,5000,qwen/qwen2.5-0.5b-instruct,200,5000,5000,552.2329920717776,dfs-weight
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,937.4818884541336,fcfs
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,3926.919736683332,chunked_hash_tree_heuristic
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,3866.330858841848,chunked_hash_tree_bandit
+sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,1416.6823420123214,fcfs
+sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,742.4675851557187,lpm
+sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,709.9441204824088,dfs-weight
+vllm,5,None,500,1,5000,lmsys/longchat-13b-16k,200,5000,5000,155.03877097974004,fcfs
