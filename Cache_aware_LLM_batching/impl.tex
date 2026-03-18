@@ -10,16 +10,14 @@
 
 As discussed in \S\ref{sec:motivation}, the performance of batched inference is governed not just by how many requests are executed together, but by a more subtle factor: \emph{how much prefix they share}. When requests in a batch follow a common prefix, their KV-cache accesses become highly sequential, improving both temporal and spatial locality and enabling the hardware prefetcher to better utilize memory bandwidth. In contrast, even small deviations in prefix alignment can quickly fragment these access patterns, leading to degraded throughput.
 
-This observation suggests that \emph{the length of the shared prefix across all active requests} is a perfect metric for system performance. Longer shared prefixes directly translate into higher KV-cache reuse and more efficient memory access. However, this metric ineracts in a non-trivial way with batch size: larger batches improve GPU utilization, but often reduce prefix alignment. 
+This observation suggests that \emph{the length of the shared prefix across all active requests} is a perfect metric for system performance. Longer shared prefixes directly translate into higher KV-cache reuse and more efficient memory access. However, this metric interacts in a non-trivial way with batch size: larger batches improve GPU utilization, but often reduce prefix alignment. 
 
 \subsection{Challenges and Key Ideas}
 \label{sec:challenges_key_ideas}
 \paragraph{Challenge 1: When to stop growing the batch?}
 A natural strategy for improving throughput is to increase batch size. However, larger batches tend to include more heterogeneous requests, which reduce the shared prefix length and hurts memory locality. On the other hand, very small batches preserve strong prefix alignment but underutilize the GPU.
 
-As described in \S\ref{sec:motivation}, we observe that moderately sized, highly homogeneous batches often outperform larger heterogeneous ones. The key question then becomes: what is the optimal batch size? More precisely, when should the scheduler stop adding requests to a batch?
-
-The answer depends on both the hardware (e.g., compute vs.\ memory balance) and the workload (e.g., prompt similarity), making any fixed heuristic inherently brittle.
+As described in \S\ref{sec:motivation}, moderately sized, highly homogeneous batches often outperform larger heterogeneous ones. The key question then becomes: what is the optimal batch size? More precisely, when should the scheduler stop adding requests to a batch? The answer depends on both the hardware (e.g., compute vs. memory balance) and the workload (e.g., prompt similarity), making any fixed heuristic inherently brittle.
 
 \paragraph{Key Idea 1: Learn the stopping decision via RL.}
 We model batch construction as a sequential decision process and use reinforcement learning (RL) to learn when to stop. At each step, the scheduler considers adding a new request and observes: (batch size, shared prefix length, prefix after addition, future-compatible requests).
@@ -185,6 +183,11 @@ Once the best candidate $r^*$ is identified, we compute three statistics to info
 The $\mathit{peers}$ count captures an amortization argument. If admitting $r^*$ shrinks the tip by $\Delta = \ell^*_{\mathit{before}} - \ell^*_{\mathit{after}} > 0$ levels, that is a one-time locality cost. But if $\mathit{peers} = k$ other waiting requests already share a prefix of depth $\ell^*_{\mathit{after}}$, those $k$ requests can be admitted immediately after at zero further tip cost — so the cost $\Delta$ is amortized over $k + 1$ admissions. $\textsc{FindBest}$ surfaces this trade-off for free, leaving the admission policy a single focused question: is this cost worth it right now? How different policies answer that question is the subject of \S\ref{sec:batching_rl}.
 
 The result is cached and reused on repeated calls until the working set or waiting queue changes, avoiding redundant heap traversals.
+
+An intuitive alternative to using the missing count is to simply select a waiting request that matches the current shared prefix tip $(\ell^*, h^*)$. The rationale is to maintain the current tip depth and prevent the shared chain from shrinking. However, this approach introduces a subtle flaw regarding future extension potential, because the tip is inherently bottlenecked by the most divergent active request. Consider a scenario where Level 0 is shared by all requests, but Level 1 splits into three distinct branches: one for $R_1$, one shared by $R_2$ and $R_3$, and a third for $R_4$. If our active batch contains $R_1$ and $R_2$, the shared prefix tip is restricted to Level 0. If we select the next request based solely on this current tip, $R_3$ and $R_4$ appear equally viable. Should the scheduler arbitrarily admit $R_4$, the tip remains at Level 0, but crucially, when $R_1$ finishes, the remaining requests ($R_2$ and $R_4$) sit on divergent branches, leaving the tip permanently stuck.
+
+Our Chunked Hash Tree avoids this trap entirely by evaluating candidates against the complete \texttt{working\_set} using the missing count $m_r$. Rather than anchoring to a bottlenecked tip, the working set tracks every prefix chunk kept alive by any active request. In the previous example, because $R_2$ is active, its Level 1 chunk is already present in the working set. Consequently, $R_3$ requires fewer missing chunks than $R_4$, resulting in $m_{R_3} < m_{R_4}$. By selecting $R_3$, the immediate tip remains bottlenecked at Level 0, but the scheduler implicitly preserves future overlap. Once $R_1$ finishes and is removed via \textsc{Finish}, the forward scan evaluates the remaining batch $\{R_2, R_3\}$ and successfully extends the shared prefix tip to Level 1, automatically reclaiming deeper locality benefits.
+
 
 Figure~\ref{fig:chunked_hash_tree_workflow} shows a worked example of insertion,
 activation, and best-request selection. Figure~\ref{fig:shared_prefix_chain_workflow} shows how the shared prefix chain shrinks and extends upon activation and completion of requests.
