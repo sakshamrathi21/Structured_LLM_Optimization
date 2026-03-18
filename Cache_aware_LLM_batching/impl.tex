@@ -10,21 +10,21 @@
 
 As discussed in \S\ref{sec:motivation}, the performance of batched inference is governed not just by how many requests are executed together, but by a more subtle factor: \emph{how much prefix they share}. When requests in a batch follow a common prefix, their KV-cache accesses become highly sequential, improving both temporal and spatial locality and enabling the hardware prefetcher to better utilize memory bandwidth. In contrast, even small deviations in prefix alignment can quickly fragment these access patterns, leading to degraded throughput.
 
-This observation suggests that \emph{the length of the shared prefix across all active requests} is a perfect metric for system performance. Longer shared prefixes directly translate into higher KV-cache reuse and more efficient memory access. However, this metric interacts in a non-trivial way with batch size: larger batches improve GPU utilization, but often reduce prefix alignment. 
+This observation suggests that \emph{the length of the shared prefix across all active requests} is a perfect metric for system performance. Longer shared prefixes directly translate into higher KV-cache reuse and more efficient memory access. However, this metric interacts in a non-trivial way with batch size: larger batches improve GPU utilization but often reduce prefix alignment. 
 
 \subsection{Challenges and Key Ideas}
 \label{sec:challenges_key_ideas}
 \paragraph{Challenge 1: When to stop growing the batch?}
-A natural strategy for improving throughput is to increase batch size. However, larger batches tend to include more heterogeneous requests, which reduce the shared prefix length and hurts memory locality. On the other hand, very small batches preserve strong prefix alignment but underutilize the GPU.
+A natural strategy for improving throughput is to increase batch size. However, larger batches tend to include more heterogeneous requests, which reduces the shared prefix length and hurts memory locality. On the other hand, very small batches preserve strong prefix alignment but underutilize the GPU.
 
 As described in \S\ref{sec:motivation}, moderately sized, highly homogeneous batches often outperform larger heterogeneous ones. The key question then becomes: what is the optimal batch size? More precisely, when should the scheduler stop adding requests to a batch? The answer depends on both the hardware (e.g., compute vs. memory balance) and the workload (e.g., prompt similarity), making any fixed heuristic inherently brittle.
 
 \paragraph{Key Idea 1: Learn the stopping decision via RL.}
-We model batch construction as a sequential decision process and use reinforcement learning (RL) to learn when to stop. At each step, the scheduler considers adding a new request and observes: (batch size, shared prefix length, prefix after addition, future-compatible requests).
+We model batch construction as a sequential decision process and use reinforcement learning (RL) to learn when to stop. At each step, the scheduler considers adding a new request and observes (batch size, shared prefix length, prefix after addition, future-compatible requests).
 
-There are two signals which are particularly important: (i) \textbf{Shared prefix length:} the number of tokens common across all active requests. This directly captures temporal and spatial locality. (ii) \textbf{Future compatibility:} the number of waiting requests that share the same prefix up to the new level. This indicates how many future additions can be made at \emph{zero additional locality cost}.
+There are two signals that are particularly important: (i) \textbf{Shared prefix length:} the number of tokens common across all active requests. This directly captures temporal and spatial locality. (ii) \textbf{Future compatibility:} the number of waiting requests that share the same prefix up to the new level. This indicates how many future additions can be made at \emph{zero additional locality cost}.
 
-To build intuition, consider the following example. Suppose the current batch shares a prefix of length 10. A candidate request would reduce this to 8 (a loss of 2 tokens), which appears undesirable. Howeover, if there are 5 additional waiting requests that also match this shorter prefix, then this one-time loss can be amortized over multiple future additions. In such cases, accepting a small immediate loss can lead to better overall throughput.
+To build intuition, consider the following example. Suppose the current batch shares a prefix of length 10. A candidate request would reduce this to 8 (a loss of 2 tokens), which appears undesirable. However, if there are 5 additional waiting requests that also match this shorter prefix, then this one-time loss can be amortized over multiple future additions. In such cases, accepting a small immediate loss can lead to better overall throughput.
 
 The RL policy learns to balance exactly these trade-offs, optimizing directly for decode throughput and adapting automatically to hardware and workload characteristics.
 
@@ -116,7 +116,7 @@ The following subsections describe the prefix-overlap data structure in detail, 
 \label{fig:chunked_hash_tree_workflow}
 \end{figure*}
 
-Before diving into the operations of the Chunked Hash Tree (CHT), we must define how requests are represented and token sequences are converted into a compact representation that captures the prefix sharing structure. As shown in Figure~\ref{fig:chunked_hash_tree_prefix_representation}, given a request with a token sequence $T = (t_1, t_2, \dots, t_N)$, we partition $T$ into non-overlapping chunks of size $K$ (e.g., $K = 50$). For each chunk boundary $\ell = 1, \dots C$ where $C = \lceil N/K \rceil$, we compute a \emph{cumulative prefix hash} at each boundary\\ $h_\ell = \mathrm{hash}(t_1, t_2, \dots, t_{\min(\ell K,\, N}), \quad \ell = 1, \dots, C$.
+Before diving into the operations of the Chunked Hash Tree (CHT), we must define how requests are represented and how token sequences are converted into a compact representation that captures the prefix sharing structure. As shown in Figure~\ref{fig:chunked_hash_tree_prefix_representation}, given a request with a token sequence $T = (t_1, t_2, \dots, t_N)$, we partition $T$ into non-overlapping chunks of size $K$ (e.g., $K = 50$). For each chunk boundary $\ell = 1, \dots C$ where $C = \lceil N/K \rceil$, we compute a \emph{cumulative prefix hash} at each boundary\\ $h_\ell = \mathrm{hash}(t_1, t_2, \dots, t_{\min(\ell K,\, N}), \quad \ell = 1, \dots, C$.
 
 Because the hash is cumulative, two requests share the same $h_\ell$ if and only if their first $\ell K$ tokens are identical, which is precisely the condition under which their KV-cache prefixes can be shared. Each request $r$ is therefore represented as an ordered hash vector $H_r = (h_1^r, h_2^r, \dots, h_C^r)$. We use an incremental xxHash-64 state so that each token is processed exactly once, making the total cost $O(N)$ regardless of the number of chunked boundaries.
 
@@ -135,7 +135,7 @@ We begin by computing the cumulative prefix-hash vector
 \[
 H_r = (h_1^r, \dots, h_C^r) \gets \textsc{ComputeHashes}(T, K),
 \]
-and storing it in \texttt{request\_hashes}, a map from request IDs to their hash vectors.
+and storing it in \texttt{request\_hashes}, a map of request IDs to their hash vectors.
 
 At the same time, we maintain a \emph{reverse index} \texttt{waiting}, which maps each hash $h$ to the set of \emph{waiting} requests that contain $h$. As we iterate over $H_r$, we insert $r$ into \texttt{waiting[$h$]} for every $h \in H_r$.
 
@@ -167,11 +167,6 @@ For the shared prefix tip, after removing $r$ the remaining active requests may 
 
 Both updates are performed in a single forward pass over $H_r$ for the working set, followed by a short forward scan for the tip extension. The tip scan begins from $\ell^* + 1$ and consults the working set directly: a level $\ell$ can extend the tip only if $(\ell, h)$ is in the working set with ref count equal to $|\mathit{active}|$, meaning every remaining active request carries that hash.
 
-
-
-
-
-
 \subsubsection*{Finding the Best Request}
 
 The goal of $\textsc{FindBest}$ is to identify the waiting request that would best complement the current active batch. The key insight is that the best candidate is the waiting request whose prefix chunks are \emph{most covered} by the current active batch, i.e., the one with the smallest missing count $m_r$.
@@ -188,10 +183,8 @@ An intuitive alternative to using the missing count is to simply select a waitin
 
 Our Chunked Hash Tree avoids this trap entirely by evaluating candidates against the complete \texttt{working\_set} using the missing count $m_r$. Rather than anchoring to a bottlenecked tip, the working set tracks every prefix chunk kept alive by any active request. In the previous example, because $R_2$ is active, its Level 1 chunk is already present in the working set. Consequently, $R_3$ requires fewer missing chunks than $R_4$, resulting in $m_{R_3} < m_{R_4}$. By selecting $R_3$, the immediate tip remains bottlenecked at Level 0, but the scheduler implicitly preserves future overlap. Once $R_1$ finishes and is removed via \textsc{Finish}, the forward scan evaluates the remaining batch $\{R_2, R_3\}$ and successfully extends the shared prefix tip to Level 1, automatically reclaiming deeper locality benefits.
 
-
 Figure~\ref{fig:chunked_hash_tree_workflow} shows a worked example of insertion,
 activation, and best-request selection. Figure~\ref{fig:shared_prefix_chain_workflow} shows how the shared prefix chain shrinks and extends upon activation and completion of requests.
-
 
 \begin{figure*}[t]
 \centering
@@ -226,8 +219,6 @@ activation, and best-request selection. Figure~\ref{fig:shared_prefix_chain_work
 \caption{An example of shared prefix chain workflow. We initially have just a single active request $R_1$ with four prefix hash chunks, so the shared prefix chain is also the same as its hash vector, as shown in figure~\ref{fig:shared_prefix_chain_step1}. We then activate $R_2$, which does not have the last level common with $R_1$, and thus the chain size reduces by one~\ref{fig:shared_prefix_chain_step2}. Similarly, as shown in~\ref{fig:shared_prefix_chain_step3}, activation of another request $R_3$ leads to further reduction in the chain size. Now, $R_3$ finishes its execution first, so we remove it from the set of active requests, and therefore this gives an opportunity to extend the chain~\ref{fig:shared_prefix_chain_step4}.}
 \label{fig:shared_prefix_chain_workflow}
 \end{figure*}
-
-
 
 \subsubsection*{Optimizations}
 
@@ -335,11 +326,6 @@ Algorithm~\ref{alg:rl_batch} shows how all three policies fit into the same batc
 \State \Return $B$
 \end{algorithmic}
 \end{algorithm}
-
-
-
-
-
 
 \subsection{Integration with vLLM and SGLang}
 We integrate our scheduler as a lightweight layer on top of both vLLM's~\cite{kwon2023efficient} and SGLang's~\cite{zheng2024sglangefficientexecutionstructured} existing request management pipeline. The Chunked Hash Tree (implemented in C++), shared prefix chain tracking, and reinforcement learning policies operate entirely at the scheduler level.
