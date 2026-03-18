@@ -102,8 +102,6 @@ Before a request can be inserted into the scheduler, its token sequence must be 
 
 Because the hash is cumulative, two requests share the same $h_\ell$ if and only if their first $\ell K$ tokens are identical, which is precisely the condition under which their KV-cache prefixes can be shared. Each request $r$ is therefore represented as an ordered hash vector $H_r = (h_1^r, h_2^r, \dots, h_C^r)$.
 
-Hash levels are addressed by a packed 64-bit $\mathrm{key}(\ell, h)$, which encodes both the chunk level and the hash value in a single integer, enabling $O(1)$ hash-table operations without pointer traversal.
-
 Algorithm~\ref{alg:compute_hashes} details the hash computation. We use an incremental xxHash-64 state so that each token is processed exactly once, making the total cost $O(N)$ regardless of the number of chunked boundaries.
 
 \begin{algorithm}[H]
@@ -136,21 +134,21 @@ The CHT maintains the following components that together capture the full schedu
 
 \paragraph{Hash vectors.} A map from request ID to its cumulative prefix-hash vector $H_r = (h_1^r, \dots, h_C^r)$ is stored for every active and waiting request.
 
-\paragraph{Reference counts.} \texttt{ref} maps each $\mathrm{key}(\ell, h)$ to the number of currently \emph{active} requests that contain that key. 
+\paragraph{Reference counts.} \texttt{ref} maps each $h$ to the number of currently \emph{active} requests that contain that hash in their hash vectors. 
 
-\paragraph{Working set.} \texttt{working\_set} is the set of packed keys $\mathrm{key}(\ell, h)$ that belong to at least one \emph{active} request. A key is in the working set if and only if its reference count is greater than zero.
+\paragraph{Working set.} \texttt{working\_set} is the set of hashes that belong to at least one \emph{active} request. A hash is in the working set if and only if its reference count is greater than zero.
 
-\paragraph{Missing cache.} \texttt{miss} maps each \emph{waiting} request $r$ to an integer $m_r$, defined as the number of keys in $H_r$ that are \emph{not} currently in the working set. Intuitively, $m_r$ counts how many of $r$'s prefix chunks would need to be freshly computed (i.e., are not already cached by the active batch). A request with $m_r = 0$ has its entire prefix covered by the current active batch and is therefore the most preferable candidate to admit next.
+\paragraph{Missing cache.} \texttt{miss} maps each \emph{waiting} request $r$ to an integer $m_r$, defined as the number of hashes in $H_r$ that are \emph{not} currently in the working set. Intuitively, $m_r$ counts how many of $r$'s prefix chunks would need to be freshly computed (i.e., are not already cached by the active batch). A request with $m_r = 0$ has its entire prefix covered by the current active batch and is therefore the most preferable candidate to admit next.
 
 \paragraph{Waiting heap.} \texttt{waiting\_heap} is a min-heap of $(m_r, r)$ pairs, ordered by missing count $m_r$. It enables $O(\log W)$ retrieval of the waiting request with the smallest missing count, where $W$ is the number of waiting requests.
 
-\paragraph{Reverse index.} \texttt{waiting} maps each packed key $k$ to the set of waiting requests whose hash vector contains $k$, enabling $O(1)$ updates to \texttt{miss} when the working set changes.
+\paragraph{Reverse index.} \texttt{waiting} maps each hash $h$ to the set of waiting requests whose hash vector contains $h$, enabling $O(1)$ updates to \texttt{miss} when the working set changes.
 
 \paragraph{Shared prefix chain.} \texttt{shared\_prefix\_chain} is a vector $P = (p_1, \dots, p_L)$ recording the longest common hash prefix shared by all currently active requests. $P$ is maintained incrementally rather than recomputed from scratch for every event, keeping the amortized cost low. 
 
 
 \subsubsection*{Request Insertion (Algorithm~\ref{alg:insert})}
-$\textsc{Insert}$ is called the moment a new request arrives at the scheduler. It computes $H_r$ via $\textsc{ComputeHashes}$, stores the hash vector, and for each key $k \in H_r$, registers $r$ in the reverse index $\mathit{waiting}[k]$. Crucially, it also computes the initial missing count $m_r$: the number of keys in $H_r$ not yet present in the working set. This count is stored in $\mathit{miss}[r]$ and the pair $(m_r, r)$ is pushed onto the waiting heap. No reference counts are modified at this stage; that happens only when the request is activated.
+$\textsc{Insert}$ is called the moment a new request arrives at the scheduler. It computes $H_r$ via $\textsc{ComputeHashes}$, stores the hash vector, and for each hash $h \in H_r$, registers $r$ in the reverse index $\mathit{waiting}[h]$. Crucially, it also computes the initial missing count $m_r$: the number of hashes in $H_r$ not yet present in the working set. This count is stored in $\mathit{miss}[r]$ and the pair $(m_r, r)$ is pushed onto the waiting heap. No reference counts are modified at this stage; that happens only when the request is activated.
 
 \begin{algorithm}[H]
 \caption{$\textsc{Insert}(r, T)$}
@@ -163,11 +161,10 @@ $\textsc{Insert}$ is called the moment a new request arrives at the scheduler. I
 \State $m_r \gets 0$
 \State $\mathit{waiting\_requests} \gets \mathit{waiting\_requests} \cup \{r\}$
 \For{$\ell \gets 1$ \textbf{to} $|H_r|$}
-  \State $k \gets \mathrm{key}(\ell,\, h_\ell^r)$
-  \If{$k \notin \mathit{working\_set}$}
+  \If{$h_\ell^r \notin \mathit{working\_set}$}
     \State $m_r \gets m_r + 1$
   \EndIf
-  \State $\mathit{waiting}[k] \gets \mathit{waiting}[k] \cup \{r\}$
+  \State $\mathit{waiting}[h_\ell^r] \gets \mathit{waiting}[h_\ell^r] \cup \{r\}$
 \EndFor
 \State $\mathit{miss}[r] \gets m_r$
 \State $\mathit{waiting\_heap}.\textsc{Push}(m_r,\; r)$
@@ -175,7 +172,7 @@ $\textsc{Insert}$ is called the moment a new request arrives at the scheduler. I
 \end{algorithm}
 
 \paragraph{Activation (Algorithm~\ref{alg:activate}).} 
-$\textsc{Activate}$ is called when the scheduler moves a request from the waiting queue into the active decoding batch. For each key $k$ in $H_r$, if $k$ transitions from absent to present in the working set (i.e., its reference count goes from 0 to 1), then $k$ is added to the working set and all waiting requests that contain $k$ have their missing count decremented by one; updated pairs are pushed onto the heap. This eager propagation keeps $\mathit{miss}$ accurate for all waiting requests without requiring a full rescan. The shared prefix chain is then updated incrementally via $\textsc{UpdateChainOnActivate}$ (Algorithm~\ref{alg:update_chain_activate}).
+$\textsc{Activate}$ is called when the scheduler moves a request from the waiting queue into the active decoding batch. For each hash $h$ in $H_r$, if $h$ transitions from absent to present in the working set (i.e., its reference count goes from 0 to 1), then $h$ is added to the working set and all waiting requests that contain $h$ have their missing count decremented by one; updated pairs are pushed onto the heap. This eager propagation keeps $\mathit{miss}$ accurate for all waiting requests without requiring a full rescan. The shared prefix chain is then updated incrementally via $\textsc{UpdateChainOnActivate}$ (Algorithm~\ref{alg:update_chain_activate}).
 
 \begin{algorithm}[H]
 \caption{$\textsc{Activate}(r)$}
@@ -187,11 +184,10 @@ $\textsc{Activate}$ is called when the scheduler moves a request from the waitin
 \State       $\mathit{active} \gets \mathit{active} \cup \{r\}$
 \State $\mathit{added} \gets 0$
 \For{$\ell \gets 1$ \textbf{to} $|H_r|$}
-  \State $k \gets \mathrm{key}(\ell,\, h_\ell^r)$
-  \If{$\mathrm{ref}[k] = 0$}
-  \Comment{$k$ newly enters working set}
-  \State $\mathit{working\_set} \gets \mathit{working\_set} \cup \{k\}$
-  \For{$w \in \mathit{waiting}[k]$}
+  \If{$\mathrm{ref}[h_\ell^r] = 0$}
+  \Comment{$h_\ell^r$ newly enters working set}
+  \State $\mathit{working\_set} \gets \mathit{working\_set} \cup \{h_\ell^r\}$
+  \For{$w \in \mathit{waiting}[h_\ell^r]$}
       \If{$w \notin \mathit{active}$ \textbf{and} $w \in \mathit{miss}$}
         \State $\mathit{miss}[w] \gets \mathit{miss}[w] - 1$
         \State $\mathit{waiting\_heap}.\textsc{Push}(\mathit{miss}[w],\; w)$
@@ -199,7 +195,7 @@ $\textsc{Activate}$ is called when the scheduler moves a request from the waitin
     \EndFor
     \State $\mathit{added} \gets \mathit{added} + 1$
   \EndIf
-  \State $\mathrm{ref}[k] \gets \mathrm{ref}[k] + 1$
+  \State $\mathrm{ref}[h_\ell^r] \gets \mathrm{ref}[h_\ell^r] + 1$
 \EndFor
 \State $\textsc{UpdateChainOnActivate}(r)$
 \State \Return $(\mathit{added},\; |H_r|)$
@@ -232,7 +228,7 @@ $\textsc{Activate}$ is called when the scheduler moves a request from the waitin
 \end{algorithm}
 
 
-\paragraph{Completion (Algorithm~\ref{alg:finish}).} $\textsc{Finish}$ is called when the model has generated the final token for request $r$, and the request is removed from the active batch. For each key $k$ in $H_r$, its reference count is decremented; if it reaches zero, $k$ is evicted from the working set, and all waiting requests containing $k$ have their missing count incremented by one, with updated pairs pushed onto the heap. The shared prefix chain is then updated via $\textsc{UpdateChainOnFinish}$, since removing a request can only lengthen the common prefix.
+\paragraph{Completion (Algorithm~\ref{alg:finish}).} $\textsc{Finish}$ is called when the model has generated the final token for request $r$, and the request is removed from the active batch. For each hash $h$ in $H_r$, its reference count is decremented; if it reaches zero, $h$ is evicted from the working set, and all waiting requests containing $h$ have their missing count incremented by one, with updated pairs pushed onto the heap. The shared prefix chain is then updated via $\textsc{UpdateChainOnFinish}$, since removing a request can only lengthen the common prefix.
 
 
 \begin{algorithm}[H]
@@ -244,11 +240,10 @@ $\textsc{Activate}$ is called when the scheduler moves a request from the waitin
 \State $\mathit{active} \gets \mathit{active} \setminus \{r\}$
 \State $\mathit{evicted} \gets 0$
 \For{$\ell \gets 1$ \textbf{to} $|H_r|$}
-  \State $k \gets \mathrm{key}(\ell,\, h_\ell^r)$
-  \State $\mathrm{ref}[k] \gets \mathrm{ref}[k] - 1$
-   \If{$\mathrm{ref}[k] = 0$}
-   \State $\mathit{working\_set} \gets \mathit{working\_set} \setminus \{k\}$
-    \For{$w \in \mathit{waiting}[k]$}
+  \State $\mathrm{ref}[h_\ell^r] \gets \mathrm{ref}[h_\ell^r] - 1$
+   \If{$\mathrm{ref}[h_\ell^r] = 0$}
+   \State $\mathit{working\_set} \gets \mathit{working\_set} \setminus \{h_\ell^r\}$
+    \For{$w \in \mathit{waiting}[h_\ell^r]$}
       \If{$w \notin \mathit{active}$ \textbf{and} $w \in \mathit{miss}$}
         \State $\mathit{miss}[w] \gets \mathit{miss}[w] + 1$
         \State $\mathit{waiting\_heap}.\textsc{Push}(\mathit{miss}[w],\; w)$
@@ -383,18 +378,15 @@ activation, and best-request selection. Figure~\ref{fig:shared_prefix_chain_work
 $\textsc{FindBest}()$ may be called repeatedly within a single scheduling round without any intervening state change.  We cache its last result—a four-tuple\\ $(r^*, \mathit{chunks\_before}, \mathit{chunks\_after}, \mathit{peers})$ and return it immediately on subsequent calls until a mutation invalidates the flag. 
 
 \paragraph{Lazy heap updates.}
-The waiting heap uses \emph{lazy deletion}: when a request's missing count changes, we push a new $(m_r, r)$ entry rather than updating the existing one in place. Stale entries (where the recorded $m$ differs from $\mathit{miss}[r]$) are silently skipped during $\textsc{FindBest}$. This avoids the $O(W)$ cost of a linear heap search and keeps activation and completion at $O(C \cdot W_k \cdot \log W)$ total, where $W_k$ is the average number of waiting requests per key.
+The waiting heap uses \emph{lazy deletion}: when a request's missing count changes, we push a new $(m_r, r)$ entry rather than updating the existing one in place. Stale entries (where the recorded $m$ differs from $\mathit{miss}[r]$) are silently skipped during $\textsc{FindBest}$. This avoids the $O(W)$ cost of a linear heap search and keeps activation and completion at $O(C \cdot W_h \cdot \log W)$ total, where $W_h$ is the average number of waiting requests per hash.
 
 \paragraph{Incremental shared prefix chain maintenance.}
 Recomputing the shared prefix chain from scratch after every activate or finish event would cost $O(A \cdot C)$, where $A$ is the active-set size. Instead, we exploit the fact that activation can only \emph{shrink} the chain and completion can only \emph{grow} it. On activation, we truncate $P$ at the first mismatch with the new request's hash vector in $O(L)$; on completion, we attempt a forward extension beyond the current chain length, stopping at the first disagreement, again in $O(L + C_{\max})$.
 
-\paragraph{Packed 64-bit key encoding.}
-Each $(\ell, h)$ pair is encoded into a single 64-bit integer by placing the chunk level in the top 8 bits and the lower 56 bits of the hash digest in the remaining field.  This eliminates pointer indirection and struct padding that would arise from a two-field composite key, enabling $O(1)$ hash-table operations on a single register-wide integer.
-
 Additionally, all major hash tables and vectors pre-allocate capacity at construction time, eliminating rehash latency and reallocation during high-throughput operation.
 
 \subsubsection*{Complexity Analysis}
-Table~\ref{tab:complexity} summarizes the time complexity of each operation. $T$ is the average number of tokens per request, $C$ is the average number of chunks per request, $W$ is the number of waiting requests, and $W_k$ is the average number of waiting requests sharing a given key (typically $W_k \ll W$).
+Table~\ref{tab:complexity} summarizes the time complexity of each operation. $T$ is the average number of tokens per request, $C$ is the average number of chunks per request, $W$ is the number of waiting requests, and $W_h$ is the average number of waiting requests sharing a given hash (typically $W_h \ll W$).
 
 \begin{table}[H]
 \centering
@@ -405,9 +397,9 @@ Table~\ref{tab:complexity} summarizes the time complexity of each operation. $T$
 \textbf{Operation} & \textbf{Complexity}\\
 \hline
 Insert request            & $O(T + C \log W)$ \\
-Activate request          & $O(C \cdot W_k \cdot \log W)$ \\
+Activate request          & $O(C \cdot W_h \cdot \log W)$ \\
 Update chain on activate  & $O(L)$ \\
-Finish request            & $O(C \cdot W_k \cdot \log W)$ \\
+Finish request            & $O(C \cdot W_h \cdot \log W)$ \\
 Update chain on finish    & $O(L + C_{\max})$ \\
 Find best request         & $O(\log W)$ (cached: $O(1)$) \\
 Remove request            & $O(C)$ \\
