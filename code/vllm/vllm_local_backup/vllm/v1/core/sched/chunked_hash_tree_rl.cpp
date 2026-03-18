@@ -85,28 +85,32 @@ void ChunkedHashTree_RL::update_chain_on_activate(uint32_t request_id) {
     if (it == request_hashes.end()) {
         return;
     }
-    
+
     const auto& hashes = it->second;
-    
+
     if (active_requests.size() == 1) {
         // First active request - the entire request becomes the chain
         shared_prefix_chain = hashes;
         shared_chain_length = hashes.size();
         return;
     }
-    
-    // Iterate through the current chain and check if new request matches
-    uint32_t new_chain_length = 0;
-    for (uint32_t level = 0; level < shared_chain_length && level < hashes.size(); ++level) {
-        if (hashes[level] == shared_prefix_chain[level]) {
-            new_chain_length++;
+
+    // With cumulative hashes, matching is monotone: if level k matches,
+    // all levels 0..k-1 match too. So we binary search for the new chain length.
+    uint32_t lo = 0;
+    uint32_t hi = std::min(shared_chain_length, (uint32_t)hashes.size());
+
+    // Binary search for the longest prefix that still matches
+    while (lo < hi) {
+        uint32_t mid = lo + (hi - lo + 1) / 2; // upper-mid to avoid infinite loop
+        if (hashes[mid - 1] == shared_prefix_chain[mid - 1]) {
+            lo = mid; // level mid-1 matches, so at least mid levels match
         } else {
-            break; // Chain breaks here
+            hi = mid - 1; // level mid-1 doesn't match, chain ends before here
         }
     }
-    
-    // Update the chain length (may have decreased)
-    shared_chain_length = new_chain_length;
+
+    shared_chain_length = lo;
     shared_prefix_chain.resize(shared_chain_length);
 }
 

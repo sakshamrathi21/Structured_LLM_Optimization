@@ -141,9 +141,12 @@ def main():
     llm = sgl.Engine(
         model_path=args.model_name,
         mem_fraction_static=0.98,
-        max_total_tokens=32768,
+        max_total_tokens=65536,
         max_running_requests=args.max_batch_size,
         schedule_policy=args.policy,
+        max_prefill_tokens=1048576,
+        chunked_prefill_size=131072,
+        enable_mixed_chunk=True
     )
 
     sampling_params = {

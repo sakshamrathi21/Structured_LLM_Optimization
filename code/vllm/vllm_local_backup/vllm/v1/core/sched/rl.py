@@ -102,7 +102,6 @@ class QLearningScheduler:
         else:
             q_add = self.get_q_value(state, True)
             q_skip = self.get_q_value(state, False)
-            print(f"State: {state}, Q(Add): {q_add:.4f}, Q(Skip): {q_skip:.4f}, Epsilon: {self.epsilon:.4f}")
             action = q_add > q_skip
             self.metrics['decisions']['add' if action else 'skip'] += 1
             
@@ -229,8 +228,6 @@ class ContextualBanditScheduler:
         avg_reward = self.action_rewards[key] / count
         
         exploration_bonus = self.c * np.sqrt(np.log(self.total_steps + 1) / count)
-
-        print(f"State: {state}, Action: {'Add' if action else 'Skip'}, Count: {count}, Avg Reward: {avg_reward:.4f}, Exploration Bonus: {exploration_bonus:.4f}, UCB Score: {avg_reward + exploration_bonus:.4f}")
         
         return avg_reward + exploration_bonus
     

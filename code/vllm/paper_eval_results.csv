@@ -528,3 +528,4 @@ sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,1416.682
 sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,742.4675851557187,lpm
 sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,709.9441204824088,dfs-weight
 vllm,5,None,500,1,5000,lmsys/longchat-13b-16k,200,5000,5000,155.03877097974004,fcfs
+sglang,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,2500,2500,2205.323645256197,fcfs

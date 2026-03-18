@@ -557,7 +557,7 @@ class RadixCostRequestQueue_RL(RequestQueue):
         scheduler_params: dict = None,
         model_save_path: Optional[str] = None
     ):
-        self._radix = ChunkedHashTree_RL(chunk_size=500)
+        self._radix = ChunkedHashTree_RL(chunk_size=50)
         self._pending_requests = {}
         self._id_map = {}
         self._id_to_request = {}
@@ -578,28 +578,16 @@ class RadixCostRequestQueue_RL(RequestQueue):
         self.scheduler_type = scheduler_type
         self.model_save_path = model_save_path
 
-        if model_save_path and hasattr(self.scheduler, 'load'):
-            try:
-                self.scheduler.load(model_save_path)
-                print(f"Loaded RL model from {model_save_path}")
-            except FileNotFoundError:
-                print(f"No existing model found at {model_save_path}, starting fresh")
-
-        # Steps recorded for the batch currently being assembled (ADD decisions).
         self._current_batch_steps: list = []
 
-        # The PREVIOUS batch's trajectory, waiting for last_batch_time to arrive.
-        # Set when SKIP is taken; consumed on the very next call where last_batch_time > 0.
-        self._pending_feedback: dict = None  # {'steps': [...], 'final_batch_size': int}
+        self._pending_feedback: dict = None  
+
+        self._last_seen_batch_id = None    
 
         self.batch_count = 0
         self.batch_execution_times = []
         self.batch_sizes = []
         self.decisions_made = []
-
-    # ------------------------------------------------------------------
-    # Internal ID helpers
-    # ------------------------------------------------------------------
 
     def _intern_id(self, request_id: str) -> int:
         rid = self._id_map.get(request_id)
@@ -614,10 +602,6 @@ class RadixCostRequestQueue_RL(RequestQueue):
         rid = self._id_map.pop(request_id, None)
         if rid is not None:
             self._id_to_request.pop(rid, None)
-
-    # ------------------------------------------------------------------
-    # Queue operations
-    # ------------------------------------------------------------------
 
     def add_request(self, request: Request) -> None:
         rid = self._intern_id(request.request_id)
@@ -681,68 +665,52 @@ class RadixCostRequestQueue_RL(RequestQueue):
             self._radix.finish_request(rid)
             self._release_id(request_id)
 
-    # ------------------------------------------------------------------
-    # Scheduling
-    # ------------------------------------------------------------------
 
     def should_add_more_to_batch(self, **kwargs) -> bool:
         current_batch_size = kwargs.get("current_batch_size", 0)
         last_batch_time    = kwargs.get("last_batch_time", 0.0)
+        current_batch_id   = kwargs.get("current_batch_id", None)
 
-        # ----------------------------------------------------------------
-        # Step 1: consume pending feedback from the PREVIOUS batch.
-        #
-        # last_batch_time > 0 means the GPU just finished the batch that
-        # was dispatched by the previous SKIP.  That SKIP left its
-        # trajectory in _pending_feedback exactly for this moment.
-        # ----------------------------------------------------------------
-        if (
-            self.scheduler_type != "heuristic"
-            and last_batch_time is not None
-            and last_batch_time > 0
-            and self._pending_feedback is not None
-        ):
-            self._provide_feedback(
-                steps=self._pending_feedback['steps'],
-                final_batch_size=self._pending_feedback['final_batch_size'],
-                batch_execution_time=last_batch_time
-            )
+        batch_id_changed = (
+            current_batch_id is not None
+            and self._last_seen_batch_id is not None
+            and current_batch_id != self._last_seen_batch_id
+        )
+        
+        if batch_id_changed:
+            # Always flush feedback when batch changes, regardless of how it ended
+            if (
+                self.scheduler_type != "heuristic"
+                and last_batch_time is not None
+                and last_batch_time > 0
+                and self._current_batch_steps  # flush whatever steps we have
+            ):
+                self._provide_feedback(
+                    steps=self._current_batch_steps,
+                    final_batch_size=self._last_final_batch_size,  # <-- store this
+                    batch_execution_time=last_batch_time
+                )
+            self._current_batch_steps = []
             self._pending_feedback = None
 
-        # ----------------------------------------------------------------
-        # Step 2: first call of a new batch (current_batch_size == 0).
-        # Always add, reset current step history.
-        # ----------------------------------------------------------------
+        if current_batch_id is not None:
+            self._last_seen_batch_id = current_batch_id
+
         if current_batch_size == 0:
             self._current_batch_steps = []
             return True
 
-        # ----------------------------------------------------------------
-        # Step 3: check if there is anything to potentially add.
-        # ----------------------------------------------------------------
         rid, chunks_before, chunks_after, requests_waiting = self._radix.find_best_request()
 
         if rid == 0:
-            # Queue drained — forced SKIP with no decision to record.
             return False
 
-        # ----------------------------------------------------------------
-        # Step 4: ask the scheduler.
-        # ----------------------------------------------------------------
         decision = self.scheduler.should_add_request(
             batch_size=current_batch_size,
             chunks_before=chunks_before,
             chunks_after=chunks_after,
             requests_waiting=requests_waiting
         )
-
-        print(f"[RL Decision] batch_size={current_batch_size}, "
-              f"chunks_before={chunks_before}, chunks_after={chunks_after}, "
-              f"requests_waiting={requests_waiting}, decision={'ADD' if decision else 'SKIP'}")
-
-        # if hasattr(self.scheduler, 'epsilon'):
-        #     print(f"[RL Stats] epsilon={self.scheduler.epsilon:.3f}, "
-        #           f"steps={self.scheduler.step_count}")
 
         self.decisions_made.append({
             'batch_size': current_batch_size,
@@ -752,12 +720,8 @@ class RadixCostRequestQueue_RL(RequestQueue):
             'decision': decision,
         })
 
-        # ----------------------------------------------------------------
-        # Step 5: record trajectory or stash for deferred feedback.
-        # ----------------------------------------------------------------
         if self.scheduler_type != "heuristic":
             if decision:
-                # ADD — append to current batch's trajectory.
                 self._current_batch_steps.append({
                     'batch_size': current_batch_size,
                     'chunks_before': chunks_before,
@@ -766,21 +730,20 @@ class RadixCostRequestQueue_RL(RequestQueue):
                     'action': True
                 })
             else:
-                # SKIP — batch is dispatched to GPU right now.
-                # We don't have last_batch_time for THIS batch yet;
-                # it will arrive on the next iteration's first call.
-                # Stash the full trajectory so we can update then.
-                self._pending_feedback = {
-                    'steps': self._current_batch_steps,
-                    'final_batch_size': current_batch_size  # no new req was added
-                }
-                self._current_batch_steps = []
+                # Skip decision — store final size for when batch eventually flushes
+                self._last_final_batch_size = current_batch_size
+                self._current_batch_steps.append({
+                    'batch_size': current_batch_size,
+                    'chunks_before': chunks_before,
+                    'chunks_after': chunks_after,
+                    'requests_waiting': requests_waiting,
+                    'action': False  # record the skip too
+                })
+
+        # Always track last known batch size
+        self._last_final_batch_size = current_batch_size
 
         return decision
-
-    # ------------------------------------------------------------------
-    # Feedback / learning
-    # ------------------------------------------------------------------
 
     def _provide_feedback(
         self,
@@ -788,19 +751,6 @@ class RadixCostRequestQueue_RL(RequestQueue):
         final_batch_size: int,
         batch_execution_time: float
     ) -> None:
-        """
-        Update the scheduler with the reward for a completed batch.
-
-        Called at the start of the iteration AFTER the batch was dispatched,
-        once last_batch_time (the GPU execution time) is available.
-
-        reward = final_batch_size / batch_execution_time
-            — true throughput: rewards filling the batch without sacrificing speed.
-
-        For Q-learning, steps are replayed in order with chained next-states so
-        the Bellman updates are internally consistent. The SKIP action is also
-        updated so the scheduler learns the value of stopping at size N.
-        """
         if batch_execution_time <= 0:
             return
 
@@ -823,7 +773,6 @@ class RadixCostRequestQueue_RL(RequestQueue):
                         next_requests_waiting=nxt['requests_waiting']
                     )
                 else:
-                    # Last ADD before SKIP — terminal.
                     self.scheduler.update(
                         batch_size=step['batch_size'],
                         chunks_before=step['chunks_before'],
@@ -834,7 +783,6 @@ class RadixCostRequestQueue_RL(RequestQueue):
                         next_batch_size=None
                     )
 
-            # Update the SKIP decision using the last ADD step's radix state.
             if steps:
                 last = steps[-1]
                 self.scheduler.update(
@@ -848,7 +796,6 @@ class RadixCostRequestQueue_RL(RequestQueue):
                 )
 
         else:
-            # Bandit: all steps and SKIP share the same reward.
             for step in steps:
                 self.scheduler.update(
                     batch_size=step['batch_size'],
@@ -872,39 +819,6 @@ class RadixCostRequestQueue_RL(RequestQueue):
         self.batch_execution_times.append(batch_execution_time)
         self.batch_sizes.append(final_batch_size)
         self.batch_count += 1
-
-        if self.model_save_path and self.batch_count % 100 == 0:
-            if hasattr(self.scheduler, 'save'):
-                self.scheduler.save(self.model_save_path)
-                print(f"Saved RL model to {self.model_save_path} (batch {self.batch_count})")
-
-    # ------------------------------------------------------------------
-    # Statistics
-    # ------------------------------------------------------------------
-
-    def get_statistics(self) -> dict:
-        stats = {
-            'batch_count': self.batch_count,
-            'avg_batch_time': sum(self.batch_execution_times[-100:]) / len(self.batch_execution_times[-100:])
-                             if self.batch_execution_times else 0,
-            'avg_batch_size': sum(self.batch_sizes[-100:]) / len(self.batch_sizes[-100:])
-                             if self.batch_sizes else 0,
-        }
-        if hasattr(self.scheduler, 'get_statistics'):
-            stats.update(self.scheduler.get_statistics())
-        return stats
-
-    def print_statistics(self):
-        stats = self.get_statistics()
-        print("\n" + "="*60)
-        print("RL Batch Scheduler Statistics")
-        print("="*60)
-        for key, value in stats.items():
-            if isinstance(value, float):
-                print(f"{key:30s}: {value:.4f}")
-            else:
-                print(f"{key:30s}: {value}")
-        print("="*60 + "\n")
     
 
 class FamilyLoadRequestQueue(RequestQueue):

@@ -39,7 +39,7 @@ def build_mode1_prompts(tokenizer, L, num_requests, query_base="What is AI?"):
     """
     Mode 1: All requests share a system prompt of length 3*L
     """
-    shared_prefix = generate_text_of_length(tokenizer, 5 * L, "SHARED_3L ")
+    shared_prefix = generate_text_of_length(tokenizer, 4 * L, "SHARED_3L ")
 
     prompts = []
     for i in range(num_requests):
@@ -193,8 +193,8 @@ def build_mode5_prompts(tokenizer, L, num_requests, query_base="What is AI?"):
     """
     Mode 5: Two separate groups, each with their own 3*L shared context
     """
-    group1_shared = generate_text_of_length(tokenizer, 5 * L, "GROUP1_3L ")
-    group2_shared = generate_text_of_length(tokenizer, 5 * L, "GROUP2_3L ")
+    group1_shared = generate_text_of_length(tokenizer, 4 * L, "GROUP1_3L ")
+    group2_shared = generate_text_of_length(tokenizer, 4 * L, "GROUP2_3L ")
 
     prompts = []
     half = num_requests // 2
@@ -378,7 +378,7 @@ def build_mode9_prompts(tokenizer, L, num_requests, query_base="What is AI?"):
     """
 
     # Level 1 shared by all
-    level1_shared = generate_text_of_length(tokenizer, 2 * L, "LEVEL1_L ")
+    level1_shared = generate_text_of_length(tokenizer, 1 * L, "LEVEL1_L ")
 
     # Two 3L branches
     branch1 = generate_text_of_length(tokenizer, 3 * L, "BRANCH1_3L ")
@@ -421,7 +421,7 @@ def build_mode10_prompts(tokenizer, L, num_requests, query_base="What is AI?"):
     """
 
     # Level 1
-    level1_shared = generate_text_of_length(tokenizer, 2 * L, "LEVEL1_L ")
+    level1_shared = generate_text_of_length(tokenizer, L, "LEVEL1_L ")
 
     # Level 2 (2 branches of L each)
     branch1_L2 = generate_text_of_length(tokenizer, L, "L2_BRANCH1_L ")
@@ -476,7 +476,7 @@ def build_mode11_prompts(tokenizer, L, num_requests, query_base="What is AI?"):
     """
 
     # Level 1
-    level1 = generate_text_of_length(tokenizer, 2 * L, "LEVEL1_L ")
+    level1 = generate_text_of_length(tokenizer, L, "LEVEL1_L ")
 
     # Level 2 (2 branches)
     level2 = [
