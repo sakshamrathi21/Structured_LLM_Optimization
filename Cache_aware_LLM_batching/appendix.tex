@@ -4,6 +4,143 @@
 \clearpage
 
 \section{Algorithms}
+\begin{algorithm}[H]
+\caption{$\textsc{ComputeHashes}(T, K)$}
+\label{alg:compute_hashes}
+\begin{algorithmic}[1]
+\Require Token sequence $T = (t_1, \dots, t_N)$; chunk size $K$
+\Ensure Cumulative prefix-hash vector $H = (h_1, \dots, h_C)$
+\State $H \gets []$;\quad $C \gets \lceil N / K \rceil$
+\State Initialise incremental \textsc{xxHash-64} state $s$
+\For{$i \gets 1$ \textbf{to} $N$}
+  \State Feed $t_i$ into $s$
+  \If{$i \bmod K = 0$ \textbf{or} $i = N$}
+    \State $H.\textsc{Append}(\textsc{Digest}(s))$
+  \EndIf
+\EndFor
+\State \Return $H$
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[H]
+\caption{$\textsc{Insert}(r, T)$}
+\label{alg:insert}
+\begin{algorithmic}[1]
+\Require Request $r$; token sequence $T$; working set $\mathit{working\_set}$; reverse index $\mathit{waiting}$; min-heap $\mathit{waiting\_heap}$
+\Ensure $r$ registered and ready for scheduling
+\State $H_r \gets \textsc{ComputeHashes}(T, K)$
+\State $\mathit{request\_hashes}[r] \gets H_r$
+\State $m_r \gets 0$
+\For{$\ell \gets 1$ \textbf{to} $|H_r|$}
+  \State $h \gets h_\ell^r$
+  \If{$(\ell, h) \notin \mathit{working\_set}$}
+    \State $m_r \gets m_r + 1$
+  \EndIf
+  \State $\mathit{waiting}[h] \gets \mathit{waiting}[h] \cup \{r\}$
+\EndFor
+\State $\mathit{miss}[r] \gets m_r$
+\State $\mathit{waiting\_heap}.\textsc{Push}(m_r,\; r)$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{$\textsc{AddToBatch}(r)$}
+\label{alg:add_to_batch}
+\begin{algorithmic}[1]
+\Require $H_r$; $\mathrm{ref}$; $\mathit{working\_set}$; $\mathit{waiting}$; $\mathit{miss}$; $\mathit{waiting\_heap}$; tip $(\ell^*, h^*)$; $\mathit{active}$
+\Ensure Updated $\mathrm{ref}$, $\mathit{working\_set}$, $\mathit{miss}$, $(\ell^*, h^*)$
+
+\State $\mathit{active} \gets \mathit{active} \cup \{r\}$;\quad $\mathit{waiting\_requests} \gets \mathit{waiting\_requests} \setminus \{r\}$
+
+\If{$|\mathit{active}| = 1$}
+  \State $(\ell^*, h^*) \gets (|H_r|,\; h_{|H_r|}^r)$;\quad \Return
+\EndIf
+
+\State $\ell_{\mathrm{tip}} \gets \min(\ell^*,\; |H_r|)$;\quad $(\ell^*, h^*) \gets (0, \bot)$
+
+\For{$\ell \gets |H_r|$ \textbf{downto} $1$}
+  \If{$\mathrm{ref}[h_\ell^r] = 0$}
+    \State $\mathit{working\_set} \gets \mathit{working\_set} \cup \{(\ell, h_\ell^r)\}$
+    \For{$w \in \mathit{waiting}[h_\ell^r],\; w \notin \mathit{active}$}
+      \State $\mathit{miss}[w] \mathrel{-}= 1$;\quad $\mathit{waiting\_heap}.\textsc{Push}(\mathit{miss}[w], w)$
+    \EndFor
+  \EndIf
+  \State $\mathrm{ref}[h_\ell^r] \mathrel{+}= 1$
+  \If{$\ell^* = 0$ \textbf{and} $\ell \leq \ell_{\mathrm{tip}}$ \textbf{and} $(\ell, h_\ell^r) \in \mathit{working\_set}$}
+    \State $(\ell^*, h^*) \gets (\ell,\; h_\ell^r)$
+    \Comment{LCA found; continue loop for remaining working set updates}
+  \EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{$\textsc{Finish}(r)$}
+\label{alg:finish}
+\begin{algorithmic}[1]
+\Require $H_r$; $\mathrm{ref}$; $\mathit{working\_set}$; $\mathit{waiting}$; $\mathit{miss}$; $\mathit{waiting\_heap}$; tip $(\ell^*, h^*)$; $\mathit{active}$
+\Ensure Updated $\mathrm{ref}$, $\mathit{working\_set}$, $\mathit{miss}$, $(\ell^*, h^*)$
+
+\State $\mathit{active} \gets \mathit{active} \setminus \{r\}$
+
+\For{$\ell \gets 1$ \textbf{to} $|H_r|$}
+  \State $\mathrm{ref}[h_\ell^r] \mathrel{-}= 1$
+  \If{$\mathrm{ref}[h_\ell^r] = 0$}
+    \State $\mathit{working\_set} \gets \mathit{working\_set} \setminus \{(\ell, h_\ell^r)\}$
+    \For{$w \in \mathit{waiting}[h_\ell^r],\; w \notin \mathit{active}$}
+      \State $\mathit{miss}[w] \mathrel{+}= 1$;\quad $\mathit{waiting\_heap}.\textsc{Push}(\mathit{miss}[w], w)$
+    \EndFor
+  \EndIf
+\EndFor
+
+\If{$\mathit{active} = \emptyset$}
+  \State $(\ell^*, h^*) \gets (0, \bot)$;\quad \Return
+\EndIf
+\If{$|\mathit{active}| = 1$}
+  \State let $q$ be the sole element of $\mathit{active}$
+  \State $(\ell^*, h^*) \gets (|H_q|,\; h_{|H_q|}^q)$;\quad \Return
+\EndIf
+
+\While{$\ell^* + 1 \leq \min_{q \in \mathit{active}} |H_q|$}
+  \Comment{try to extend tip forward}
+  \State $\ell \gets \ell^* + 1$
+  \If{$\mathrm{ref}[h_\ell^{q_0}] = |\mathit{active}|$ for arbitrary $q_0 \in \mathit{active}$}
+    \Comment{all active requests agree at level $\ell$}
+    \State $(\ell^*, h^*) \gets (\ell,\; h_\ell^{q_0})$
+  \Else
+    \State \textbf{break}
+  \EndIf
+\EndWhile
+\State $\textsc{Remove}(r)$
+\Comment{cleans reverse index and request hashes}
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[H]
+\caption{$\textsc{FindBest}()$}
+\label{alg:find_best}
+\begin{algorithmic}[1]
+\Require $\mathit{waiting\_heap}$; $\mathit{miss}$; $\mathit{active}$; tip $(\ell^*, h^*)$; $\mathit{working\_set}$; $\mathit{request\_hashes}$
+\Ensure $(r^*,\; \ell^*_{\mathit{before}},\; \ell^*_{\mathit{after}},\; \mathit{peers})$ or $\bot$
+
+\If{$\mathit{waiting\_requests} = \emptyset$}\ \Return $\bot$ \EndIf
+\If{$\mathit{cache\_valid}$}\ \Return $\mathit{cached\_result}$ \EndIf
+
+\While{$\mathit{waiting\_heap} \neq \emptyset$}
+  \State $(m, r) \gets \mathit{waiting\_heap}.\textsc{Pop}()$
+  \If{$r \in \mathit{active}$ \textbf{or} $r \notin \mathit{miss}$ \textbf{or} $\mathit{miss}[r] \neq m$}\ \textbf{continue} \EndIf
+  \State $r^* \gets r$;\quad $\mathit{waiting\_heap}.\textsc{Push}(m, r^*)$
+  \Comment{restore for future calls}
+  \State $\ell^*_{\mathit{before}} \gets \ell^*$
+  \State $\ell^*_{\mathit{after}} \gets \ell$ where $\ell$ is the largest $\ell \leq \min(\ell^*, |H_{r^*}|)$ s.t. $(\ell, h_\ell^{r^*}) \in \mathit{working\_set}$
+  \State $\mathit{peers} \gets |\{w \in \mathit{waiting\_requests} : h_{\ell^*_{\mathit{after}}}^w = h_{\ell^*_{\mathit{after}}}^{r^*}\}|$
+  \State Cache and \Return $(r^*,\; \ell^*_{\mathit{before}},\; \ell^*_{\mathit{after}},\; \mathit{peers})$
+\EndWhile
+\State \Return $\bot$
+\end{algorithmic}
+\end{algorithm}
 
 
 

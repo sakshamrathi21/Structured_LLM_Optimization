@@ -8,52 +8,88 @@
 \label{fig:pipeline}
 \end{figure*}
 
-As discussed in \S\ref{sec:motivation}, the efficiency of batched decoding is governed not only by how many requests are executed concurrently, but also by how much prefix all of them share. When requests in a batch follow the same prefix and access the KV cache in a consistent order, memory accesses become highly sequential. This improves both temporal and spatial locality, allowing the hardware prefetcher to utilize DRAM bandwidth more effectively. However, even small deviations in prefix sharing can quickly disrupt this access pattern, leading to degraded cache efficiency.
+As discussed in \S\ref{sec:motivation}, the performance of batched inference is governed not just by how many requests are executed together, but by a more subtle factor: \emph{how much prefix they share}. When requests in a batch follow a common prefix, their KV-cache accesses become highly sequential, improving both temporal and spatial locality and enabling the hardware prefetcher to better utilize memory bandwidth. In contrast, even small deviations in prefix alignment can quickly fragment these access patterns, leading to degraded throughput.
 
-This observation reveals a fundamental trade-off in scheduler design. On one hand, increasing batch size improves GPU utilization by maximizing parallelism. On the other hand, maintaining a long shared prefix across all active requests preserves temporal and spatial locality. These two objectives are often at odds: aggressively growing the batch can introduce heterogeneous requests that break prefix alignment, while strictly enforcing homogeneity can leave GPU resources underutilized.
+This observation suggests that \emph{the length of the shared prefix across all active requests} is a perfect metric for system performance. Longer shared prefixes directly translate into higher KV-cache reuse and more efficient memory access. However, this metric ineracts in a non-trivial way with batch size: larger batches improve GPU utilization, but often reduce prefix alignment. 
 
-\paragraph{Optimization Objective.}
-We formalize this trade-off \\through a joint objective that captures both compute efficiency and memory locality. Specifically, we aim to maximize a reward signal that reflects end-to-end decoding throughput, which is jointly influenced by (i) the number of active requests in the batch, and (ii) the length of the shared prefix across those requests. Intuitively, the scheduler should prefer large batches when locality is weak, and prioritize prefix alignment when locality benefits dominate.
+\subsection{Challenges and Key Ideas}
+\label{sec:challenges_key_ideas}
+\paragraph{Challenge 1: When to stop growing the batch?}
+A natural strategy for improving throughput is to increase batch size. However, larger batches tend to include more heterogeneous requests, which reduce the shared prefix length and hurts memory locality. On the other hand, very small batches preserve strong prefix alignment but underutilize the GPU.
 
-The relative importance of these factors depends on the underlying hardware characteristics, such as the balance between compute capability and memory bandwidth. As a result, any fixed heuristic for batch construction is inherently suboptimal across different deployment settings.
+As described in \S\ref{sec:motivation}, we observe that moderately sized, highly homogeneous batches often outperform larger heterogeneous ones. The key question then becomes: what is the optimal batch size? More precisely, when should the scheduler stop adding requests to a batch?
 
-To address this, we design an adaptive scheduler that learns to balance this trade-off dynamically at runtime. We model batch formation as a sequential decision process and train a reinforcement learning (RL) policy that selects which requests to admit into the batch based on the current system state and observed performance.
+The answer depends on both the hardware (e.g., compute vs.\ memory balance) and the workload (e.g., prompt similarity), making any fixed heuristic inherently brittle.
 
-In addition to scheduling, efficiently identifying shared prefixes across requests is itself a key challenge. Existing approaches incur significant CPU overhead, particularly for long sequences, introducing stalls that negate the benefits of improved locality. To overcome this bottleneck, we introduce the \emph{Chunked Hash Tree}, a data structure that enables fast, low-overhead prefix detection and scales efficiently to long contexts.
+\paragraph{Key Idea 1: Learn the stopping decision via RL.}
+We model batch construction as a sequential decision process and use reinforcement learning (RL) to learn when to stop. At each step, the scheduler considers adding a new request and observes: (batch size, shared prefix length, prefix after addition, future-compatible requests).
 
-Together, these components form a unified system that jointly optimizes scheduling decisions and prefix detection to improve both compute utilization and memory efficiency during LLM inference.
+There are two signals which are particularly important: (i) \textbf{Shared prefix length:} the number of tokens common across all active requests. This directly captures temporal and spatial locality. (ii) \textbf{Future compatibility:} the number of waiting requests that share the same prefix up to the new level. This indicates how many future additions can be made at \emph{zero additional locality cost}.
 
+To build intuition, consider the following example. Suppose the current batch shares a prefix of length 10. A candidate request would reduce this to 8 (a loss of 2 tokens), which appears undesirable. Howeover, if there are 5 additional waiting requests that also match this shorter prefix, then this one-time loss can be amortized over multiple future additions. In such cases, accepting a small immediate loss can lead to better overall throughput.
+
+The RL policy learns to balance exactly these trade-offs, optimizing directly for decode throughput and adapting automatically to hardware and workload characteristics.
+
+\paragraph{Challenge 2: Efficiently identifying prefix overlap.}
+To make good scheduling decisions, the system must repeatedly answer: \emph{which waiting request shares the largest prefix with the current batch?} Since scheduling decisions occur frequently and the waiting queue may contain thousands of requests with long prompts, detecting prefix overlap must be extremely fast and impose minimal CPU overhead.
+
+Modern inference systems already exploit prefix sharing for KV-cache reuse. As shown in \S\ref{sec:background}, vLLM~\cite{kwon2023efficient} uses Merkle Trees, while SGLang~\cite{zheng2024sglangefficientexecutionstructured} and BatchLLM~\cite{zheng2025batchllmoptimizinglargebatched} use radix trees to detect prefix sharing. Our scheduler, however, has a different objective: we do not need to store or manage KV-cache blocks; instead, we only need a lightweight way to estimate how much prefix overlap exists between requests so that we can select the best request to add to the batch. While a radix tree precisely captures prefix sharing, it incurs significant overhead; every insertion may trigger node splitting, and finding the best matching waiting request requires a DFS traversal that is $O(W)$ in the worst case, where $W$ is the number of waiting requests. For a scheduler making frequent decisions over thousands of long-prompt requests, that is quite expensive. Similarly, Merkle-style hash chains introduce unnecessary sequential dependencies during hash computation and expose more structure than the scheduler actually requires.
+
+We start with a simple question: can we move away from trees? Instead of representing prefixes as paths in a tree, we divide each request into fixed-size chunks and compute prefix hashes at chunk boundaries. Each request is now represented as a sequence of hashes, and the active batch induces a \emph{working set} of hashes currently in use. This reframes the problem from tree traversal to set overlap: \emph{which request has the maximum overlap with the current working set?}
+
+This shift eliminates structural overheads such as node splits and DFS traversal. An additional advantage of this design is that hash computation can be naturally batched and parallelized. Because chunks are processed independently, their hash contributions can be computed separately and later combined to obtain the cumulative prefix hashes. This pattern is similar in spirit to techniques such as online softmax, where partial statistics are computed over blocks and then merged to produce the final result. In contrast, Merkle-style hash chains require sequential computation because each hash depends on the previous one.
+
+A straightforward solution is to scan all waiting requests and count how many of their hashes appear in the working set. The request with the highest overlap is selected. While correct, this approach requires $O(W \cdot C)$ work per decision (where $C$ is the number of chunks), which is too expensive for high-frequency scheduling.
+
+\paragraph{Key Idea 2: Incremental overlap tracking via missing counts.}
+To avoid repeated rescanning, we maintain for each request a \emph{missing count}: the number of its chunks not present in the working set.
+
+Crucially, this count only changes when the working set changes (i.e., when requests are activated or finished). Instead of recomputing overlap from scratch, we update these counts incrementally. This reduces the problem to finding the request with the smallest missing count.
+
+\paragraph{Key Idea 3: Fast retrieval via lazy heap.}
+To efficiently identify the best request, we maintain a min-heap over missing counts. When counts change, we push updated entries and use lazy deletion to skip stale ones.
+
+This brings the selection cost down to $O(\log W)$ while keeping updates proportional only to affected requests.
+
+The resulting design has two tightly coupled components: (i) A \emph{Chunked Hash representation} that transforms prefix matching into a lightweight set-overlap problem and exposes both current locality (shared prefix length) and future opportunities (compatible requests). (ii) A \emph{learning-based scheduler} that uses these signals to decide when to stop batch construction. Together, they enable the system to construct batches that are both compute-efficient and locality-aware.
 
 \subsection{System Overview} 
 \label{sec:system_overview}
-Figure~\ref{fig:pipeline} illustrates the overall pipeline of our scheduling system. The goal of the scheduler is to construct batches that both keep the GPU well utilized and preserve spatial-temporal locality for the KV cache. To achieve this, our design combines two main components:
-(i) a lightweight prefix-tracking data structure called \emph{Chunked Hash Tree (CHT)} and
-(ii) a learning-based policy that decides when batch construction should stop.
+Figure~\ref{fig:pipeline} illustrates the overall pipeline of our scheduling system. Our is to construct batches that simultaneously (i) keep the GPU well utilized and (ii) maximize the shared prefix length across requests, thereby improving temporal and spatial locality.
 
-\paragraph{Request model.}
-We consider an inference server that continuously receives requests. Each request consists of a prompt (a sequence of input tokens) followed by autoregressive generation. Processing a request involves two phases: prefill (encoding the prompt) and decode (generating output tokens step by step).
-At any point in time, a request is in one of three states:
-(i) \emph{waiting}: requests that have not yet been scheduled,
-(ii) \emph{active}: requests that are currently being processed on the GPU—this includes both prompt prefill and subsequent decoding, and
-(iii) \emph{finished}: requests whose generation has been fully completed.
+\paragraph{System model.}
+We consider an inference server that continuously receives requests. Each request consists of a prompt (input tokens) followed by autoregressive decoding. Execution proceeds in iterations, where each iteration processes either prompt tokens (prefill) or generates one token per active request (decode). 
+At any time, requests are partitioned into three sets:
+(i) \emph{Waiting} ($W$): requests that have not yet been scheduled,
+(ii) \emph{Active} ($A$): requests currently being processed on the GPU, and
+(iii) \emph{Finished}: requests whose generation has completed.
+
 The scheduler operates in repeated execution steps. In each step, it incrementally constructs a batch by selecting requests from the waiting queue and activating them. Once the batch is finalized, it is executed on the GPU for one iteration, which may correspond to either processing prompt tokens (prefill) or generating the next token for active decoding requests.
 
-\paragraph{Prefix-aware request selection.} The first challenge is identifying which waiting request should be added next to the batch. Ideally, we want to add requests whose prefixes overlap with those of the already active requests, since this increases temporal and spatial locality. To support this efficiently, we introduce \emph{Chunked Hash Tree}. Instead of comparing token sequences directly, each request is represented using a compact vector of cumulative prefix hashes computed at fixed token intervals. These hashes allow the scheduler to quickly detect shared prefixes across requests. The CHT maintains a working set that represents the prefixes currently referenced by active requests and tracks how much prefix overlap each waiting request has with this working set. Using this information, the scheduler can efficiently identify the waiting request that maximizes our joint objective function.
+Each request is represented as a sequence of $C$ prefix hashes (chunks), derived from its token sequence of length $N$. The scheduler maintains a working set of hashes induced by the active set $A$, which defines the current shared prefix structure.
 
-\paragraph{Batch construction loop.} Using the CHT, the scheduler repeatedly retrieves the best candidate request from the waiting queue (the one with the highest prefix overlap) and considers adding it to the current batch. Each candidate provides useful statistics, such as the current batch size, the shared-prefix length across all active requests before and after the addition, and the number of waiting requests that could benefit from the same prefix. At this point, the scheduler must decide whether to add the request or stop building the batch. Adding more requests improves GPU utilization but may reduce prefix locality if the shared prefix becomes smaller.
+\paragraph{Unified request representation.}
+All incoming requests are immediately converted into their chunked hash representation and inserted into the scheduler's data structures. Concretely, each request contributes:
+(i) its hash vector,
+(ii) entries in a reverse index mapping hashes to requests, and 
+(iii) a missing count that tracks how much of its prefix is not yet covered by the current working set.
 
-\paragraph{Learning when to stop.} We formulate this decision as a learning problem. The scheduler observes a state that summarizes the current batch size and prefix-sharing statistics, and a reinforcement learning policy chooses between two actions: \textsc{Add} the candidate request to the batch or \textsc{Stop} and dispatch the batch for execution. After the batch is executed, the system observes the resulting performance (e.g., throughput) and uses it as feedback to update the policy. Over time, the policy learns how to balance GPU utilization and prefix locality for different workload conditions.
+A global min-heap over missing counts allows the scheduler to efficiently retrieve the request with maximum overlap (i.e., minimum missing chunks) with the active batch.
 
-\paragraph{End-to-end flow.} Putting everything together, the pipeline works as follows. Incoming requests are first inserted into the CHT, where their prefix hashes are computed and indexed. During batch construction, the scheduler repeatedly calls \textsc{FindBest} to retrieve the best candidate request based on prefix overlap. The reinforcement learning policy then decides whether to activate the request and add it to the batch or to stop. Once the batch is finalized, it is dispatched for execution on the GPU. The observed throughput is then used to update the policy for future scheduling decisions. 
+\paragraph{Batch construction loop.} 
+The scheduler builds batches incrementally in a loop: (i) \textbf{Select candidate.} Using the heap, the scheduler retrieves the waiting request with the highest overlap with the current working set (via \textsc{FindBest}). (ii) \textbf{Compute metrics.} For this candidate, the system computes: current shared prefix length $|P|$, the prefix length after hypothetical addition, and the number of waiting requests that would remain compatible at that level. (iii) \textbf{Decision (RL policy).} These signals are passed to the policy, which decides whether to \textsc{Add} the request or \textsc{Stop} batch construction. (iv) \textbf{Update state.} If \textsc{Add}, the request is activated, the working set is updated, and overlap statistics are incrementally maintained. Otherwise, the batch is finalized.
 
-The following subsections describe the Chunked Hash Tree data structure in detail and then present the batching and reinforcement learning policies built on top of it.
+This loop continues until the policy decides to stop or no suitable candidates remain.
+
+\paragraph{Execution and iteration.}
+Once a batch is finalized, it is dispatched to the GPU for one execution step. After execution, the completed requests are removed from the active set, updating the working set accordingly, and the batch construction resumes by repeating the same loop. This creates a continuous scheduling cycle where batches are formed, executed, and updated in an online fashion.
+
+\paragraph{End-to-end flow.}
+Putting everything together, the system operates as follows. Incoming requests are inserted into the chunked hash structure and indexed in the heap. The scheduler repeatedly selects the best candidate based on prefix overlap, queries the policy for a decision, and either activates the request or stops batch construction. The resulting batch is executed, and the observed throughput is used to refine future decisions. This process repeats continuously as new requests arrive and existing ones complete.
+
+The following subsections describe the prefix-overlap data structure in detail, followed by the batching policies built on top of it.
 
 \subsection{Chunked Hash Tree}
-\textcolor{red}{a better name, without a tree, for uniqueness. Do we need to make it a separate section?}
-
-\textcolor{red}{starting with a brief overview}
-
-\textcolor{red}{need to mention that implemented in C++ (can do so in the section integration with vllm)}
 
 \begin{figure*}[t]
 \centering
@@ -82,46 +118,9 @@ The following subsections describe the Chunked Hash Tree data structure in detai
 \label{fig:chunked_hash_tree_workflow}
 \end{figure*}
 
+Before diving into the operations of the Chunked Hash Tree (CHT), we must define how requests are represented and token sequences are converted into a compact representation that captures the prefix sharing structure. As shown in Figure~\ref{fig:chunked_hash_tree_prefix_representation}, given a request with a token sequence $T = (t_1, t_2, \dots, t_N)$, we partition $T$ into non-overlapping chunks of size $K$ (e.g., $K = 50$). For each chunk boundary $\ell = 1, \dots C$ where $C = \lceil N/K \rceil$, we compute a \emph{cumulative prefix hash} at each boundary\\ $h_\ell = \mathrm{hash}(t_1, t_2, \dots, t_{\min(\ell K,\, N}), \quad \ell = 1, \dots, C$.
 
-\subsubsection*{Motivation and Design Evolution} The scheduler repeatedly needs to answer a simple question: among all waiting requests, which one shares the largest prefix with the currently active batch? Requests that share longer prefixes will lead to higher temporal and spatial locality. Since scheduling decisions occur frequently and the waiting queue may contain thousands of requests with long prompts, detecting prefix overlap must be extremely fast and impose minimal CPU overhead.
-
-Modern inference systems already exploit prefix sharing for KV-cache reuse. As shown in \S\ref{sec:background}, vLLM~\cite{kwon2023efficient} uses Merkle Trees, while SGLang~\cite{zheng2024sglangefficientexecutionstructured} and BatchLLM~\cite{zheng2025batchllmoptimizinglargebatched} use radix trees to detect prefix sharing. Our scheduler, however, has a different objective: we do not need to store or manage KV-cache blocks; instead, we only need a lightweight way to estimate how much prefix overlap exists between requests so that we can select the best request to add to the batch. While a radix tree precisely captures prefix sharing, it incurs significant overhead; every insertion may trigger node splitting, and finding the best matching waiting request requires a DFS traversal that is $O(W)$ in the worst case, where $W$ is the number of waiting requests. For a scheduler making frequent decisions over thousands of long-prompt requests, that is quite expensive. Similarly, Merkle-style hash chains introduce unnecessary sequential dependencies during hash computation and expose more structure than the scheduler actually requires.
-
-We instead want a structure centered around a \emph{working set}: the set of prefix chunks currently held by active requests; so that we can directly ask: ``which waiting request has the most overlap with the already running batch?'' This reframes the problem from tree traversal to set intersection. To that end, rather than maintaining a strict hash chain, we divide the token sequence into fixed-size chunks and compute prefix hashes at chunk boundaries. An additional advantage of this design is that hash computation can be naturally batched and parallelized. Because chunks are processed independently, their hash contributions can be computed separately and later combined to obtain the cumulative prefix hashes. This pattern is similar in spirit to techniques such as online softmax, where partial statistics are computed over blocks and then merged to produce the final result. In contrast, Merkle-style hash chains require sequential computation because each hash depends on the previous one.
-
-The simplest realization is to represent each request as a set of hashed prefix chunks, maintain the working set explicitly, and, on each scheduling decision, scan all waiting requests and count how many of their chunks appear in the working set. The request with the highest overlap wins. This is correct and easy to implement, but finding the best request is $O(W \cdot C)$ --- linear in the number of waiting requests times chunks per request, since we rescan everything on every call.
-
-We can avoid rescanning by maintaining a \emph{missing count} per waiting request: the number of its chunks that are absent from the working set. This count only needs to change when the working set itself changes, i.e., upon activation or completion of a request. Instead of recomputing overlaps from scratch, we propagate small delta updates. Finding the best request then becomes a linear scan over waiting requests to find the minimum missing count — $O(W)$.
-
-To eliminate the linear scan, we maintain a min-heap ordered by missing count. When a chunk enters or leaves the working set, we update the missing counts of affected waiting requests and push new entries to the heap. However, in-place heap updates are expensive, so we use \emph{lazy deletion}: push a new entry with the updated count, and skip stale entries (where the heap's recorded count differs from the current missing cache) when popping. This reduces the complexity to $O(\log W)$ amortized, while keeping activation and completion costs proportional only to the number of \emph{affected} waiting requests per chunk—typically far smaller than $W$.
-
-The resulting structure, which we call the \emph{Chunked Hash Tree} (CHT), is a scheduling data structure that maximizes KV-cache prefix reuse across concurrent inference requests. We first describe how requests are represented as hash vectors, then introduce the data structures that track the scheduler state, and finally walk through each operation in turn.
-
-
-\subsubsection*{Hash Computation}
-Before a request can be inserted into the scheduler, its token sequence must be converted into a compact representation that captures the prefix-sharing structure.  As shown in Figure~\ref{fig:chunked_hash_tree_prefix_representation}, given a request with a token sequence $T = (t_1, t_2, \dots, t_N)$, we partition $T$ into non-overlapping chunks of size $K$ (e.g., $K = 50$). For each chunk boundary $\ell = 1, \dots C$ where $C = \lceil N/K \rceil$, we compute a \emph{cumulative prefix hash} at each boundary\\ $h_\ell = \mathrm{hash}(t_1, t_2, \dots, t_{\min(\ell K,\, N}), \quad \ell = 1, \dots, C$.
-
-Because the hash is cumulative, two requests share the same $h_\ell$ if and only if their first $\ell K$ tokens are identical, which is precisely the condition under which their KV-cache prefixes can be shared. Each request $r$ is therefore represented as an ordered hash vector $H_r = (h_1^r, h_2^r, \dots, h_C^r)$.
-
-Algorithm~\ref{alg:compute_hashes} details the hash computation. We use an incremental xxHash-64 state so that each token is processed exactly once, making the total cost $O(N)$ regardless of the number of chunked boundaries.
-
-\begin{algorithm}[H]
-\caption{$\textsc{ComputeHashes}(T, K)$}
-\label{alg:compute_hashes}
-\begin{algorithmic}[1]
-\Require Token sequence $T = (t_1, \dots, t_N)$; chunk size $K$
-\Ensure Cumulative prefix-hash vector $H = (h_1, \dots, h_C)$
-\State $H \gets []$;\quad $C \gets \lceil N / K \rceil$
-\State Initialise incremental \textsc{xxHash-64} state $s$
-\For{$i \gets 1$ \textbf{to} $N$}
-  \State Feed $t_i$ into $s$
-  \If{$i \bmod K = 0$ \textbf{or} $i = N$}
-    \State $H.\textsc{Append}(\textsc{Digest}(s))$
-  \EndIf
-\EndFor
-\State \Return $H$
-\end{algorithmic}
-\end{algorithm}
+Because the hash is cumulative, two requests share the same $h_\ell$ if and only if their first $\ell K$ tokens are identical, which is precisely the condition under which their KV-cache prefixes can be shared. Each request $r$ is therefore represented as an ordered hash vector $H_r = (h_1^r, h_2^r, \dots, h_C^r)$. We use an incremental xxHash-64 state so that each token is processed exactly once, making the total cost $O(N)$ regardless of the number of chunked boundaries.
 
 \begin{figure}[H]
 \centering
@@ -130,209 +129,62 @@ Algorithm~\ref{alg:compute_hashes} details the hash computation. We use an incre
 \label{fig:chunked_hash_tree_prefix_representation}
 \end{figure}
 
-\subsubsection*{Data Structures}
-The CHT maintains the following components that together capture the full scheduler state:
+\subsubsection*{Inserting a request into Chunked Hash Tree}
 
-\paragraph{Hash vectors.} A map from request ID to its cumulative prefix-hash vector $H_r = (h_1^r, \dots, h_C^r)$ is stored for every active and waiting request.
+$\textsc{Insert}$ is invoked as soon as a new request $r$ arrives at the scheduler. The goal is to register the request, compute its prefix hashes, and determine how well it aligns with the current working set.
 
-\paragraph{Reference counts.} \texttt{ref} maps each $h$ to the number of currently \emph{active} requests that contain that hash in their hash vectors. 
+We begin by computing the cumulative prefix-hash vector
+\[
+H_r = (h_1^r, \dots, h_C^r) \gets \textsc{ComputeHashes}(T, K),
+\]
+and storing it in \texttt{request\_hashes}, a map from request IDs to their hash vectors.
 
-\paragraph{Working set.} \texttt{working\_set} is the set of hashes that belong to at least one \emph{active} request. A hash is in the working set if and only if its reference count is greater than zero.
+At the same time, we maintain a \emph{reverse index} \texttt{waiting}, which maps each hash $h$ to the set of \emph{waiting} requests that contain $h$. As we iterate over $H_r$, we insert $r$ into \texttt{waiting[$h$]} for every $h \in H_r$.
 
-\paragraph{Missing cache.} \texttt{miss} maps each \emph{waiting} request $r$ to an integer $m_r$, defined as the number of hashes in $H_r$ that are \emph{not} currently in the working set. Intuitively, $m_r$ counts how many of $r$'s prefix chunks would need to be freshly computed (i.e., are not already cached by the active batch). A request with $m_r = 0$ has its entire prefix covered by the current active batch and is therefore the most preferable candidate to admit next.
+To evaluate how well $r$ matches the current active batch, we use the \texttt{working\_set}, which is defined as a set of tuples $(\ell, h)$ representing prefix hashes at specific levels that are currently covered by active requests. 
 
-\paragraph{Waiting heap.} \texttt{waiting\_heap} is a min-heap of $(m_r, r)$ pairs, ordered by missing count $m_r$. It enables $O(\log W)$ retrieval of the waiting request with the smallest missing count, where $W$ is the number of waiting requests.
+Using this, we compute the \emph{missing count} $m_r$, defined as the number of levels $\ell$ such that $(\ell, h_\ell^r) \notin \mathit{working\_set}$. Intuitively, $m_r$ counts how many of $r$'s prefix chunks are not already cached by the active batch. A request with $m_r = 0$ has its entire prefix covered by the current active batch and is therefore the most preferable candidate to admit next. We store this value in the \texttt{miss} map.
 
-\paragraph{Reverse index.} \texttt{waiting} maps each hash $h$ to the set of waiting requests whose hash vector contains $h$, enabling $O(1)$ updates to \texttt{miss} when the working set changes.
+Finally, we insert the pair $(m_r, r)$ into \texttt{waiting\_heap}, a min-heap keyed by missing count. This allows efficient retrieval of the request that is most compatible with the current working set.
 
-\paragraph{Shared prefix chain.} \texttt{shared\_prefix\_chain} is a vector $P = (p_1, \dots, p_L)$ recording the longest common hash prefix shared by all currently active requests. $P$ is maintained incrementally rather than recomputed from scratch for every event, keeping the amortized cost low. 
+Importantly, $\textsc{Insert}$ does \emph{not} modify reference counts or the working set. These are updated only when a request transitions from waiting to active.
 
+\subsubsection*{Adding a request to the active batch}
+As proposed in \S\ref{sec:challenges_key_ideas}, our key metric aims to find the number of chunks which are shared by \emph{all} requests of the active batch. In the hash tree, this corresponds to a root-anchored path that extends downward as long as every active request agrees on the hash at each level, and stops at the first level of disagreement. Since this path always starts at the root and is contiguous, it is completely determined by where it ends. We therefore maintain a single tuple $(\ell^*, h^*)$ — the \emph{shared prefix tip} — recording the depth and hash of its deepest node. An empty common prefix is denoted $\ell^* = 0$.
 
-\subsubsection*{Request Insertion (Algorithm~\ref{alg:insert})}
-$\textsc{Insert}$ is called the moment a new request arrives at the scheduler. It computes $H_r$ via $\textsc{ComputeHashes}$, stores the hash vector, and for each hash $h \in H_r$, registers $r$ in the reverse index $\mathit{waiting}[h]$. Crucially, it also computes the initial missing count $m_r$: the number of hashes in $H_r$ not yet present in the working set. This count is stored in $\mathit{miss}[r]$ and the pair $(m_r, r)$ is pushed onto the waiting heap. No reference counts are modified at this stage; that happens only when the request is activated.
+When request $r$ is promoted into the active batch, two things must happen: the working set must be updated to reflect $r$'s prefixes, and the shared prefix tip must be recomputed with $r$.
 
-\begin{algorithm}[H]
-\caption{$\textsc{Insert}(r, T)$}
-\label{alg:insert}
-\begin{algorithmic}[1]
-\Require Request $r$; token sequence $T$; working set $\mathit{working\_set}$; reverse index $\mathit{waiting}$; min-heap $\mathit{waiting\_heap}$
-\Ensure $r$ registered and ready for scheduling
-\State $H_r \gets \textsc{ComputeHashes}(T, K)$
-\State $\mathit{request\_hashes}[r] \gets H_r$
-\State $m_r \gets 0$
-\State $\mathit{waiting\_requests} \gets \mathit{waiting\_requests} \cup \{r\}$
-\For{$\ell \gets 1$ \textbf{to} $|H_r|$}
-  \If{$h_\ell^r \notin \mathit{working\_set}$}
-    \State $m_r \gets m_r + 1$
-  \EndIf
-  \State $\mathit{waiting}[h_\ell^r] \gets \mathit{waiting}[h_\ell^r] \cup \{r\}$
-\EndFor
-\State $\mathit{miss}[r] \gets m_r$
-\State $\mathit{waiting\_heap}.\textsc{Push}(m_r,\; r)$
-\end{algorithmic}
-\end{algorithm}
+For the working set, any prefix hash of $r$ that is newly entering the working set (ref count zero) is inserted, and every waiting request that shares that hash gets its miss count decremented — it now has one fewer prefix chunk to warm up. Reference counts are incremented for all levels regardless.
 
-\paragraph{Activation (Algorithm~\ref{alg:activate}).} 
-$\textsc{Activate}$ is called when the scheduler moves a request from the waiting queue into the active decoding batch. For each hash $h$ in $H_r$, if $h$ transitions from absent to present in the working set (i.e., its reference count goes from 0 to 1), then $h$ is added to the working set and all waiting requests that contain $h$ have their missing count decremented by one; updated pairs are pushed onto the heap. This eager propagation keeps $\mathit{miss}$ accurate for all waiting requests without requiring a full rescan. The shared prefix chain is then updated incrementally via $\textsc{UpdateChainOnActivate}$ (Algorithm~\ref{alg:update_chain_activate}).
+For the shared prefix tip, the key observation is that admitting a new request can only \emph{shorten} the common prefix, never lengthen it. The new tip therefore lies at some level $\leq \min(\ell^*, |H_r|)$. To find it, we need the deepest level where $r$ agrees with the existing tip hash and that node is in the working set — this is exactly the LCA of all active request leaves in the hash trie. Searching from the bottom up finds this immediately at the first hit, allowing an early stop.
 
-\begin{algorithm}[H]
-\caption{$\textsc{Activate}(r)$}
-\label{alg:activate}
-\begin{algorithmic}[1]
-\Require Request $r$ with hash vector $H_r$; ref counts $\mathrm{ref}$; working set $\mathit{working\_set}$; reverse index $\mathit{waiting}$; missing cache $\mathit{miss}$; min-heap $\mathit{waiting\_heap}$
-\Ensure Updated $\mathrm{ref}$, $\mathit{working\_set}$, $\mathit{miss}$; updated shared prefix chain
-\State $\mathit{waiting\_requests} \gets \mathit{waiting\_requests} \setminus \{r\}$;
-\State       $\mathit{active} \gets \mathit{active} \cup \{r\}$
-\State $\mathit{added} \gets 0$
-\For{$\ell \gets 1$ \textbf{to} $|H_r|$}
-  \If{$\mathrm{ref}[h_\ell^r] = 0$}
-  \Comment{$h_\ell^r$ newly enters working set}
-  \State $\mathit{working\_set} \gets \mathit{working\_set} \cup \{h_\ell^r\}$
-  \For{$w \in \mathit{waiting}[h_\ell^r]$}
-      \If{$w \notin \mathit{active}$ \textbf{and} $w \in \mathit{miss}$}
-        \State $\mathit{miss}[w] \gets \mathit{miss}[w] - 1$
-        \State $\mathit{waiting\_heap}.\textsc{Push}(\mathit{miss}[w],\; w)$
-      \EndIf
-    \EndFor
-    \State $\mathit{added} \gets \mathit{added} + 1$
-  \EndIf
-  \State $\mathrm{ref}[h_\ell^r] \gets \mathrm{ref}[h_\ell^r] + 1$
-\EndFor
-\State $\textsc{UpdateChainOnActivate}(r)$
-\State \Return $(\mathit{added},\; |H_r|)$
-\end{algorithmic}
-\end{algorithm}
+Both updates are performed in a single backward pass over $H_r$. We iterate from level $|H_r|$ down to $1$, updating the working set and miss counts at every level. Once we reach $\ell_{\mathrm{tip}} = \min(\ell^*, |H_r|)$, we additionally begin checking for LCA agreement at each level. The first level where $h_\ell^r = h^*$ and $(\ell, h_\ell^r) \in \mathit{working\_set}$ is the new tip; we record it and continue the loop — without breaking — so that all remaining levels still receive their working set updates.
 
-\paragraph{Updating the shared prefix chain on activation (Algorithm~\ref{alg:update_chain_activate}).}
-It is called at the end of every $\textsc{Activate}$ after $r$ has been added to the active set. It keeps the shared prefix chain consistent without recomputing it from scratch. Because adding a new request can only \emph{shorten} the common prefix (never lengthen it), we must find the longest prefix of the current chain $P$ that $H_r$ also satisfies.
+\subsubsection*{Removing a request from the active batch}
+$\textsc{Finish}$ is called when request $r$ completes. It is the symmetric counterpart of $\textsc{AddToBatch}$: where activation could only shorten the shared prefix, completion can only \emph{lengthen} it, since one fewer request needs to agree.
 
-As described before, each hash $h_\ell$ is produced by a cumulative (prefix) hasher: $h_\ell$ is the digest of all tokens from position $1$ through $\ell \cdot C$, where $C$ is the chunk size. Consequently, if two hash vectors agree at level $\ell$, they necessarily agree at every level $1, \ldots, \ell-1$ as well, because those earlier digests are sub-sequences of the same cumulative stream. Formally, we define the predicate $\mathcal{M}(\ell) \;=\; \bigl[h_\ell^r = p_\ell\bigr]$. The cumulative property guarantees that $\mathcal{M}$ is \emph{monotone decreasing} on the index set $\{1, \dots, \min(L, |H_r|)\}$: once $\mathcal{M}(\ell)$ is false for some $\ell^*$, it is false for all $\ell > \ell^*$. This monotone structure is exactly the condition required for binary search to be correct: we seek the largest $k$ such that $\mathcal{M}(k)$ is true, and binary search finds it in $O(\log \min(L, |H_r|))$ comparisons rather than the $O(\min(L, |H_r|))$ required by a linear scan.
+For the working set, we decrement the ref count of each hash in $H_r$. Any hash whose ref count drops to zero leaves the working set, and every waiting request containing that hash has its miss count incremented because that prefix chunk is no longer in the working set.
 
-\begin{algorithm}[H]
-\caption{$\textsc{UpdateChainOnActivate}(r)$}
-\label{alg:update_chain_activate}
-\begin{algorithmic}[1]
-\Require Request $r$ with hash vector $H_r$; current shared chain $P$ of length $L$; active set $\mathit{active}$
-\Ensure $P$ reflects the longest common prefix of all active requests
-\If{$|\mathit{active}| = 1$}
-    \Comment{$r$ is the only active request}
-    \State $P \gets H_r$;\quad $L \gets |H_r|$
-    \State \Return
-\EndIf
-\State $L \gets \textsc{BinarySearch}\!\left(H_r,\, P,\, \min(L,\, |H_r|)\right)$
-\Comment{largest $k$ s.t.\ $h_k^r = p_k$}
-\State Truncate $P$ to its first $L$ entries
-\end{algorithmic}
-\end{algorithm}
+For the shared prefix tip, after removing $r$ the remaining active requests may now agree on a longer common prefix than before. Starting from $\ell^* + 1$, we walk forward level by level, checking whether all remaining active requests share the same hash at each level. The first level of disagreement — or the shortest active request — ends the extension. This forward scan is cheap in practice since the tip rarely moves more than a few levels.
 
-\paragraph{Completion (Algorithm~\ref{alg:finish}).} $\textsc{Finish}$ is called when the model has generated the final token for request $r$, and the request is removed from the active batch. For each hash $h$ in $H_r$, its reference count is decremented; if it reaches zero, $h$ is evicted from the working set, and all waiting requests containing $h$ have their missing count incremented by one, with updated pairs pushed onto the heap. The shared prefix chain is then updated via $\textsc{UpdateChainOnFinish}$, since removing a request can only lengthen the common prefix.
-
-
-\begin{algorithm}[H]
-\caption{$\textsc{Finish}(r)$}
-\label{alg:finish}
-\begin{algorithmic}[1]
-\Require Request $r$ with hash vector $H_r$; ref counts $\mathrm{ref}$; working set $\mathit{working\_set}$; reverse index $\mathit{waiting}$; missing cache $\mathit{miss}$; min-heap $\mathit{waiting\_heap}$
-\Ensure Updated $\mathrm{ref}$, $\mathit{working\_set}$, $\mathit{miss}$; reverse index cleaned; updated shared prefix chain
-\State $\mathit{active} \gets \mathit{active} \setminus \{r\}$
-\State $\mathit{evicted} \gets 0$
-\For{$\ell \gets 1$ \textbf{to} $|H_r|$}
-  \State $\mathrm{ref}[h_\ell^r] \gets \mathrm{ref}[h_\ell^r] - 1$
-   \If{$\mathrm{ref}[h_\ell^r] = 0$}
-   \State $\mathit{working\_set} \gets \mathit{working\_set} \setminus \{h_\ell^r\}$
-    \For{$w \in \mathit{waiting}[h_\ell^r]$}
-      \If{$w \notin \mathit{active}$ \textbf{and} $w \in \mathit{miss}$}
-        \State $\mathit{miss}[w] \gets \mathit{miss}[w] + 1$
-        \State $\mathit{waiting\_heap}.\textsc{Push}(\mathit{miss}[w],\; w)$
-      \EndIf
-    \EndFor
-    \State $\mathit{evicted} \gets \mathit{evicted} + 1$
-  \EndIf
-\EndFor
-\State $\textsc{UpdateChainOnFinish}(r)$
-\State $\textsc{Remove}(r)$
-  \Comment{cleans $\mathit{waiting}$ index and $\mathit{request\_hashes}$}
-\State \Return $(\mathit{evicted},\; |H_r|)$
-\end{algorithmic}
-\end{algorithm}
-
-\paragraph{Updating the shared prefix chain on completion (Algorithm~\ref{alg:update_chain_finish})}
-It is called inside $\textsc{Finish}$, \emph{before} $r$'s hash vector is erased, after $r$ has been removed from the active set. Removing a request can only \emph{extend} the common prefix. We therefore try to grow the chain level by level beyond its current length by checking whether all remaining active requests agree on each successive hash. Two special cases are handled up front: if no requests remain, the chain is cleared; if exactly one request remains, the chain is set to its full hash vector.
-
-\begin{algorithm}[H]
-\caption{$\textsc{UpdateChainOnFinish}(r)$}
-\label{alg:update_chain_finish}
-\begin{algorithmic}[1]
-\Require Active set $\mathit{active}$ (already excludes $r$); current shared chain $P$ of length $L$; hash vectors $\mathit{request\_hashes}$
-\Ensure $P$ extended as far as all remaining active requests agree
-\If{$\mathit{active} = \emptyset$}
-\State $P \gets []$;\quad $L \gets 0$;\quad \Return
-\EndIf
-\If{$|\mathit{active}| = 1$}
-  \State $\textsc{RecomputeChain}()$;\quad \Return
-  \Comment{sets $P$ to the sole remaining request's full hash vector}
-\EndIf
-\State $M \gets \min_{q \in \mathit{active}} |H_q|$
-  \Comment{maximum possible extension}
-\For{$\ell \gets L + 1$ \textbf{to} $M$}
-  \State $h^* \gets h_\ell^{q_0}$ for an arbitrary $q_0 \in \mathit{active}$
-  \If{$\forall\, q \in \mathit{active} : h_\ell^q = h^*$}
-    \State $P.\textsc{Append}(h^*)$;\quad $L \gets L + 1$
-  \Else
-    \State \textbf{break}
-  \EndIf
-\EndFor
-\end{algorithmic}
-\end{algorithm}
- 
+Both updates are performed in a single forward pass over $H_r$ for the working set, followed by a short forward scan for the tip extension. The tip scan begins from $\ell^* + 1$ and consults the working set directly: a level $\ell$ can extend the tip only if $(\ell, h)$ is in the working set with ref count equal to $|\mathit{active}|$, meaning every remaining active request carries that hash.
 
 
 
 
-\subsubsection*{Finding the Best Request (Algorithm~\ref{alg:find_best})}
-$\textsc{FindBest}$ is called by the batch-construction loop whenever the scheduler needs to select the next candidate request to admit. The key insight is that the best candidate is the waiting request whose prefix chunks are \emph{most covered} by the current active batch, i.e., the one with the smallest missing count $m_r$. The algorithm extracts the minimum-missing-count entry from the waiting heap, skipping stale entries (those whose recorded missing count no longer matches $\mathit{miss}$ due to lazy deletion). Three auxiliary statistics are then computed to guide the caller's admission decision: 
-(i) $\mathit{chunks\_before}$, the shared prefix chain length before the candidate is admitted; 
-(ii) $\mathit{chunks\_after}$, the chain length that would result after admitting the candidate, computed by comparing $H_{r^*}$ with $P$; and 
-(iii) $\mathit{peers}$, the number of other waiting requests sharing the prefix up to level $\mathit{chunks\_after}$, indicating the future benefit that the admission would unlock.
+
+
+\subsubsection*{Finding the Best Request}
+
+The goal of $\textsc{FindBest}$ is to identify the waiting request that would best complement the current active batch. The key insight is that the best candidate is the waiting request whose prefix chunks are \emph{most covered} by the current active batch, i.e., the one with the smallest missing count $m_r$.
+
+The primary selection criterion is the \emph{missing count} $m_r$: the number of prefix chunks of $r$ not yet in the working set. The waiting heap is a min-heap keyed by $m_r$, so the best candidate surfaces at the top. Since the heap uses lazy deletion, stale entries (where the recorded miss count no longer matches $\mathit{miss}[r]$) are skipped until a fresh entry is found.
+
+Once the best candidate $r^*$ is identified, we compute three statistics to inform the caller's admission decision. The first is $\ell^*_{\mathit{before}}$, the current tip depth before admitting $r^*$. The second is $\ell^*_{\mathit{after}}$, the tip depth that would result after admitting $r^*$, found by walking backward from $\min(\ell^*, |H_{r^*}|)$ until $r^*$'s hash matches the working set — the same LCA logic as $\textsc{AddToBatch}$, but without committing the update. The third is $\mathit{peers}$: the number of other waiting requests that already share the prefix down to depth $\ell^*_{\mathit{after}}$, indicating how many future admissions would benefit at no additional tip cost.
+
+The $\mathit{peers}$ count captures an amortization argument. If admitting $r^*$ shrinks the tip by $\Delta = \ell^*_{\mathit{before}} - \ell^*_{\mathit{after}} > 0$ levels, that is a one-time locality cost. But if $\mathit{peers} = k$ other waiting requests already share a prefix of depth $\ell^*_{\mathit{after}}$, those $k$ requests can be admitted immediately after at zero further tip cost — so the cost $\Delta$ is amortized over $k + 1$ admissions. $\textsc{FindBest}$ surfaces this trade-off for free, leaving the admission policy a single focused question: is this cost worth it right now? How different policies answer that question is the subject of \S\ref{sec:batching_rl}.
 
 The result is cached and reused on repeated calls until the working set or waiting queue changes, avoiding redundant heap traversals.
-
-The computation of $\mathit{peers}$ serves a deeper purpose than bookkeeping: it tells the admission policy whether a chain-shrinking addition is actually worth it. If admitting $r^*$ reduces the shared chain by $\Delta = \mathit{chunks\_before} - \mathit{chunks\_after} > 0$, that looks like a pure locality cost. But if $\mathit{peers} = k$ other waiting requests already share a prefix of depth $\mathit{chunks\_after}$, those $k$ requests can follow at zero additional chain cost---so the one-time tax of $\Delta$ is effectively spread over $k + 1$ admissions. The CHT computes this amortization argument for free at query time, leaving the admission policy a much simpler question: is this trade-off favorable right now? How different policies answer that question is the subject of \S\ref{sec:batching_rl}.
-
-
-\begin{algorithm}[H]
-\caption{$\textsc{FindBest}()$}
-\label{alg:find_best}
-\begin{algorithmic}[1]
-\Require Min-heap $\mathit{waiting\_heap}$ of $(m_r, r)$ pairs; missing cache $\mathit{miss}$; active set $\mathit{active}$; shared chain $P$ of length $L$
-\Ensure $(r^*,\;\mathit{chunks\_before},\;\mathit{chunks\_after},\;\mathit{peers})$ or $\bot$ if the waiting queue is empty
-\If{$\mathit{waiting\_requests} = \emptyset$}\ \Return $\bot$
-\EndIf
-\If{$\mathit{cache\_valid}$}\ \Return $\mathit{cached\_result}$
-\EndIf
-\While{$\mathit{waiting\_heap} \neq \emptyset$}
-\State $(m, r) \gets \mathit{waiting\_heap}.\textsc{Pop}()$
-  \If{$r \in \mathit{active}$}\ \textbf{continue}
-    \Comment{already activated}
-  \EndIf
-  \If{$r \notin \mathit{miss}$}\ \textbf{continue} \Comment{request no longer exists}
-  \EndIf
-  \If{$\mathit{miss}[r] \neq m$}\ \textbf{continue}
-    \Comment{stale heap entry}
-  \EndIf
-  \State $r^* \gets r$
-  \State $\mathit{chunks\_before} \gets L$
-  \State $\mathit{chunks\_after} \gets \textsc{ChainLengthWith}(r^*)$
-    \Comment{compare $H_{r^*}$ with $P$}
-  \State $\mathit{peers} \gets \textsc{WaitersAtLevel}(\mathit{chunks\_after})$
-  \State $\mathit{waiting\_heap}.\textsc{Push}(m, r^*)$
-    \Comment{restore entry for future calls}
-  \State Cache and \Return $(r^*,\;\mathit{chunks\_before},\;\mathit{chunks\_after},\;\mathit{peers})$
-\EndWhile
-\State \Return $\bot$
-\end{algorithmic}
-\end{algorithm}
-
 
 Figure~\ref{fig:chunked_hash_tree_workflow} shows a worked example of insertion,
 activation, and best-request selection. Figure~\ref{fig:shared_prefix_chain_workflow} shows how the shared prefix chain shrinks and extends upon activation and completion of requests.
@@ -373,20 +225,24 @@ activation, and best-request selection. Figure~\ref{fig:shared_prefix_chain_work
 \end{figure*}
 
 
+
 \subsubsection*{Optimizations}
+
 \paragraph{Result caching.}
-$\textsc{FindBest}()$ may be called repeatedly within a single scheduling round without any intervening state change.  We cache its last result—a four-tuple\\ $(r^*, \mathit{chunks\_before}, \mathit{chunks\_after}, \mathit{peers})$ and return it immediately on subsequent calls until a mutation invalidates the flag. 
+$\textsc{FindBest}()$ may be called repeatedly within a single scheduling round without any intervening state change. We cache its last result — a four-tuple \\ $(r^*,\, \ell^*_{\mathit{before}},\, \ell^*_{\mathit{after}},\, \mathit{peers})$ — and return it immediately on subsequent calls until any mutation (an activation, completion, or new insertion) invalidates the cache flag.
 
 \paragraph{Lazy heap updates.}
-The waiting heap uses \emph{lazy deletion}: when a request's missing count changes, we push a new $(m_r, r)$ entry rather than updating the existing one in place. Stale entries (where the recorded $m$ differs from $\mathit{miss}[r]$) are silently skipped during $\textsc{FindBest}$. This avoids the $O(W)$ cost of a linear heap search and keeps activation and completion at $O(C \cdot W_h \cdot \log W)$ total, where $W_h$ is the average number of waiting requests per hash.
+When a request's missing count changes, we push a fresh $(m_r, r)$ entry onto the heap rather than updating the existing one in place. Stale entries — where the recorded $m$ differs from $\mathit{miss}[r]$ — are silently skipped during $\textsc{FindBest}$. This avoids an $O(W)$ heap search on every miss-count change, keeping $\textsc{AddToBatch}$ and $\textsc{Finish}$ at $O(C \cdot W_h \cdot \log W)$, where $W_h$ is the average number of waiting requests sharing a given hash.
 
-\paragraph{Incremental shared prefix chain maintenance.}
-Recomputing the shared prefix chain from scratch after every activate or finish event would cost $O(A \cdot C)$, where $A$ is the active-set size. Instead, we exploit the fact that activation can only \emph{shrink} the chain and completion can only \emph{grow} it. On activation, we truncate $P$ at the first mismatch with the new request's hash vector in $O(L)$; on completion, we attempt a forward extension beyond the current chain length, stopping at the first disagreement, again in $O(L + C_{\max})$.
+\paragraph{Incremental shared prefix tip maintenance.}
+Rather than recomputing the shared prefix tip from scratch after every state change — which would require scanning all active requests at $O(A \cdot C)$ cost — we exploit the asymmetry between the two events. Activation can only \emph{shorten} the tip: $\textsc{AddToBatch}$ finds the new tip via a single backward pass over $H_r$, terminating at the first working-set match. Completion can only \emph{lengthen} the tip: $\textsc{Finish}$ attempts a forward extension level by level beyond $\ell^*$, using the ref count check to test agreement across all active requests, stopping at the first disagreement. Both updates are $O(C)$ in the worst case and terminate early in practice.
 
-Additionally, all major hash tables and vectors pre-allocate capacity at construction time, eliminating rehash latency and reallocation during high-throughput operation.
+\paragraph{Pre-allocation.}
+All major hash tables and vectors pre-allocate capacity at construction time, eliminating rehash latency and reallocation overhead during high-throughput operation.
 
 \subsubsection*{Complexity Analysis}
-Table~\ref{tab:complexity} summarizes the time complexity of each operation. $T$ is the average number of tokens per request, $C$ is the average number of chunks per request, $W$ is the number of waiting requests, and $W_h$ is the average number of waiting requests sharing a given hash (typically $W_h \ll W$).
+
+Table~\ref{tab:complexity} summarizes the time complexity of each operation. $T$ is the average number of tokens per request, $C$ is the average number of chunks per request ($C = \lceil T/K \rceil$), $W$ is the number of waiting requests, $W_h$ is the average number of waiting requests sharing a given hash (typically $W_h \ll W$), and $\ell^*$ is the current tip depth.
 
 \begin{table}[H]
 \centering
@@ -394,20 +250,18 @@ Table~\ref{tab:complexity} summarizes the time complexity of each operation. $T$
 \label{tab:complexity}
 \begin{tabular}{ll}
 \hline
-\textbf{Operation} & \textbf{Complexity}\\
+\textbf{Operation} & \textbf{Complexity} \\
 \hline
-Insert request            & $O(T + C \log W)$ \\
-Activate request          & $O(C \cdot W_h \cdot \log W)$ \\
-Update chain on activate  & $O(\log L)$ \\
-Finish request            & $O(C \cdot W_h \cdot \log W)$ \\
-Update chain on finish    & $O(L + C_{\max})$ \\
-Find best request         & $O(\log W)$ (cached: $O(1)$) \\
-Remove request            & $O(C)$ \\
+$\textsc{Insert}$      & $O(T + C \log W)$ \\
+$\textsc{AddToBatch}$  & $O(C \cdot W_h \cdot \log W)$ \\
+$\textsc{Finish}$      & $O(C \cdot W_h \cdot \log W)$ \\
+$\textsc{FindBest}$    & $O(\log W)$ amortized; $O(1)$ cached \\
+$\textsc{Remove}$      & $O(C)$ \\
 \hline
 \end{tabular}
 \end{table}
 
-Here $L \le C$ is the current shared chain length, and $C_{\max}$ is the maximum number of chunks in any active request. Because result caching eliminates redundant heap traversals between working-set changes, the dominant cost in practice is the $O(C \cdot W_k \cdot \log W)$ propagation step in activate and finish, which updates the missing counts of all affected waiting requests.
+The tip update in both $\textsc{AddToBatch}$ and $\textsc{Finish}$ is subsumed within their $O(C \cdot W_h \cdot \log W)$ pass and adds no asymptotic overhead. The dominant cost in practice is the miss-count propagation in $\textsc{AddToBatch}$ and $\textsc{Finish}$, which updates all waiting requests affected by each working-set change. Result caching eliminates redundant $\textsc{FindBest}$ traversals between consecutive working-set mutations, keeping scheduling overhead low under sustained load.
 
 \subsection{Batching and Reinforcement Learning}
 \label{sec:batching_rl}
