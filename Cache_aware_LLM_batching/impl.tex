@@ -415,7 +415,7 @@ Here $L \le C$ is the current shared chain length, and $C_{\max}$ is the maximum
 
 So far, the CHT provides us with an efficient way to find the best next request to add to the batch, the one that maximizes prefix reuse. But it does not tell us \emph{when to stop}. Adding more requests always increases GPU utilization, but at some point, the shared prefix starts to shrink, hurting locality. This section describes how we frame this stop/continue decision as a learning problem and present three policies of increasing complexity: a hand-crafted heuristic that encodes domain intuition, a contextual bandit that learns from experience without temporal structure, and a Q-learning agent that reasons about long-term throughput.
 
-As highlighted in \S\ref{sec:system_overview}, the scheduler incrementally builds a decoding batch by repeatedly selecting the lowest-cost waiting request via the CHT and deciding whether to add it to the current batch or dispatch the batch as-is. This stop/continue decision is the crux of the batching problem. 
+As highlighted in \S\ref{sec:system_overview}, the scheduler incrementally builds a decoding batch by repeatedly selecting the lowest-cost waiting request via the CHT and deciding whether to add it to the current batch or to dispatch the batch as-is. This stop/continue decision is the crux of the batching problem. 
 
 \subsubsection*{State, Actions, and Reward}
 At each step of batch formation, the scheduler observes a state
