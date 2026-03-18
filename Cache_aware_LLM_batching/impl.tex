@@ -202,7 +202,10 @@ $\textsc{Activate}$ is called when the scheduler moves a request from the waitin
 \end{algorithmic}
 \end{algorithm}
 
-\paragraph{Updating the shared prefix chain on activation (Algorithm~\ref{alg:update_chain_activate}).} It is called at the end of every $\textsc{Activate}$ after $r$ has been added to the active set. It keeps the shared prefix chain consistent without recomputing it from scratch. Because adding a new request can only \emph{shorten} the common prefix (never lengthen it), we walk $H_r$ and the current chain together and truncate at the first mismatch. The special case where $r$ is the very first active request sets the chain to $H_r$ in full.
+\paragraph{Updating the shared prefix chain on activation (Algorithm~\ref{alg:update_chain_activate}).}
+It is called at the end of every $\textsc{Activate}$ after $r$ has been added to the active set. It keeps the shared prefix chain consistent without recomputing it from scratch. Because adding a new request can only \emph{shorten} the common prefix (never lengthen it), we must find the longest prefix of the current chain $P$ that $H_r$ also satisfies.
+
+As described before, each hash $h_\ell$ is produced by a cumulative (prefix) hasher: $h_\ell$ is the digest of all tokens from position $1$ through $\ell \cdot C$, where $C$ is the chunk size. Consequently, if two hash vectors agree at level $\ell$, they necessarily agree at every level $1, \ldots, \ell-1$ as well, because those earlier digests are sub-sequences of the same cumulative stream. Formally, we define the predicate $\mathcal{M}(\ell) \;=\; \bigl[h_\ell^r = p_\ell\bigr]$. The cumulative property guarantees that $\mathcal{M}$ is \emph{monotone decreasing} on the index set $\{1, \dots, \min(L, |H_r|)\}$: once $\mathcal{M}(\ell)$ is false for some $\ell^*$, it is false for all $\ell > \ell^*$. This monotone structure is exactly the condition required for binary search to be correct: we seek the largest $k$ such that $\mathcal{M}(k)$ is true, and binary search finds it in $O(\log \min(L, |H_r|))$ comparisons rather than the $O(\min(L, |H_r|))$ required by a linear scan.
 
 \begin{algorithm}[H]
 \caption{$\textsc{UpdateChainOnActivate}(r)$}
@@ -211,22 +214,15 @@ $\textsc{Activate}$ is called when the scheduler moves a request from the waitin
 \Require Request $r$ with hash vector $H_r$; current shared chain $P$ of length $L$; active set $\mathit{active}$
 \Ensure $P$ reflects the longest common prefix of all active requests
 \If{$|\mathit{active}| = 1$}
-  \Comment{$r$ is the only active request}
-  \State $P \gets H_r$;\quad $L \gets |H_r|$
-  \State \Return
+    \Comment{$r$ is the only active request}
+    \State $P \gets H_r$;\quad $L \gets |H_r|$
+    \State \Return
 \EndIf
-\State $L' \gets 0$
-\For{$\ell \gets 1$ \textbf{to} $\min(L,\, |H_r|)$}
-  \If{$h_\ell^r = p_\ell$}
-    \State $L' \gets L' + 1$
-  \Else
-    \State \textbf{break}
-  \EndIf
-\EndFor
-\State $L \gets L'$;\quad truncate $P$ to its first $L$ entries
+\State $L \gets \textsc{BinarySearch}\!\left(H_r,\, P,\, \min(L,\, |H_r|)\right)$
+\Comment{largest $k$ s.t.\ $h_k^r = p_k$}
+\State Truncate $P$ to its first $L$ entries
 \end{algorithmic}
 \end{algorithm}
-
 
 \paragraph{Completion (Algorithm~\ref{alg:finish}).} $\textsc{Finish}$ is called when the model has generated the final token for request $r$, and the request is removed from the active batch. For each hash $h$ in $H_r$, its reference count is decremented; if it reaches zero, $h$ is evicted from the working set, and all waiting requests containing $h$ have their missing count incremented by one, with updated pairs pushed onto the heap. The shared prefix chain is then updated via $\textsc{UpdateChainOnFinish}$, since removing a request can only lengthen the common prefix.
 
