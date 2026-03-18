@@ -30,12 +30,13 @@ Figure~\ref{fig:pipeline} illustrates the overall pipeline of our scheduling sys
 (i) a lightweight prefix-tracking data structure called \emph{Chunked Hash Tree (CHT)} and
 (ii) a learning-based policy that decides when batch construction should stop.
 
-\paragraph{Request model.} We consider an inference server that continuously receives decoding requests. Each request consists of a prompt, which is a sequence of input tokens, followed by autoregressive decoding. At any point in time, a request falls into one of these three states: 
-(i) \emph{waiting} requests that have not yet been scheduled,
-(ii) \emph{active} requests that are currently part of the decoding batch, and
-(iii) \emph{finished} requests whose decoding has been completed.
-
-The scheduler operates in repeated decoding steps. During each step, it incrementally constructs a batch by selecting requests from the waiting queue and activating them. Once the batch is finalized, it is executed for one decoding iteration on the GPU.
+\paragraph{Request model.}
+We consider an inference server that continuously receives requests. Each request consists of a prompt (a sequence of input tokens) followed by autoregressive generation. Processing a request involves two phases: prefill (encoding the prompt) and decode (generating output tokens step by step).
+At any point in time, a request is in one of three states:
+(i) \emph{waiting}: requests that have not yet been scheduled,
+(ii) \emph{active}: requests that are currently being processed on the GPU—this includes both prompt prefill and subsequent decoding, and
+(iii) \emph{finished}: requests whose generation has been fully completed.
+The scheduler operates in repeated execution steps. In each step, it incrementally constructs a batch by selecting requests from the waiting queue and activating them. Once the batch is finalized, it is executed on the GPU for one iteration, which may correspond to either processing prompt tokens (prefill) or generating the next token for active decoding requests.
 
 \paragraph{Prefix-aware request selection.} The first challenge is identifying which waiting request should be added next to the batch. Ideally, we want to add requests whose prefixes overlap with those of the already active requests, since this increases temporal and spatial locality. To support this efficiently, we introduce \emph{Chunked Hash Tree}. Instead of comparing token sequences directly, each request is represented using a compact vector of cumulative prefix hashes computed at fixed token intervals. These hashes allow the scheduler to quickly detect shared prefixes across requests. The CHT maintains a working set that represents the prefixes currently referenced by active requests and tracks how much prefix overlap each waiting request has with this working set. Using this information, the scheduler can efficiently identify the waiting request that maximizes our joint objective function.
 
