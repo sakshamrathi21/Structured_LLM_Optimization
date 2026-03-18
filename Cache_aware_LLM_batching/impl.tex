@@ -296,6 +296,9 @@ $\textsc{FindBest}$ is called by the batch-construction loop whenever the schedu
 
 The result is cached and reused on repeated calls until the working set or waiting queue changes, avoiding redundant heap traversals.
 
+The computation of $\mathit{peers}$ serves a deeper purpose than bookkeeping: it tells the admission policy whether a chain-shrinking addition is actually worth it. If admitting $r^*$ reduces the shared chain by $\Delta = \mathit{chunks\_before} - \mathit{chunks\_after} > 0$, that looks like a pure locality cost. But if $\mathit{peers} = k$ other waiting requests already share a prefix of depth $\mathit{chunks\_after}$, those $k$ requests can follow at zero additional chain cost---so the one-time tax of $\Delta$ is effectively spread over $k + 1$ admissions. The CHT computes this amortization argument for free at query time, leaving the admission policy a much simpler question: is this trade-off favorable right now? How different policies answer that question is the subject of \S\ref{sec:batching_rl}.
+
+
 \begin{algorithm}[H]
 \caption{$\textsc{FindBest}()$}
 \label{alg:find_best}
@@ -394,7 +397,7 @@ Table~\ref{tab:complexity} summarizes the time complexity of each operation. $T$
 \hline
 Insert request            & $O(T + C \log W)$ \\
 Activate request          & $O(C \cdot W_h \cdot \log W)$ \\
-Update chain on activate  & $O(L)$ \\
+Update chain on activate  & $O(\log L)$ \\
 Finish request            & $O(C \cdot W_h \cdot \log W)$ \\
 Update chain on finish    & $O(L + C_{\max})$ \\
 Find best request         & $O(\log W)$ (cached: $O(1)$) \\
@@ -406,6 +409,7 @@ Remove request            & $O(C)$ \\
 Here $L \le C$ is the current shared chain length, and $C_{\max}$ is the maximum number of chunks in any active request. Because result caching eliminates redundant heap traversals between working-set changes, the dominant cost in practice is the $O(C \cdot W_k \cdot \log W)$ propagation step in activate and finish, which updates the missing counts of all affected waiting requests.
 
 \subsection{Batching and Reinforcement Learning}
+\label{sec:batching_rl}
 \textcolor{red}{any visualizations for these RL policies needed?}
 
 So far, the CHT provides us with an efficient way to find the best next request to add to the batch, the one that maximizes prefix reuse. But it does not tell us \emph{when to stop}. Adding more requests always increases GPU utilization, but at some point, the shared prefix starts to shrink, hurting locality. This section describes how we frame this stop/continue decision as a learning problem and present three policies of increasing complexity: a hand-crafted heuristic that encodes domain intuition, a contextual bandit that learns from experience without temporal structure, and a Q-learning agent that reasons about long-term throughput.
