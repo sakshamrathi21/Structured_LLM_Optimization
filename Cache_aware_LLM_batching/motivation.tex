@@ -87,7 +87,7 @@ The complete sharing pattern consistently achieves substantially higher throughp
 
 A more subtle observation is that configurations with 2, 3, and 4 levels exhibit similar throughput across different values of $L$, despite differing branching patterns. This can be explained by the timing of memory accesses during decode. Requests within a batch issue memory accesses roughly simultaneously. During the initial shared segment of length $L$, all configurations behave identically; every request accesses the same KV region, fully exploiting locality. Once branching occurs, the batch becomes heterogeneous, and locality degrades. However, as we will show next, throughput is highly sensitive to the presence of heterogeneity but comparatively less sensitive to the exact number of distinct prefix groups once heterogeneity is introduced.  Whether the batch ultimately splits into two, four, or eight groups in later segments has only a limited additional impact since synchronized reuse has already been disrupted. Moreover, as expected, no sharing pattern achieves the lowest throughput of all.
 
-\textbf{Takeaway 4:} Because decode-phase memory accesses from all sequences occur roughly together, the amount of sharing at the beginning of the sequence is the primary determinant of locality and throughput.
+\textbf{Takeaway 3:} Because decode-phase memory accesses from all sequences occur roughly together, the amount of sharing at the beginning of the sequence is the primary determinant of locality and throughput.
 
 
 

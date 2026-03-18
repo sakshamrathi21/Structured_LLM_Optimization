@@ -102,8 +102,6 @@ Before a request can be inserted into the scheduler, its token sequence must be 
 
 Because the hash is cumulative, two requests share the same $h_\ell$ if and only if their first $\ell K$ tokens are identical, which is precisely the condition under which their KV-cache prefixes can be shared. Each request $r$ is therefore represented as an ordered hash vector $H_r = (h_1^r, h_2^r, \dots, h_C^r)$.
 
-Hash levels are addressed by a packed 64-bit $\mathrm{key}(\ell, h)$, which encodes both the chunk level and the hash value in a single integer, enabling $O(1)$ hash-table operations without pointer traversal.
-
 Algorithm~\ref{alg:compute_hashes} details the hash computation. We use an incremental xxHash-64 state so that each token is processed exactly once, making the total cost $O(N)$ regardless of the number of chunked boundaries.
 
 \begin{algorithm}[H]
@@ -136,21 +134,21 @@ The CHT maintains the following components that together capture the full schedu
 
 \paragraph{Hash vectors.} A map from request ID to its cumulative prefix-hash vector $H_r = (h_1^r, \dots, h_C^r)$ is stored for every active and waiting request.
 
-\paragraph{Reference counts.} \texttt{ref} maps each $\mathrm{key}(\ell, h)$ to the number of currently \emph{active} requests that contain that key. 
+\paragraph{Reference counts.} \texttt{ref} maps each $h$ to the number of currently \emph{active} requests that contain that hash in their hash vectors. 
 
-\paragraph{Working set.} \texttt{working\_set} is the set of packed keys $\mathrm{key}(\ell, h)$ that belong to at least one \emph{active} request. A key is in the working set if and only if its reference count is greater than zero.
+\paragraph{Working set.} \texttt{working\_set} is the set of hashes that belong to at least one \emph{active} request. A hash is in the working set if and only if its reference count is greater than zero.
 
-\paragraph{Missing cache.} \texttt{miss} maps each \emph{waiting} request $r$ to an integer $m_r$, defined as the number of keys in $H_r$ that are \emph{not} currently in the working set. Intuitively, $m_r$ counts how many of $r$'s prefix chunks would need to be freshly computed (i.e., are not already cached by the active batch). A request with $m_r = 0$ has its entire prefix covered by the current active batch and is therefore the most preferable candidate to admit next.
+\paragraph{Missing cache.} \texttt{miss} maps each \emph{waiting} request $r$ to an integer $m_r$, defined as the number of hashes in $H_r$ that are \emph{not} currently in the working set. Intuitively, $m_r$ counts how many of $r$'s prefix chunks would need to be freshly computed (i.e., are not already cached by the active batch). A request with $m_r = 0$ has its entire prefix covered by the current active batch and is therefore the most preferable candidate to admit next.
 
 \paragraph{Waiting heap.} \texttt{waiting\_heap} is a min-heap of $(m_r, r)$ pairs, ordered by missing count $m_r$. It enables $O(\log W)$ retrieval of the waiting request with the smallest missing count, where $W$ is the number of waiting requests.
 
-\paragraph{Reverse index.} \texttt{waiting} maps each packed key $k$ to the set of waiting requests whose hash vector contains $k$, enabling $O(1)$ updates to \texttt{miss} when the working set changes.
+\paragraph{Reverse index.} \texttt{waiting} maps each hash $h$ to the set of waiting requests whose hash vector contains $h$, enabling $O(1)$ updates to \texttt{miss} when the working set changes.
 
 \paragraph{Shared prefix chain.} \texttt{shared\_prefix\_chain} is a vector $P = (p_1, \dots, p_L)$ recording the longest common hash prefix shared by all currently active requests. $P$ is maintained incrementally rather than recomputed from scratch for every event, keeping the amortized cost low. 
 
 
 \subsubsection*{Request Insertion (Algorithm~\ref{alg:insert})}
-$\textsc{Insert}$ is called the moment a new request arrives at the scheduler. It computes $H_r$ via $\textsc{ComputeHashes}$, stores the hash vector, and for each key $k \in H_r$, registers $r$ in the reverse index $\mathit{waiting}[k]$. Crucially, it also computes the initial missing count $m_r$: the number of keys in $H_r$ not yet present in the working set. This count is stored in $\mathit{miss}[r]$ and the pair $(m_r, r)$ is pushed onto the waiting heap. No reference counts are modified at this stage; that happens only when the request is activated.
+$\textsc{Insert}$ is called the moment a new request arrives at the scheduler. It computes $H_r$ via $\textsc{ComputeHashes}$, stores the hash vector, and for each hash $h \in H_r$, registers $r$ in the reverse index $\mathit{waiting}[h]$. Crucially, it also computes the initial missing count $m_r$: the number of hashes in $H_r$ not yet present in the working set. This count is stored in $\mathit{miss}[r]$ and the pair $(m_r, r)$ is pushed onto the waiting heap. No reference counts are modified at this stage; that happens only when the request is activated.
 
 \begin{algorithm}[H]
 \caption{$\textsc{Insert}(r, T)$}
@@ -163,11 +161,10 @@ $\textsc{Insert}$ is called the moment a new request arrives at the scheduler. I
 \State $m_r \gets 0$
 \State $\mathit{waiting\_requests} \gets \mathit{waiting\_requests} \cup \{r\}$
 \For{$\ell \gets 1$ \textbf{to} $|H_r|$}
-  \State $k \gets \mathrm{key}(\ell,\, h_\ell^r)$
-  \If{$k \notin \mathit{working\_set}$}
+  \If{$h_\ell^r \notin \mathit{working\_set}$}
     \State $m_r \gets m_r + 1$
   \EndIf
-  \State $\mathit{waiting}[k] \gets \mathit{waiting}[k] \cup \{r\}$
+  \State $\mathit{waiting}[h_\ell^r] \gets \mathit{waiting}[h_\ell^r] \cup \{r\}$
 \EndFor
 \State $\mathit{miss}[r] \gets m_r$
 \State $\mathit{waiting\_heap}.\textsc{Push}(m_r,\; r)$
@@ -175,7 +172,7 @@ $\textsc{Insert}$ is called the moment a new request arrives at the scheduler. I
 \end{algorithm}
 
 \paragraph{Activation (Algorithm~\ref{alg:activate}).} 
-$\textsc{Activate}$ is called when the scheduler moves a request from the waiting queue into the active decoding batch. For each key $k$ in $H_r$, if $k$ transitions from absent to present in the working set (i.e., its reference count goes from 0 to 1), then $k$ is added to the working set and all waiting requests that contain $k$ have their missing count decremented by one; updated pairs are pushed onto the heap. This eager propagation keeps $\mathit{miss}$ accurate for all waiting requests without requiring a full rescan. The shared prefix chain is then updated incrementally via $\textsc{UpdateChainOnActivate}$ (Algorithm~\ref{alg:update_chain_activate}).
+$\textsc{Activate}$ is called when the scheduler moves a request from the waiting queue into the active decoding batch. For each hash $h$ in $H_r$, if $h$ transitions from absent to present in the working set (i.e., its reference count goes from 0 to 1), then $h$ is added to the working set and all waiting requests that contain $h$ have their missing count decremented by one; updated pairs are pushed onto the heap. This eager propagation keeps $\mathit{miss}$ accurate for all waiting requests without requiring a full rescan. The shared prefix chain is then updated incrementally via $\textsc{UpdateChainOnActivate}$ (Algorithm~\ref{alg:update_chain_activate}).
 
 \begin{algorithm}[H]
 \caption{$\textsc{Activate}(r)$}
@@ -187,11 +184,10 @@ $\textsc{Activate}$ is called when the scheduler moves a request from the waitin
 \State       $\mathit{active} \gets \mathit{active} \cup \{r\}$
 \State $\mathit{added} \gets 0$
 \For{$\ell \gets 1$ \textbf{to} $|H_r|$}
-  \State $k \gets \mathrm{key}(\ell,\, h_\ell^r)$
-  \If{$\mathrm{ref}[k] = 0$}
-  \Comment{$k$ newly enters working set}
-  \State $\mathit{working\_set} \gets \mathit{working\_set} \cup \{k\}$
-  \For{$w \in \mathit{waiting}[k]$}
+  \If{$\mathrm{ref}[h_\ell^r] = 0$}
+  \Comment{$h_\ell^r$ newly enters working set}
+  \State $\mathit{working\_set} \gets \mathit{working\_set} \cup \{h_\ell^r\}$
+  \For{$w \in \mathit{waiting}[h_\ell^r]$}
       \If{$w \notin \mathit{active}$ \textbf{and} $w \in \mathit{miss}$}
         \State $\mathit{miss}[w] \gets \mathit{miss}[w] - 1$
         \State $\mathit{waiting\_heap}.\textsc{Push}(\mathit{miss}[w],\; w)$
@@ -199,14 +195,17 @@ $\textsc{Activate}$ is called when the scheduler moves a request from the waitin
     \EndFor
     \State $\mathit{added} \gets \mathit{added} + 1$
   \EndIf
-  \State $\mathrm{ref}[k] \gets \mathrm{ref}[k] + 1$
+  \State $\mathrm{ref}[h_\ell^r] \gets \mathrm{ref}[h_\ell^r] + 1$
 \EndFor
 \State $\textsc{UpdateChainOnActivate}(r)$
 \State \Return $(\mathit{added},\; |H_r|)$
 \end{algorithmic}
 \end{algorithm}
 
-\paragraph{Updating the shared prefix chain on activation (Algorithm~\ref{alg:update_chain_activate}).} It is called at the end of every $\textsc{Activate}$ after $r$ has been added to the active set. It keeps the shared prefix chain consistent without recomputing it from scratch. Because adding a new request can only \emph{shorten} the common prefix (never lengthen it), we walk $H_r$ and the current chain together and truncate at the first mismatch. The special case where $r$ is the very first active request sets the chain to $H_r$ in full.
+\paragraph{Updating the shared prefix chain on activation (Algorithm~\ref{alg:update_chain_activate}).}
+It is called at the end of every $\textsc{Activate}$ after $r$ has been added to the active set. It keeps the shared prefix chain consistent without recomputing it from scratch. Because adding a new request can only \emph{shorten} the common prefix (never lengthen it), we must find the longest prefix of the current chain $P$ that $H_r$ also satisfies.
+
+As described before, each hash $h_\ell$ is produced by a cumulative (prefix) hasher: $h_\ell$ is the digest of all tokens from position $1$ through $\ell \cdot C$, where $C$ is the chunk size. Consequently, if two hash vectors agree at level $\ell$, they necessarily agree at every level $1, \ldots, \ell-1$ as well, because those earlier digests are sub-sequences of the same cumulative stream. Formally, we define the predicate $\mathcal{M}(\ell) \;=\; \bigl[h_\ell^r = p_\ell\bigr]$. The cumulative property guarantees that $\mathcal{M}$ is \emph{monotone decreasing} on the index set $\{1, \dots, \min(L, |H_r|)\}$: once $\mathcal{M}(\ell)$ is false for some $\ell^*$, it is false for all $\ell > \ell^*$. This monotone structure is exactly the condition required for binary search to be correct: we seek the largest $k$ such that $\mathcal{M}(k)$ is true, and binary search finds it in $O(\log \min(L, |H_r|))$ comparisons rather than the $O(\min(L, |H_r|))$ required by a linear scan.
 
 \begin{algorithm}[H]
 \caption{$\textsc{UpdateChainOnActivate}(r)$}
@@ -215,24 +214,17 @@ $\textsc{Activate}$ is called when the scheduler moves a request from the waitin
 \Require Request $r$ with hash vector $H_r$; current shared chain $P$ of length $L$; active set $\mathit{active}$
 \Ensure $P$ reflects the longest common prefix of all active requests
 \If{$|\mathit{active}| = 1$}
-  \Comment{$r$ is the only active request}
-  \State $P \gets H_r$;\quad $L \gets |H_r|$
-  \State \Return
+    \Comment{$r$ is the only active request}
+    \State $P \gets H_r$;\quad $L \gets |H_r|$
+    \State \Return
 \EndIf
-\State $L' \gets 0$
-\For{$\ell \gets 1$ \textbf{to} $\min(L,\, |H_r|)$}
-  \If{$h_\ell^r = p_\ell$}
-    \State $L' \gets L' + 1$
-  \Else
-    \State \textbf{break}
-  \EndIf
-\EndFor
-\State $L \gets L'$;\quad truncate $P$ to its first $L$ entries
+\State $L \gets \textsc{BinarySearch}\!\left(H_r,\, P,\, \min(L,\, |H_r|)\right)$
+\Comment{largest $k$ s.t.\ $h_k^r = p_k$}
+\State Truncate $P$ to its first $L$ entries
 \end{algorithmic}
 \end{algorithm}
 
-
-\paragraph{Completion (Algorithm~\ref{alg:finish}).} $\textsc{Finish}$ is called when the model has generated the final token for request $r$, and the request is removed from the active batch. For each key $k$ in $H_r$, its reference count is decremented; if it reaches zero, $k$ is evicted from the working set, and all waiting requests containing $k$ have their missing count incremented by one, with updated pairs pushed onto the heap. The shared prefix chain is then updated via $\textsc{UpdateChainOnFinish}$, since removing a request can only lengthen the common prefix.
+\paragraph{Completion (Algorithm~\ref{alg:finish}).} $\textsc{Finish}$ is called when the model has generated the final token for request $r$, and the request is removed from the active batch. For each hash $h$ in $H_r$, its reference count is decremented; if it reaches zero, $h$ is evicted from the working set, and all waiting requests containing $h$ have their missing count incremented by one, with updated pairs pushed onto the heap. The shared prefix chain is then updated via $\textsc{UpdateChainOnFinish}$, since removing a request can only lengthen the common prefix.
 
 
 \begin{algorithm}[H]
@@ -244,11 +236,10 @@ $\textsc{Activate}$ is called when the scheduler moves a request from the waitin
 \State $\mathit{active} \gets \mathit{active} \setminus \{r\}$
 \State $\mathit{evicted} \gets 0$
 \For{$\ell \gets 1$ \textbf{to} $|H_r|$}
-  \State $k \gets \mathrm{key}(\ell,\, h_\ell^r)$
-  \State $\mathrm{ref}[k] \gets \mathrm{ref}[k] - 1$
-   \If{$\mathrm{ref}[k] = 0$}
-   \State $\mathit{working\_set} \gets \mathit{working\_set} \setminus \{k\}$
-    \For{$w \in \mathit{waiting}[k]$}
+  \State $\mathrm{ref}[h_\ell^r] \gets \mathrm{ref}[h_\ell^r] - 1$
+   \If{$\mathrm{ref}[h_\ell^r] = 0$}
+   \State $\mathit{working\_set} \gets \mathit{working\_set} \setminus \{h_\ell^r\}$
+    \For{$w \in \mathit{waiting}[h_\ell^r]$}
       \If{$w \notin \mathit{active}$ \textbf{and} $w \in \mathit{miss}$}
         \State $\mathit{miss}[w] \gets \mathit{miss}[w] + 1$
         \State $\mathit{waiting\_heap}.\textsc{Push}(\mathit{miss}[w],\; w)$
@@ -383,18 +374,15 @@ activation, and best-request selection. Figure~\ref{fig:shared_prefix_chain_work
 $\textsc{FindBest}()$ may be called repeatedly within a single scheduling round without any intervening state change.  We cache its last result—a four-tuple\\ $(r^*, \mathit{chunks\_before}, \mathit{chunks\_after}, \mathit{peers})$ and return it immediately on subsequent calls until a mutation invalidates the flag. 
 
 \paragraph{Lazy heap updates.}
-The waiting heap uses \emph{lazy deletion}: when a request's missing count changes, we push a new $(m_r, r)$ entry rather than updating the existing one in place. Stale entries (where the recorded $m$ differs from $\mathit{miss}[r]$) are silently skipped during $\textsc{FindBest}$. This avoids the $O(W)$ cost of a linear heap search and keeps activation and completion at $O(C \cdot W_k \cdot \log W)$ total, where $W_k$ is the average number of waiting requests per key.
+The waiting heap uses \emph{lazy deletion}: when a request's missing count changes, we push a new $(m_r, r)$ entry rather than updating the existing one in place. Stale entries (where the recorded $m$ differs from $\mathit{miss}[r]$) are silently skipped during $\textsc{FindBest}$. This avoids the $O(W)$ cost of a linear heap search and keeps activation and completion at $O(C \cdot W_h \cdot \log W)$ total, where $W_h$ is the average number of waiting requests per hash.
 
 \paragraph{Incremental shared prefix chain maintenance.}
 Recomputing the shared prefix chain from scratch after every activate or finish event would cost $O(A \cdot C)$, where $A$ is the active-set size. Instead, we exploit the fact that activation can only \emph{shrink} the chain and completion can only \emph{grow} it. On activation, we truncate $P$ at the first mismatch with the new request's hash vector in $O(L)$; on completion, we attempt a forward extension beyond the current chain length, stopping at the first disagreement, again in $O(L + C_{\max})$.
 
-\paragraph{Packed 64-bit key encoding.}
-Each $(\ell, h)$ pair is encoded into a single 64-bit integer by placing the chunk level in the top 8 bits and the lower 56 bits of the hash digest in the remaining field.  This eliminates pointer indirection and struct padding that would arise from a two-field composite key, enabling $O(1)$ hash-table operations on a single register-wide integer.
-
 Additionally, all major hash tables and vectors pre-allocate capacity at construction time, eliminating rehash latency and reallocation during high-throughput operation.
 
 \subsubsection*{Complexity Analysis}
-Table~\ref{tab:complexity} summarizes the time complexity of each operation. $T$ is the average number of tokens per request, $C$ is the average number of chunks per request, $W$ is the number of waiting requests, and $W_k$ is the average number of waiting requests sharing a given key (typically $W_k \ll W$).
+Table~\ref{tab:complexity} summarizes the time complexity of each operation. $T$ is the average number of tokens per request, $C$ is the average number of chunks per request, $W$ is the number of waiting requests, and $W_h$ is the average number of waiting requests sharing a given hash (typically $W_h \ll W$).
 
 \begin{table}[H]
 \centering
@@ -405,9 +393,9 @@ Table~\ref{tab:complexity} summarizes the time complexity of each operation. $T$
 \textbf{Operation} & \textbf{Complexity}\\
 \hline
 Insert request            & $O(T + C \log W)$ \\
-Activate request          & $O(C \cdot W_k \cdot \log W)$ \\
+Activate request          & $O(C \cdot W_h \cdot \log W)$ \\
 Update chain on activate  & $O(L)$ \\
-Finish request            & $O(C \cdot W_k \cdot \log W)$ \\
+Finish request            & $O(C \cdot W_h \cdot \log W)$ \\
 Update chain on finish    & $O(L + C_{\max})$ \\
 Find best request         & $O(\log W)$ (cached: $O(1)$) \\
 Remove request            & $O(C)$ \\
@@ -418,83 +406,77 @@ Remove request            & $O(C)$ \\
 Here $L \le C$ is the current shared chain length, and $C_{\max}$ is the maximum number of chunks in any active request. Because result caching eliminates redundant heap traversals between working-set changes, the dominant cost in practice is the $O(C \cdot W_k \cdot \log W)$ propagation step in activate and finish, which updates the missing counts of all affected waiting requests.
 
 \subsection{Batching and Reinforcement Learning}
-So far, the CHT gives us an efficient way to find the best next request to add to the batch, the one that maximizes prefix reuse. But it does not tell us \emph{when to stop}. Adding more requests always increases GPU utilization, but at some point, the shared prefix starts to shrink, hurting locality. This section describes how we frame this stop/continue decision as a learning problem and present three policies: a hand-crafted heuristic, a contextual bandit, and a Q-learning agent.
+\textcolor{red}{any visualizations for these RL policies needed?}
 
-As highlighted in the previous subsection \S\ref{sec:system_overview}, the scheduler incrementally builds a decoding batch by repeatedly selecting the lowest-cost waiting request via the CHT and deciding whether to add it to the current batch or dispatch the batch as it is. Once the scheduler decides to stop, the batch is dispatched for one decode iteration. This stop/continue decision is the crux of the batching problem. 
+So far, the CHT provides us with an efficient way to find the best next request to add to the batch, the one that maximizes prefix reuse. But it does not tell us \emph{when to stop}. Adding more requests always increases GPU utilization, but at some point, the shared prefix starts to shrink, hurting locality. This section describes how we frame this stop/continue decision as a learning problem and present three policies of increasing complexity: a hand-crafted heuristic that encodes domain intuition, a contextual bandit that learns from experience without temporal structure, and a Q-learning agent that reasons about long-term throughput.
 
+As highlighted in \S\ref{sec:system_overview}, the scheduler incrementally builds a decoding batch by repeatedly selecting the lowest-cost waiting request via the CHT and deciding whether to add it to the current batch or dispatch the batch as-is. This stop/continue decision is the crux of the batching problem. 
+
+\subsubsection*{State, Actions, and Reward}
 At each step of batch formation, the scheduler observes a state
 \[
 s = (\mathit{batch\_size},\; \mathit{chunks\_before},\; \mathit{chunks\_after},\;\mathit{requests\_waiting})
 \]
-and takes a binary action $a \in \{\textsc{Add}, \textsc{Stop}\}$. Here, $\mathit{batch\_size}$ denotes the number of requests that are already in the batch, which is a proxy for current GPU utilization. $\mathit{chunks\_before}$ is the shared-prefix chain length \emph{before} adding the candidate request; $\mathit{chunks\_after}$ is the chain length after hypothetically adding it (obtained from $\textsc{FindBest}$); and $\mathit{requests\_waiting}$ is the number of waiting requests that share the prefix up to level $\mathit{chunks\_after}$, indicating whether the locality cost of this addition will be compensated by future activations. Together, these four values capture both the current GPU utilization (batch size) and the cost of the proposed addition to prefix locality (chunk loss $= \mathit{chunks\_before} - \mathit{chunks\_after}$).
+and takes a binary action $a \in \{\textsc{Add}, \textsc{Stop}\}$. Here, $\mathit{batch\_size}$ denotes the number of requests that are already in the batch, which is a proxy for current GPU utilization. $\mathit{chunks\_before}$ is the shared-prefix chain length \emph{before} adding the candidate request; $\mathit{chunks\_after}$ is the chain length after hypothetically adding it (obtained from $\textsc{FindBest}$); and $\mathit{requests\_waiting}$ is the number of waiting requests that share the prefix up to level $\mathit{chunks\_after}$, indicating whether the locality cost of this addition will be compensated by future activations. Together, these four values capture both the current GPU utilization (batch size) and the cost of the proposed addition to prefix locality, summarized by the chunk loss $\Delta = \mathit{chunks\_before} - \mathit{chunks\_after}$).
 
-This maps naturally onto batch construction: a new episode begins each time the scheduler starts forming a fresh batch and terminates when it issues \textsc{Stop} or when the waiting queue is exhausted. The \emph{reward} for the episode is the throughput in tokens per second of the resulting decode step:
+Both learning policies share the same reward signal: the decode throughput of the dispatched batch,
+
 \[
 \mathcal{R} = \text{throughput}_{\mathrm{decode}}
 \]
 
-Maximizing the expected cumulative reward, therefore, simultaneously encourages large batches (better GPU utilization) and short decode times (better prefix locality) by employing the joint objective described previously.
+Maximizing this reward simultaneously encourages large batches (better GPU utilization) and short decode times (better prefix locality). Both policies also operate over the same discretized state space: $\mathit{batch\_size}$ and $\mathit{requests\_waiting}$ are mapped to exponential bins, while the chunk loss $\Delta$ is mapped to a coarser set of thresholds. The discretized state is a triple $(\hat{b}, \hat{\Delta}, \hat{w})$, where each hat denotes the bin index. The resulting table is small enough to store in a hash map and converges quickly, even under moderate traffic.
 
-\subsubsection*{State Space Discretization}
-Because tabular methods require a finite state space, we discretize the four state dimensions into bins before indexing the q-table. Concretely, $\mathit{batch\_size}$ and $\mathit{requests\_waiting}$ are mapped to exponential bins $\{0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024\}$, while the chunk loss $\Delta = \mathit{chunks\_before} - \mathit{chunks\_after}$ is binned into \\$\{0, 1, 2, 5, 10, 20\}$. \textcolor{red}{no need to specify these I feel} The discretized state is therefore a triple $(\hat{b}, \hat{\Delta}, \hat{w})$, where each hat denotes the bin index. The resulting table is small enough to store in a hash map and converges quickly, even with a lesser number of runs.
+\subsubsection*{Heuristic Policy}
+Before introducing any learning, we establish a baseline that encodes domain intuition directly as rules. The heuristic is designed around two competing goals: \emph{maximizing GPU utilization} by filling the batch as much as possible and \emph{preserving prefix locality} by avoiding candidates that cause large drops in the shared prefix chain. The heuristic always adds a candidate that does not hurt the shared chain at all—a free addition. When the batch is still very small and GPU utilization is clearly low, it tolerates a slightly larger locality cost to avoid dispatching an underutilized batch. In the general case, it accepts a candidate only if the chunk loss is within a small tolerance. Finally, when many waiting requests share the same prefix level, it allows a marginally higher locality cost since the short-term penalty is likely to be offset by the homogeneous additions that follow. If none of these conditions are met, the heuristic stops and dispatches the current batch.
 
-\begin{algorithm}[H]
-\caption{$\textsc{BuildBatch}()$}
-\label{alg:rl_batch}
-\begin{algorithmic}[1]
-\Require Waiting queue $Q$; Q-learning policy $\pi$; discount $\gamma$; learning rate $\alpha$
-\Ensure Batch $B$ ready for one decode iteration
-\State $B \gets \emptyset$
-\While{$Q \neq \emptyset$}
-\State $(r^*, c_{\mathrm{before}}, c_{\mathrm{after}}, w) \gets \textsc{FindBest}()$
-\If{$r^* = \bot$} \textbf{break} \EndIf
-\State $s \gets (|B|,\; c_{\mathrm{before}},\; c_{\mathrm{after}},\; w)$
-\State $a \gets \pi(s)$ \Comment{$\varepsilon$-greedy look-up in Q-table}
-\If{$a = \textsc{Stop}$} \textbf{break} \EndIf
-\State $\textsc{Activate}(r^*)$;\quad $B \gets B \cup \{r^*\}$
-\EndWhile
-\State $\text{throughput}_{\mathrm{decode}} \gets \textsc{ExecuteBatch}(B)$
-\State \textbf{Update} Q-table: $Q(s, a) \leftarrow Q(s,a)+\alpha[r + \gamma \max_{a'}Q(s',a') - Q(s,a)]$
-\State \Return $B$
-\end{algorithmic}
-\end{algorithm}
+This policy requires no training and converges immediately, but its thresholds are fixed and cannot adapt to shifts in workload distribution.
+
+\subsubsection*{Contextual Bandit}
+To move beyond hand-tuned thresholds, we implement a contextual bandit using Upper Confidence Bound (UCB) selection~\cite{auer2002finite}. The bandit treats each batch-construction call as an independent decision: given the discretized state $\hat{s} = (\hat{b}, \hat{\Delta}, \hat{w})$, it selects the action that maximizes
+\[
+  \mathrm{UCB}(\hat{s},a) = \frac{\mu(\hat{s},a)}{n(\hat{s},a)} + c\sqrt{\frac{\ln N}{n(\hat{s},a)}}
+\]
+where $\mu(\hat{s}, a)$ is the cumulative reward for taking action $a$ in state $\hat{s}$, $n(\hat{s}, a)$ is the number of times that pair has been selected, $N$ is the total number of steps, and $c$ is the exploration coefficient. The first term favors actions that have historically yielded high throughput; the second term ensures that under-explored actions are tried sufficiently often.
+
+Because the bandit discards temporal structure entirely, it does not reason about how today's batching decision affects the state of the queue for the next batch, it can miss opportunities where a short-term locality sacrifice leads to a better-amortized sequence of future batches. This motivates the full reinforcement learning approach.
 
 \subsubsection*{Q-Learning Policy}
-We adopt a tabular Q-learning algorithm~\cite{watkins1992} with an $\varepsilon$-greedy exploration strategy. The Q-table stores a value $Q(s, a)$ for every (discretized state, action) pair and is updated upon each batch completion via
+To capture the temporal dependencies that the bandit ignores, we model batch construction as an episodic reinforcement learning problem. A new episode begins each time the scheduler starts forming a fresh batch and terminates when it issues \textsc{Stop} or the waiting queue is exhausted. The Q-table~\cite{watkins1992} stores a value $Q(s, a)$ for every (discretized state, action) pair and is updated upon each batch completion via the standard Bellman update:
 
 \[
 Q(s, a) \; \leftarrow\; Q(s, a) + \alpha\bigl[r + \gamma \max_{a'} Q(s', a') - Q(s, a)\bigr]
 \]
 
-where $s'$ is the state reward at the start of the \emph{next} batch formation, $r$ is the reward, $\alpha$ is the learning rate, and $\gamma$ is the discount factor. The discount factor is important here; it indicates that the agent values near-term throughput slightly more than long-term gains, which matches the real-time nature of an inference server.
+where $r$ is the observed throughput reward, $s'$ is the state at the start of the \emph{next} batch formation, $\alpha$ is the learning rate, and $\gamma$ is the discount factor. The discount factor encodes that the agent values near-term throughput slightly more than long-term gains, which matches the real-time nature of an inference server. During training, $\varepsilon$ starts at $1.0$ (fully random) and decays linearly to $\varepsilon_{\min}$ over a configurable number of steps, after which the policy is nearly deterministic.
 
-During training, the agent uses $\varepsilon$-greedy exploration: with probability $\varepsilon$, it takes a uniformly random action, and with probability $1 - \varepsilon$, it picks $\arg\max_{a} Q(s, a)$. $\varepsilon$ starts at $1.0$ (fully random) and decays linearly to $\varepsilon_{\min}$ over a configurable number of steps, after which the policy is nearly deterministic and exploits accumulated knowledge.
+\subsubsection*{The \textsc{BuildBatch} Procedure}
+Algorithm~\ref{alg:rl_batch} shows how all three policies fit into the same batch-construction loop. At each iteration, \textsc{FindBest} (Algorithm~\ref{alg:find_best}) is called to retrieve the lowest-cost candidate from the CHT along with its chain statistics $c_{\mathrm{before}}$, $c_{\mathrm{after}}$, and the number of waiting requests $w$ that share the same prefix level. These four values are assembled into the state $s$ and passed to whichever policy $\pi$ is active—heuristic, bandit, or Q-learning agent—which returns either \textsc{Add} or \textsc{Stop}. If \textsc{Add}, the candidate is activated and appended to the batch; if \textsc{Stop}, the loop exits and the batch is dispatched immediately. Once the batch executes, the observed decode throughput serves as the reward signal: the bandit updates its count-and-mean tables, while the Q-learning agent applies the Bellman update above. The heuristic requires no update. 
 
-Algorithm~\ref{alg:rl_batch} summarizes the complete batch-construction loop used at inference time. The inner loop calls \textsc{FindBest} (Algorithm~\ref{alg:find_best}) to obtain the next candidate and its chain statistics, then queries the policy for the \textsc{add}/\textsc{Stop} decision. When the loop exits, the batch is dispatched, and the Q-table is updated with the observed reward.
+\begin{algorithm}[H]
+\caption{$\textsc{BuildBatch}()$}
+\label{alg:rl_batch}
+\begin{algorithmic}[1]
+\Require Waiting queue $Q$; policy $\pi$ (heuristic, bandit, or Q-learning); discount $\gamma$; learning rate $\alpha$
+\Ensure Batch $B$ ready for one decode iteration
+\State $B \gets \emptyset$
+\While{$Q \neq \emptyset$}
+    \State $(r^*, c_{\mathrm{before}}, c_{\mathrm{after}}, w) \gets \textsc{FindBest}()$
+    \If{$r^* = \bot$} \textbf{break} \EndIf
+    \State $s \gets (|B|,\; c_{\mathrm{before}},\; c_{\mathrm{after}},\; w)$
+    \State $a \gets \pi(s)$ \Comment{heuristic rule / UCB look-up / $\varepsilon$-greedy Q-table}
+    \If{$a = \textsc{Stop}$} \textbf{break} \EndIf
+    \State $\textsc{Activate}(r^*)$;\quad $B \gets B \cup \{r^*\}$
+\EndWhile
+\State $\text{throughput}_{\mathrm{decode}} \gets \textsc{ExecuteBatch}(B)$
+\State \textbf{Update} $\pi$ with observed reward $\text{throughput}_{\mathrm{decode}}$ \Comment{no-op for heuristic}
+\State \Return $B$
+\end{algorithmic}
+\end{algorithm}
 
 
 
-\subsubsection*{Contextual Bandit}
-As a simpler alternative, we also implement a contextual bandit using Upper Confidence Bound (UCB) selection~\cite{auer2002finite}. It drops the temporal structure entirely and treats each batch-construction call as an independent decision. The bandit maintains, for each (discretized state, action) pair, a count $n(s, a)$ and a cumulative reward sum $\mu(s, a)$. The action with the highest UCB score
-\[
-  \mathrm{UCB}(s,a) = \frac{\mu(s,a)}{n(s,a)} + c\sqrt{\frac{\ln N}{n(s,a)}}
-\]
-is selected, where $N$ is the total number of steps and $c$ is the exploration coefficient. The first term rewards actions that have worked well historically; the second term encourages trying under-explored actions.
 
-\textcolor{red}{any visualizations for these RL policies needed?}
-
-\subsubsection*{Heuristic Policy}
-Before introducing any learning, we establish a baseline that encodes domain intuition directly as rules. The heuristic accepts the candidate request if: 
-(i) the chunk loss $\Delta \leq 0$ (the candidate does not hurt the shared chain), or 
-(ii) the batch is still small ($\mathit{batch\_size} < n_{\min}$) and $\Delta \leq \delta_{\max} + 2$, or 
-(iii) $\Delta \leq \delta_{\max}$, or 
-(iv) $\mathit{requests\_waiting} \geq 10$ and $\Delta \leq \delta_{\max} + 1$. \textcolor{red}{no need to show the precise rules here, write it in plain english to avoid showing constants, looks dirty}
-
-Otherwise, it stops. 
-Rule (i) captures the free case: if the candidate first fits perfectly in the existing shared prefix, always add it. 
-Rule (ii) is aggressive early on since the GPU is clearly underutilized when the batch is tiny. 
-Rule (iii) is the main guard: it tolerates a small locality cost for a larger batch. 
-Rule (iv) adds a bonus when many waiting requests share the same prefix level, since the short-term locality cost is likely compensated by future homogeneous additions.
 
 
 \subsection{Integration with vLLM and SGLang}
