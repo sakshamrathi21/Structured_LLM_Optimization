@@ -19,7 +19,7 @@ A natural strategy for improving throughput is to increase batch size. However, 
 
 As described in \S\ref{sec:motivation}, moderately sized, highly homogeneous batches often outperform larger heterogeneous ones. The key question then becomes: what is the optimal batch size? More precisely, when should the scheduler stop adding requests to a batch? The answer depends on both the hardware (e.g., compute vs. memory balance) and the workload (e.g., prompt similarity), making any fixed heuristic inherently brittle.
 
-\paragraph{Key Idea 1: Learn the stopping decision via RL.}
+\paragraph{Key Idea 1: Learn the stopping decision via RL}
 We model batch construction as a sequential decision process and use reinforcement learning (RL) to learn when to stop. At each step, the scheduler considers adding a new request and observes (batch size, shared prefix length, prefix after addition, future-compatible requests).
 
 There are two signals that are particularly important: (i) \textbf{Shared prefix length:} the number of tokens common across all active requests. This directly captures temporal and spatial locality. (ii) \textbf{Future compatibility:} the number of waiting requests that share the same prefix up to the new level. This indicates how many future additions can be made at \emph{zero additional locality cost}.
@@ -42,7 +42,7 @@ A straightforward solution is to scan all waiting requests and count how many of
 \paragraph{Key Idea 2: Incremental overlap tracking via missing counts.}
 To avoid repeated rescanning, we maintain for each request a \emph{missing count}: the number of its chunks not present in the working set.
 
-Crucially, this count only changes when the working set changes (i.e., when requests are activated or finished). Instead of recomputing overlap from scratch, we update these counts incrementally. This reduces the problem to finding the request with the smallest missing count.
+Crucially, this count only changes when the working set changes (i.e., when requests are added to the batch or finished). Instead of recomputing overlap from scratch, we update these counts incrementally. This reduces the problem to finding the request with the smallest missing count.
 
 \paragraph{Key Idea 3: Fast retrieval via lazy heap.}
 To efficiently identify the best request, we maintain a min-heap over missing counts. When counts change, we push updated entries and use lazy deletion to skip stale ones.
@@ -89,33 +89,6 @@ The following subsections describe the prefix-overlap data structure in detail, 
 
 \subsection{Chunked Hash Tree}
 
-\begin{figure*}[t]
-\centering
-\begin{subfigure}{0.32\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{illustration_images/chunked_hash_tree_insertion.png}
-    \caption{}
-    \label{fig:chunked_hash_tree_insertion}
-\end{subfigure}
-\hfill
-\begin{subfigure}{0.32\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{illustration_images/chunked_hash_tree_activation.png}
-    \caption{}
-    \label{fig:chunked_hash_tree_activation}
-\end{subfigure}
-\hfill
-\begin{subfigure}{0.32\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{illustration_images/chunked_hash_tree_find_best_request.png}
-    \caption{}
-    \label{fig:chunked_hash_tree_find_best_request}
-\end{subfigure}
-
-\caption{An example of chunked hash tree workflow which shows insertion, activation and best request selection. Consider 3 requests $R_1, R_2, R_3$ each with 6 tokens. With a chunk size of 2, each request will get divided into 3 levels, as shown in~\ref{fig:chunked_hash_tree_insertion}. Next, we add $R_1$ to the active decoding batch, this makes the shared prefix chain include all its nodes, which are marked as green in ~\ref{fig:chunked_hash_tree_activation}. Now, we wish to find the next candidate request which can be added to the running batch. We have two options $R_2$ and $R_3$. Since, $R_2$ has the max overlap with the current shared prefix chain, we prefer it over $R_3$, as shown in~\ref{fig:chunked_hash_tree_find_best_request}.}
-\label{fig:chunked_hash_tree_workflow}
-\end{figure*}
-
 Before diving into the operations of the Chunked Hash Tree (CHT), we must define how requests are represented and how token sequences are converted into a compact representation that captures the prefix sharing structure. As shown in Figure~\ref{fig:chunked_hash_tree_prefix_representation}, given a request with a token sequence $T = (t_1, t_2, \dots, t_N)$, we partition $T$ into non-overlapping chunks of size $K$ (e.g., $K = 50$). For each chunk boundary $\ell = 1, \dots C$ where $C = \lceil N/K \rceil$, we compute a \emph{cumulative prefix hash} at each boundary\\ $h_\ell = \mathrm{hash}(t_1, t_2, \dots, t_{\min(\ell K,\, N}), \quad \ell = 1, \dots, C$.
 
 Because the hash is cumulative, two requests share the same $h_\ell$ if and only if their first $\ell K$ tokens are identical, which is precisely the condition under which their KV-cache prefixes can be shared. Each request $r$ is therefore represented as an ordered hash vector $H_r = (h_1^r, h_2^r, \dots, h_C^r)$. We use an incremental xxHash-64 state so that each token is processed exactly once, making the total cost $O(N)$ regardless of the number of chunked boundaries.
@@ -147,6 +120,15 @@ Finally, we insert the pair $(m_r, r)$ into \texttt{waiting\_heap}, a min-heap k
 
 Importantly, $\textsc{Insert}$ does \emph{not} modify reference counts or the working set. These are updated only when a request transitions from waiting to active.
 
+Figure~\ref{fig:chunked_hash_tree_insertion} shows an example of a chunked hash tree where we insert 3 requests, $R_1, R_2, R_3$. Requests $R_1, R_2$ share two levels, whereas $R_3$ just has level-1 in common with the other two. The heap has all 3 requests, each with a cost of 3. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\columnwidth]{illustration_images/chunked_hash_tree_insertion.png}
+    \caption{Insertion}
+    \label{fig:chunked_hash_tree_insertion}
+\end{figure}
+
 \subsubsection*{Adding a request to the active batch}
 As proposed in \S\ref{sec:challenges_key_ideas}, our key metric aims to find the number of chunks which are shared by \emph{all} requests of the active batch. In the hash tree, this corresponds to a root-anchored path that extends downward as long as every active request agrees on the hash at each level, and stops at the first level of disagreement. Since this path always starts at the root and is contiguous, it is completely determined by where it ends. We therefore maintain a single tuple $(\ell^*, h^*)$ — the \emph{shared prefix tip} — recording the depth and hash of its deepest node. An empty common prefix is denoted $\ell^* = 0$.
 
@@ -157,6 +139,15 @@ For the working set, any prefix hash of $r$ that is newly entering the working s
 For the shared prefix tip, the key observation is that admitting a new request can only \emph{shorten} the common prefix, never lengthen it. The new tip therefore lies at some level $\leq \min(\ell^*, |H_r|)$. To find it, we need the deepest level where $r$ agrees with the existing tip hash and that node is in the working set — this is exactly the LCA of all active request leaves in the hash trie. Searching from the bottom up finds this immediately at the first hit, allowing an early stop.
 
 Both updates are performed in a single backward pass over $H_r$. We iterate from level $|H_r|$ down to $1$, updating the working set and miss counts at every level. Once we reach $\ell_{\mathrm{tip}} = \min(\ell^*, |H_r|)$, we additionally begin checking for LCA agreement at each level. The first level where $h_\ell^r = h^*$ and $(\ell, h_\ell^r) \in \mathit{working\_set}$ is the new tip; we record it and continue the loop — without breaking — so that all remaining levels still receive their working set updates.
+
+Figure~\ref{fig:chunked_hash_tree_activation} shows the chunked hash tree, after we activate request $R_1$. We mark the working set nodes as green. The shared prefix tip is set to level-2 hash of $R_1$, and the newer costs of $R_2$ and $R_3$ are appended to the waiting heap.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\columnwidth]{illustration_images/chunked_hash_tree_activation.png}
+    \caption{Adding a request to the active batch}
+    \label{fig:chunked_hash_tree_activation}
+\end{figure}
 
 \subsubsection*{Removing a request from the active batch}
 $\textsc{Finish}$ is called when request $r$ completes. It is the symmetric counterpart of $\textsc{AddToBatch}$: where activation could only shorten the shared prefix, completion can only \emph{lengthen} it, since one fewer request needs to agree.
@@ -183,42 +174,27 @@ An intuitive alternative to using the missing count is to simply select a waitin
 
 Our Chunked Hash Tree avoids this trap entirely by evaluating candidates against the complete \texttt{working\_set} using the missing count $m_r$. Rather than anchoring to a bottlenecked tip, the working set tracks every prefix chunk kept alive by any active request. In the previous example, because $R_2$ is active, its Level 1 chunk is already present in the working set. Consequently, $R_3$ requires fewer missing chunks than $R_4$, resulting in $m_{R_3} < m_{R_4}$. By selecting $R_3$, the immediate tip remains bottlenecked at Level 0, but the scheduler implicitly preserves future overlap. Once $R_1$ finishes and is removed via \textsc{Finish}, the forward scan evaluates the remaining batch $\{R_2, R_3\}$ and successfully extends the shared prefix tip to Level 1, automatically reclaiming deeper locality benefits.
 
-Figure~\ref{fig:chunked_hash_tree_workflow} shows a worked example of insertion,
-activation, and best-request selection. Figure~\ref{fig:shared_prefix_chain_workflow} shows how the shared prefix chain shrinks and extends upon activation and completion of requests.
+Figure~\ref{fig:chunked_hash_tree_find_best_request} shows that $R_2$ was at the top of the waiting heap, and thus got selected as the best request. After adding $R_2$ to the active batch, it's nodes are appended to the working set, and the shared prefix tip is updated.
 
-\begin{figure*}[t]
-\centering
-\begin{subfigure}{0.24\textwidth}
+\begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{illustration_images/shared_prefix_chain_step1.png}
-    \caption{}
-    \label{fig:shared_prefix_chain_step1}
-\end{subfigure}
-\hfill
-\begin{subfigure}{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{illustration_images/shared_prefix_chain_step2.png}
-    \caption{}
-    \label{fig:shared_prefix_chain_step2}
-\end{subfigure}
-\hfill
-\begin{subfigure}{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{illustration_images/shared_prefix_chain_step3.png}
-    \caption{}
-    \label{fig:shared_prefix_chain_step3}
-\end{subfigure}
-\hfill
-\begin{subfigure}{0.24\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{illustration_images/shared_prefix_chain_step4.png}
-    \caption{}
-    \label{fig:shared_prefix_chain_step4}
-\end{subfigure}
+    \includegraphics[width=\columnwidth]{illustration_images/chunked_hash_tree_find_best_request.png}
+    \caption{Finding the best request}
+    \label{fig:chunked_hash_tree_find_best_request}
+\end{figure}
 
-\caption{An example of shared prefix chain workflow. We initially have just a single active request $R_1$ with four prefix hash chunks, so the shared prefix chain is also the same as its hash vector, as shown in figure~\ref{fig:shared_prefix_chain_step1}. We then activate $R_2$, which does not have the last level common with $R_1$, and thus the chain size reduces by one~\ref{fig:shared_prefix_chain_step2}. Similarly, as shown in~\ref{fig:shared_prefix_chain_step3}, activation of another request $R_3$ leads to further reduction in the chain size. Now, $R_3$ finishes its execution first, so we remove it from the set of active requests, and therefore this gives an opportunity to extend the chain~\ref{fig:shared_prefix_chain_step4}.}
-\label{fig:shared_prefix_chain_workflow}
-\end{figure*}
+
+Figure~\ref{fig:chunked_hash_tree_finish} shows the state of the chunked hash tree when $R_1$ finishes its execution. The shared prefix tip moves down to $R_2$'s last level, and the costs in the waiting heap are updated accordingly. 
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\columnwidth]{illustration_images/chunked_hash_tree_finish.png}
+    \caption{Request Completion}
+    \label{fig:chunked_hash_tree_finish}
+\end{figure}
+
+
 
 \subsubsection*{Optimizations}
 
