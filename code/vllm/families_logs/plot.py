@@ -95,7 +95,21 @@ for path in log_files:
         continue
 
     engine, policy, fam = parsed
-    label = f"{engine}_{policy}"
+    if engine == "vllm":
+        engine = "vLLM"
+    if engine == "sglang":
+        engine = "SGLang"
+    if policy == "dfs-weight":
+        policy = "DFS-W"
+    if policy == "lpm":
+        policy = "LPM"
+    if policy == "fcfs":
+        policy = "FCFS"
+    if policy == "chunked_hash_tree_bandit":
+        policy = "Feather"
+    if policy == "chunked_hash_tree_heuristic":
+        continue
+    label = f"{engine}:{policy}"
 
     avg_batch, avg_diff, throughput = parse_log(path)
 
