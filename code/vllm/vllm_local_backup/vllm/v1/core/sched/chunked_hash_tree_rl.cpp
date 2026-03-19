@@ -2,6 +2,74 @@
 #include <xxhash.h>
 #include <algorithm>
 #include <iostream>
+#include <chrono>
+
+// ── Timing infrastructure ────────────────────────────────────────────────────
+
+struct FunctionStats {
+    uint64_t total_ns   = 0;
+    uint64_t call_count = 0;
+};
+
+struct ChunkedHashTree_RL_Stats {
+    FunctionStats insert;
+    FunctionStats find_best_request;
+    FunctionStats activate;
+    FunctionStats finish;
+    // Add more as you instrument other functions
+
+    uint64_t update_count = 0;   // total "updates" across all functions
+
+    void log() const {
+        std::cout << "[ChunkedHashTree_RL] === Stats after "
+                  << update_count << " updates ===\n";
+
+        auto report = [](const char* name, const FunctionStats& s) {
+            if (s.call_count == 0) return;
+            std::cout << "  " << name
+                      << "  calls=" << s.call_count
+                      << "  total_ns=" << s.total_ns
+                      << "  avg_ns=" << s.total_ns / s.call_count
+                      << '\n';
+        };
+
+        report("insert              ", insert);
+        report("find_best_request      ", find_best_request);
+        report("activate", activate);
+        report("finish", finish);
+        std::cout << std::flush;
+    }
+};
+
+// One instance per ChunkedHashTree_RL object (or make it static/global if preferred)
+static ChunkedHashTree_RL_Stats g_stats;
+
+// RAII timer: records elapsed ns into a FunctionStats slot and bumps update_count
+struct ScopedTimer {
+    using Clock = std::chrono::high_resolution_clock;
+
+    FunctionStats&          slot;
+    ChunkedHashTree_RL_Stats& stats;
+    Clock::time_point       start;
+
+    ScopedTimer(FunctionStats& slot_, ChunkedHashTree_RL_Stats& stats_)
+        : slot(slot_), stats(stats_), start(Clock::now()) {}
+
+    ~ScopedTimer() {
+        uint64_t ns = static_cast<uint64_t>(
+            std::chrono::duration_cast<std::chrono::nanoseconds>(
+                Clock::now() - start).count());
+        slot.total_ns   += ns;
+        slot.call_count += 1;
+        stats.update_count += 1;
+        if (stats.update_count % 100 == 0)
+            stats.log();
+    }
+};
+
+// Convenience macro so call sites stay one-liners
+#define TIME_FN(slot_name) \
+    ScopedTimer _timer_(g_stats.slot_name, g_stats)
 
 ChunkedHashTree_RL::ChunkedHashTree_RL(uint32_t chunk) 
     : chunk_size(chunk), cache_valid(false), shared_chain_length(0)
@@ -254,6 +322,7 @@ ChunkedHashTree_RL::compute_hashes(const std::vector<uint32_t>& tokens)
 
 uint32_t ChunkedHashTree_RL::insert(uint32_t request_id, const std::vector<uint32_t>& tokens)
 {
+    TIME_FN(insert);
     if (request_hashes.count(request_id)) {
         return 0;
     }
@@ -287,6 +356,7 @@ std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> ChunkedHashTree_RL::find_best
     //       << " missing_cache size: " << missing_cache.size()
     //       << std::endl;
     // std::cout << "inside chunked_hash_tree_rl --> find_best_request()" << std::endl;
+    TIME_FN(find_best_request);
     if (cache_valid && cached_best_request.has_value()) {
         return cached_best_request.value();
     }
@@ -340,6 +410,7 @@ std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> ChunkedHashTree_RL::find_best
 std::pair<uint32_t, uint32_t>
 ChunkedHashTree_RL::activate_request(uint32_t request_id) 
 {
+    TIME_FN(activate);
     if (active_requests.count(request_id)) {
         return {0, 0};
     }
@@ -413,6 +484,7 @@ void ChunkedHashTree_RL::remove(uint32_t request_id) {
 
 std::pair<uint32_t, uint32_t>
 ChunkedHashTree_RL::finish_request(uint32_t request_id) {
+    TIME_FN(finish);
     if (!active_requests.erase(request_id)) {
         return {0, 0};
     }

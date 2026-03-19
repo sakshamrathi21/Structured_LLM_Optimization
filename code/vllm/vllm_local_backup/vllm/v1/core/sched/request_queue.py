@@ -393,14 +393,13 @@ class ChunkedHashTreeRequestQueue(RequestQueue):
         if rid is not None:
             self._id_to_request.pop(rid, None)
 
-    # -----------------------------
-    # Required RequestQueue API
-    # -----------------------------
+    @log_cycles
     def add_request(self, request: Request) -> None:
         rid = self._intern_id(request.request_id)
         self._radix.insert(rid, request.all_token_ids)
         self._pending_requests[request.request_id] = request
 
+    @log_cycles
     def pop_request(self) -> Request:
         rid, cost = self._radix.find_best_request()
         if rid == 0:
@@ -412,6 +411,7 @@ class ChunkedHashTreeRequestQueue(RequestQueue):
         self._radix.activate_request(rid)
         return request
 
+    @log_cycles
     def peek_request(self) -> Request:
         rid, _ = self._radix.find_best_request()
         if rid == 0:
@@ -456,6 +456,7 @@ class ChunkedHashTreeRequestQueue(RequestQueue):
         for request_id in reversed(list(self._pending_requests.keys())):
             yield self._pending_requests[request_id]
 
+    @log_cycles
     def free_request(self, request: Request) -> None:
         request_id = request.request_id
         rid = self._id_map.get(request_id)
@@ -463,6 +464,7 @@ class ChunkedHashTreeRequestQueue(RequestQueue):
             self._radix.finish_request(rid)
             self._release_id(request_id)
 
+    @log_cycles
     def should_add_more_to_batch(self, **kwargs) -> bool:
         current_batch_size = kwargs.get("current_batch_size", 0)
         if current_batch_size == 0:
@@ -603,11 +605,13 @@ class RadixCostRequestQueue_RL(RequestQueue):
         if rid is not None:
             self._id_to_request.pop(rid, None)
 
+    @log_cycles
     def add_request(self, request: Request) -> None:
         rid = self._intern_id(request.request_id)
         self._radix.insert(rid, request.all_token_ids)
         self._pending_requests[request.request_id] = request
 
+    @log_cycles
     def pop_request(self) -> Request:
         rid, _, _, _ = self._radix.find_best_request()
         if rid == 0:
@@ -617,6 +621,7 @@ class RadixCostRequestQueue_RL(RequestQueue):
         self._radix.activate_request(rid)
         return request
 
+    @log_cycles
     def peek_request(self) -> Request:
         rid, _, _, _ = self._radix.find_best_request()
         if rid == 0:
@@ -658,6 +663,7 @@ class RadixCostRequestQueue_RL(RequestQueue):
         for request_id in reversed(list(self._pending_requests.keys())):
             yield self._pending_requests[request_id]
 
+    @log_cycles
     def free_request(self, request: Request) -> None:
         request_id = request.request_id
         rid = self._id_map.get(request_id)
@@ -665,7 +671,7 @@ class RadixCostRequestQueue_RL(RequestQueue):
             self._radix.finish_request(rid)
             self._release_id(request_id)
 
-
+    @log_cycles
     def should_add_more_to_batch(self, **kwargs) -> bool:
         current_batch_size = kwargs.get("current_batch_size", 0)
         last_batch_time    = kwargs.get("last_batch_time", 0.0)
@@ -826,7 +832,7 @@ class FamilyLoadRequestQueue(RequestQueue):
         self.family_requests: dict[int, deque[Request]] = {}
         self.last_served_family: int = 0
 
-    # @log_cycles
+    @log_cycles
     def add_request(self, request: Request) -> None:
         family_id = request.all_token_ids[26]
         # family id should be hash of the first 50 tokens
@@ -835,7 +841,7 @@ class FamilyLoadRequestQueue(RequestQueue):
             self.family_requests[family_id] = deque()
         self.family_requests[family_id].append(request)
 
-    # @log_cycles
+    @log_cycles
     def pop_request(self) -> Request:
         if self.last_served_family not in self.family_requests or not self.family_requests[self.last_served_family]:
             available_families = [fid for fid in self.family_requests if self.family_requests[fid]]
@@ -843,14 +849,13 @@ class FamilyLoadRequestQueue(RequestQueue):
         request = self.family_requests[self.last_served_family].popleft()
         return request
 
-    # @log_cycles
+    @log_cycles
     def peek_request(self) -> Request:
         if self.last_served_family not in self.family_requests or not self.family_requests[self.last_served_family]:
             available_families = [fid for fid in self.family_requests if self.family_requests[fid]]
             self.last_served_family = min(available_families)
         return self.family_requests[self.last_served_family][0]
 
-    # @log_cycles
     def prepend_request(self, request: Request) -> None:
         # family_id = request.all_token_ids[26]
         family_id = hash(tuple(request.all_token_ids[:50]))
@@ -858,18 +863,15 @@ class FamilyLoadRequestQueue(RequestQueue):
             self.family_requests[family_id] = deque()
         self.family_requests[family_id].appendleft(request)
     
-    # @log_cycles
     def prepend_requests(self, requests: RequestQueue) -> None:
         for request in requests:
             self.prepend_request(request)
     
-    # @log_cycles
     def remove_request(self, request: Request) -> None:
         family_id = request.all_token_ids[3]
         if family_id in self.family_requests:
             self.family_requests[family_id].remove(request)
     
-    # @log_cycles
     def remove_requests(self, requests: Iterable[Request]) -> None:
         for request in requests:
             self.remove_request(request)
@@ -890,7 +892,7 @@ class FamilyLoadRequestQueue(RequestQueue):
             for request in reversed(self.family_requests[fid]):
                 yield request
 
-    # @log_cycles
+    @log_cycles
     def should_add_more_to_batch(self, **kwargs) -> bool:
         current_batch_size = kwargs.get("current_batch_size", 0)
         if current_batch_size == 0:

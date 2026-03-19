@@ -32,7 +32,7 @@ RE_FILENAME = re.compile(
     r"^(?P<engine>vllm|sglang)_(?P<policy>.+?)_(?P<model>"
     r"qwen_qwen2\.5-0\.5b-instruct|"
     r"meta-llama_Llama-3\.1-8B-Instruct|"
-    r"lmsys_longchat-13b-16k"
+    r"qwen_qwen3-8b"
     r")_req\d+"
 )
 
@@ -120,6 +120,8 @@ for path in log_files:
     if policy == "fcfs":
         policy = "FCFS"
     if policy == "chunked_hash_tree_bandit":
+        policy = "Feather"
+    if policy == "family_load":
         policy = "Feather"
     if policy == "chunked_hash_tree_heuristic":
         continue
