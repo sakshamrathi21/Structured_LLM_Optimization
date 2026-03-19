@@ -120,6 +120,12 @@ SGLang policies follow the opposite trajectory in batch size. Because SGLang cou
 
 \subsubsection*{Varying Number of Shared Prefix Tokens}
 
+Figures~\ref{fig:tp_vs_sys}, \ref{fig:abs_vs_sys}, and \ref{fig:tbt_vs_sys} present throughput, average batch size, and TBT as the shared prefix length increases from 100 to 10000 tokens. The overall trend is expected: longer prefixes increase prefill compute and KV cache memory pressure, dragging down throughput across all policies. What is more revealing is how differently the policies respond to this pressure.
+
+At short prefix lengths, all policies perform similarly and throughput is comparable across the board. Beyond 1000 tokens, the policies diverge sharply. \textsc{Feather}'s throughput advantage grows with prefix length, a direct consequence of higher locality gains as sequences get longer. vLLM:FCFS, despite maintaining large batch sizes throughout (owing to its idea of excluding shared prefix tokens from the token budget), sees its throughput collapse and TBT increase exponentially to 1.0s at 10000 tokens because packing oversized, heterogeneous batches destroys locality. \textsc{Feather} avoids this by running moderately sized but homogeneous batches, keeping TBT nearly flat across the entire range. The SGLang policies tell a  different story: because SGLang counts prefix tokens toward the token budget, longer prefixes spread out requests and batch sizes reduce by 10000 tokens. SGLang:FCFS preserves low TBT as a side effect of these tiny batches, but at a steep throughput cost. SGLang:LPM and DFS-W suffer on both fronts, with TBT rising steadily due to heavier memory access and growing CPU scheduling overhead for longer prompts.
+
+Taken together, as shared prefix lengths grow, \textsc{Feather} is the only policy that sustains both high throughput and low latency, while all baselines are forced to sacrifice one for the other.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{results/sys_prompt_tokens_plots/throughput_vs_sys_prompt_tokens.png}
@@ -140,6 +146,8 @@ SGLang policies follow the opposite trajectory in batch size. Because SGLang cou
     \caption{Time-between-tokens (TBT) across varying number of shared prefix tokens.}
     \label{fig:tbt_vs_sys}
 \end{figure}
+
+
 
 \subsubsection*{Varying Models}
 \begin{figure}[H]
