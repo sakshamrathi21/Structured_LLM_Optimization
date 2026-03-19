@@ -175,11 +175,23 @@ Taken together, as shared prefix lengths grow, \textsc{Feather} is the only poli
 \subsection{Micro-Benchmarks}
 \subsubsection*{Comparing Scheduler Compute Overhead across Different Policies}
 
+Figure~\ref{fig:profile_sum_vs_sys_prompt_tokens} shows the CPU scheduling overhead for each policy as the shared prefix length varies from 100 to 20,000 tokens, plotted alongside actual GPU execution time to give a meaningful frame of reference.
+
+We include an Oracle policy as a baseline, where the caller explicitly supplies prefix group identifiers with each request. This lets the scheduler batch requests sharing the same prefix instantly, with no matching computation, effectively zero overhead while still realizing all the cache-locality benefits that motivated \textsc{Feather}. A second Oracle line shows the GPU execution time under this ideal batching, representing the throughput ceiling any policy could hope to achieve.
+
+All three non-trivial policies, \textsc{Feather}, LPM, and DFS-W show increasing overhead as prefix length grows, since longer contexts mean deeper radix-tree traversals and larger key comparisons. But the rate of growth diverges dramatically. At 20,000 tokens, LPM and DFS-W overhead is roughly 1,000$\times$ higher than \textsc{Feather}'s, and at larger sequence lengths their scheduling overhead exceeds total Oracle GPU execution time by up to 10$\times$, meaning the CPU bottleneck alone is enough to negate any gains from cache-aware batching. \textsc{Feather}, by contrast, stays below 1\% of GPU execution time across the entire tested range.
+
+Let $N$ be the number of requests in the waiting queue and $L$ the maximum prefix length. For each request, LPM performs prefix matching on the global radix cache tree, a token-by-token traversal costing $O(L)$ per request, then sorts the queue by matched prefix length, adding $O(N \log N)$. Total per-round cost is $\mathcal{O}(N \cdot L + N \log N)$. The in-batch prefix caching check adds another $O(N \cdot L)$ term. The result is overhead that scales multiplicatively with both queue size and context length. LPM's own implementation implicitly acknowledges this by falling back to FCFS when $N > 128$ (we disabled the fallback during these experiments). 
+
+DFS-W avoids per-request tree traversal, but replaces it with something different: a full traversal of the entire radix cache tree every scheduling round. Let $T$ be the total node count. DFS-W first propagates subtree request counts upward in $O(T)$, then re-traverses depth-first, sorting children by weight at every level. Total cost is $\mathcal{O}(N + T \log T)$. The key problem is that $T$ reflects the server's accumulated history, not the current workload. The radix tree grows monotonically and is only pruned under memory pressure, so DFS-W's overhead increases indefinitely over a deployment's lifetime, regardless of current queue length or request size.
+
+These failure modes compound adversarially in practice. A server with a large accumulated cache ($T \gg N$) will punish DFS-W even during quiet periods; a burst of long-context requests will punish LPM through the $N \cdot L$ term. Either way, scheduling overhead can reach the same order of magnitude as GPU execution time. The broader takeaway is that algorithmically identifying shared prefixes at runtime is fundamentally expensive and that naive cache-aware scheduling can itself become the dominant bottleneck.
+
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{results/profile_sum_vs_sys_prompt_tokens.png}
-    \caption{Time taken by different scheduling policies.}
-    \label{fig:profile_sum_vs_sys_prompt_tokens}
+\centering
+\includegraphics[width=\linewidth]{results/profile_sum_vs_sys_prompt_tokens.png}
+\caption{CPU scheduling overhead (in milliseconds) for \textsc{Feather}, LPM, DFS-W, and Oracle policies as a function of shared prefix length (100 to 20{,}000 tokens). The dotted line denotes the total GPU execution time under the Oracle policy.}
+\label{fig:profile_sum_vs_sys_prompt_tokens}
 \end{figure}
 
 \subsection{\textcolor{blue}{Micro-benchmarks}}
