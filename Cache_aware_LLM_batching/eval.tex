@@ -172,12 +172,15 @@ Taken together, as shared prefix lengths grow, \textsc{Feather} is the only poli
     \label{fig:tbt_vs_mod}
 \end{figure}
 
-\subsection{\textcolor{blue}{Main Results}}
-\textcolor{red}{
-\begin{itemize}
-    \item Separate SGLANG and vLLM if needed?
-    \item Throughput, Average Batch Size, TBT across different radix tree modes?
-\end{itemize}}
+\subsection{Micro-Benchmarks}
+\subsubsection*{Comparing Scheduler Compute Overhead across Different Policies}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{results/profile_sum_vs_sys_prompt_tokens.png}
+    \caption{Time taken by different scheduling policies.}
+    \label{fig:profile_sum_vs_sys_prompt_tokens}
+\end{figure}
 
 \subsection{\textcolor{blue}{Micro-benchmarks}}
 \textcolor{red}{
