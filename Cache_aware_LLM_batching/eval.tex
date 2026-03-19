@@ -193,11 +193,35 @@ These failure modes compound adversarially in practice. A server with a large ac
 \caption{CPU scheduling overhead (in milliseconds) for \textsc{Feather}, LPM, DFS-W, and Oracle policies as a function of shared prefix length (100 to 20{,}000 tokens). The dotted line denotes the total GPU execution time under the Oracle policy.}
 \label{fig:profile_sum_vs_sys_prompt_tokens}
 \end{figure}
+\subsubsection*{Time taken by individual functions of Chunked Hash Tree}
 
-\subsection{\textcolor{blue}{Micro-benchmarks}}
+Table~\ref{tab:chunked_hash_tree_individual_functions} profiles the CHT operations over an inference workload of $5{,}000$ requests, each $5{,}000$ tokens long. As expected, \textsc{Insert}, \textsc{AddToBatch}, and \textsc{Finish} are each invoked exactly $5{,}000$ times, once per request lifecycle. \textsc{FindBest}, however, is called $26{,}405$ times, since it is queried repeatedly during batch construction: the RL policy may reject a candidate and trigger a fresh lookup, or the scheduler may inspect the queue multiple times before committing to a \textsc{Stop}.
+
+\textsc{Insert} dominates total time, consuming ${\sim}768$~ms out of the ${\sim}1{,}194$~ms aggregate. This is expected: hash computation must scan every token once ($O(N)$ per request), making \textsc{Insert} inherently proportional to prompt length. \textsc{Finish} is notably more expensive than \textsc{AddToBatch} (${\sim}195$~ms vs.\ ${\sim}56$~ms) despite their symmetric nature. The gap arises from \textsc{Finish}'s additional forward tip-extension scan: after updating the working set, it must walk forward from $\ell^*{+}1$ level by level to check whether the shared prefix can be lengthened, an overhead that \textsc{AddToBatch}'s early-terminating backward LCA scan does not incur. \textsc{FindBest} is the cheapest per-call operation at $6{,}641$~ns on average, a direct consequence of result caching and lazy heap traversal — its high call count therefore contributes only a smaller chunk to the total overhead (${\sim}175$~ms).
+
+\begin{table}[t]
+\centering
+\small
+\resizebox{\columnwidth}{!}{\begin{tabular}{lccc}
+\toprule
+\textbf{Function} & \textbf{Number of Calls} & \textbf{Average Time (ns)} & \textbf{Total Time (ns)} \\
+\midrule
+\textsc{Insert}      & 5,000  & 153,714 & 768,570,573 \\
+\textsc{AddToBatch}  & 5,000  &  11,143 &  55,715,469 \\
+\textsc{Finish}      & 5,000  &  38,952 & 194,760,111 \\
+\textsc{FindBest}    & 26,405 &   6,641 & 175,372,986 \\
+\bottomrule
+\end{tabular}}
+\caption{Time taken by individual functions of Chunked Hash Tree for $5{,}000$ requests of $5{,}000$ tokens each.}
+\label{tab:chunked_hash_tree_individual_functions}
+\end{table}
+
+
+
+
+
 \textcolor{red}{
 \begin{itemize}
-    \item Compare the CPU overhead of the chunked hash tree, basically by adding a row to the previous table? Add the cycles taken by individual functions of our chunked hash tree.
     \item How do the state and action flow for these two RL policies? How does the batch size vary across iterations?
     \item Also present DRAM activity numbers here?
 \end{itemize}}
