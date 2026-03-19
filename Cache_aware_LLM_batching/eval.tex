@@ -90,7 +90,11 @@ Overall, \textsc{Feather} achieves the best throughput across all settings while
 \end{figure}
 
 \subsubsection*{Varying Number of Decode Tokens}
+Figures~\ref{fig:tp_vs_tok_l_5000}, \ref{fig:abs_vs_tok_l_5000}, and \ref{fig:tbt_vs_tok_l_5000} present throughput, average batch size, and TBT as a function of the number of output decode tokens per request. Each decode token generation corresponds to a sweep through its entire KV cache. The policies exhibit two qualitatively distinct regimes separated by a crossover around 20 decode tokens. In the prefill-dominated regime (1--20 tokens), all policies behave similarly: throughput grows modestly and batch sizes converge, since the workload is dominated by short prefill phases that leave little room for locality-aware scheduling to take effect.
 
+Beyond 20 tokens, the policies diverge sharply. \textsc{Feather} scales strongly with decode length, reaching roughly 3800 toks/s at 200 tokens --- more than $3\times$ the throughput of any SGLang policy at the same point. Two complementary effects drive this. First, longer decode phases mean each batch sweeps through the KV cache repeatedly, so the gains from temporal and spatial locality compound over more iterations, allowing \textsc{Feather} to utilize the benefits of locality for a larger fraction of total execution time. Second, longer decodes give the scheduler more opportunities to accumulate waiting requests from the same prefix group, enabling it to assemble larger, more homogeneous batches. Both effects reinforce each other as decode length grows, explaining the near-monotonic rise in \textsc{Feather}'s average batch size and throughput.
+
+SGLang policies follow the opposite trajectory in batch size. Because SGLang counts shared prefix tokens toward the token budget, each prefill contributes roughly 5000 tokens to the overall token budget, while each decode step contributes only a single token. As requests become decode-heavy, fewer prefills occur per scheduling step, meaning fewer new requests are available at each step to populate the batch. This causes the effective batch size to collapse for SGLang policies (Figure~\ref{fig:abs_vs_tok_l_5000}). The resulting smaller batches reduce per-step compute, which drives down TBT for SGLang:FCFS and LPM, but at the cost of throughput, since fewer tokens are generated per second. Although \textsc{Feather} operates at a higher batch size than SGLang policies, its TBT remains competitive: reduced scheduler compute overhead and the gains from temporal and spatial locality together offset the cost of processing larger batches.
 
 \begin{figure}[H]
     \centering
@@ -112,14 +116,67 @@ Overall, \textsc{Feather} achieves the best throughput across all settings while
     \caption{Time-between-tokens (TBT) across varying number of decode tokens.}
     \label{fig:tbt_vs_tok_l_5000}
 \end{figure}
+
+
+\subsubsection*{Varying Number of Shared Prefix Tokens}
+
+Figures~\ref{fig:tp_vs_sys}, \ref{fig:abs_vs_sys}, and \ref{fig:tbt_vs_sys} present throughput, average batch size, and TBT as the shared prefix length increases from 100 to 10000 tokens. The overall trend is expected: longer prefixes increase prefill compute and KV cache memory pressure, dragging down throughput across all policies. What is more revealing is how differently the policies respond to this pressure.
+
+At short prefix lengths, all policies perform similarly and throughput is comparable across the board. Beyond 1000 tokens, the policies diverge sharply. \textsc{Feather}'s throughput advantage grows with prefix length, a direct consequence of higher locality gains as sequences get longer. vLLM:FCFS, despite maintaining large batch sizes throughout (owing to its idea of excluding shared prefix tokens from the token budget), sees its throughput collapse and TBT increase exponentially to 1.0s at 10000 tokens because packing oversized, heterogeneous batches destroys locality. \textsc{Feather} avoids this by running moderately sized but homogeneous batches, keeping TBT nearly flat across the entire range. The SGLang policies tell a  different story: because SGLang counts prefix tokens toward the token budget, longer prefixes spread out requests and batch sizes reduce by 10000 tokens. SGLang:FCFS preserves low TBT as a side effect of these tiny batches, but at a steep throughput cost. SGLang:LPM and DFS-W suffer on both fronts, with TBT rising steadily due to heavier memory access and growing CPU scheduling overhead for longer prompts.
+
+Taken together, as shared prefix lengths grow, \textsc{Feather} is the only policy that sustains both high throughput and low latency, while all baselines are forced to sacrifice one for the other.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{results/sys_prompt_tokens_plots/throughput_vs_sys_prompt_tokens.png}
+    \caption{Throughput across varying number of shared prefix tokens.}
+    \label{fig:tp_vs_sys}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{results/sys_prompt_tokens_plots/avg_batch_vs_sys_prompt_tokens.png}
+    \caption{Average running batch size across varying number of shared prefix tokens.}
+    \label{fig:abs_vs_sys}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{results/sys_prompt_tokens_plots/avg_timediff_vs_sys_prompt_tokens.png}
+    \caption{Time-between-tokens (TBT) across varying number of shared prefix tokens.}
+    \label{fig:tbt_vs_sys}
+\end{figure}
+
+
+
+\subsubsection*{Varying Models}
+\textcolor{red}{add longchat bars and then describe all 3 together}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{results/model_bar_plots/throughput_model_bar.png}
+    \caption{Throughput across varying models.}
+    \label{fig:tp_vs_mod}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{results/model_bar_plots/avg_batch_model_bar.png}
+    \caption{Average running batch size across varying models.}
+    \label{fig:abs_vs_mod}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{results/model_bar_plots/avg_timediff_model_bar.png}
+    \caption{Time-between-tokens (TBT) across varying models.}
+    \label{fig:tbt_vs_mod}
+\end{figure}
+
 \subsection{\textcolor{blue}{Main Results}}
 \textcolor{red}{
 \begin{itemize}
     \item Separate SGLANG and vLLM if needed?
-    \item Throughput, Average Batch Size, TBT across varying context length (number of tokens shared by system prompt)?
-    \item Throughput, Average Batch Size, TBT across different models?
     \item Throughput, Average Batch Size, TBT across different radix tree modes?
-    \item highlight the movement of batch size as the number of decode tokens increases.
 \end{itemize}}
 
 \subsection{\textcolor{blue}{Micro-benchmarks}}
@@ -137,57 +194,3 @@ Overall, \textsc{Feather} achieves the best throughput across all settings while
     \item Remove RL policy, do not stop the batch, and compare the throughput in low request rate settings, where larger batch sizes will reduce the homogeneity.
 \end{itemize}
 }
-
-\begin{figure*}[t]
-\centering
-\begin{subfigure}{0.32\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{results/sys_prompt_tokens_plots/throughput_vs_sys_prompt_tokens.png}
-    \caption{}
-    \label{fig:tp_vs_sys}
-\end{subfigure}
-\hfill
-\begin{subfigure}{0.32\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{results/sys_prompt_tokens_plots/avg_batch_vs_sys_prompt_tokens.png}
-    \caption{}
-    \label{fig:tbt_vs_sys}
-\end{subfigure}
-\hfill
-\begin{subfigure}{0.32\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{results/sys_prompt_tokens_plots/avg_timediff_vs_sys_prompt_tokens.png}
-    \caption{}
-    \label{fig:abs_vs_sys}
-\end{subfigure}
-
-\caption{Various metrics across varying number of shared prefix tokens. 200 tokens decode length; 500 input request poisson rate and 5 prefix groups.}
-\label{fig:metrics_vs_sys}
-\end{figure*}
-
-\begin{figure*}[t]
-\centering
-\begin{subfigure}{0.32\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{results/model_bar_plots/throughput_model_bar.png}
-    \caption{}
-    \label{fig:tp_vs_mod}
-\end{subfigure}
-\hfill
-\begin{subfigure}{0.32\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{results/model_bar_plots/avg_batch_model_bar.png}
-    \caption{}
-    \label{fig:tbt_vs_mod}
-\end{subfigure}
-\hfill
-\begin{subfigure}{0.32\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{results/model_bar_plots/avg_timediff_model_bar.png}
-    \caption{}
-    \label{fig:abs_vs_mod}
-\end{subfigure}
-
-\caption{Various metrics across varying models. 200 tokens decode length; 500 input request poisson rate, 5 prefix groups, 5000 shared prefix tokens.}
-\label{fig:metrics_vs_sys}
-\end{figure*}
