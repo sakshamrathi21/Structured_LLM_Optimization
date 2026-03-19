@@ -57,13 +57,65 @@ Turning to time-between-tokens (TBT) in Figure~\ref{fig:tbt_vs_rps_l_5000_fam_5}
 \label{fig:tbt_vs_rps_l_5000_fam_5}
 \end{figure}
 
+\subsubsection*{Varying Number of Prefix Groups}
+
+Figures~\ref{fig:tp_vs_fam_l_5000}, \ref{fig:abs_vs_fam_l_5000}, and \ref{fig:tbt_vs_fam_l_5000} present throughput, average batch size, and TBT as a function of the number of prefix groups, respectively.
+
+As established in \S\ref{sec:motivation}, increasing the number of prefix groups introduces request heterogeneity, which degrades both temporal and spatial locality in the KV cache. This manifests as a sharp drop in throughput under vLLM's FCFS policy even when moving from just 1 to 2 prefix groups. As the number of groups grows further, FCFS continues to suffer: beyond 20 prefix groups, the aggregate KV cache footprint exceeds HBM capacity, causing a pronounced collapse in average batch size (Figure~\ref{fig:abs_vs_fam_l_5000}) and a corresponding increase in recomputation, which further depresses throughput.
+
+\textsc{Feather} mitigates this by co-scheduling requests that share a prefix group, improving cache reuse and reducing evictions. This allows \textsc{Feather} to sustain a larger effective batch size and significantly outperform all baselines in throughput across the entire range of prefix group configurations.
+
+SGLang's LPM and DFS-W policies occupy a middle ground: their prefix-aware scheduling reduces KV cache evictions and supports larger batch sizes relative to FCFS, yielding higher throughput than vLLM:FCFS at scale. However, the additional per-step scheduler overhead inflates their TBT, making them less suitable when latency is a primary concern.
+Overall, \textsc{Feather} achieves the best throughput across all settings while keeping TBT competitive.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{results/families_plots/throughput_vs_fam.png}
+    \caption{Throughput across varying number of prefix groups.}
+    \label{fig:tp_vs_fam_l_5000}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{results/families_plots/avg_batch_vs_fam.png}
+    \caption{Average running batch size across varying number of prefix groups.}
+    \label{fig:abs_vs_fam_l_5000}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{results/families_plots/avg_timediff_vs_fam.png}
+    \caption{Time-between-tokens (TBT) across varying number of prefix groups.}
+    \label{fig:tbt_vs_fam_l_5000}
+\end{figure}
+
+\subsubsection*{Varying Number of Decode Tokens}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{results/decode_tokens_plots/throughput_vs_tok.png}
+    \caption{Throughput across varying number of decode tokens.}
+    \label{fig:tp_vs_tok_l_5000}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{results/decode_tokens_plots/avg_batch_vs_tok.png}
+    \caption{Average running batch size across varying number of decode tokens.}
+    \label{fig:abs_vs_tok_l_5000}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{results/decode_tokens_plots/avg_timediff_vs_tok.png}
+    \caption{Time-between-tokens (TBT) across varying number of decode tokens.}
+    \label{fig:tbt_vs_tok_l_5000}
+\end{figure}
 \subsection{\textcolor{blue}{Main Results}}
 \textcolor{red}{
 \begin{itemize}
     \item Separate SGLANG and vLLM if needed?
-    \item Throughput, Average Batch Size, TBT across req rate?
-    \item Throughput, Average Batch Size, TBT across number of prefix groups?
-    \item Throughput, Average Batch Size, TBT across varying decode lengths?
     \item Throughput, Average Batch Size, TBT across varying context length (number of tokens shared by system prompt)?
     \item Throughput, Average Batch Size, TBT across different models?
     \item Throughput, Average Batch Size, TBT across different radix tree modes?
@@ -85,60 +137,6 @@ Turning to time-between-tokens (TBT) in Figure~\ref{fig:tbt_vs_rps_l_5000_fam_5}
     \item Remove RL policy, do not stop the batch, and compare the throughput in low request rate settings, where larger batch sizes will reduce the homogeneity.
 \end{itemize}
 }
-
-\begin{figure*}[t]
-\centering
-\begin{subfigure}{0.32\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{results/families_plots/throughput_vs_fam.png}
-    \caption{}
-    \label{fig:tp_vs_fam_l_5000}
-\end{subfigure}
-\hfill
-\begin{subfigure}{0.32\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{results/families_plots/avg_batch_vs_fam.png}
-    \caption{}
-    \label{fig:tbt_vs_fam_l_5000}
-\end{subfigure}
-\hfill
-\begin{subfigure}{0.32\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{results/families_plots/avg_timediff_vs_fam.png}
-    \caption{}
-    \label{fig:abs_vs_fam_l_5000}
-\end{subfigure}
-
-\caption{Various metrics across varying number of prefix groups. Shared prefix length of 5000 tokens; 500 input request poisson rate and 200 tokens decode length.}
-\label{fig:metrics_vs_fam_l_5000}
-\end{figure*}
-
-\begin{figure*}[t]
-\centering
-\begin{subfigure}{0.32\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{results/decode_tokens_plots/throughput_vs_tok.png}
-    \caption{}
-    \label{fig:tp_vs_tok_l_5000}
-\end{subfigure}
-\hfill
-\begin{subfigure}{0.32\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{results/decode_tokens_plots/avg_batch_vs_tok.png}
-    \caption{}
-    \label{fig:tbt_vs_tok_l_5000}
-\end{subfigure}
-\hfill
-\begin{subfigure}{0.32\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{results/decode_tokens_plots/avg_timediff_vs_tok.png}
-    \caption{}
-    \label{fig:abs_vs_tok_l_5000}
-\end{subfigure}
-
-\caption{Various metrics across varying number of total decode tokens. Shared prefix length of 5000 tokens; 500 input request poisson rate and 5 prefix groups.}
-\label{fig:metrics_vs_tok_l_5000}
-\end{figure*}
 
 \begin{figure*}[t]
 \centering
