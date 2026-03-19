@@ -12,7 +12,7 @@ We evaluate \textsc{Feather} across a range of models, GPU configurations, and r
 \subsection{Experimental Setup}
 
 \textbf{Models and Hardware.}
-We evaluate on three model families spanning a range of sizes: Qwen~\cite{qwen} (2B),  LLaMA-3~\cite{llama3modelcard} (8B), and LongChat~\cite{longchat2023} (13B). Unless stated otherwise, all experiments run on an NVIDIA RTX 6000 Ada Generation GPU~\cite{nvidia_rtx6000_datasheet} with 48\,GB of HBM and a 96\,MB L2 cache, with the maximum batch size fixed at 500. \textcolor{red}{[Present results on A100 for PAT? Any other GPU?]}
+We evaluate on three model families spanning a range of sizes: Qwen~\cite{qwen} (0.5B),  LLaMA-3~\cite{llama3modelcard} (8B), and LongChat~\cite{longchat2023} (13B). Unless stated otherwise, all experiments run on an NVIDIA RTX 6000 Ada Generation GPU~\cite{nvidia_rtx6000_datasheet} with 48\,GB of HBM and a 96\,MB L2 cache, with the maximum batch size fixed at 500. \textcolor{red}{[Present results on A100 for PAT? Any other GPU?]}
 
 \textbf{Workloads.}
 Following prior work, request arrivals are modeled as a Poisson process, with input and output lengths sampled from two real-world datasets. L-Eval~\cite{an2023leval} is a benchmark of human-labeled query-response pairs covering diverse tasks such as summarization and question answering, with sequence lengths ranging from 2.7K to 210.5K tokens. LongBench~\cite{bai2024longbench2} is a curated collection of long-context samples drawn from 21 datasets across 6 task categories---including multi-document question answering, summarization, and code completion---with context lengths between 4K and 10K tokens.
