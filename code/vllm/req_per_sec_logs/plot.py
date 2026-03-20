@@ -103,6 +103,8 @@ for path in log_files:
         policy = "DFS-W"
     if policy == "lpm":
         policy = "LPM"
+    if policy == "dynamic_batching":
+        policy = "DB"
     if policy == "fcfs":
         policy = "FCFS"
     if policy == "chunked_hash_tree_bandit":

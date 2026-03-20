@@ -4,7 +4,7 @@ VLLM_SCRIPT="vllm_multiple_families_varying_workloads.py"
 SGLANG_SCRIPT="sglang_multiple_families_varying_workloads.py"
 PY_BIN="/home/saksham/CS496/code/vllm/.venv/bin/python"
 
-LOG_DIR="logs"
+LOG_DIR="req_per_sec_logs"
 mkdir -p "$LOG_DIR"
 
 LEN_FACTOR=(1000 2000)
@@ -15,8 +15,8 @@ MODELS=(qwen/qwen2.5-0.5b-instruct meta-llama/Llama-3.1-8B-Instruct lmsys/longch
 MODELS=(lmsys/longchat-13b-16k)
 
 # VLLM_POLICIES=(fcfs chunked_hash_tree_heuristic chunked_hash_tree_bandit)
-VLLM_POLICIES=(chunked_hash_tree_bandit)
-SGLANG_POLICIES=(fcfs lpm dfs-weight)
+VLLM_POLICIES=(dynamic_batching)
+SGLANG_POLICIES=()
 
 MIN_REQUESTS=1000
 MAX_REQUESTS=5000
