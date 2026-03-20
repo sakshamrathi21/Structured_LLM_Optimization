@@ -12,7 +12,7 @@ We evaluate \textsc{Feather} across a range of models, GPU configurations, and r
 \subsection{Experimental Setup}
 
 \textbf{Models and Hardware.}
-We evaluate on three model families spanning a range of sizes: Qwen~\cite{qwen} (0.5B,8B) and LLaMA-3~\cite{llama3modelcard} (8B). Unless stated otherwise, all experiments run on an NVIDIA RTX 6000 Ada Generation GPU~\cite{nvidia_rtx6000_datasheet} with 48\,GB of HBM and a 96\,MB L2 cache, with the maximum batch size fixed at 500. \textcolor{red}{[Present results on A100 for PAT? Any other GPU?]}
+We evaluate on three model families spanning a range of sizes: Qwen~\cite{qwen} (0.5B,8B) and LLaMA-3~\cite{llama3modelcard} (8B). Unless stated otherwise, all experiments run on an NVIDIA RTX 6000 Ada Generation GPU~\cite{nvidia_rtx6000_datasheet} with 48\,GB of GDDR6 and a 96\,MB L2 cache, with the maximum batch size fixed at 500. \textcolor{red}{[Present results on A100 for PAT? Any other GPU?]}
 
 \textbf{Workloads.}
 Following prior work, request arrivals are modeled as a Poisson process, with input and output lengths sampled from two real-world datasets. L-Eval~\cite{an2023leval} is a benchmark of human-labeled query-response pairs covering diverse tasks such as summarization and question answering, with sequence lengths ranging from 2.7K to 210.5K tokens. LongBench~\cite{bai2024longbench2} is a curated collection of long-context samples drawn from 21 datasets across 6 task categories—including multi-document question answering, summarization, and code completion—with context lengths between 4K and 10K tokens.
@@ -32,7 +32,7 @@ Throughout this section, we evaluate a workload consisting of 5 prefix groups, e
 
 Figure~\ref{fig:tp_vs_rps_l_5000_fam_5} presents throughput (toks/s) as a function of the input Poisson rate. Across all policies, throughput rises with increasing request rate before eventually saturating. \textsc{Feather} consistently outperforms all baselines at every request rate. At 100 req/sec, \textsc{Feather} achieves roughly $4\times$ the throughput of vLLM's FCFS policy.
 
-Notably, this throughput advantage is not driven by larger batch sizes. As shown in Figure~\ref{fig:abs_vs_rps_l_5000_fam_5}, \textsc{Feather} maintains a \emph{smaller} average batch size than vLLM:FCFS across all request rates. This reinforces a key insight: \emph{smaller, homogeneous batches outperform larger, heterogeneous ones}. The gradual growth in \textsc{Feather}'s batch size with increasing request rate reflects its ability to smartly (\textcolor{red}{better adverb here}) aggregate more requests from the same prefix group into the active batch without sacrificing locality. We also observe that SGLang policies consistently operate at lower batch sizes than vLLM policies; this is because vLLM avoids double-counting shared prefix tokens toward the token budget, allowing it to pack more requests into each batch.
+Notably, this throughput advantage is not driven by larger batch sizes. As shown in Figure~\ref{fig:abs_vs_rps_l_5000_fam_5}, \textsc{Feather} maintains a \emph{smaller} average batch size than vLLM:FCFS across all request rates. This reinforces a key insight: \emph{smaller, homogeneous batches outperform larger, heterogeneous ones}. The gradual growth in \textsc{Feather}'s batch size with increasing request rate reflects its ability to smartly (\textcolor{red}{better adverb here}) aggregate more requests from the same prefix group into the active batch without sacrificing locality. We also observe that SGLang policies consistently operate at lower batch sizes than vLLM policies; this is because vLLM avoids double-counting shared prefix tokens toward the token budget, allowing it to pack more requests into each batch. Dynamic Batching (denoted as DB on the plot) performs quite similar to vLLM FCFS, because all the KV caches of the exeperimental setup fit onto the GPU memory. 
 
 Turning to time-between-tokens (TBT) in Figure~\ref{fig:tbt_vs_rps_l_5000_fam_5},\\ \textsc{Feather} achieves substantially lower TBT than all baselines except SGLang:FCFS, whose smaller batch sizes naturally yield faster per-token generation. While SGLang's LPM and DFS-W policies also operate at low batch sizes, their TBT remains significantly higher than \textsc{Feather}'s - a consequence of the non-trivial scheduling overhead incurred during their batch construction process (see \S for a detailed breakdown). Together, these results demonstrate that \textsc{Feather} strikes an effective balance between batch efficiency, cache locality, and scheduling overhead.
 
@@ -150,7 +150,7 @@ Taken together, as shared prefix lengths grow, \textsc{Feather} is the only poli
 
 
 \subsubsection*{Varying Models}
-\textcolor{red}{add longchat bars and then describe all 3 together}
+Figures~\ref{fig:tp_vs_mod}, \ref{fig:abs_vs_mod}, and \ref{fig:tbt_vs_mod} present throughput, average batch size, and TBT across models of varying sizes. The overall trend is expected: smaller models 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{results/model_bar_plots/throughput_model_bar.png}

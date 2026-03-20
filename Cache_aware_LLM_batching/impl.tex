@@ -14,8 +14,9 @@ This observation suggests that \emph{the length of the shared prefix across all 
 
 \subsection{Challenges and Key Ideas}
 \label{sec:challenges_key_ideas}
+
 \paragraph{Challenge 1: When to stop growing the batch?}
-A natural strategy for improving throughput is to increase batch size. However, larger batches tend to include more heterogeneous requests, which reduces the shared prefix length and hurts memory locality. On the other hand, very small batches preserve strong prefix alignment but underutilize the GPU.
+A natural strategy for improving throughput is to increase batch size. However, larger batches tend to include more heterogeneous requests, which reduces the shared prefix length and hurts memory locality. On the other hand, very small batches preserve strong prefix alignment but underutilize the GPU. Critically, existing schedulers do not address this tension: they greedily maximize batch size, filling batches up to a fixed capacity limit. Even schedulers that sort or group requests by prefix similarity~\cite{zheng2024sglangefficientexecutionstructured, zheng2025batchllmoptimizinglargebatched} still pack as many requests as possible, inevitably admitting heterogeneous requests that fragment prefix alignment once the pool of similar requests is exhausted.
 
 As described in \S\ref{sec:motivation}, moderately sized, highly homogeneous batches often outperform larger heterogeneous ones. The key question then becomes: what is the optimal batch size? More precisely, when should the scheduler stop adding requests to a batch? The answer depends on both the hardware (e.g., compute vs. memory balance) and the workload (e.g., prompt similarity), making any fixed heuristic inherently brittle.
 
