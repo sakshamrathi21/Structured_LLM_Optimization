@@ -572,3 +572,14 @@ vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,5,5000,5000,567.58592936
 vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,10,5000,5000,898.6989167031924,dynamic_batching
 vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,20,5000,5000,920.177980851453,dynamic_batching
 vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,50,5000,5000,849.3111552245002,dynamic_batching
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,100,5000,5000,852.8119385635946,dynamic_batching
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,931.4216601703973,dynamic_batching
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,300,5000,5000,957.3254573957734,dynamic_batching
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,400,5000,5000,1005.9716171975756,dynamic_batching
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,500,5000,5000,1115.768031887887,dynamic_batching
+vllm,1,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,1000,1000,4131.863465247043,dynamic_batching
+vllm,2,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,1000,1000,1471.0491272087756,dynamic_batching
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,2500,2500,1064.4110116430238,dynamic_batching
+vllm,10,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,911.583546827541,dynamic_batching
+vllm,20,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,773.3442135014616,dynamic_batching
+vllm,50,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,595.3019450724954,dynamic_batching

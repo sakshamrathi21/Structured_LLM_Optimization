@@ -105,6 +105,8 @@ for path in log_files:
         policy = "LPM"
     if policy == "fcfs":
         policy = "FCFS"
+    if policy == "dynamic_batching":
+        policy = "DB"
     if policy == "chunked_hash_tree_bandit":
         policy = "Feather"
     if policy == "chunked_hash_tree_heuristic":
