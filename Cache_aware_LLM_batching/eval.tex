@@ -12,7 +12,7 @@ We evaluate \textsc{Feather} across a range of models, GPU configurations, and r
 \subsection{Experimental Setup}
 
 \textbf{Models and Hardware.}
-We evaluate on three model families spanning a range of sizes: Qwen~\cite{qwen} (0.5B,8B) and LLaMA-3~\cite{llama3modelcard} (8B). Unless stated otherwise, all experiments run on an NVIDIA RTX 6000 Ada Generation GPU~\cite{nvidia_rtx6000_datasheet} with 48\,GB of GDDR6 and a 96\,MB L2 cache, with the maximum batch size fixed at 500. \textcolor{red}{[Present results on A100 for PAT? Any other GPU?]}
+We evaluate on three model families spanning a range of sizes: Qwen~\cite{qwen} (0.5B,1.5B,8B) and LLaMA-3~\cite{llama3modelcard} (8B). Unless stated otherwise, all experiments run on an NVIDIA RTX 6000 Ada Generation GPU~\cite{nvidia_rtx6000_datasheet} with 48\,GB of GDDR6 and a 96\,MB L2 cache, with the maximum batch size fixed at 500. \textcolor{red}{[Present results on A100 for PAT? Any other GPU?]}
 
 \textbf{Workloads.}
 Following prior work, request arrivals are modeled as a Poisson process, with input and output lengths sampled from two real-world datasets. L-Eval~\cite{an2023leval} is a benchmark of human-labeled query-response pairs covering diverse tasks such as summarization and question answering, with sequence lengths ranging from 2.7K to 210.5K tokens. LongBench~\cite{bai2024longbench2} is a curated collection of long-context samples drawn from 21 datasets across 6 task categories—including multi-document question answering, summarization, and code completion—with context lengths between 4K and 10K tokens.
@@ -148,28 +148,35 @@ Taken together, as shared prefix lengths grow, \textsc{Feather} is the only poli
 \end{figure}
 
 
-
 \subsubsection*{Varying Models}
-Figures~\ref{fig:tp_vs_mod}, \ref{fig:abs_vs_mod}, and \ref{fig:tbt_vs_mod} present throughput, average batch size, and TBT across models of varying sizes. The overall trend is expected: smaller models 
+
+Figures~\ref{fig:tp_vs_mod}, \ref{fig:abs_vs_mod}, and \ref{fig:tbt_vs_mod} present throughput, average running batch size, and time-between-tokens (TBT) across models of varying sizes. The overall trend is consistent with expectations: smaller models achieve higher throughput owing to lower per-token compute cost. \textsc{Feather} outperforms all baselines across all models. The sole exception is Qwen-1.5B, where SGLang FCFS achieves marginally higher throughput; however, \textsc{Feather} compensates on the latency axis, exhibiting substantially lower TBT for the same model.
+
+A key structural observation is that \textsc{Feather}'s \emph{relative} throughput advantage over the baselines grows with model size. As model size increases, a larger fraction of total execution time is spent in attention computation, which amplifies the benefits of temporal and spatial KV-cache locality that \textsc{Feather} exploits. This effect is visible in Figure~\ref{fig:tp_vs_mod}: the gap between \textsc{Feather} and the next-best baseline widens from Qwen-0.5B to the 8B-scale models. 
+
+The performance of SGLang's LPM and DFS-W schedulers degrades noticeably for smaller models. Both policies rely on CPU-side tree traversal whose overhead scales with sequence length rather than model size; as the model shrinks, GPU execution time decreases while scheduler overhead remains roughly constant, causing the CPU to become an increasing bottleneck. \textsc{Feather} avoids this through its chunked hash tree, which reduces per-step scheduler complexity and keeps CPU overhead negligible relative to GPU execution time across all model scales.
+
+Finally, Figure~\ref{fig:tbt_vs_mod} highlights that vLLM's FCFS and DB baselines incur substantially higher TBT at larger model sizes, whereas \textsc{Feather} keeps TBT low and stable.
+
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{results/model_bar_plots/throughput_model_bar.png}
-    \caption{Throughput across varying models.}
-    \label{fig:tp_vs_mod}
+\centering
+\includegraphics[width=\linewidth]{results/model_bar_plots/throughput_model_bar.png}
+\caption{Throughput (tokens/s) across models of varying size.}
+\label{fig:tp_vs_mod}
 \end{figure}
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{results/model_bar_plots/avg_batch_model_bar.png}
-    \caption{Average running batch size across varying models.}
-    \label{fig:abs_vs_mod}
+\centering
+\includegraphics[width=\linewidth]{results/model_bar_plots/avg_batch_model_bar.png}
+\caption{Average running batch size across models of varying size.}
+\label{fig:abs_vs_mod}
 \end{figure}
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{results/model_bar_plots/avg_timediff_model_bar.png}
-    \caption{Time-between-tokens (TBT) across varying models.}
-    \label{fig:tbt_vs_mod}
+\centering
+\includegraphics[width=\linewidth]{results/model_bar_plots/avg_timediff_model_bar.png}
+\caption{Time-between-tokens (TBT) across models of varying size.}
+\label{fig:tbt_vs_mod}
 \end{figure}
 
 \subsection{Micro-Benchmarks}
