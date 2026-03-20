@@ -11,6 +11,12 @@ import numpy as np
 
 
 LOG_DIR = os.path.expanduser("~/CS496/code/vllm/models_logs/")
+MODEL_SHORT = {
+    "qwen_qwen2.5-0.5b-instruct": "Qwen-0.5B",
+    "Qwen_Qwen2.5-1.5B": "Qwen-1.5B",
+    "meta-llama_Llama-3.1-8B-Instruct": "Llama-8B",
+    "qwen_qwen3-8b": "Qwen3-8B",
+}
 
 
 # ─────────────────────────────────────────────────────────────
@@ -31,6 +37,7 @@ RE_SGLANG_THROUGHPUT = re.compile(
 RE_FILENAME = re.compile(
     r"^(?P<engine>vllm|sglang)_(?P<policy>.+?)_(?P<model>"
     r"qwen_qwen2\.5-0\.5b-instruct|"
+    r"Qwen_Qwen2\.5-1\.5B|"
     r"meta-llama_Llama-3\.1-8B-Instruct|"
     r"qwen_qwen3-8b"
     r")_req\d+"
@@ -47,7 +54,7 @@ def parse_filename(fname):
 
     engine = m.group("engine")
     policy = m.group("policy")
-    model = str(m.group("model"))
+    model = MODEL_SHORT.get(m.group("model"), m.group("model"))
 
     return engine, policy, model
 
@@ -157,10 +164,20 @@ PALETTE = [
     "#06D6A0",
 ]
 
+def model_sort_key(name):
+    if "Llama" in name:
+        return (999, 0)  # always last
+
+    # extract number before B
+    m = re.search(r"(\d+\.?\d*)B", name)
+    size = float(m.group(1)) if m else 0
+
+    return (0, size)
+
 
 def make_bar_plot(metric_key, ylabel, title, outpath):
 
-    models = sorted(data.keys())
+    models = sorted(data.keys(), key=model_sort_key)
     policies = sorted({p for m in data.values() for p in m})
 
     x = np.arange(len(models))
@@ -193,11 +210,12 @@ def make_bar_plot(metric_key, ylabel, title, outpath):
     ax.set_xticks(x)
     ax.set_xticklabels(models, rotation=25)
 
-    ax.set_xlabel("Model", fontsize=18)
-    ax.set_ylabel(ylabel, fontsize=18)
-    ax.set_title(title, fontsize=20)
-
-    ax.legend(fontsize=12)
+    ax.set_xlabel("Model", fontsize=20)
+    ax.set_ylabel(ylabel, fontsize=20)
+    if metric_key == "throughput":
+        ax.legend(fontsize=20)
+    ax.set_xticklabels(models, rotation=25, fontsize=20)
+    ax.tick_params(axis="y", labelsize=20)
 
     ax.grid(axis="y", linestyle="--", alpha=0.6)
 
@@ -206,7 +224,6 @@ def make_bar_plot(metric_key, ylabel, title, outpath):
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
-    ax.tick_params(axis="both", labelsize=14)
 
     plt.tight_layout()
 

@@ -190,10 +190,10 @@ def make_plot(metric_key, ylabel, title, outpath):
     ax.set_xlabel("Number of Prefix Groups", fontsize=18)
     ax.set_ylabel(ylabel, fontsize=20)
 
-    ax.tick_params(axis="both", labelsize=18)
+    ax.tick_params(axis="both", labelsize=20)
 
     if metric_key == "throughput":
-        ax.legend(fontsize=15, framealpha=0.3)
+        ax.legend(fontsize=15, framealpha=0.3, ncol=2)
 
     ax.grid(True, linewidth=0.7, linestyle="--")
 

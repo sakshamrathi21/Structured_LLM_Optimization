@@ -8,10 +8,10 @@ LEN_FACTOR=(1000 2000)
 REQ_PER_SEC_S=(1 2 5 10 20 50 75 100)
 NUM_FAMILIES=(50 100)
 MAX_NEW_TOKENS=(1 2 5 10 20 50 100 200 300 400 500)
-MODELS=(qwen/qwen2.5-0.5b-instruct meta-llama/Llama-3.1-8B-Instruct qwen/qwen3-8b)
-# MODELS=(qwen/qwen3-8b)
-VLLM_POLICIES=(dynamic_batching)
-SGLANG_POLICIES=()
+# MODELS=(qwen/qwen2.5-0.5b-instruct meta-llama/Llama-3.1-8B-Instruct qwen/qwen3-8b)
+MODELS=(Qwen/Qwen2.5-1.5B)
+VLLM_POLICIES=(family_load)
+# SGLANG_POLICIES=(fcfs dfs-weight lpm)
 MIN_REQUESTS=1000
 MAX_REQUESTS=10000
 for mode in "${MODELS[@]}"; do

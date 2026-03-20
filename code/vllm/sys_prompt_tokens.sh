@@ -4,10 +4,10 @@ VLLM_SCRIPT="vllm_multiple_families_varying_workloads.py"
 SGLANG_SCRIPT="sglang_multiple_families_varying_workloads.py"
 PY_BIN="/home/saksham/CS496/code/vllm/.venv/bin/python"
 
-LOG_DIR="sys_prompt_tokens_logs_microbenchmark"
+LOG_DIR="sys_prompt_tokens_logs"
 mkdir -p "$LOG_DIR"
 
-LEN_FACTOR=(100 200 500 1000 2000 5000 10000 20000)
+LEN_FACTOR=(10000)
 REQ_PER_SEC_S=(1 2 5 10 20 50 75 100)
 NUM_FAMILIES=(50 100)
 MAX_NEW_TOKENS=(1 2 5 10 20 50 100 200 300 400 500)

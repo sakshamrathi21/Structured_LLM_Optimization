@@ -186,19 +186,19 @@ def make_plot(metric_key, ylabel, title, outpath):
                 label=label
             )
 
-    ax.set_xlabel("Req / sec", fontsize=18)
+    ax.set_xlabel("Input Workload (req/sec)", fontsize=20)
     ax.set_ylabel(ylabel, fontsize=20)
 
-    ax.tick_params(axis="both", labelsize=18)
+    ax.tick_params(axis="both", labelsize=19)
 
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
 
     if metric_key == "throughput":
         ax.legend(
-            fontsize=15,
+            fontsize=16,
             framealpha=0.3,
-            loc="upper left",
-            ncol=1
+            loc="center right",
+            ncol=2
         )
 
     ax.grid(True, linewidth=0.7, linestyle="--")

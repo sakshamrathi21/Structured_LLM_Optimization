@@ -109,6 +109,8 @@ for path in log_files:
         policy = "Feather"
     if policy == "chunked_hash_tree_heuristic":
         continue
+    if policy == "dynamic_batching":
+        policy = "DB"
     label = f"{engine}:{policy}"
 
     avg_batch, avg_diff, throughput = parse_log(path)
@@ -180,19 +182,19 @@ def make_plot(metric_key, ylabel, title, outpath):
 
     ax.set_xscale("log")
 
-    ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=18)
+    ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=19)
     ax.set_ylabel(ylabel, fontsize=20)
 
     ax.set_xticks(all_tokens)
     ax.set_xticklabels(all_tokens, rotation=30)
     ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
 
-    ax.tick_params(axis="both", labelsize=18)
+    ax.tick_params(axis="both", labelsize=19)
 
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
 
     if metric_key == "throughput":
-        ax.legend(fontsize=15, framealpha=0.3, ncol=1)
+        ax.legend(fontsize=18, framealpha=0.3, ncol=1)
 
     ax.grid(True, linewidth=0.7, linestyle="--")
 
