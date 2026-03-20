@@ -15,7 +15,7 @@ MODEL_SHORT = {
     "qwen_qwen2.5-0.5b-instruct": "Qwen-0.5B",
     "Qwen_Qwen2.5-1.5B": "Qwen-1.5B",
     "meta-llama_Llama-3.1-8B-Instruct": "Llama-8B",
-    "qwen_qwen3-8b": "Qwen3-8B",
+    "qwen_qwen3-8b": "Qwen-8B",
 }
 
 
