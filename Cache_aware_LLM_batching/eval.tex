@@ -12,7 +12,7 @@ We evaluate \textsc{Feather} across a range of models, GPU configurations, and r
 \subsection{Experimental Setup}
 
 \textbf{Models and Hardware.}
-We evaluate on three model families spanning a range of sizes: Qwen~\cite{qwen} (2B),  LLaMA-3~\cite{llama3modelcard} (8B), and LongChat~\cite{longchat2023} (13B). Unless stated otherwise, all experiments run on an NVIDIA RTX 6000 Ada Generation GPU~\cite{nvidia_rtx6000_datasheet} with 48\,GB of HBM and a 96\,MB L2 cache, with the maximum batch size fixed at 500. \textcolor{red}{[Present results on A100 for PAT? Any other GPU?]}
+We evaluate on three model families spanning a range of sizes: Qwen~\cite{qwen} (0.5B),  LLaMA-3~\cite{llama3modelcard} (8B), and LongChat~\cite{longchat2023} (13B). Unless stated otherwise, all experiments run on an NVIDIA RTX 6000 Ada Generation GPU~\cite{nvidia_rtx6000_datasheet} with 48\,GB of HBM and a 96\,MB L2 cache, with the maximum batch size fixed at 500. \textcolor{red}{[Present results on A100 for PAT? Any other GPU?]}
 
 \textbf{Workloads.}
 Following prior work, request arrivals are modeled as a Poisson process, with input and output lengths sampled from two real-world datasets. L-Eval~\cite{an2023leval} is a benchmark of human-labeled query-response pairs covering diverse tasks such as summarization and question answering, with sequence lengths ranging from 2.7K to 210.5K tokens. LongBench~\cite{bai2024longbench2} is a curated collection of long-context samples drawn from 21 datasets across 6 task categories---including multi-document question answering, summarization, and code completion---with context lengths between 4K and 10K tokens.
@@ -172,17 +172,56 @@ Taken together, as shared prefix lengths grow, \textsc{Feather} is the only poli
     \label{fig:tbt_vs_mod}
 \end{figure}
 
-\subsection{\textcolor{blue}{Main Results}}
-\textcolor{red}{
-\begin{itemize}
-    \item Separate SGLANG and vLLM if needed?
-    \item Throughput, Average Batch Size, TBT across different radix tree modes?
-\end{itemize}}
+\subsection{Micro-Benchmarks}
+\subsubsection*{Comparing Scheduler Compute Overhead across Different Policies}
 
-\subsection{\textcolor{blue}{Micro-benchmarks}}
+Figure~\ref{fig:profile_sum_vs_sys_prompt_tokens} shows the CPU scheduling overhead for each policy as the shared prefix length varies from 100 to 20,000 tokens, plotted alongside actual GPU execution time to give a meaningful frame of reference.
+
+We include an Oracle policy as a baseline, where the caller explicitly supplies prefix group identifiers with each request. This lets the scheduler batch requests sharing the same prefix instantly, with no matching computation, effectively zero overhead while still realizing all the cache-locality benefits that motivated \textsc{Feather}. A second Oracle line shows the GPU execution time under this ideal batching, representing the throughput ceiling any policy could hope to achieve.
+
+All three non-trivial policies, \textsc{Feather}, LPM, and DFS-W show increasing overhead as prefix length grows, since longer contexts mean deeper radix-tree traversals and larger key comparisons. But the rate of growth diverges dramatically. At 20,000 tokens, LPM and DFS-W overhead is roughly 1,000$\times$ higher than \textsc{Feather}'s, and at larger sequence lengths their scheduling overhead exceeds total Oracle GPU execution time by up to 10$\times$, meaning the CPU bottleneck alone is enough to negate any gains from cache-aware batching. \textsc{Feather}, by contrast, stays below 1\% of GPU execution time across the entire tested range.
+
+Let $N$ be the number of requests in the waiting queue and $L$ the maximum prefix length. For each request, LPM performs prefix matching on the global radix cache tree, a token-by-token traversal costing $O(L)$ per request, then sorts the queue by matched prefix length, adding $O(N \log N)$. Total per-round cost is $\mathcal{O}(N \cdot L + N \log N)$. The in-batch prefix caching check adds another $O(N \cdot L)$ term. The result is overhead that scales multiplicatively with both queue size and context length. LPM's own implementation implicitly acknowledges this by falling back to FCFS when $N > 128$ (we disabled the fallback during these experiments). 
+
+DFS-W avoids per-request tree traversal, but replaces it with something different: a full traversal of the entire radix cache tree every scheduling round. Let $T$ be the total node count. DFS-W first propagates subtree request counts upward in $O(T)$, then re-traverses depth-first, sorting children by weight at every level. Total cost is $\mathcal{O}(N + T \log T)$. The key problem is that $T$ reflects the server's accumulated history, not the current workload. The radix tree grows monotonically and is only pruned under memory pressure, so DFS-W's overhead increases indefinitely over a deployment's lifetime, regardless of current queue length or request size.
+
+These failure modes compound adversarially in practice. A server with a large accumulated cache ($T \gg N$) will punish DFS-W even during quiet periods; a burst of long-context requests will punish LPM through the $N \cdot L$ term. Either way, scheduling overhead can reach the same order of magnitude as GPU execution time. The broader takeaway is that algorithmically identifying shared prefixes at runtime is fundamentally expensive and that naive cache-aware scheduling can itself become the dominant bottleneck.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{results/profile_sum_vs_sys_prompt_tokens.png}
+\caption{CPU scheduling overhead (in milliseconds) for \textsc{Feather}, LPM, DFS-W, and Oracle policies as a function of shared prefix length (100 to 20{,}000 tokens). The dotted line denotes the total GPU execution time under the Oracle policy.}
+\label{fig:profile_sum_vs_sys_prompt_tokens}
+\end{figure}
+\subsubsection*{Time taken by individual functions of Chunked Hash Tree}
+
+Table~\ref{tab:chunked_hash_tree_individual_functions} profiles the CHT operations over an inference workload of $5{,}000$ requests, each $5{,}000$ tokens long. As expected, \textsc{Insert}, \textsc{AddToBatch}, and \textsc{Finish} are each invoked exactly $5{,}000$ times, once per request lifecycle. \textsc{FindBest}, however, is called $26{,}405$ times, since it is queried repeatedly during batch construction: the RL policy may reject a candidate and trigger a fresh lookup, or the scheduler may inspect the queue multiple times before committing to a \textsc{Stop}.
+
+\textsc{Insert} dominates total time, consuming ${\sim}768$~ms out of the ${\sim}1{,}194$~ms aggregate. This is expected: hash computation must scan every token once ($O(N)$ per request), making \textsc{Insert} inherently proportional to prompt length. \textsc{Finish} is notably more expensive than \textsc{AddToBatch} (${\sim}195$~ms vs.\ ${\sim}56$~ms) despite their symmetric nature. The gap arises from \textsc{Finish}'s additional forward tip-extension scan: after updating the working set, it must walk forward from $\ell^*{+}1$ level by level to check whether the shared prefix can be lengthened, an overhead that \textsc{AddToBatch}'s early-terminating backward LCA scan does not incur. \textsc{FindBest} is the cheapest per-call operation at $6{,}641$~ns on average, a direct consequence of result caching and lazy heap traversal — its high call count therefore contributes only a smaller chunk to the total overhead (${\sim}175$~ms).
+
+\begin{table}[t]
+\centering
+\small
+\resizebox{\columnwidth}{!}{\begin{tabular}{lccc}
+\toprule
+\textbf{Function} & \textbf{Number of Calls} & \textbf{Average Time (ns)} & \textbf{Total Time (ns)} \\
+\midrule
+\textsc{Insert}      & 5,000  & 153,714 & 768,570,573 \\
+\textsc{AddToBatch}  & 5,000  &  11,143 &  55,715,469 \\
+\textsc{Finish}      & 5,000  &  38,952 & 194,760,111 \\
+\textsc{FindBest}    & 26,405 &   6,641 & 175,372,986 \\
+\bottomrule
+\end{tabular}}
+\caption{Time taken by individual functions of Chunked Hash Tree for $5{,}000$ requests of $5{,}000$ tokens each.}
+\label{tab:chunked_hash_tree_individual_functions}
+\end{table}
+
+
+
+
+
 \textcolor{red}{
 \begin{itemize}
-    \item Compare the CPU overhead of the chunked hash tree, basically by adding a row to the previous table? Add the cycles taken by individual functions of our chunked hash tree.
     \item How do the state and action flow for these two RL policies? How does the batch size vary across iterations?
     \item Also present DRAM activity numbers here?
 \end{itemize}}
