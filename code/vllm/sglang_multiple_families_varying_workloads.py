@@ -22,7 +22,7 @@ def generate_prefixes(n):
 
 def build_dcgmi_filename(args):
     name = (
-        f"dcgmi_model-{args.model_name.replace('/', '_')}"
+        f"dcgmi_sglang_model-{args.model_name.replace('/', '_')}"
         f"_families-{args.num_families}"
         f"_rps-{args.req_per_sec}"
         f"_batch-{args.max_batch_size}"
