@@ -120,6 +120,11 @@ for path in log_files:
         f"tput={throughput}  batch={avg_batch}  "
         f"dt={avg_diff}"
     )
+    if label in data and rps in data[label]:
+        existing_tput = data[label][rps].get("throughput") or 0
+        new_tput = throughput or 0
+        if new_tput <= existing_tput:
+            continue
 
     data[label][rps] = dict(
         throughput=throughput,

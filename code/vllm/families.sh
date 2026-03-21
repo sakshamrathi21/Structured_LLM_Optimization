@@ -18,8 +18,8 @@ VLLM_POLICIES=(dynamic_batching)
 # SGLANG_POLICIES=(fcfs lpm dfs-weight)
 # SGLANG_POLICIES=(fcfs)
 
-MIN_REQUESTS=1000
-MAX_REQUESTS=10000
+MIN_REQUESTS=10000
+MAX_REQUESTS=20000
 
 for fam in "${NUM_FAMILIES[@]}"; do
     NUM_REQUESTS=$((fam * 500))

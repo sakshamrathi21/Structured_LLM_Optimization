@@ -15,11 +15,11 @@ MODELS=(qwen/qwen2.5-0.5b-instruct meta-llama/Llama-3.1-8B-Instruct lmsys/longch
 MODELS=(lmsys/longchat-13b-16k)
 
 # VLLM_POLICIES=(fcfs chunked_hash_tree_heuristic chunked_hash_tree_bandit)
-VLLM_POLICIES=(dynamic_batching)
+VLLM_POLICIES=(chunked_hash_tree_bandit)
 SGLANG_POLICIES=()
 
 MIN_REQUESTS=1000
-MAX_REQUESTS=5000
+MAX_REQUESTS=10000
 
 for req in "${REQ_PER_SEC_S[@]}"; do
     NUM_REQUESTS=$((req * 500))
