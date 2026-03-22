@@ -224,13 +224,22 @@ Table~\ref{tab:chunked_hash_tree_individual_functions} profiles the CHT operatio
 \end{table}
 
 
+\subsubsection*{Mean DRAM Activity across various sequence lengths}
+Figure~\ref{fig:mean_drama_vs_sys_prompt_tokens} presents the mean DRAM activity for various policies across different shared prefix lengths. As discussed in \S\ref{sec:motivation}, homogeneous batches promote higher temporal and spatial locality, which in turn increases  prefetcher activity and leads to more effective utilization of available DRAM bandwidth. This is clearly reflected in \textsc{Feather}'s consistently higher mean DRAM activity compared to all other policies across nearly the entire range of prefix lengths tested.
 
+There is a pronounced and consistent decreasing trend in mean DRAM activity for SGLang:DFS-W, SGLang:LPM, and vLLM:DB as the number of shared prefix tokens increases. SGLang:LPM and SGLang:DFS-W exhibit the steepest decline, dropping from $\sim$0.156 and $\sim$0.146 at 100 tokens to just $\sim$0.037 and $\sim$0.043 respectively at 10{,}000 tokens---a reduction of more than $3\times$. This degradation stems from two compounding factors: first, these policies do not halt batch formation at the right moment, resulting in heterogeneous batches that disrupt spatial and temporal locality; second, they incur large CPU stalls that further reduce effective memory utilization. vLLM:DB, while more stable than the SGLang variants at longer prefix lengths, still lags significantly behind \textsc{Feather}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{results/sys_prompt_tokens_plots/mean_dram_vs_sys_prompt_tokens.png}
+\caption{Mean DRAM Activity for various policies as a function of shared prefix length (100 to 10{,}000 tokens).}
+\label{fig:mean_drama_vs_sys_prompt_tokens}
+\end{figure}
 
 
 \textcolor{red}{
 \begin{itemize}
     \item How do the state and action flow for these two RL policies? How does the batch size vary across iterations?
-    \item Also present DRAM activity numbers here?
 \end{itemize}}
 
 \subsection{\textcolor{blue}{Ablation Study}}
