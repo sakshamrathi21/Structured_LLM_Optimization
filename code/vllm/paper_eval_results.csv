@@ -670,3 +670,15 @@ vllm,10,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,3712.71
 vllm,20,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,3591.2334894989413,chunked_hash_tree_bandit
 vllm,50,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,20000,20000,2177.541904361081,chunked_hash_tree_bandit
 vllm,100,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,20000,20000,2999.170248589864,chunked_hash_tree_bandit
+vllm,5,None,500,1,100,meta-llama/Llama-3.1-8B-Instruct,200,2000,2000,3039.7642206808014,radix_cost
+vllm,5,None,500,1,100,meta-llama/Llama-3.1-8B-Instruct,200,2000,2000,4298.766255363793,chunked_hash_tree_heuristic
+vllm,5,None,500,1,100,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,1360.4122038235196,radix_cost
+vllm,5,None,500,1,100,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,4059.9138718498252,chunked_hash_tree_heuristic
+vllm,5,None,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,1288.4731924655944,radix_cost
+vllm,5,None,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,4271.139571353799,chunked_hash_tree_heuristic
+vllm,5,None,500,1,2000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,1282.3345109528764,radix_cost
+vllm,5,None,500,1,2000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,4027.426692970329,chunked_hash_tree_heuristic
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,1254.9165403071913,radix_cost
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,3790.137290166744,chunked_hash_tree_heuristic
+vllm,5,None,500,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,1189.4021028081672,radix_cost
+vllm,5,None,500,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,2930.3040747851733,chunked_hash_tree_heuristic
