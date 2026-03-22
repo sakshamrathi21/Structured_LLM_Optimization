@@ -236,16 +236,33 @@ There is a pronounced and consistent decreasing trend in mean DRAM activity for 
 \label{fig:mean_drama_vs_sys_prompt_tokens}
 \end{figure}
 
+\subsubsection*{How to compare the two RL policies?}
 
-\textcolor{red}{
-\begin{itemize}
-    \item How do the state and action flow for these two RL policies? How does the batch size vary across iterations?
-\end{itemize}}
+\subsubsection*{Effect of Chunk Size}
 
-\subsection{\textcolor{blue}{Ablation Study}}
-\textcolor{red}{
-\begin{itemize}
-    \item Replace chunked hash tree by token level radix tree, and compare both CPU overhead and drop in overall throughput.
-    \item Remove RL policy, do not stop the batch, and compare the throughput in low request rate settings, where larger batch sizes will reduce the homogeneity.
-\end{itemize}
-}
+
+\subsection{Ablation Study}
+
+\subsubsection*{What if we replace the Chunked Hash Tree with a Radix Tree?}
+
+Figures~\ref{fig:tp_vs_sys_prompt_tokens_ablation} and \ref{fig:tbt_vs_sys_prompt_tokens_ablation} compare the throughput and time-between-tokens (TBT) when the Chunked Hash Tree (CHT) in \textsc{Feather} is substituted with a token-level radix tree, while keeping the reinforcement learning (RL)-based batch formation policy unchanged.
+
+Across all shared prefix lengths, the radix tree variant achieves substantially lower throughput than \textsc{Feather}. Although the RL policy continues to ensure that batches consist of homogeneous requests, the significantly higher CPU overhead introduced by the radix tree causes pronounced stalls between consecutive GPU iterations. This is directly reflected in the TBT results: the radix tree consistently exhibits much higher inter-token latency, indicating that the GPU frequently sits idle while the CPU scheduler catches up. The CHT's chunk-level granularity reduces this overhead substantially, enabling \textsc{Feather} to sustain high GPU utilization and deliver better end-to-end throughput.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{results/sys_prompt_tokens_plots_ablation/throughput_vs_sys_prompt_tokens_bar.png}
+\caption{Throughput vs.\ number of shared prefix tokens: Chunked Hash Tree (\textsc{Feather}) vs.\ token-level radix tree.}
+\label{fig:tp_vs_sys_prompt_tokens_ablation}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{results/sys_prompt_tokens_plots_ablation/tbt_vs_sys_prompt_tokens_bar.png}
+\caption{Time-between-tokens (TBT) vs.\ number of shared prefix tokens: Chunked Hash Tree (\textsc{Feather}) vs.\ token-level radix tree.}
+\label{fig:tbt_vs_sys_prompt_tokens_ablation}
+\end{figure}
+
+
+\subsubsection*{What if we remove RL?}
+
