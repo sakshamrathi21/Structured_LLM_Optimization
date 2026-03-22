@@ -111,6 +111,8 @@ for path in log_files:
         policy = "Feather"
     if policy == "chunked_hash_tree_heuristic":
         continue
+    if policy == "chunked_hash_tree":
+        policy = "Feather (without RL)"
     label = f"{engine}:{policy}"
 
     avg_batch, avg_diff, throughput = parse_log(path)
@@ -203,7 +205,7 @@ def make_plot(metric_key, ylabel, title, outpath):
             fontsize=16,
             framealpha=0.3,
             loc="center right",
-            ncol=2
+            ncol=1
         )
 
     ax.grid(True, linewidth=0.7, linestyle="--")
