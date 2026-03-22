@@ -59,7 +59,7 @@ def main():
         "--model_name", type=str, default="meta-llama/Llama-3.1-8B-Instruct"
     )
     parser.add_argument("--num_families", type=int, default=5)
-    parser.add_argument("--req_per_sec", type=int, default=None)
+    parser.add_argument("--req_per_sec", type=float, default=None)
     parser.add_argument("--max_batch_size", type=int, default=500)
     parser.add_argument("--randomness", type=int, default=1)
     parser.add_argument(

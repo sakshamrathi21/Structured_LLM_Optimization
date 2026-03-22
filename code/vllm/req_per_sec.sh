@@ -4,25 +4,24 @@ VLLM_SCRIPT="vllm_multiple_families_varying_workloads.py"
 SGLANG_SCRIPT="sglang_multiple_families_varying_workloads.py"
 PY_BIN="/home/saksham/CS496/code/vllm/.venv/bin/python"
 
-LOG_DIR="req_per_sec_logs"
+LOG_DIR="req_per_sec_logs_ablation"
 mkdir -p "$LOG_DIR"
 
 LEN_FACTOR=(1000 2000)
-REQ_PER_SEC_S=(1 2 5 10 20 50 75 100)
+REQ_PER_SEC_S=(1 2 3 4 5 7 10 15 20)
 NUM_FAMILIES=(20 50 100)
 MAX_NEW_TOKENS=(1 2 5 10 20 50 100 200 300 400 500)
 MODELS=(qwen/qwen2.5-0.5b-instruct meta-llama/Llama-3.1-8B-Instruct lmsys/longchat-13b-16k)
 MODELS=(lmsys/longchat-13b-16k)
 
-# VLLM_POLICIES=(fcfs chunked_hash_tree_heuristic chunked_hash_tree_bandit)
-VLLM_POLICIES=(chunked_hash_tree_bandit)
+VLLM_POLICIES=(chunked_hash_tree chunked_hash_tree_bandit)
 SGLANG_POLICIES=()
 
-MIN_REQUESTS=1000
-MAX_REQUESTS=10000
+MIN_REQUESTS=10
+MAX_REQUESTS=5000
 
 for req in "${REQ_PER_SEC_S[@]}"; do
-    NUM_REQUESTS=$((req * 500))
+    NUM_REQUESTS=$(echo "$req * 500" | bc | awk '{print int($1)}')
 
     if [ $NUM_REQUESTS -lt $MIN_REQUESTS ]; then
         NUM_REQUESTS=$MIN_REQUESTS
