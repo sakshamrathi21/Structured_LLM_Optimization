@@ -737,3 +737,4 @@ vllm,5,None,500,1,2000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,4052.83969
 vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,3761.287209235594,chunked_hash_tree_heuristic
 vllm,5,None,500,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,2874.6797567106073,chunked_hash_tree_heuristic
 vllm,5,None,500,1,100,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,4087.9132612434682,chunked_hash_tree_heuristic
+vllm,5,None,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,4286.0595689342645,chunked_hash_tree_heuristic
