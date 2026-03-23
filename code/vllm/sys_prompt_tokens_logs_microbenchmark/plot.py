@@ -211,7 +211,6 @@ ax.yaxis.set_major_formatter(ticker.LogFormatterSciNotation(base=10, labelOnlyBa
 
 ax.legend(fontsize=12, framealpha=0.3)
 ax.grid(True, which="both", linewidth=0.7, linestyle="--")  # grid on both major/minor ticks
-
 plt.tight_layout()
 outpath = os.path.join(OUT, "profile_sum_vs_sys_prompt_tokens.png")
 fig.savefig(outpath, dpi=150, bbox_inches="tight")

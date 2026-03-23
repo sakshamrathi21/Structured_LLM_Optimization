@@ -202,7 +202,7 @@ def make_plot(metric_key, ylabel, title, outpath):
         ax.legend(fontsize=15, framealpha=0.3, ncol=2)
 
     ax.grid(True, linewidth=0.7, linestyle="--")
-
+    ax.set_ylim(bottom=0)
     plt.tight_layout()
 
     fig.savefig(
