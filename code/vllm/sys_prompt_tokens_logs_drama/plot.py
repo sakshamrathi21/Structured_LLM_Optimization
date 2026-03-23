@@ -65,7 +65,7 @@ def normalise_policy(policy: str) -> str:
         "lpm":                      "LPM",
         "fcfs":                     "FCFS",
         "chunked_hash_tree_bandit": "Feather",
-        "dynamic_batching":         "DB",
+        "dynamic_batching":         "DynBatch",
         "family_load":              "FamilyLoad",
     }
     return mapping.get(policy, policy)
