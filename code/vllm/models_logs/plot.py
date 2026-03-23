@@ -129,7 +129,7 @@ for path in log_files:
     if policy == "chunked_hash_tree_bandit":
         policy = "Feather"
     if policy == "dynamic_batching":
-        policy = "DB"
+        policy = "DynBatch"
     if policy == "family_load":
         policy = "Feather"
     if policy == "chunked_hash_tree_heuristic":

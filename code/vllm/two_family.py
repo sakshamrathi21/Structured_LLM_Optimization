@@ -158,7 +158,7 @@ def main():
     parser.add_argument("--model", type=str, default="meta-llama/Llama-3.1-8B-Instruct")
 
     parser.add_argument(
-        "--L", type=int, default=5000, help="exact system prompt token length"
+        "--L", type=int, default=10000, help="exact system prompt token length"
     )
 
     parser.add_argument(
@@ -169,7 +169,7 @@ def main():
 
     parser.add_argument("--iterations", type=int, default=3)
 
-    parser.add_argument("--max_new_tokens", type=int, default=50)
+    parser.add_argument("--max_new_tokens", type=int, default=200)
 
     parser.add_argument("--batch_size", type=int, default=500)
 

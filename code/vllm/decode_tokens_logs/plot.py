@@ -102,7 +102,7 @@ for path in log_files:
     if policy == "fcfs":
         policy = "FCFS"
     if policy == "dynamic_batching":
-        policy = "DB"
+        policy = "DynBatch"
     if policy == "chunked_hash_tree_bandit":
         policy = "Feather"
     if policy == "chunked_hash_tree_heuristic":

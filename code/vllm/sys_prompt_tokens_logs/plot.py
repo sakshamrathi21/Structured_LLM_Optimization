@@ -110,7 +110,7 @@ for path in log_files:
     if policy == "chunked_hash_tree_heuristic":
         continue
     if policy == "dynamic_batching":
-        policy = "DB"
+        policy = "DynBatch"
     label = f"{engine}:{policy}"
 
     avg_batch, avg_diff, throughput = parse_log(path)
