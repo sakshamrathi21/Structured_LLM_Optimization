@@ -95,7 +95,7 @@ def main():
 
         try:
             drama    = read_drama(filepath)
-            mean_val = float(np.mean(drama))
+            mean_val = float(np.sum(drama))
             print(f"  mean_drama={mean_val:.4f}  (n={len(drama)})")
         except Exception as e:
             print(f"  ERROR: {e}")

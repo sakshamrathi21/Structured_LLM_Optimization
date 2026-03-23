@@ -14,6 +14,7 @@ import math
 from vllm.v1.request import Request
 from vllm.v1.core.sched.radix_tree import TokenRadixTree, SyncRadixTreeClient
 from vllm.v1.core.sched.radix_tree import ChunkedHashTree as ChunkedHashTree_Python
+from vllm.v1.core.sched.merkle_tree import SharedMerklePrefixTree
 from vllm.v1.core.sched.rl import QLearningScheduler, ContextualBanditScheduler, HeuristicScheduler, StateAction
 from vllm.v1.core.sched.build.chunked_hash_tree import ChunkedHashTree, ChunkedHashTree_RL
 
@@ -285,8 +286,8 @@ class ChunkedHashTreeRequestQueue_Python(RequestQueue):
 
     def __init__(self):
         # C++ radix structure (integer IDs only)
-        self._radix = ChunkedHashTree_Python(chunk_size=16)
-
+        # self._radix = ChunkedHashTree_Python(chunk_size=16)
+        self._radix = SharedMerklePrefixTree()
         # vLLM-visible storage
         self._pending_requests: dict[str, Request] = {}
 
@@ -393,13 +394,13 @@ class ChunkedHashTreeRequestQueue(RequestQueue):
         if rid is not None:
             self._id_to_request.pop(rid, None)
 
-    @log_cycles
+    # @log_cycles
     def add_request(self, request: Request) -> None:
         rid = self._intern_id(request.request_id)
         self._radix.insert(rid, request.all_token_ids)
         self._pending_requests[request.request_id] = request
 
-    @log_cycles
+    # @log_cycles
     def pop_request(self) -> Request:
         rid, cost = self._radix.find_best_request()
         if rid == 0:
@@ -411,7 +412,7 @@ class ChunkedHashTreeRequestQueue(RequestQueue):
         self._radix.activate_request(rid)
         return request
 
-    @log_cycles
+    # @log_cycles
     def peek_request(self) -> Request:
         rid, _ = self._radix.find_best_request()
         if rid == 0:
@@ -456,7 +457,7 @@ class ChunkedHashTreeRequestQueue(RequestQueue):
         for request_id in reversed(list(self._pending_requests.keys())):
             yield self._pending_requests[request_id]
 
-    @log_cycles
+    # @log_cycles
     def free_request(self, request: Request) -> None:
         request_id = request.request_id
         rid = self._id_map.get(request_id)
@@ -464,7 +465,7 @@ class ChunkedHashTreeRequestQueue(RequestQueue):
             self._radix.finish_request(rid)
             self._release_id(request_id)
 
-    @log_cycles
+    # @log_cycles
     def should_add_more_to_batch(self, **kwargs) -> bool:
         current_batch_size = kwargs.get("current_batch_size", 0)
         if current_batch_size == 0:
@@ -483,12 +484,12 @@ class RadixCostRequestQueue(RequestQueue):
         # vLLM-visible storage
         self._pending_requests: dict[str, Request] = {}
 
-    @log_cycles
+    # @log_cycles
     def add_request(self, request: Request) -> None:
         self._radix.insert(request_id=request.request_id, token_ids=list(request.all_token_ids))
         self._pending_requests[request.request_id] = request
 
-    @log_cycles
+    # @log_cycles
     def pop_request(self) -> Request:
         rid, cost = self._radix.find_best_request()
         if rid == None:
@@ -497,7 +498,7 @@ class RadixCostRequestQueue(RequestQueue):
         self._radix.activate_request(rid)
         return request
 
-    @log_cycles
+    # @log_cycles
     def peek_request(self) -> Request:
         rid, _ = self._radix.find_best_request()
         if rid == None:
@@ -537,11 +538,12 @@ class RadixCostRequestQueue(RequestQueue):
         for request_id in reversed(list(self._pending_requests.keys())):
             yield self._pending_requests[request_id]
 
+    # @log_cycles
     def free_request(self, request: Request) -> None:
         request_id = request.request_id
         self._radix.finish_request(request_id)
 
-    @log_cycles
+    # @log_cycles
     def should_add_more_to_batch(self, **kwargs) -> bool:
         current_batch_size = kwargs.get("current_batch_size", 0)
         if current_batch_size == 0:
@@ -559,7 +561,8 @@ class RadixCostRequestQueue_RL(RequestQueue):
         scheduler_params: dict = None,
         model_save_path: Optional[str] = None
     ):
-        self._radix = ChunkedHashTree_RL(chunk_size=50)
+        self.chunk_size = 1
+        self._radix = ChunkedHashTree_RL(chunk_size=self.chunk_size)
         self._pending_requests = {}
         self._id_map = {}
         self._id_to_request = {}
@@ -710,6 +713,11 @@ class RadixCostRequestQueue_RL(RequestQueue):
 
         if rid == 0:
             return False
+        
+        if abs(chunks_before - chunks_after)*self.chunk_size >= 1000:
+            return False
+        else:
+            return True
 
         decision = self.scheduler.should_add_request(
             batch_size=current_batch_size,
@@ -832,7 +840,7 @@ class FamilyLoadRequestQueue(RequestQueue):
         self.family_requests: dict[int, deque[Request]] = {}
         self.last_served_family: int = 0
 
-    @log_cycles
+    # @log_cycles
     def add_request(self, request: Request) -> None:
         family_id = request.all_token_ids[26]
         # family id should be hash of the first 50 tokens
@@ -841,7 +849,7 @@ class FamilyLoadRequestQueue(RequestQueue):
             self.family_requests[family_id] = deque()
         self.family_requests[family_id].append(request)
 
-    @log_cycles
+    # @log_cycles
     def pop_request(self) -> Request:
         if self.last_served_family not in self.family_requests or not self.family_requests[self.last_served_family]:
             available_families = [fid for fid in self.family_requests if self.family_requests[fid]]
@@ -849,7 +857,7 @@ class FamilyLoadRequestQueue(RequestQueue):
         request = self.family_requests[self.last_served_family].popleft()
         return request
 
-    @log_cycles
+    # @log_cycles
     def peek_request(self) -> Request:
         if self.last_served_family not in self.family_requests or not self.family_requests[self.last_served_family]:
             available_families = [fid for fid in self.family_requests if self.family_requests[fid]]
@@ -892,7 +900,7 @@ class FamilyLoadRequestQueue(RequestQueue):
             for request in reversed(self.family_requests[fid]):
                 yield request
 
-    @log_cycles
+    # @log_cycles
     def should_add_more_to_batch(self, **kwargs) -> bool:
         current_batch_size = kwargs.get("current_batch_size", 0)
         if current_batch_size == 0:

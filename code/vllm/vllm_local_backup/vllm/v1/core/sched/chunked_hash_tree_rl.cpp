@@ -62,8 +62,8 @@ struct ScopedTimer {
         slot.total_ns   += ns;
         slot.call_count += 1;
         stats.update_count += 1;
-        if (stats.update_count % 100 == 0)
-            stats.log();
+        // if (stats.update_count % 100 == 0)
+        //     stats.log();
     }
 };
 
@@ -322,7 +322,7 @@ ChunkedHashTree_RL::compute_hashes(const std::vector<uint32_t>& tokens)
 
 uint32_t ChunkedHashTree_RL::insert(uint32_t request_id, const std::vector<uint32_t>& tokens)
 {
-    TIME_FN(insert);
+    // TIME_FN(insert);
     if (request_hashes.count(request_id)) {
         return 0;
     }
@@ -356,7 +356,7 @@ std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> ChunkedHashTree_RL::find_best
     //       << " missing_cache size: " << missing_cache.size()
     //       << std::endl;
     // std::cout << "inside chunked_hash_tree_rl --> find_best_request()" << std::endl;
-    TIME_FN(find_best_request);
+    // TIME_FN(find_best_request);
     if (cache_valid && cached_best_request.has_value()) {
         return cached_best_request.value();
     }
@@ -410,7 +410,7 @@ std::tuple<uint32_t, uint32_t, uint32_t, uint32_t> ChunkedHashTree_RL::find_best
 std::pair<uint32_t, uint32_t>
 ChunkedHashTree_RL::activate_request(uint32_t request_id) 
 {
-    TIME_FN(activate);
+    // TIME_FN(activate);
     if (active_requests.count(request_id)) {
         return {0, 0};
     }
@@ -484,7 +484,7 @@ void ChunkedHashTree_RL::remove(uint32_t request_id) {
 
 std::pair<uint32_t, uint32_t>
 ChunkedHashTree_RL::finish_request(uint32_t request_id) {
-    TIME_FN(finish);
+    // TIME_FN(finish);
     if (!active_requests.erase(request_id)) {
         return {0, 0};
     }
