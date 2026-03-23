@@ -242,7 +242,7 @@ def plot_metric(data: dict, metric: str, out_dir: str) -> None:
 
     ax.legend(fontsize=18, framealpha=0.3, ncol=1)
     ax.grid(True, linewidth=0.7, linestyle="--")
-
+    ax.set_ylim(bottom=0)
     plt.tight_layout()
     fig.savefig(outpath, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)

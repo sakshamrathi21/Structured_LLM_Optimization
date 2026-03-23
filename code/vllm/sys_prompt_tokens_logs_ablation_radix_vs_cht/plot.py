@@ -171,7 +171,7 @@ def make_bar_plot(metric_key, ylabel, outpath):
 
     ax.legend(fontsize=18, framealpha=0.3)
     ax.grid(True, axis="y", linewidth=0.7, linestyle="--", zorder=0)
-
+    ax.set_ylim(bottom=0)
     plt.tight_layout()
     fig.savefig(outpath, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
