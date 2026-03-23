@@ -89,10 +89,10 @@ for path in log_files:
     if throughput is not None:
         throughput_data[chunk][sys_tok] = throughput
 
-# ── STYLE ─────────────────────────────────────────────────────────────────
 PALETTE = [
     "#E63946", "#457B9D", "#2A9D8F", "#E9C46A",
     "#F4A261", "#8338EC", "#06D6A0", "#FB5607",
+    "#3A86FF", "#FF006E",
 ]
 
 MARKERS    = ["o", "s", "D", "^", "v", "P", "X", "*"]

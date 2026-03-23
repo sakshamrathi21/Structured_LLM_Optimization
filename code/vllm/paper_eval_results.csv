@@ -757,3 +757,17 @@ vllm,5,None,500,1,2000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,4049.98317
 vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,3822.2031511895684,chunked_hash_tree_heuristic
 vllm,5,None,500,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,2937.953369908804,chunked_hash_tree_heuristic
 vllm,5,None,500,1,100,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,4084.804010948628,chunked_hash_tree_heuristic
+vllm,5,None,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,4295.899831514607,chunked_hash_tree_heuristic
+vllm,5,None,500,1,2000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,4056.26350775537,chunked_hash_tree_heuristic
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,3820.2600466741096,chunked_hash_tree_heuristic
+vllm,5,None,500,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,2923.851908708824,chunked_hash_tree_heuristic
+vllm,5,None,500,1,100,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,4072.3575741580844,chunked_hash_tree_heuristic
+vllm,5,None,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,4293.251353911856,chunked_hash_tree_heuristic
+vllm,5,None,500,1,2000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,4071.298734797392,chunked_hash_tree_heuristic
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,3811.2640091601534,chunked_hash_tree_heuristic
+vllm,5,None,500,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,2944.8041553064427,chunked_hash_tree_heuristic
+vllm,5,None,500,1,100,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,558.2573540770104,chunked_hash_tree_heuristic
+vllm,5,None,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,537.7003827541073,chunked_hash_tree_heuristic
+vllm,5,None,500,1,2000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,522.8202520695235,chunked_hash_tree_heuristic
+vllm,5,None,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,469.6148187951752,chunked_hash_tree_heuristic
+vllm,5,None,500,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,397.89045419648744,chunked_hash_tree_heuristic
