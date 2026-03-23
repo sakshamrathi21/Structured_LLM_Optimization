@@ -58,7 +58,7 @@ def read_throughput(filepath: str) -> float:
         for line in f:
             m = pattern.search(line)
             if m:
-                return float(m.group(1))
+                return float(m.group(1))*200
     raise ValueError(f"No throughput found in {filepath}")
 
 
