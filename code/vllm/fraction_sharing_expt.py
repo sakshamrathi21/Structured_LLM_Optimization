@@ -156,18 +156,18 @@ def main():
     parser.add_argument("--model", type=str, default="meta-llama/Llama-3.1-8B-Instruct")
 
     parser.add_argument(
-        "--L", type=int, default=1200, help="system prompt token length"
+        "--L", type=int, default=2000, help="system prompt token length"
     )
 
     parser.add_argument(
-        "--fraction", type=float, default=0.5, help="shared prefix fraction (0–1)"
+        "--fraction", type=float, default=0.5, help="shared prefix fraction (0-1)"
     )
 
-    parser.add_argument("--requests", type=int, default=500)
+    parser.add_argument("--requests", type=int, default=100)
 
-    parser.add_argument("--iterations", type=int, default=1)
+    parser.add_argument("--iterations", type=int, default=10)
 
-    parser.add_argument("--max_new_tokens", type=int, default=50)
+    parser.add_argument("--max_new_tokens", type=int, default=200)
 
     parser.add_argument("--batch_size", type=int, default=500)
 
