@@ -1,0 +1,79 @@
+{
+    "0.0": {
+        "throughput": 1686.0,
+        "nsys_mean": 588.2579511505018,
+        "nsys_sum": 755.1214368,
+        "dcgmi_mean": null,
+        "dcgmi_sum": null
+    },
+    "0.1": {
+        "throughput": 1664.0,
+        "nsys_mean": 558.9058440499862,
+        "nsys_sum": 719.972448,
+        "dcgmi_mean": null,
+        "dcgmi_sum": null
+    },
+    "0.2": {
+        "throughput": 1762.0,
+        "nsys_mean": 562.3689456968256,
+        "nsys_sum": 687.9037536000001,
+        "dcgmi_mean": null,
+        "dcgmi_sum": null
+    },
+    "0.3": {
+        "throughput": 1873.9999999999998,
+        "nsys_mean": 557.6886013108743,
+        "nsys_sum": 645.04104,
+        "dcgmi_mean": null,
+        "dcgmi_sum": null
+    },
+    "0.4": {
+        "throughput": 1973.9999999999998,
+        "nsys_mean": 547.934374820351,
+        "nsys_sum": 610.0043807999999,
+        "dcgmi_mean": null,
+        "dcgmi_sum": null
+    },
+    "0.5": {
+        "throughput": 2078.0,
+        "nsys_mean": 548.7199101014602,
+        "nsys_sum": 574.73088,
+        "dcgmi_mean": null,
+        "dcgmi_sum": null
+    },
+    "0.6": {
+        "throughput": 2228.0,
+        "nsys_mean": 535.3338551151821,
+        "nsys_sum": 533.2321344,
+        "dcgmi_mean": null,
+        "dcgmi_sum": null
+    },
+    "0.7": {
+        "throughput": 2370.0,
+        "nsys_mean": 532.4662828136458,
+        "nsys_sum": 496.788912,
+        "dcgmi_mean": null,
+        "dcgmi_sum": null
+    },
+    "0.8": {
+        "throughput": 2540.0,
+        "nsys_mean": 518.8648831186301,
+        "nsys_sum": 462.7911552,
+        "dcgmi_mean": null,
+        "dcgmi_sum": null
+    },
+    "0.9": {
+        "throughput": 2750.0,
+        "nsys_mean": 517.3269382304246,
+        "nsys_sum": 420.30485760000005,
+        "dcgmi_mean": null,
+        "dcgmi_sum": null
+    },
+    "1.0": {
+        "throughput": 3068.0,
+        "nsys_mean": 520.7943901346764,
+        "nsys_sum": 381.4423104,
+        "dcgmi_mean": null,
+        "dcgmi_sum": null
+    }
+}

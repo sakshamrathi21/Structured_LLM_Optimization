@@ -1,23 +1,3 @@
-#!/usr/bin/env python3
-"""
-Reads two_families_logs/ and produces 3 plots, all vs fraction:
-  1. Throughput (req/s)            — from vllm_two_fam_frac*.log  (latest timestamp wins)
-  2. Mean DRAM Activity (GB/s)     — DCGMI vs NSYS on same axes
-  3. Total DRAM Data Accessed (PB) — DCGMI vs NSYS on same axes
-
-For each frac, if multiple vLLM logs exist the one with the latest
-timestamp (the _YYYYMMDD_HHMMSS_ suffix) is used.
-
-NSYS numbers are embedded as the last two lines of each vLLM log:
-    <mean_dram_activity>|<sum_dram_activity>
-e.g.
-    24.1172946941933|98.0
-
-Usage:
-    cd ~/CS496/code/vllm/two_families_logs
-    python plot_fractions.py
-"""
-
 import os
 import re
 import json
@@ -250,76 +230,6 @@ def plot_single(
     print(f"Saved: {outpath}")
 
 
-# ── Step 3: Dual-series plot (DCGMI vs NSYS) ─────────────────────────────────
-def plot_dual(
-    fracs:        list,
-    values_dcgmi: list,
-    values_nsys:  list,
-    ylabel:       str,
-    outpath:      str,
-    color_dcgmi:  str = "#E63946",
-    color_nsys:   str = "#FF9F1C",
-) -> None:
-    def fmt(v):
-        if v == 0: return "0"
-        if v == 1: return "1"
-        return f"{v:.3f}".rstrip("0").rstrip(".")
-
-    # Build a unified x-axis from fracs that have at least one series
-    valid_fracs = [
-        f for f, d, n in zip(fracs, values_dcgmi, values_nsys)
-        if d is not None or n is not None
-    ]
-    if not valid_fracs:
-        print(f"  No data for {outpath}, skipping.")
-        return
-
-    xs = list(range(len(valid_fracs)))
-    frac_map = {f: i for i, f in enumerate(valid_fracs)}
-
-    def series_xy(values):
-        xs_s, ys_s = [], []
-        for f, v in zip(fracs, values):
-            if f in frac_map and v is not None:
-                xs_s.append(frac_map[f])
-                ys_s.append(v)
-        return xs_s, ys_s
-
-    xs_d, ys_d = series_xy(values_dcgmi)
-    xs_n, ys_n = series_xy(values_nsys)
-
-    fig, ax = plt.subplots(figsize=(11, 7))
-
-    plot_kwargs = dict(
-        marker=MARKER, linestyle="-", linewidth=LINEWIDTH,
-        markersize=MARKERSIZE, markeredgecolor="black", markeredgewidth=0.8,
-    )
-
-    # if xs_d:
-    #     ax.plot(xs_d, ys_d, color=color_dcgmi, label="DCGMI", **plot_kwargs)
-    if xs_n:
-        ax.plot(xs_n, ys_n, color=color_nsys,  label="NSYS",  **plot_kwargs)
-
-    ax.set_xlabel("Fraction", fontsize=20)
-    ax.set_ylabel(ylabel, fontsize=20)
-    ax.tick_params(axis="both", labelsize=20)
-    ax.set_xticks(xs)
-    ax.set_xticklabels([fmt(v) for v in valid_fracs], rotation=40, ha="right")
-    ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
-    ax.grid(True, linewidth=0.7, linestyle="--")
-    # ax.set_ylim(bottom=0)
-    # ax.set_yscale("log")
-    ax.set_xlim(-0.5, len(xs) - 0.5)
-    ax.legend(fontsize=16, framealpha=0.9)
-
-    plt.tight_layout()
-    fig.savefig(outpath, dpi=150, bbox_inches="tight")
-    plt.close(fig)
-    print(f"Saved: {outpath}")
-
-
-# ── Entry point ───────────────────────────────────────────────────────────────
-# ── Entry point ───────────────────────────────────────────────────────────────
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
 
