@@ -135,7 +135,7 @@ def build_results() -> dict:
             mean_val = float(np.mean(drama))
             sum_val  = float(np.sum(drama))
             print(f"  mean={mean_val:.4f}  sum={sum_val:.4f}  (n={len(drama)})")
-            entry = {"mean": mean_val*960, "sum": sum_val*960/1000000}
+            entry = {"mean": mean_val*100, "sum": sum_val*960/1000000}
         except Exception as e:
             print(f"  ERROR: {e}")
             entry = {"mean": None, "sum": None}
@@ -220,7 +220,7 @@ def plot_metric(data: dict, metric: str, out_dir: str, normalised: bool = False)
     all_tokens = sorted({tok for series in data.values() for tok in series})
 
     ylabel_map = {
-        "mean": "Mean DRAM Bandwidth Utilzation (GB/s)",
+        "mean": "Mean DRAM Bandwidth Utilzation (%)",
         "sum":  "Total DRAM Data Accessed (fraction of max)",
     }
     fname_map = {
