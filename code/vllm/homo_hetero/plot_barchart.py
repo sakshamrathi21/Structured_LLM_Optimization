@@ -4,6 +4,8 @@ import numpy as np
 import os
 import argparse
 
+hatches = ['/', '\\', 'x', '-', '+', 'o', '.', '*']
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--csv", type=str, default="/home/saksham/CS496/code/vllm/homo_hetero/summary.csv")
 parser.add_argument("--outdir", type=str, default="../../../results/")
@@ -18,8 +20,8 @@ df["avg_throughput_req_s"] = pd.to_numeric(df["avg_throughput_req_s"], errors="c
 df["throughput_tok_s"] = df["avg_throughput_req_s"] * df["max_new_tokens"]
 
 # Keep only selected decode lengths
-# df = df[df["max_new_tokens"].isin([1, 10, 50, 100])].copy()
-df = df[df["max_new_tokens"] == 100].copy()
+df = df[df["max_new_tokens"].isin([1, 10, 50, 100])].copy()
+# df = df[df["max_new_tokens"] == 100].copy()
 
 # Optional: ensure sorted order
 df = df.sort_values(["max_new_tokens", "mode"]).reset_index(drop=True)
@@ -58,8 +60,9 @@ for i, tok in enumerate(tokens):
         throughputs,
         width=bar_width,
         label=f"{tok} tokens",
-        edgecolor="white",
-        linewidth=0.7
+        edgecolor="black",   # better visibility for hatches
+        linewidth=0.7,
+        hatch=hatches[i % len(hatches)]  # 🔹 add hatch here
     )
 
 ax.set_xticks(x)
@@ -73,11 +76,11 @@ ax.set_axisbelow(True)
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 
-# ax.legend(title="Decode Tokens", fontsize=18, title_fontsize=18)
+ax.legend(title="Decode Tokens", fontsize=18, title_fontsize=18)
 
 plt.tight_layout()
 
-out_path = os.path.join(args.outdir, "prefill_decode_homo_hetero_grouped_throughput_tok100.png")
+out_path = os.path.join(args.outdir, "prefill_decode_homo_hetero_grouped_throughput.png")
 plt.savefig(out_path, dpi=150)
 plt.close()
 
