@@ -209,10 +209,10 @@ for sv in sorted(per_sys.keys()):
         ax.set_xticklabels(mode_labels, fontsize=16)
         ax.set_xlabel("Mode", fontsize=18)
         ax.set_ylabel(ylabel, fontsize=18)
-        ax.tick_params(axis="both", labelsize=15)
+        ax.tick_params(axis="both", labelsize=17)
         ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
         if metric_key == "throughput":
-            ax.legend(fontsize=13, framealpha=0.35, ncol=3,
+            ax.legend(fontsize=15, framealpha=0.35, ncol=3,
                       loc="upper left", bbox_to_anchor=(0, 1.18))
         ax.grid(True, axis="y", linewidth=0.7, linestyle="--", zorder=0)
         ax.set_axisbelow(True)
