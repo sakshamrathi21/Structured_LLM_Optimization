@@ -1,57 +1,47 @@
-Radix Tree Experiment - Mode 1, L=100, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 22.23 req/sec, Total Time: 359.90s
-Radix Tree Experiment - Mode 1, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 14.36 req/sec, Total Time: 557.21s
-Radix Tree Experiment - Mode 1, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=chunked_hash_tree_heuristic | Throughput: 14.29 req/sec, Total Time: 559.83s
-Radix Tree Experiment - Mode 1, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=chunked_hash_tree_bandit | Throughput: 14.26 req/sec, Total Time: 560.94s
-Radix Tree Experiment - Mode 5, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 1.87 req/sec, Total Time: 4278.47s
-Radix Tree Experiment - Mode 5, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=chunked_hash_tree_heuristic | Throughput: 14.58 req/sec, Total Time: 548.54s
-Radix Tree Experiment - Mode 5, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=chunked_hash_tree_bandit | Throughput: 12.29 req/sec, Total Time: 651.11s
-Radix Tree Experiment - Mode 9, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 2.37 req/sec, Total Time: 3378.89s
-Radix Tree Experiment - Mode 9, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=chunked_hash_tree_heuristic | Throughput: 14.21 req/sec, Total Time: 562.99s
-Radix Tree Experiment - Mode 9, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=chunked_hash_tree_bandit | Throughput: 2.38 req/sec, Total Time: 3355.29s
-Radix Tree Experiment - Mode 10, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 2.29 req/sec, Total Time: 3495.91s
-Radix Tree Experiment - Mode 10, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=chunked_hash_tree_heuristic | Throughput: 13.02 req/sec, Total Time: 614.34s
-Radix Tree Experiment - Mode 11, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 2.13 req/sec, Total Time: 3749.29s
-Radix Tree Experiment - Mode 11, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=chunked_hash_tree_heuristic | Throughput: 11.63 req/sec, Total Time: 687.96s
-Radix Tree Experiment - Engine=vllm, Mode 1, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:dynamic_batching | Throughput: 14.08 req/sec, Total Time: 568.36s
-Radix Tree Experiment - Engine=vllm, Mode 5, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:dynamic_batching | Throughput: 1.87 req/sec, Total Time: 4266.73s
-Radix Tree Experiment - Engine=vllm, Mode 9, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:dynamic_batching | Throughput: 2.33 req/sec, Total Time: 3431.76s
-Radix Tree Experiment - Engine=sglang, Mode 1, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:lpm | Throughput: 5.75 req/sec, Total Time: 1390.70s
-Radix Tree Experiment - Engine=sglang, Mode 1, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:dfs-weight | Throughput: 5.25 req/sec, Total Time: 1522.39s
-Radix Tree Experiment - Engine=sglang, Mode 1, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:fcfs | Throughput: 12.98 req/sec, Total Time: 616.42s
-Radix Tree Experiment - Engine=sglang, Mode 5, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:lpm | Throughput: 5.77 req/sec, Total Time: 1385.88s
-Radix Tree Experiment - Engine=sglang, Mode 5, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:dfs-weight | Throughput: 5.55 req/sec, Total Time: 1440.96s
-Radix Tree Experiment - Engine=sglang, Mode 5, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:fcfs | Throughput: 12.97 req/sec, Total Time: 616.88s
-Radix Tree Experiment - Engine=vllm, Mode 5, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:fcfs | Throughput: 6.36 req/sec, Total Time: 1256.97s
-Radix Tree Experiment - Engine=vllm, Mode 5, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:chunked_hash_tree_heuristic | Throughput: 18.94 req/sec, Total Time: 422.42s
-Radix Tree Experiment - Engine=vllm, Mode 5, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:dynamic_batching | Throughput: 6.01 req/sec, Total Time: 1330.37s
-Radix Tree Experiment - Engine=sglang, Mode 9, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:lpm | Throughput: 5.51 req/sec, Total Time: 1452.55s
-Radix Tree Experiment - Engine=sglang, Mode 9, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:dfs-weight | Throughput: 5.55 req/sec, Total Time: 1441.53s
-Radix Tree Experiment - Engine=sglang, Mode 9, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:fcfs | Throughput: 12.70 req/sec, Total Time: 629.91s
-Radix Tree Experiment - Engine=vllm, Mode 9, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:fcfs | Throughput: 8.18 req/sec, Total Time: 978.21s
-Radix Tree Experiment - Engine=vllm, Mode 9, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:chunked_hash_tree_heuristic | Throughput: 18.68 req/sec, Total Time: 428.31s
-Radix Tree Experiment - Engine=vllm, Mode 9, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:dynamic_batching | Throughput: 8.27 req/sec, Total Time: 967.56s
-Radix Tree Experiment - Engine=sglang, Mode 10, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:lpm | Throughput: 6.23 req/sec, Total Time: 1283.79s
-Radix Tree Experiment - Engine=sglang, Mode 10, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:dfs-weight | Throughput: 5.58 req/sec, Total Time: 1433.93s
-Radix Tree Experiment - Engine=sglang, Mode 10, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:fcfs | Throughput: 12.11 req/sec, Total Time: 660.63s
-Radix Tree Experiment - Engine=vllm, Mode 10, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:fcfs | Throughput: 8.11 req/sec, Total Time: 985.86s
-Radix Tree Experiment - Engine=vllm, Mode 10, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:chunked_hash_tree_heuristic | Throughput: 18.45 req/sec, Total Time: 433.63s
-Radix Tree Experiment - Engine=vllm, Mode 10, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:dynamic_batching | Throughput: 8.46 req/sec, Total Time: 946.03s
-Radix Tree Experiment - Engine=sglang, Mode 11, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:lpm | Throughput: 6.96 req/sec, Total Time: 1149.72s
-Radix Tree Experiment - Engine=sglang, Mode 11, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:dfs-weight | Throughput: 6.24 req/sec, Total Time: 1281.09s
-Radix Tree Experiment - Engine=sglang, Mode 11, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:fcfs | Throughput: 12.54 req/sec, Total Time: 637.96s
-Radix Tree Experiment - Engine=vllm, Mode 11, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:fcfs | Throughput: 8.69 req/sec, Total Time: 920.92s
-Radix Tree Experiment - Engine=vllm, Mode 11, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:chunked_hash_tree_heuristic | Throughput: 18.25 req/sec, Total Time: 438.28s
-Radix Tree Experiment - Engine=vllm, Mode 11, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:dynamic_batching | Throughput: 8.33 req/sec, Total Time: 960.57s
-Radix Tree Experiment - Engine=sglang, Mode 1, L=2000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:lpm | Throughput: 3.08 req/sec, Total Time: 2596.93s
-Radix Tree Experiment - Engine=sglang, Mode 1, L=2000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:dfs-weight | Throughput: 2.92 req/sec, Total Time: 2741.21s
-Radix Tree Experiment - Engine=sglang, Mode 1, L=2000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:fcfs | Throughput: 9.07 req/sec, Total Time: 881.99s
-Radix Tree Experiment - Engine=vllm, Mode 1, L=2000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:fcfs | Throughput: 17.56 req/sec, Total Time: 455.51s
-Radix Tree Experiment - Engine=vllm, Mode 1, L=2000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:chunked_hash_tree_heuristic | Throughput: 16.88 req/sec, Total Time: 473.84s
-Radix Tree Experiment - Engine=vllm, Mode 1, L=2000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:dynamic_batching | Throughput: 17.82 req/sec, Total Time: 448.86s
-Radix Tree Experiment - Engine=sglang, Mode 5, L=2000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:lpm | Throughput: 2.53 req/sec, Total Time: 3159.21s
-Radix Tree Experiment - Engine=sglang, Mode 5, L=2000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:dfs-weight | Throughput: 2.56 req/sec, Total Time: 3127.81s
-Radix Tree Experiment - Engine=vllm, Mode 1, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:fcfs | Throughput: 19.52 req/sec, Total Time: 409.86s
-Radix Tree Experiment - Engine=vllm, Mode 1, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:chunked_hash_tree_heuristic | Throughput: 18.72 req/sec, Total Time: 427.29s
-Radix Tree Experiment - Engine=vllm, Mode 1, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:dynamic_batching | Throughput: 19.52 req/sec, Total Time: 409.77s
-Radix Tree Experiment - Engine=vllm, Mode 5, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:fcfs | Throughput: 6.59 req/sec, Total Time: 1213.46s
-Radix Tree Experiment - Engine=vllm, Mode 5, L=1000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=vllm:chunked_hash_tree_heuristic | Throughput: 19.02 req/sec, Total Time: 420.70s
+Radix Tree Experiment - Mode 1, L=100, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 83.92 req/sec, Total Time: 119.16s
+Radix Tree Experiment - Mode 5, L=100, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 62.25 req/sec, Total Time: 160.65s
+Radix Tree Experiment - Mode 9, L=100, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 70.07 req/sec, Total Time: 142.71s
+Radix Tree Experiment - Mode 10, L=100, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 70.51 req/sec, Total Time: 141.82s
+Radix Tree Experiment - Mode 11, L=100, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 69.63 req/sec, Total Time: 143.61s
+Radix Tree Experiment - Mode 1, L=1000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 64.09 req/sec, Total Time: 156.04s
+Radix Tree Experiment - Mode 5, L=1000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 21.08 req/sec, Total Time: 474.39s
+Radix Tree Experiment - Mode 9, L=1000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 29.37 req/sec, Total Time: 340.45s
+Radix Tree Experiment - Mode 10, L=1000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 30.24 req/sec, Total Time: 330.71s
+Radix Tree Experiment - Mode 11, L=1000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 30.85 req/sec, Total Time: 324.16s
+Radix Tree Experiment - Mode 1, L=5000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 34.62 req/sec, Total Time: 288.87s
+Radix Tree Experiment - Mode 5, L=5000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 5.46 req/sec, Total Time: 1831.15s
+Radix Tree Experiment - Mode 9, L=5000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 6.78 req/sec, Total Time: 1475.13s
+Radix Tree Experiment - Mode 10, L=5000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 7.76 req/sec, Total Time: 1289.03s
+Radix Tree Experiment - Mode 11, L=5000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 8.48 req/sec, Total Time: 1178.89s
+
+
+
+
+
+
+
+
+
+
+Radix Tree Experiment - Mode 1, L=100, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 78.63 req/sec, Total Time: 127.18s
+Radix Tree Experiment - Mode 5, L=100, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 58.82 req/sec, Total Time: 170.01s
+Radix Tree Experiment - Mode 9, L=100, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 64.59 req/sec, Total Time: 154.83s
+Radix Tree Experiment - Mode 10, L=100, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 64.81 req/sec, Total Time: 154.30s
+Radix Tree Experiment - Mode 11, L=100, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 63.59 req/sec, Total Time: 157.26s
+Radix Tree Experiment - Mode 1, L=1000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 55.86 req/sec, Total Time: 179.03s
+Radix Tree Experiment - Mode 5, L=1000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 16.59 req/sec, Total Time: 602.65s
+Radix Tree Experiment - Mode 9, L=1000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 29.46 req/sec, Total Time: 339.39s
+Radix Tree Experiment - Mode 10, L=1000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 30.05 req/sec, Total Time: 332.73s
+Radix Tree Experiment - Mode 11, L=1000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 25.96 req/sec, Total Time: 385.13s
+Radix Tree Experiment - Mode 1, L=5000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 29.43 req/sec, Total Time: 339.83s
+Radix Tree Experiment - Mode 5, L=5000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 4.26 req/sec, Total Time: 2346.71s
+Radix Tree Experiment - Mode 9, L=5000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 5.72 req/sec, Total Time: 1749.35s
+Radix Tree Experiment - Mode 10, L=5000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 5.82 req/sec, Total Time: 1717.69s
+Radix Tree Experiment - Mode 11, L=5000, Total Requests=10000, Batch Size=500, RPS=None, Max New Tokens=50, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=fcfs | Throughput: 7.15 req/sec, Total Time: 1397.95s
+
+
+
+
+
+
+
