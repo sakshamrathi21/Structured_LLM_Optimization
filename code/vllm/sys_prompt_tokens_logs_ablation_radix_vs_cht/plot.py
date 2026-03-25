@@ -116,8 +116,8 @@ for path in log_files:
 
 # ── Bar chart styling ────────────────────────────────────────────────────────
 PALETTE = {
-    "RadixTree": "#457B9D",
-    "Feather":   "#E63946",
+    "RadixTree": "#8338EC",
+    "Feather":   "#3A86FF",
 }
 
 token_sets = [set(data[label].keys()) for label in data]
@@ -162,14 +162,14 @@ def make_bar_plot(metric_key, ylabel, outpath):
             zorder=3
         )
 
-    ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=19)
-    ax.set_ylabel(ylabel, fontsize=20)
+    ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=20)
+    ax.set_ylabel(ylabel, fontsize=22)
     ax.set_xticks(x_centers)
     ax.set_xticklabels([str(t) for t in all_tokens], rotation=30, fontsize=19)
-    ax.tick_params(axis="y", labelsize=19)
+    ax.tick_params(axis="both", labelsize=20)
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
-
-    ax.legend(fontsize=18, framealpha=0.3)
+    if metric_key == "throughput":
+        ax.legend(fontsize=21, framealpha=0.3)
     ax.grid(True, axis="y", linewidth=0.7, linestyle="--", zorder=0)
     ax.set_ylim(bottom=0)
     plt.tight_layout()
@@ -190,7 +190,7 @@ make_bar_plot(
 
 make_bar_plot(
     "avg_diff",
-    "Time Between Tokens",
+    "Time Between Tokens (s)",
     os.path.join(OUT, "tbt_vs_sys_prompt_tokens_bar.png")
 )
 
