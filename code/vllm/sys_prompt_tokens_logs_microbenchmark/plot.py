@@ -1,15 +1,3 @@
-#!/usr/bin/env python3
-"""
-Parse sys_prompt_tokens_logs_microbenchmark/ and generate:
-
-  1. One plot per engine:policy label showing the SUM of all [PROFILE]
-     function totals vs shared prefix tokens.
-
-  2. For the vLLM:FamilyLoad policy specifically, also overlay a line
-     showing total execution time derived from throughput:
-         exec_time_ms = (req * tok_per_req) / throughput_toks_s * 1000
-"""
-
 import os
 import re
 import glob
@@ -134,8 +122,8 @@ for path in log_files:
 
 # ── Plot styling ─────────────────────────────────────────────────────────────
 PALETTE = [
-    "#E63946", "#457B9D", "#2A9D8F", "#E9C46A",
-    "#F4A261", "#8338EC", "#06D6A0", "#FB5607",
+    "#E63946", "#457B9D", "#2A9D8F", "#FB5607",
+    "#F4A261", "#8338EC", "#06D6A0",
     "#3A86FF", "#FF006E",
 ]
 MARKERS    = ["o", "s", "D", "^", "v", "P", "X", "*", "<", ">"]
@@ -199,17 +187,17 @@ for i, label in enumerate(labels):
 
 ax.set_xscale("log")
 ax.set_yscale("log")  # <-- LOG SCALE ON Y-AXIS
-ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=18)
+ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=20)
 ax.set_ylabel("Time (ms)", fontsize=20)
 
 ax.set_xticks(all_sys_toks)
 ax.set_xticklabels([str(t) for t in all_sys_toks], rotation=30)
 ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
-ax.tick_params(axis="both", labelsize=15)
+ax.tick_params(axis="both", labelsize=20)
 # Use LogFormatter for y-axis ticks since it's now log scale
 ax.yaxis.set_major_formatter(ticker.LogFormatterSciNotation(base=10, labelOnlyBase=False))
 
-ax.legend(fontsize=12, framealpha=0.3)
+ax.legend(fontsize=20, framealpha=0.3,ncol=2)
 ax.grid(True, which="both", linewidth=0.7, linestyle="--")  # grid on both major/minor ticks
 plt.tight_layout()
 outpath = os.path.join(OUT, "profile_sum_vs_sys_prompt_tokens.png")
