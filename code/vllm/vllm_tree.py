@@ -39,7 +39,7 @@ def build_mode1_prompts(tokenizer, L, num_requests, query_base="What is AI?"):
     """
     Mode 1: All requests share a system prompt of length 3*L
     """
-    shared_prefix = generate_text_of_length(tokenizer, 4 * L, "SHARED_3L ")
+    shared_prefix = generate_text_of_length(tokenizer, 4 * L, "SHARED_4L ")
 
     prompts = []
     for i in range(num_requests):
@@ -576,7 +576,12 @@ def main():
     parser.add_argument(
         "--write_output", action="store_true", help="Write results to output file"
     )
-    parser.add_argument("--policy", type=str, default="fcfs", help="Scheduling policy")
+    parser.add_argument(
+        "--policy",
+        type=str,
+        default="vllm:fcfs",
+        help="Engine and scheduling policy in format 'engine:policy' (e.g., 'vllm:fcfs', 'sglang:lpm')",
+    )
     parser.add_argument(
         "--query_base", type=str, default="What is AI?", help="Base query text"
     )
@@ -590,6 +595,18 @@ def main():
     )
 
     args = parser.parse_args()
+
+    # Parse engine and policy from --policy argument
+    policy_parts = args.policy.split(":", 1)
+    if len(policy_parts) == 2:
+        engine_name = policy_parts[0].lower()
+        scheduling_policy = policy_parts[1]
+    else:
+        # Backward compatibility: no engine prefix means vllm
+        engine_name = "vllm"
+        scheduling_policy = args.policy
+
+    print(f"[INFO] Engine: {engine_name}, Scheduling Policy: {scheduling_policy}")
 
     # Set random seed for reproducibility
     random.seed(args.seed)
@@ -660,20 +677,70 @@ def main():
         tokens = tokenizer.encode(prompts[i])
         print(f"  Prompt {i}: {len(tokens)} tokens")
 
-    # Initialize LLM
-    print(f"\n[INFO] Initializing LLM...")
-    llm = LLM(
-        model=args.model_name,
-        gpu_memory_utilization=0.75,
-        enable_chunked_prefill=True,
-        enable_prefix_caching=True,
-        max_num_seqs=args.max_batch_size,
-        scheduling_policy=args.policy,
-    )
+    # -------------------------------------------------------------------------
+    # Initialize engine
+    # -------------------------------------------------------------------------
+    if engine_name == "sglang":
+        import sglang as sgl
 
+        print(f"\n[INFO] Initializing SGLang engine with policy={scheduling_policy}...")
+        llm = sgl.Engine(
+            model_path=args.model_name,
+            mem_fraction_static=0.98,
+            max_running_requests=args.max_batch_size,
+            schedule_policy=scheduling_policy,
+            enable_mixed_chunk=True,
+            max_total_tokens=65536
+        )
+        sampling_params = {
+            "temperature": 0.7,
+            "max_new_tokens": args.max_new_tokens,
+        }
+
+    elif engine_name == "vllm":
+        from vllm import LLM, SamplingParams
+
+        print(f"\n[INFO] Initializing vLLM engine with policy={scheduling_policy}...")
+        llm = LLM(
+            model=args.model_name,
+            gpu_memory_utilization=0.95,
+            enable_chunked_prefill=True,
+            enable_prefix_caching=True,
+            max_num_seqs=args.max_batch_size,
+            scheduling_policy=scheduling_policy,
+            max_num_batched_tokens=32768,
+        )
+        sampling_params = SamplingParams(
+            temperature=0.7, max_tokens=args.max_new_tokens
+        )
+
+    else:
+        raise ValueError(
+            f"Unknown engine '{engine_name}'. Expected 'vllm' or 'sglang'. "
+            f"Use --policy engine:policy (e.g., 'vllm:fcfs' or 'sglang:lpm')."
+        )
+
+    # -------------------------------------------------------------------------
+    # Define a unified generate function
+    # -------------------------------------------------------------------------
+    def run_generate():
+        if engine_name == "sglang":
+            llm.generate(
+                prompts,
+                sampling_params,
+                poisson_rate=args.req_per_sec,
+            )
+        else:  # vllm
+            if args.req_per_sec is not None:
+                llm.generate(prompts, sampling_params, poisson_lambda=args.req_per_sec)
+            else:
+                llm.generate(prompts, sampling_params)
+
+    # -------------------------------------------------------------------------
+    # Run with or without DCGMI monitoring
+    # -------------------------------------------------------------------------
     initial_start_time = time.time()
 
-    # Run with or without DCGMI monitoring
     if args.write_dcgmi:
         dcgmi_file = build_dcgmi_filename(args)
         print(f"[INFO] Logging DCGMI output to: {dcgmi_file}")
@@ -682,17 +749,8 @@ def main():
 
         with open(dcgmi_file, "w") as f:
             dcgmi_proc = subprocess.Popen(dcgmi_cmd, stdout=f, stderr=subprocess.STDOUT)
-
             try:
-                sampling_params = SamplingParams(
-                    temperature=0.7, max_tokens=args.max_new_tokens
-                )
-                if args.req_per_sec is not None:
-                    llm.generate(
-                        prompts, sampling_params, poisson_lambda=args.req_per_sec
-                    )
-                else:
-                    llm.generate(prompts, sampling_params)
+                run_generate()
             finally:
                 print("[INFO] Stopping DCGMI monitoring...")
                 dcgmi_proc.terminate()
@@ -701,14 +759,7 @@ def main():
                 except subprocess.TimeoutExpired:
                     dcgmi_proc.kill()
     else:
-        # Normal run without DCGMI
-        sampling_params = SamplingParams(
-            temperature=0.7, max_tokens=args.max_new_tokens
-        )
-        if args.req_per_sec is not None:
-            llm.generate(prompts, sampling_params, poisson_lambda=args.req_per_sec)
-        else:
-            llm.generate(prompts, sampling_params)
+        run_generate()
 
     end_time = time.time()
 
@@ -716,7 +767,7 @@ def main():
     total_time = end_time - initial_start_time
 
     result_str = (
-        f"Radix Tree Experiment - Mode {args.mode}, "
+        f"Radix Tree Experiment - Engine={engine_name}, Mode {args.mode}, "
         f"L={args.L}, Total Requests={args.total_requests}, "
         f"Batch Size={args.max_batch_size}, "
         f"RPS={args.req_per_sec}, Max New Tokens={args.max_new_tokens}, "
@@ -733,7 +784,6 @@ def main():
         with open(output_file, "a") as f:
             f.write(result_str)
         print(f"[INFO] Results appended to {output_file}")
-
 
 if __name__ == "__main__":
     main()

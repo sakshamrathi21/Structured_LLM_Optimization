@@ -136,8 +136,8 @@ def build_results() -> dict:
             entry = results.setdefault(frac, _empty_entry())
             try:
                 drama    = read_drama(filepath)
-                entry["dcgmi_mean"] = float(np.mean(drama)) * 960
-                entry["dcgmi_sum"]  = float(np.sum(drama))  * 960 / 1e6
+                entry["dcgmi_mean"] = float(np.mean(drama)) * 100
+                entry["dcgmi_sum"]  = float(np.sum(drama))
                 print(f"  dcgmi_mean={entry['dcgmi_mean']:.4f} GB/s  "
                       f"dcgmi_sum={entry['dcgmi_sum']:.6f} PB  (n={len(drama)})")
             except Exception as e:
@@ -179,6 +179,79 @@ def build_results() -> dict:
     print(f"\n✅ Saved results to {OUTPUT_JSON}")
     return results
 
+def plot_dual_axis(
+    fracs: list,
+    means: list,
+    sums: list,
+    ylabel_left: str,
+    ylabel_right: str,
+    outpath: str,
+) -> None:
+
+    # Filter valid pairs
+    paired = [(f, m, s) for f, m, s in zip(fracs, means, sums)
+              if m is not None and s is not None]
+
+    if not paired:
+        print(f"No valid data for {outpath}")
+        return
+
+    frac_labels, means_clean, sums_clean = zip(*paired)
+    xs = list(range(len(frac_labels)))
+
+    # Normalize sums
+    max_sum = max(sums_clean)
+    sums_norm = [s / max_sum for s in sums_clean]
+
+    def fmt(v):
+        if v == 0: return "0"
+        if v == 1: return "1"
+        return f"{v:.3f}".rstrip("0").rstrip(".")
+
+    fig, ax1 = plt.subplots(figsize=(11, 7))
+
+    # LEFT AXIS → Mean DRAM
+    ax1.plot(xs, means_clean,
+             marker=MARKER,
+             linestyle="-",
+             linewidth=LINEWIDTH,
+             markersize=MARKERSIZE,
+             markeredgecolor="black",
+             label="Mean DRAM")
+
+    ax1.set_xlabel("Fraction", fontsize=20)
+    ax1.set_ylabel(ylabel_left, fontsize=20)
+    ax1.tick_params(axis="both", labelsize=18)
+    ax1.set_xticks(xs)
+    ax1.set_xticklabels([fmt(v) for v in frac_labels],
+                        rotation=40, ha="right")
+    ax1.grid(True, linestyle="--", linewidth=0.7)
+
+    # RIGHT AXIS → Normalized Sum
+    ax2 = ax1.twinx()
+    ax2.plot(xs, sums_norm,
+             marker="s",
+             linestyle="--",
+             linewidth=LINEWIDTH,
+             markersize=MARKERSIZE,
+             label="Normalized Sum DRAM")
+
+    ax2.set_ylabel(ylabel_right, fontsize=20)
+    ax2.tick_params(axis="y", labelsize=18)
+    ax2.set_ylim(0, 1.05)
+
+    # Legend (combined)
+    lines_1, labels_1 = ax1.get_legend_handles_labels()
+    lines_2, labels_2 = ax2.get_legend_handles_labels()
+    ax1.legend(lines_1 + lines_2, labels_1 + labels_2,
+               loc="center", fontsize=20)
+
+    plt.tight_layout()
+    fig.savefig(outpath, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+    print(f"Saved dual-axis plot: {outpath}")
+
 
 def _empty_entry() -> dict:
     return {
@@ -196,7 +269,6 @@ def plot_single(
     values:  list,
     ylabel:  str,
     outpath: str,
-    color:   str,
 ) -> None:
     paired = [(x, y) for x, y in zip(fracs, values) if y is not None]
     if not paired:
@@ -213,7 +285,7 @@ def plot_single(
     fig, ax = plt.subplots(figsize=(11, 7))
     ax.plot(xs, ys, marker=MARKER, linestyle="-", linewidth=LINEWIDTH,
             markersize=MARKERSIZE, markeredgecolor="black",
-            markeredgewidth=0.8, color=color)
+            markeredgewidth=0.8)
     ax.set_xlabel("Fraction", fontsize=20)
     ax.set_ylabel(ylabel, fontsize=20)
     ax.tick_params(axis="both", labelsize=20)
@@ -247,40 +319,31 @@ def main():
         fracs, tps,
         ylabel  = "Throughput (tok/s)",
         outpath = os.path.join(OUT_DIR, "throughput_vs_fraction.png"),
-        color   = "#3A86FF",
     )
 
     # 2. DCGMI Mean DRAM Bandwidth
     plot_single(
         fracs, dcgmi_means,
-        ylabel  = "Mean DRAM Bandwidth Utilization (GB/s)",
+        ylabel  = "Mean DRAM Bandwidth Utilization (%)",
         outpath = os.path.join(OUT_DIR, "dcgmi_mean_dram_vs_fraction.png"),
-        color   = "#E63946",
-    )
-
-    # 3. NSYS Mean DRAM Bandwidth
-    plot_single(
-        fracs, nsys_means,
-        ylabel  = "Mean DRAM Bandwidth Utilization (GB/s)",
-        outpath = os.path.join(OUT_DIR, "nsys_mean_dram_vs_fraction.png"),
-        color   = "#FF9F1C",
     )
 
     # 4. DCGMI Total DRAM Data
     plot_single(
         fracs, dcgmi_sums,
-        ylabel  = "Total DRAM Data Accessed (PB)",
+        ylabel  = "Total DRAM Data Accessed",
         outpath = os.path.join(OUT_DIR, "dcgmi_sum_dram_vs_fraction.png"),
-        color   = "#E63946",
     )
 
-    # 5. NSYS Total DRAM Data
-    plot_single(
-        fracs, nsys_sums,
-        ylabel  = "Total DRAM Data Accessed (PB)",
-        outpath = os.path.join(OUT_DIR, "nsys_sum_dram_vs_fraction.png"),
-        color   = "#FF9F1C",
+    plot_dual_axis(
+        fracs,
+        dcgmi_means,
+        dcgmi_sums,
+        ylabel_left="Mean DRAM Bandwidth Utilization (%)",
+        ylabel_right="Normalized Total DRAM (fraction of max)",
+        outpath=os.path.join(OUT_DIR, "dcgmi_mean_vs_sum_dual.png"),
     )
+
 
 
 if __name__ == "__main__":
