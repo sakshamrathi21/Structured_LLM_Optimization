@@ -96,6 +96,8 @@ for path in log_files:
         policy = "Feather"
 
     label = f"{engine}:{policy}"
+    if "fcfs" in label.lower() and "sglang" in label.lower():
+        continue
 
     avg_batch, avg_diff, throughput = parse_log(path)
 
@@ -129,7 +131,7 @@ print(f"Modes found    : {all_modes}")
 
 # ── Color-blind-friendly palette ─────────────────────────────────────────────
 PALETTE = [
-    "#E63946", "#457B9D", "#2A9D8F", "#E9C46A",
+    "#E63946", "#2A9D8F", "#E9C46A",
     "#F4A261", "#8338EC", "#06D6A0", "#FB5607",
     "#3A86FF", "#FF006E",
 ]
@@ -207,7 +209,7 @@ for sv in sorted(per_sys.keys()):
         ax.set_xticklabels(mode_labels, fontsize=16)
         ax.set_xlabel("Mode", fontsize=18)
         ax.set_ylabel(ylabel, fontsize=18)
-        ax.tick_params(axis="y", labelsize=15)
+        ax.tick_params(axis="both", labelsize=15)
         ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
         if metric_key == "throughput":
             ax.legend(fontsize=13, framealpha=0.35, ncol=3,
