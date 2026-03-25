@@ -5,7 +5,7 @@ Single script that:
   2. Computes both mean and sum of DRAMA, stores both in results.json.
   3. Generates two plots:
        - Mean DRAM Activity vs Shared Prefix Tokens
-       - Sum  DRAM Activity vs Shared Prefix Tokens
+       - Sum  DRAM Activity vs Shared Prefix Tokens (normalised to max)
 
 results.json structure:
   { model -> engine -> policy -> sptokens (str) -> {"mean": float|null, "sum": float|null} }
@@ -184,13 +184,44 @@ def flatten_data(raw: dict, metric: str) -> dict:
     return data
 
 
+# ── Step 2b: Normalise sum data to fraction of global max ─────────────────────
+def normalise_to_max(data: dict) -> dict:
+    """
+    Rescales all values in `data` so that the global maximum across all
+    labels and token points equals 1.0.  None / NaN values are preserved.
+
+    Returns a new dict with the same structure.
+    """
+    # Collect every finite value to find the global max
+    all_vals = [
+        v
+        for series in data.values()
+        for v in series.values()
+        if v is not None and not np.isnan(v)
+    ]
+    if not all_vals:
+        return data  # nothing to normalise
+
+    global_max = max(all_vals)
+    if global_max == 0:
+        return data  # avoid division by zero
+
+    normalised = {}
+    for label, series in data.items():
+        normalised[label] = {
+            tok: (v / global_max if (v is not None and not np.isnan(v)) else v)
+            for tok, v in series.items()
+        }
+    return normalised
+
+
 # ── Step 3: Plot one metric ───────────────────────────────────────────────────
-def plot_metric(data: dict, metric: str, out_dir: str) -> None:
+def plot_metric(data: dict, metric: str, out_dir: str, normalised: bool = False) -> None:
     all_tokens = sorted({tok for series in data.values() for tok in series})
 
     ylabel_map = {
         "mean": "Mean DRAM Bandwidth Utilzation (GB/s)",
-        "sum":  "Total DRAM Data Accessed (PB)",
+        "sum":  "Total DRAM Data Accessed (fraction of max)",
     }
     fname_map = {
         "mean": "mean_dram_vs_sys_prompt_tokens.png",
@@ -231,18 +262,24 @@ def plot_metric(data: dict, metric: str, out_dir: str) -> None:
         )
 
     ax.set_xscale("log")
-    ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=19)
-    ax.set_ylabel(ylabel_map[metric],               fontsize=20)
+    ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=20)
+    ax.set_ylabel(ylabel_map[metric],               fontsize=18)
 
     ax.set_xticks(all_tokens)
     ax.set_xticklabels(all_tokens, rotation=30)
     ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
-    ax.tick_params(axis="both", labelsize=19)
-    ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
+    ax.tick_params(axis="both", labelsize=20)
 
-    ax.legend(fontsize=18, framealpha=0.3, ncol=1)
+    if metric == "sum":
+        # Show as 0.00–1.00 on y-axis
+        ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
+        ax.set_ylim(0, 1.05)
+    else:
+        ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
+        ax.set_ylim(bottom=0)
+
+    ax.legend(fontsize=22, framealpha=0.3, ncol=1)
     ax.grid(True, linewidth=0.7, linestyle="--")
-    ax.set_ylim(bottom=0)
     plt.tight_layout()
     fig.savefig(outpath, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
@@ -261,6 +298,8 @@ def main():
     # 3. Generate one plot per metric
     for metric in ("mean", "sum"):
         data = flatten_data(raw, metric)
+        if metric == "sum":
+            data = normalise_to_max(data)
         plot_metric(data, metric, OUT_DIR)
 
 
