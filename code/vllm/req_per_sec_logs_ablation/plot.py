@@ -137,9 +137,7 @@ for path in log_files:
 
 # ── Plot styling (color-blind friendly) ─────────────────────────────────────
 PALETTE = [
-    "#E63946", "#457B9D", "#2A9D8F", "#E9C46A",
-    "#F4A261", "#8338EC", "#06D6A0", "#FB5607",
-    "#3A86FF", "#FF006E",
+    "#8338EC","#FF006E",
 ]
 
 MARKERS = ["o", "s", "D", "^", "v", "P", "X", "*", "<", ">"]
@@ -193,18 +191,17 @@ def make_plot(metric_key, ylabel, title, outpath):
                 label=label
             )
 
-    ax.set_xlabel("Input Workload (req/sec)", fontsize=20)
-    ax.set_ylabel(ylabel, fontsize=20)
+    ax.set_xlabel("Input Workload (req/sec)", fontsize=22)
+    ax.set_ylabel(ylabel, fontsize=22)
 
-    ax.tick_params(axis="both", labelsize=19)
+    ax.tick_params(axis="both", labelsize=20)
 
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
 
     if metric_key == "throughput":
         ax.legend(
-            fontsize=16,
+            fontsize=25,
             framealpha=0.3,
-            loc="center right",
             ncol=1
         )
 
@@ -244,7 +241,7 @@ make_plot(
 
 make_plot(
     "avg_diff",
-    "Time Between Tokens",
+    "Time Between Tokens (s)",
     "Average Consecutive Scheduler Timestamp Diff vs Request Rate",
     os.path.join(OUT, "avg_timediff_vs_rps.png")
 )
