@@ -9,6 +9,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+HATCHES = ["//", "\\\\", "xx", "--", "++", "oo", ".."]
 
 LOG_DIR = os.path.expanduser("~/CS496/code/vllm/models_logs/")
 MODEL_SHORT = {
@@ -205,6 +206,8 @@ def make_bar_plot(metric_key, ylabel, title, outpath):
             width,
             label=policy,
             color=PALETTE[i % len(PALETTE)],
+            hatch=HATCHES[i % len(HATCHES)],  # ← add this
+            edgecolor="black",                # ← recommended for visibility
         )
 
     ax.set_xticks(x)
@@ -262,7 +265,7 @@ make_bar_plot(
 
 make_bar_plot(
     "avg_diff",
-    "Time Between Tokens",
+    "Time Between Tokens (s)",
     "Scheduler Token Time Across Models",
     os.path.join(OUT, "avg_timediff_model_bar.png"),
 )

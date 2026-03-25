@@ -242,7 +242,7 @@ make_plot(
 
 make_plot(
     "avg_diff",
-    "Time Between Tokens",
+    "Time Between Tokens (s)",
     "Average Consecutive Scheduler Timestamp Diff vs Request Rate",
     os.path.join(OUT, "avg_timediff_vs_rps.png")
 )
