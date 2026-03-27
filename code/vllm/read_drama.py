@@ -3,7 +3,7 @@ import re
 import json
 import numpy as np
 
-LOG_DIR = "sys_prompt_tokens_logs_drama"
+LOG_DIR = "."
 OUTPUT_FILE = "results.json"
 
 # -------------------------------

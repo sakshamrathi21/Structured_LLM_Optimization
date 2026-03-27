@@ -7,11 +7,11 @@ PY_BIN="/home/saksham/CS496/code/vllm/.venv/bin/python"
 LOG_DIR="radix_tree_logs"
 mkdir -p "$LOG_DIR"
 
-LEN_FACTOR=(1000 2000 5000)
+LEN_FACTOR=(5000)
 
 
-# VLLM_POLICIES=(sglang:lpm sglang:dfs-weight sglang:fcfs vllm:fcfs vllm:chunked_hash_tree_heuristic vllm:dynamic_batching)
-VLLM_POLICIES=(vllm:fcfs vllm:chunked_hash_tree_heuristic vllm:dynamic_batching)
+VLLM_POLICIES=(sglang:lpm sglang:dfs-weight sglang:fcfs vllm:fcfs vllm:chunked_hash_tree_heuristic vllm:dynamic_batching)
+# VLLM_POLICIES=(vllm:fcfs vllm:chunked_hash_tree_heuristic vllm:dynamic_batching)
 MODES=(1 5 9 10 11)
 for L in "${LEN_FACTOR[@]}"; do
     for m in "${MODES[@]}"; do

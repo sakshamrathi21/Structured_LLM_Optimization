@@ -1,0 +1,7 @@
+{
+    "meta-llama_Llama-3.1-8B-Instruct_families-5_rps-None_batch-500_rand-1_sptokens-10000_policy-chunked_hash_tree_maxnew-50.log": {
+        "chunked_hash_tree_maxnew-50": {
+            "10000": 0.05327858094651325
+        }
+    }
+}

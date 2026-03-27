@@ -45,3 +45,4 @@ Radix Tree Experiment - Mode 11, L=5000, Total Requests=10000, Batch Size=500, R
 
 
 
+Radix Tree Experiment - Engine=sglang, Mode 1, L=5000, Total Requests=8000, Batch Size=500, RPS=None, Max New Tokens=200, Model=meta-llama/Llama-3.1-8B-Instruct, Policy=sglang:lpm | Throughput: 1.10 req/sec, Total Time: 7299.44s
