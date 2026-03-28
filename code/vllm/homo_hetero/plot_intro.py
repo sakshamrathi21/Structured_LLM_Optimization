@@ -93,7 +93,14 @@ ax.spines["right"].set_visible(False)
 
 # Extra top margin so rotated labels don't get clipped
 ax.set_ylim(top=ax.get_ylim()[1] * 1.2)
-
+ax.text(
+    0.99, 0.97,
+    "Bold text = batch execution time (s)",
+    transform=ax.transAxes,
+    ha='right', va='top',
+    fontsize=15, fontstyle='italic', color='black',
+    bbox=dict(boxstyle='round,pad=0.3', facecolor='lightyellow', edgecolor='gray', alpha=0.8)
+)
 plt.tight_layout()
 out_path = os.path.join(args.outdir, "prefill_decode_homo_hetero_grouped_throughput_tok100.png")
 plt.savefig(out_path, dpi=150)
