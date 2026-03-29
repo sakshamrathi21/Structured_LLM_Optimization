@@ -27,12 +27,12 @@ df = df[df["max_new_tokens"].isin([1, 10, 50, 100])].copy()
 df = df.sort_values(["max_new_tokens", "mode"]).reset_index(drop=True)
 
 SETTINGS = [
-    "1x800\n(8 fam/batch)",
-    "2x400\n(4 fam/batch)",
-    "4x200\n(2 fam/batch)",
-    "8x100\n(1 fam/batch)",
-    "16x50\n(1 fam/batch)",
-    "32x25\n(1 fam/batch)",
+    "1x800\n(8 fam)",
+    "2x400\n(4 fam)",
+    "4x200\n(2 fam)",
+    "8x100\n(1 fam)",
+    "16x50\n(1 fam)",
+    "32x25\n(1 fam)",
 ]
 
 tokens = sorted(df["max_new_tokens"].unique())
