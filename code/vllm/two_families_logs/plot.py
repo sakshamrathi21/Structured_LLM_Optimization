@@ -15,7 +15,7 @@ OUT_DIR     = "../../../results/two_family_plots/"
 # ── Plot styling ──────────────────────────────────────────────────────────────
 MARKER     = "o"
 LINEWIDTH  = 2.4
-MARKERSIZE = 8
+MARKERSIZE = 12
 
 # ── DCGMI: DRAM reader ────────────────────────────────────────────────────────
 def read_drama(filepath: str) -> np.ndarray:

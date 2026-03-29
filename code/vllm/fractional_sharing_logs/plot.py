@@ -15,7 +15,7 @@ OUT_DIR     = "../../../results/fractional_sharing_plots/"
 # ── Plot styling ──────────────────────────────────────────────────────────────
 MARKER     = "o"
 LINEWIDTH  = 2.4
-MARKERSIZE = 8
+MARKERSIZE = 12
 
 
 # ── vLLM log: throughput reader ───────────────────────────────────────────────
