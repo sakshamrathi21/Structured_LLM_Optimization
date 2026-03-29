@@ -184,7 +184,7 @@ def make_plot(metric_key, ylabel, title, outpath):
                 marker=marker,
                 linestyle=linestyle,
                 linewidth=2.2,
-                markersize=7,
+                markersize=12,
                 markeredgecolor="black",
                 markeredgewidth=0.7,
                 color=color,

@@ -8,6 +8,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
+from matplotlib.lines import Line2D
 
 LOG_DIR = os.path.expanduser("~/CS496/code/vllm/sys_prompt_tokens_logs_ablation_radix_vs_cht/")
 
@@ -143,15 +144,19 @@ def make_bar_plot(metric_key, ylabel, outpath):
         color = PALETTE.get(policy_name, "#888888")
 
         ys = []
+        tbt_vals = []
         for tok in all_tokens:
             v = data[label].get(tok, {}).get(metric_key)
             if v is not None:
                 v = round(v, 4)
             ys.append(v if v is not None else 0.0)
 
+            tbt = data[label].get(tok, {}).get("avg_diff")
+            tbt_vals.append(tbt)
+
         offsets = x_centers + (i - (n_bars - 1) / 2) * bar_width
 
-        ax.bar(
+        bars = ax.bar(
             offsets,
             ys,
             width=bar_width,
@@ -162,16 +167,59 @@ def make_bar_plot(metric_key, ylabel, outpath):
             zorder=3
         )
 
+        # Annotate TBT on top of each bar
+        for bar, tbt in zip(bars, tbt_vals):
+            if tbt is not None:
+                ax.text(
+                    bar.get_x() + bar.get_width() / 2,
+                    bar.get_height() + ax.get_ylim()[1] * 0.01,
+                    f"{tbt:.3f}s",
+                    ha="center",
+                    va="bottom",
+                    fontsize=15,
+                    color="black",
+                )
+
     ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=20)
     ax.set_ylabel(ylabel, fontsize=22)
     ax.set_xticks(x_centers)
     ax.set_xticklabels([str(t) for t in all_tokens], rotation=30, fontsize=19)
     ax.tick_params(axis="both", labelsize=20)
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
-    if metric_key == "throughput":
-        ax.legend(fontsize=21, framealpha=0.3)
+
+    # Build legend: bar colours + TBT annotation marker
+    bar_handles = [
+        plt.Rectangle((0, 0), 1, 1,
+                       color=PALETTE.get(lbl.split(":")[1], "#888888"),
+                       edgecolor="black", linewidth=0.7,
+                       label=lbl)
+        for lbl in labels_sorted
+    ]
+    tbt_handle = Line2D(
+        [], [],
+        color="none",
+        marker="",
+        label="Bar annotation: TBT (s)",
+        linestyle="none",
+    )
+    # Use a small text marker to represent the annotation
+    from matplotlib.patches import Patch
+    tbt_proxy = Line2D(
+        [0], [0],
+        color="black",
+        linewidth=0,
+        marker=r"$\mathtt{s}$",
+        markersize=12,
+        label="Bar top: Time Between Tokens (s)",
+    )
+    ax.legend(handles=bar_handles + [tbt_proxy], fontsize=17, framealpha=0.3)
+
     ax.grid(True, axis="y", linewidth=0.7, linestyle="--", zorder=0)
-    ax.set_ylim(bottom=0)
+
+    # Add a little headroom so TBT labels don't get clipped
+    ymax = ax.get_ylim()[1]
+    ax.set_ylim(bottom=0, top=ymax * 1.18)
+
     plt.tight_layout()
     fig.savefig(outpath, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
@@ -186,12 +234,6 @@ make_bar_plot(
     "throughput",
     "Throughput (toks/s)",
     os.path.join(OUT, "throughput_vs_sys_prompt_tokens_bar.png")
-)
-
-make_bar_plot(
-    "avg_diff",
-    "Time Between Tokens (s)",
-    os.path.join(OUT, "tbt_vs_sys_prompt_tokens_bar.png")
 )
 
 print("\nDone! Plots written to:", OUT)
