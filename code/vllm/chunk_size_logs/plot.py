@@ -124,6 +124,7 @@ for i, label in enumerate(labels):
         color=PALETTE[i % len(PALETTE)],
         linewidth=2,
         label=f"{label}",
+        markersize=12
     )
 
 ax.set_xscale("log")
