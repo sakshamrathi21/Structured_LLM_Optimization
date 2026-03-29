@@ -127,7 +127,7 @@ PALETTE = [
     "#3A86FF", "#FF006E",
 ]
 MARKERS    = ["o", "s", "D", "^", "v", "P", "X", "*", "<", ">"]
-LINESTYLES = ["-", "--", "-.", ":"]
+LINESTYLES = ["--", "--", "-", ":", ":"]
 
 all_sys_toks = sorted({tok for d in summed_profile.values() for tok in d})
 print(f"\nSys-token counts found: {all_sys_toks}")
@@ -157,7 +157,7 @@ for i, label in enumerate(labels):
         marker=marker,
         linestyle=linestyle,
         linewidth=2.2,
-        markersize=7,
+        markersize=12,
         markeredgecolor="black",
         markeredgewidth=0.7,
         color=color,
@@ -177,7 +177,7 @@ for i, label in enumerate(labels):
             marker=marker,
             linestyle=":",          # dotted to distinguish
             linewidth=2.5,
-            markersize=8,
+            markersize=12,
             markeredgecolor="black",
             markeredgewidth=0.9,
             color=color,
