@@ -33,7 +33,7 @@ PALETTE = [
     "#3A86FF", "#FF006E",
 ]
 MARKERS    = ["o", "s", "D", "^", "v", "P", "X", "*", "<", ">"]
-LINESTYLES = ["-", "--", "-.", ":"]
+LINESTYLES = ["--", "--", ":", "-"]
 
 # ── Policy / engine mapping ───────────────────────────────────────────────────
 VLLM_POLICIES   = {"fcfs", "dynamic_batching", "chunked_hash_tree_bandit", "family_load"}
@@ -239,7 +239,7 @@ def plot_metric(data: dict, metric: str, out_dir: str, normalised: bool = False)
     for i, label in enumerate(sorted(data.keys())):
         color     = PALETTE[i % len(PALETTE)]
         marker    = MARKERS[i % len(MARKERS)]
-        linestyle = LINESTYLES[(i // len(MARKERS)) % len(LINESTYLES)]
+        linestyle = LINESTYLES[i % len(LINESTYLES)]
 
         xs, ys = [], []
         for tok in all_tokens:
@@ -254,7 +254,7 @@ def plot_metric(data: dict, metric: str, out_dir: str, normalised: bool = False)
             marker=marker,
             linestyle=linestyle,
             linewidth=2.2,
-            markersize=7,
+            markersize=12,
             markeredgecolor="black",
             markeredgewidth=0.7,
             color=color,

@@ -144,7 +144,7 @@ labels = sorted(summed_profile.keys())
 for i, label in enumerate(labels):
     color     = PALETTE[i % len(PALETTE)]
     marker    = MARKERS[i % len(MARKERS)]
-    linestyle = LINESTYLES[(i // len(MARKERS)) % len(LINESTYLES)]
+    linestyle = LINESTYLES[i% len(LINESTYLES)]
 
     xs, ys = [], []
     for tok in all_sys_toks:
