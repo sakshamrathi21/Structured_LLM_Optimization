@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-"""
-Plot Throughput vs RPS:
-  - Feather: parsed from run_rate_<rps>.log files
-  - FLASH_ATTN / PREFIX_ATTN: parsed from e2e_perf.jsonl
-"""
-
 import os, re, glob, json
 import numpy as np
 import matplotlib
@@ -92,7 +85,7 @@ PALETTE = [
 ]
 
 MARKERS = ["P","v", ">", "s", "D", "^" , "X", "*", "<"]
-LINESTYLES = ["-"]
+LINESTYLES = ["-", ":", ":"]
 
 fig, ax = plt.subplots(figsize=(10, 6))
 
@@ -117,7 +110,7 @@ for i, (label, xs, ys) in enumerate(series):
         marker=MARKERS[i % len(MARKERS)],
         linestyle=LINESTYLES[i % len(LINESTYLES)],
         linewidth=2.2,
-        markersize=8,
+        markersize=12,
         markeredgecolor="black",
         markeredgewidth=0.7,
         color=PALETTE[i % len(PALETTE)],
