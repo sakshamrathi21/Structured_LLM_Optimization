@@ -136,7 +136,7 @@ PALETTE = [
 ]
 
 MARKERS = ["o", "s", "D", "^", "v", "P", "X", "*", "<", ">"]
-LINESTYLES = ["-", "--", "-.", ":"]
+LINESTYLES = ["--", "--", "--", ":", ":", "-"]
 
 all_tokens = sorted({tok for policy in data.values() for tok in policy})
 
@@ -152,7 +152,7 @@ def make_plot(metric_key, ylabel, title, outpath):
 
         color = PALETTE[i % len(PALETTE)]
         marker = MARKERS[i % len(MARKERS)]
-        linestyle = LINESTYLES[(i // len(MARKERS)) % len(LINESTYLES)]
+        linestyle = LINESTYLES[i % len(LINESTYLES)]
 
         xs = []
         ys = []
@@ -173,7 +173,7 @@ def make_plot(metric_key, ylabel, title, outpath):
             marker=marker,
             linestyle=linestyle,
             linewidth=2.2,
-            markersize=7,
+            markersize=12,
             markeredgecolor="black",
             markeredgewidth=0.7,
             color=color,
