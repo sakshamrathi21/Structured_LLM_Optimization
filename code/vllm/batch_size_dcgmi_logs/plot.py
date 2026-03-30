@@ -48,17 +48,17 @@ color_tensor = "darkorange"
 
 # Left axis: Throughput
 ax1.set_xlabel("Batch Size", fontsize=20)
-ax1.set_ylabel("Throughput (toks/sec)", fontsize=20, color=color_throughput)
+ax1.set_ylabel("Throughput (toks/sec)", fontsize=22, color=color_throughput)
 line1, = ax1.plot(fractions, throughput_values, marker='o', color=color_throughput, label="Throughput", markersize=12)
-ax1.tick_params(axis='y', labelcolor=color_throughput, labelsize=18)
-ax1.tick_params(axis='x', labelsize=18)
+ax1.tick_params(axis='y', labelcolor=color_throughput, labelsize=20)
+ax1.tick_params(axis='x', labelsize=20)
 ax1.set_ylim(0, max(throughput_values) + 500)
 
 # Right axis: Tensor Core Utilization
 ax2 = ax1.twinx()
-ax2.set_ylabel("Mean Tensor Core Utilization", fontsize=18, color=color_tensor)
+ax2.set_ylabel("Mean Tensor Core Utilization", fontsize=22, color=color_tensor)
 line2, = ax2.plot(tenso_fractions, means, marker='s', color=color_tensor, linestyle='--', label="Tensor Core Util.", markersize=12)
-ax2.tick_params(axis='y', labelcolor=color_tensor, labelsize=18)
+ax2.tick_params(axis='y', labelcolor=color_tensor, labelsize=20)
 ax2.set_ylim(0, None)
 
 # Combined legend
