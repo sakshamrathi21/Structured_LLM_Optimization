@@ -77,7 +77,7 @@ bars1 = ax1.bar(
     edgecolor="white"
 )
 
-ax1.set_xlabel("Number of Families")
+ax1.set_xlabel("Number of Prefix Groups")
 ax1.set_ylabel("Throughput (toks/s)")
 ax1.set_xticks(x)
 ax1.set_xticklabels([str(n) for n in family_counts])
