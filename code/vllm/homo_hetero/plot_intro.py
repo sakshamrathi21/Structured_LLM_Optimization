@@ -15,23 +15,19 @@ os.makedirs(args.outdir, exist_ok=True)
 
 df = pd.read_csv(args.csv)
 df["avg_throughput_req_s"] = pd.to_numeric(df["avg_throughput_req_s"], errors="coerce")
-
-# Multiply throughput by decode tokens
 df["throughput_tok_s"] = df["avg_throughput_req_s"] * df["max_new_tokens"]
-
 df = df[df["max_new_tokens"] == 100].copy()
 df = df.sort_values(["max_new_tokens", "mode"]).reset_index(drop=True)
 
 SETTINGS = [
-    "1x800\n(8 fam)",
-    "2x400\n(4 fam)",
-    "4x200\n(2 fam)",
-    "8x100\n(1 fam)",
-    "16x50\n(1 fam)",
-    "32x25\n(1 fam)",
+    "1x800\n(8 pref)",
+    "2x400\n(4 pref)",
+    "4x200\n(2 pref)",
+    "8x100\n(1 pref)",
+    "16x50\n(1 pref)",
+    "32x25\n(1 pref)",
 ]
 
-# Batch sizes corresponding to each setting (total requests per batch)
 BATCH_SIZES = [800, 400, 200, 100, 50, 25]
 
 tokens = sorted(df["max_new_tokens"].unique())
@@ -43,15 +39,19 @@ bar_width = 0.8 / num_tokens
 
 fig, ax = plt.subplots(figsize=(12, 6))
 
+# We'll store one bar's info for the arrow annotation (first bar of first token group)
+arrow_bar = None
+arrow_label = None
+
 for i, tok in enumerate(tokens):
     subset = df[df["max_new_tokens"] == tok].sort_values("mode").reset_index(drop=True)
-
     if len(subset) != num_configs:
         print(f"[WARN] max_new_tokens={tok} has {len(subset)} rows (expected {num_configs}), skipping.")
         continue
 
     throughputs = subset["throughput_tok_s"].tolist()
     offset = (i - num_tokens / 2) * bar_width + bar_width / 2
+
     bars = ax.bar(
         x + offset,
         throughputs,
@@ -59,27 +59,32 @@ for i, tok in enumerate(tokens):
         label=f"{tok} tokens",
         edgecolor="black",
         linewidth=0.7,
-        hatch=hatches[i % len(hatches)]
     )
 
-    # Add execution time label on top of each bar
-    for bar, tp_tok_s, batch_size in zip(bars, throughputs, BATCH_SIZES):
+    for j, (bar, tp_tok_s, batch_size) in enumerate(zip(bars, throughputs, BATCH_SIZES)):
         if tp_tok_s > 0:
-            # tok/s → req/s (200 toks per request)
             tp_req_s = tp_tok_s / 100.0
-            # time to process full batch
             exec_time = batch_size / tp_req_s
-            label = f"{exec_time:.1f}s"
+            # multiplier: how many batches needed vs the largest batch (800)
+            multiplier = 800 // batch_size
+            label = f"{multiplier}×{exec_time:.1f}s"
         else:
             label = "N/A"
 
         ax.text(
             bar.get_x() + bar.get_width() / 2,
-            bar.get_height() + max(throughputs) * 0.01,  # small padding above bar
+            bar.get_height() + max(throughputs) * 0.01,
             label,
             ha='center', va='bottom',
-            fontsize=15, fontweight='bold', color='black',
+            fontsize=20, fontweight='bold', color='black',
         )
+
+        # Pick the 3rd bar (index 2, "4x200") of the first token group for the arrow
+        if i == 0 and j == 3 and tp_tok_s > 0:
+            arrow_bar = bar
+            arrow_label = label
+            arrow_bar_height = bar.get_height()
+            arrow_bar_x = bar.get_x() + bar.get_width()
 
 ax.set_xticks(x)
 ax.set_xticklabels(SETTINGS, fontsize=20)
@@ -91,16 +96,32 @@ ax.set_axisbelow(True)
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 
-# Extra top margin so rotated labels don't get clipped
-ax.set_ylim(top=ax.get_ylim()[1] * 1.2)
-ax.text(
-    0.99, 0.97,
-    "Bold text = batch execution time (s)",
-    transform=ax.transAxes,
-    ha='right', va='top',
-    fontsize=15, fontstyle='italic', color='black',
-    bbox=dict(boxstyle='round,pad=0.3', facecolor='lightyellow', edgecolor='gray', alpha=0.8)
-)
+# Extra top margin so labels don't get clipped
+ax.set_ylim(top=ax.get_ylim()[1] * 1.35)
+
+# --- Arrow annotation pointing to the chosen bar's execution time label ---
+if arrow_bar is not None:
+    label_y = arrow_bar_height + max(df["throughput_tok_s"]) * 0.01
+    # Place annotation text above and to the right, with an arrow pointing down to the label
+    annotation_x = arrow_bar_x + 0.3
+    annotation_y = label_y + ax.get_ylim()[1] * 0.15
+
+    ax.annotate(
+        "Total Execution Time",
+        xy=(arrow_bar_x, label_y + ax.get_ylim()[1] * 0.04),  # tip of arrow: just above label
+        xytext=(annotation_x, annotation_y),                   # text position
+        fontsize=20,
+        color='black',
+        ha='left', va='bottom',
+        arrowprops=dict(
+            arrowstyle="->",
+            color='black',
+            lw=1.8,
+            connectionstyle="arc3,rad=-0.2",
+        ),
+        bbox=dict(boxstyle='round,pad=0.3', facecolor='lightyellow', edgecolor='gray', alpha=0.8),
+    )
+
 plt.tight_layout()
 out_path = os.path.join(args.outdir, "prefill_decode_homo_hetero_grouped_throughput_tok100.png")
 plt.savefig(out_path, dpi=150)
