@@ -217,6 +217,7 @@ def plot_dual_axis(
              linewidth=LINEWIDTH,
              markersize=MARKERSIZE,
              markeredgecolor="black",
+             color="tab:blue",  
              label="Mean DRAM")
 
     ax1.set_xlabel("Fraction", fontsize=20)
@@ -234,6 +235,7 @@ def plot_dual_axis(
              linestyle="--",
              linewidth=LINEWIDTH,
              markersize=MARKERSIZE,
+             color="tab:red",
              label="Normalized Sum DRAM")
 
     ax2.set_ylabel(ylabel_right, fontsize=20)

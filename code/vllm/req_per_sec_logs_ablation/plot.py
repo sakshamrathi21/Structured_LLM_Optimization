@@ -149,7 +149,7 @@ all_rps = sorted({rps for policy in data.values() for rps in policy})
 # ── Plotting helper ─────────────────────────────────────────────────────────
 def make_plot(metric_key, ylabel, title, outpath):
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(12, 6))
 
     policies = sorted(data.keys())
 

@@ -221,7 +221,7 @@ def plot_metric(data: dict, metric: str, out_dir: str, normalised: bool = False)
 
     ylabel_map = {
         "mean": "Mean DRAM Bandwidth Utilzation (%)",
-        "sum":  "Total DRAM Data Accessed (fraction of max)",
+        "sum":  "Total DRAM Data Accessed \n(fraction of max)",
     }
     fname_map = {
         "mean": "mean_dram_vs_sys_prompt_tokens.png",
@@ -234,7 +234,7 @@ def plot_metric(data: dict, metric: str, out_dir: str, normalised: bool = False)
     os.makedirs(out_dir, exist_ok=True)
     outpath = os.path.join(out_dir, fname_map[metric])
 
-    fig, ax = plt.subplots(figsize=(12, 7))
+    fig, ax = plt.subplots(figsize=(12, 6))
 
     for i, label in enumerate(sorted(data.keys())):
         color     = PALETTE[i % len(PALETTE)]
@@ -263,7 +263,7 @@ def plot_metric(data: dict, metric: str, out_dir: str, normalised: bool = False)
 
     ax.set_xscale("log")
     ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=20)
-    ax.set_ylabel(ylabel_map[metric],               fontsize=18)
+    ax.set_ylabel(ylabel_map[metric],               fontsize=17)
 
     ax.set_xticks(all_tokens)
     ax.set_xticklabels(all_tokens, rotation=30)

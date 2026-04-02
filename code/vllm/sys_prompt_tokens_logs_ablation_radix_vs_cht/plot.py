@@ -128,7 +128,7 @@ labels_sorted = sorted(data.keys())
 # ── Bar plot helper ──────────────────────────────────────────────────────────
 def make_bar_plot(metric_key, ylabel, outpath):
 
-    fig, ax = plt.subplots(figsize=(13, 6))
+    fig, ax = plt.subplots(figsize=(12, 6))
 
     n_groups = len(all_tokens)
     n_bars = len(labels_sorted)

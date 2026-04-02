@@ -150,7 +150,7 @@ all_fams = sorted({fam for policy in data for fam in data[policy]})
 # ── Plot function ───────────────────────────────────────────────────────────
 def make_plot(metric_key, ylabel, title, outpath):
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(12, 6))
 
     policies = sorted(data.keys())
 

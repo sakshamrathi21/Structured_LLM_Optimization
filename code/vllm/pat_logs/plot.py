@@ -87,7 +87,7 @@ PALETTE = [
 MARKERS = ["P","v", ">", "s", "D", "^" , "X", "*", "<"]
 LINESTYLES = ["-", ":", ":"]
 
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(12, 6))
 
 series = []
 

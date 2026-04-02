@@ -107,7 +107,7 @@ labels = sorted(summed_profile.keys())
 # ──────────────────────────────────────────────────────────────────────────
 # 📊 PLOT 1: FUNCTION TOTALS
 # ──────────────────────────────────────────────────────────────────────────
-fig, ax = plt.subplots(figsize=(13, 6))
+fig, ax = plt.subplots(figsize=(12, 6))
 
 for i, label in enumerate(labels):
     xs, ys = [], []
@@ -149,7 +149,7 @@ print(f"Saved: {out1}")
 # ──────────────────────────────────────────────────────────────────────────
 # 🚀 PLOT 2: THROUGHPUT
 # ──────────────────────────────────────────────────────────────────────────
-fig, ax = plt.subplots(figsize=(13, 6))
+fig, ax = plt.subplots(figsize=(12, 6))
 
 for i, label in enumerate(labels):
     xs, ys = [], []

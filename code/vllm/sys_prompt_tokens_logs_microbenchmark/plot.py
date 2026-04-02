@@ -137,7 +137,7 @@ print(f"Labels found: {sorted(summed_profile.keys())}\n")
 # ── Single combined plot: one line per label ──────────────────────────────────
 OUT = os.path.expanduser("../../../results/")
 
-fig, ax = plt.subplots(figsize=(13, 6))
+fig, ax = plt.subplots(figsize=(12, 6))
 
 labels = sorted(summed_profile.keys())
 

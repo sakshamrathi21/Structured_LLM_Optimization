@@ -169,7 +169,7 @@ for sv in sorted(per_sys.keys()):
         bar_width = 0.8 / n_labels
         group_pos = np.arange(n_modes)
 
-        fig, ax = plt.subplots(figsize=(max(10, n_modes * 2.2), 6))
+        fig, ax = plt.subplots(figsize=(max(12, n_modes * 2.2), 6))
 
         for i, label in enumerate(sys_labels):
             color = PALETTE[i % len(PALETTE)]
