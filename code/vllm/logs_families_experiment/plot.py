@@ -19,9 +19,7 @@ RE_SCHEDULER = re.compile(
     r"Scheduler stats;.*?running batch size:\s*(\d+),.*?current time:\s*([\d.]+)"
 )
 
-RE_VLLM_THROUGHPUT = re.compile(
-    r"Throughput Test.*?:\s*([\d.]+)\s*$"
-)
+RE_VLLM_THROUGHPUT = re.compile(r"Average throughput\s*:\s*([0-9.]+)")
 
 log_dir = "."
 
@@ -29,7 +27,7 @@ data = {}
 
 for log_file in sorted(glob.glob(os.path.join(log_dir, "*.log"))):
     filename = os.path.basename(log_file)
-    m = re.match(r".*fam(\d+)_.*", filename)
+    m = re.match(r"families_(\d+)_default.log", filename)
     print(filename, m)
     if not m:
         continue

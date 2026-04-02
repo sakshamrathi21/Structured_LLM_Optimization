@@ -5,14 +5,14 @@
 # Common prefix f1 = 0 (fixed)
 
 MODEL="meta-llama/Llama-3.1-8B-Instruct"
-L=5000
+L=10000
 F1=0
 ITERATIONS=1
 MAX_NEW_TOKENS=50
 BATCH_SIZE=500
 SEED=42
 
-FAMILIES=(1 2 5 10 20 50 100 150 200)
+FAMILIES=(5 10 20 50 100)
 
 LOG_DIR="./logs_families_experiment"
 mkdir -p "$LOG_DIR"
@@ -64,26 +64,26 @@ for NUM_FAM in "${FAMILIES[@]}"; do
         --seed "$SEED" \
         2>&1 | tee "$LOG_FILE_DEFAULT"
 
-    echo ""
-    echo "----------------------------------------"
-    echo "Running: num_families=$NUM_FAM  (actual=$ACTUAL_FAM)  f2=$F2"
-    echo "Policy: family_load"
-    echo "Log: $LOG_FILE_FAMILY_LOAD"
-    echo "----------------------------------------"
+    # echo ""
+    # echo "----------------------------------------"
+    # echo "Running: num_families=$NUM_FAM  (actual=$ACTUAL_FAM)  f2=$F2"
+    # echo "Policy: family_load"
+    # echo "Log: $LOG_FILE_FAMILY_LOAD"
+    # echo "----------------------------------------"
 
-    python3 tiered_prefix_experiment.py \
-        --model "$MODEL" \
-        --L "$L" \
-        --f1 "$F1" \
-        --f2 "$F2" \
-        --num_families "$ACTUAL_FAM" \
-        --requests "$REQUESTS" \
-        --iterations "$ITERATIONS" \
-        --max_new_tokens "$MAX_NEW_TOKENS" \
-        --batch_size "$BATCH_SIZE" \
-        --seed "$SEED" \
-        --policy radix_cost \
-        2>&1 | tee "$LOG_FILE_FAMILY_LOAD"
+    # python3 tiered_prefix_experiment.py \
+    #     --model "$MODEL" \
+    #     --L "$L" \
+    #     --f1 "$F1" \
+    #     --f2 "$F2" \
+    #     --num_families "$ACTUAL_FAM" \
+    #     --requests "$REQUESTS" \
+    #     --iterations "$ITERATIONS" \
+    #     --max_new_tokens "$MAX_NEW_TOKENS" \
+    #     --batch_size "$BATCH_SIZE" \
+    #     --seed "$SEED" \
+    #     --policy radix_cost \
+    #     2>&1 | tee "$LOG_FILE_FAMILY_LOAD"
 
     echo ""
     echo "Done with num_families=$NUM_FAM"
