@@ -201,7 +201,11 @@ def _finish(fig, ax_l, ax_r,
     # Combined legend
     lines  = ax_l.get_lines() + ax_r.get_lines()
     labels = [legend_l, legend_r]
-    ax_l.legend(lines, labels, fontsize=20, framealpha=0.35, loc="best")
+    if "throughput" in legend_l.lower():
+        loc = "lower right"
+    else:
+        loc = "center right"
+    ax_l.legend(lines, labels, fontsize=20, framealpha=0.35, loc=loc)
 
     plt.tight_layout()
     fig.savefig(outpath, dpi=DPI, bbox_inches="tight")
@@ -245,8 +249,7 @@ def plot_throughput_tensor(data: dict, out_dir: str) -> None:
     ax_r.set_ylim(0, 105)
     ax_r.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
 
-    ax_l.set_xticks(bs_vals)
-    ax_l.set_xticklabels([str(b) for b in bs_vals])
+    ax_l.xaxis.set_major_locator(ticker.MaxNLocator(nbins=6))
 
     _finish(fig, ax_l, ax_r,
             xlabel   = "Batch Size",

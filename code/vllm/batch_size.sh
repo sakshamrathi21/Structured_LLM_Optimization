@@ -11,7 +11,7 @@ LEN_FACTOR=(1000 2000)
 REQ_PER_SEC_S=(1 2 3 4 5 7 10 15 20)
 NUM_FAMILIES=(20 50 100)
 MAX_NEW_TOKENS=(1 2 5 10 20 50 100 200 300 400 500)
-BATCH_SIZES=(150 400)
+BATCH_SIZES=(400)
 MODELS=(qwen/qwen2.5-0.5b-instruct meta-llama/Llama-3.1-8B-Instruct lmsys/longchat-13b-16k)
 MODELS=(lmsys/longchat-13b-16k)
 
