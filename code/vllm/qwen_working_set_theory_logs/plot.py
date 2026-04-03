@@ -96,7 +96,7 @@ def draw_heatmap(mat, title, fmt, cmap, outfile):
                 norm_v = (v - np.nanmin(mat)) / (np.nanmax(mat) - np.nanmin(mat) + 1e-9)
                 txt_color = "white" if norm_v > 0.55 else "black"
                 ax.text(j, i, fmt(v), ha="center", va="center",
-                        fontsize=12, color=txt_color, fontweight="500")
+                        fontsize=11, color=txt_color, fontweight="500")
 
     plt.colorbar(im, ax=ax, shrink=0.85)
     plt.tight_layout()
