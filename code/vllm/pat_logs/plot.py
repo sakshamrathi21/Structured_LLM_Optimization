@@ -117,11 +117,11 @@ for i, (label, xs, ys) in enumerate(series):
         label=f"vLLM:{label}",
     )
 
-ax.set_xlabel("Input Workload (req/sec)", fontsize=20)
-ax.set_ylabel("Throughput (toks/s)", fontsize=20)
-ax.tick_params(axis="both", labelsize=20)
+ax.set_xlabel("Input Workload (req/sec)", fontsize=30)
+ax.set_ylabel("Throughput (toks/s)", fontsize=30)
+ax.tick_params(axis="both", labelsize=25)
 ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.0f'))
-ax.legend(fontsize=20, framealpha=0.3, loc="lower right")
+ax.legend(fontsize=25, framealpha=0.3, loc="lower right")
 ax.grid(True, linewidth=0.7, linestyle="--")
 ax.set_ylim(bottom=0)
 plt.tight_layout()
