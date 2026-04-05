@@ -8,10 +8,10 @@ import numpy as np
 plt.rcParams.update({
     "font.size": 20,
     "axes.titlesize": 20,
-    "axes.labelsize": 17,
+    "axes.labelsize": 20,
     "xtick.labelsize": 20,
     "ytick.labelsize": 20,
-    "legend.fontsize": 17,
+    "legend.fontsize": 20,
     "figure.titlesize": 22
 })
 
@@ -87,14 +87,14 @@ bars2 = ax2.bar(
     x + width / 2,
     batch_vals,
     width,
-    label="Average Running Batch Size",
+    label="Average Batch Size",
     color="#d62728",
     alpha=0.85,
     hatch="xx",
     edgecolor="white"
 )
 
-ax2.set_ylabel("Average Running Batch Size")
+ax2.set_ylabel("Average Batch Size")
 
 # ── Legend placed INSIDE the plot at upper right ──────────────────────────────
 handles = [bars1, bars2]

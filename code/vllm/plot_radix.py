@@ -82,13 +82,13 @@ mode_labels = [
     for mode in all_modes
 ]
 
-plt.xticks(x, mode_labels, fontsize=18)
-plt.yticks(fontsize=20)
-plt.ylabel("Throughput (toks/sec)", fontsize=20)
-plt.xlabel("Sharing Pattern", fontsize=20)
+plt.xticks(x, mode_labels, fontsize=25)
+plt.yticks(fontsize=22)
+plt.ylabel("Throughput (toks/s)", fontsize=25)
+plt.xlabel("Sharing Pattern", fontsize=25)
 
 plt.legend(
-    fontsize=20,
+    fontsize=25,
     loc="upper center",
     bbox_to_anchor=(0.5, 1.15),
     ncol=len(all_L_values),
@@ -98,3 +98,4 @@ plt.legend(
 plt.grid(axis="y", linestyle="--", alpha=0.4)
 plt.tight_layout()
 plt.savefig("../../results/tp_different_modes_sharing_at_top.png")
+print("Plot saved to ../../results/tp_different_modes_sharing_at_top.png")
