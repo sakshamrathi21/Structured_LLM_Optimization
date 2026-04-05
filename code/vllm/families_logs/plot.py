@@ -193,13 +193,13 @@ def make_plot(metric_key, ylabel, title, outpath):
     ax.set_xticks(all_fams)
     ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
 
-    ax.set_xlabel("Number of Prefix Groups", fontsize=18)
-    ax.set_ylabel(ylabel, fontsize=20)
+    ax.set_xlabel("Number of Prefix Groups", fontsize=30)
+    ax.set_ylabel(ylabel, fontsize=30)
 
-    ax.tick_params(axis="both", labelsize=20)
+    ax.tick_params(axis="both", labelsize=25)
 
     if metric_key == "throughput":
-        ax.legend(fontsize=15, framealpha=0.3, ncol=2)
+        ax.legend(fontsize=18, framealpha=0.3, ncol=2)
 
     ax.grid(True, linewidth=0.7, linestyle="--")
     ax.set_ylim(bottom=0)
@@ -230,14 +230,14 @@ make_plot(
 
 make_plot(
     "avg_batch",
-    "Avg Running Batch Size",
-    "Average Running Batch Size vs Prefix Groups",
+    "Avg Batch Size",
+    "Average Batch Size vs Prefix Groups",
     os.path.join(OUT, "avg_batch_vs_fam.png")
 )
 
 make_plot(
     "avg_diff",
-    "Time Between Tokens (s)",
+    "TBT (s)",
     "Average Consecutive Scheduler Timestamp Diff vs Prefix Groups",
     os.path.join(OUT, "avg_timediff_vs_fam.png")
 )
