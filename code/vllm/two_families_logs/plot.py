@@ -220,8 +220,8 @@ def plot_dual_axis(
              color="tab:blue",  
              label="Mean DRAM")
 
-    ax1.set_xlabel("Fraction", fontsize=25)
-    ax1.set_ylabel(ylabel_left, fontsize=25)
+    ax1.set_xlabel("Fraction", fontsize=28)
+    ax1.set_ylabel(ylabel_left, fontsize=28)
     ax1.tick_params(axis="both", labelsize=20)
     ax1.set_xticks(xs)
     ax1.set_xticklabels([fmt(v) for v in frac_labels],
@@ -238,7 +238,7 @@ def plot_dual_axis(
              color="tab:red",
              label="Normalized Sum DRAM")
 
-    ax2.set_ylabel(ylabel_right, fontsize=25)
+    ax2.set_ylabel(ylabel_right, fontsize=28)
     ax2.tick_params(axis="y", labelsize=20)
     ax2.set_ylim(0, 1.05)
 
@@ -246,7 +246,7 @@ def plot_dual_axis(
     lines_1, labels_1 = ax1.get_legend_handles_labels()
     lines_2, labels_2 = ax2.get_legend_handles_labels()
     ax1.legend(lines_1 + lines_2, labels_1 + labels_2,
-               loc="center", fontsize=25)
+               loc="center", fontsize=28)
 
     plt.tight_layout()
     fig.savefig(outpath, dpi=150, bbox_inches="tight")
@@ -288,8 +288,8 @@ def plot_single(
     ax.plot(xs, ys, marker=MARKER, linestyle="-", linewidth=LINEWIDTH,
             markersize=MARKERSIZE, markeredgecolor="black",
             markeredgewidth=0.8)
-    ax.set_xlabel("Fraction", fontsize=25)
-    ax.set_ylabel(ylabel, fontsize=25)
+    ax.set_xlabel("Fraction", fontsize=28)
+    ax.set_ylabel(ylabel, fontsize=28)
     ax.tick_params(axis="both", labelsize=20)
     ax.set_xticks(xs)
     ax.set_xticklabels([fmt(v) for v in frac_labels], rotation=40, ha="right")
