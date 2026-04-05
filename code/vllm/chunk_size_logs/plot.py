@@ -128,14 +128,14 @@ for i, label in enumerate(labels):
     )
 
 ax.set_xscale("log")
-ax.set_xlabel("Shared Prefix Tokens", fontsize=22)
-ax.set_ylabel("Function Total Time (ms)", fontsize=22)
+ax.set_xlabel("Shared Prefix Tokens", fontsize=30)
+ax.set_ylabel("Scheduler Time (ms)", fontsize=30)
 
 ax.set_xticks(all_sys_toks)
 ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
 
-ax.legend(fontsize=25, ncol=3)
-ax.tick_params(axis="both", labelsize=22)
+ax.legend(fontsize=28, ncol=3)
+ax.tick_params(axis="both", labelsize=25)
 ax.grid(True, which="both", linestyle="--")
 ax.set_ylim(bottom=0)
 
@@ -169,14 +169,14 @@ for i, label in enumerate(labels):
     )
 
 ax.set_xscale("log")
-ax.set_xlabel("Shared Prefix Tokens", fontsize=22)
-ax.set_ylabel("Throughput (tokens/sec)", fontsize=22)
+ax.set_xlabel("Shared Prefix Tokens", fontsize=30)
+ax.set_ylabel("Throughput (toks/s)", fontsize=30)
 
 ax.set_xticks(all_sys_toks)
 ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
 
-ax.legend(fontsize=25, ncol=3)
-ax.tick_params(axis="both", labelsize=22)
+ax.legend(fontsize=28, ncol=3)
+ax.tick_params(axis="both", labelsize=25)
 ax.grid(True, which="both", linestyle="--")
 ax.set_ylim(bottom=0)
 
