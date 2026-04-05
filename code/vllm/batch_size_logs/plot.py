@@ -191,11 +191,11 @@ def _finish(fig, ax_l, ax_r,
             xlabel, ylabel_l, ylabel_r,
             legend_l, legend_r,
             outpath):
-    ax_l.set_xlabel(xlabel,   fontsize=20, labelpad=8)
-    ax_l.set_ylabel(ylabel_l, fontsize=20, color=ax_l.get_lines()[0].get_color())
-    ax_r.set_ylabel(ylabel_r, fontsize=20, color=ax_r.get_lines()[0].get_color())
-    ax_l.tick_params(axis="both", labelsize=20)
-    ax_r.tick_params(axis="y",    labelsize=20)
+    ax_l.set_xlabel(xlabel,   fontsize=28, labelpad=8)
+    ax_l.set_ylabel(ylabel_l, fontsize=28, color=ax_l.get_lines()[0].get_color())
+    ax_r.set_ylabel(ylabel_r, fontsize=28, color=ax_r.get_lines()[0].get_color())
+    ax_l.tick_params(axis="both", labelsize=25)
+    ax_r.tick_params(axis="y",    labelsize=25)
     ax_l.grid(True, linewidth=0.6, linestyle="--", alpha=0.55)
 
     # Combined legend
@@ -205,7 +205,7 @@ def _finish(fig, ax_l, ax_r,
         loc = "lower right"
     else:
         loc = "center right"
-    ax_l.legend(lines, labels, fontsize=20, framealpha=0.35, loc=loc)
+    ax_l.legend(lines, labels, fontsize=28, framealpha=0.35, loc=loc)
 
     plt.tight_layout()
     fig.savefig(outpath, dpi=DPI, bbox_inches="tight")
@@ -254,7 +254,7 @@ def plot_throughput_tensor(data: dict, out_dir: str) -> None:
     _finish(fig, ax_l, ax_r,
             xlabel   = "Batch Size",
             ylabel_l = "Throughput (toks/s)",
-            ylabel_r = "Tensor Core Utilization (%)",
+            ylabel_r = "Tensor Core Util. (%)",
             legend_l = "Throughput (toks/s)",
             legend_r = "Tensor Core Util (%)",
             outpath  = os.path.join(out_dir, "plot1_throughput_tensor.png"))
