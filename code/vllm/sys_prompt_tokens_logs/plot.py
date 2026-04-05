@@ -182,19 +182,19 @@ def make_plot(metric_key, ylabel, title, outpath):
 
     ax.set_xscale("log")
 
-    ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=19)
-    ax.set_ylabel(ylabel, fontsize=20)
+    ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=25)
+    ax.set_ylabel(ylabel, fontsize=25)
 
     ax.set_xticks(all_tokens)
     ax.set_xticklabels(all_tokens, rotation=30)
-    ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
+    # ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
 
-    ax.tick_params(axis="both", labelsize=19)
+    ax.tick_params(axis="both", labelsize=22)
 
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
 
     if metric_key == "throughput":
-        ax.legend(fontsize=18, framealpha=0.3, ncol=1)
+        ax.legend(fontsize=20, framealpha=0.3, ncol=2)
 
     ax.grid(True, linewidth=0.7, linestyle="--")
 
@@ -225,8 +225,8 @@ make_plot(
 
 make_plot(
     "avg_batch",
-    "Avg Running Batch Size",
-    "Average Running Batch Size vs Shared Prefix Tokens",
+    "Avg Batch Size",
+    "Average Batch Size vs Shared Prefix Tokens",
     os.path.join(OUT, "avg_batch_vs_sys_prompt_tokens.png")
 )
 
