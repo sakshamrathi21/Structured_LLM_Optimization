@@ -220,14 +220,14 @@ def plot_dual_axis(
              color="tab:blue",  
              label="Mean DRAM")
 
-    ax1.set_xlabel("Fraction", fontsize=20)
-    ax1.set_ylabel(ylabel_left, fontsize=20)
-    ax1.tick_params(axis="both", labelsize=18)
+    ax1.set_xlabel("Fraction", fontsize=25)
+    ax1.set_ylabel(ylabel_left, fontsize=25)
+    ax1.tick_params(axis="both", labelsize=20)
     ax1.set_xticks(xs)
     ax1.set_xticklabels([fmt(v) for v in frac_labels],
                         rotation=40, ha="right")
     ax1.grid(True, linestyle="--", linewidth=0.7)
-
+    ax1.set_ylim(bottom=0)
     # RIGHT AXIS → Normalized Sum
     ax2 = ax1.twinx()
     ax2.plot(xs, sums_norm,
@@ -238,15 +238,15 @@ def plot_dual_axis(
              color="tab:red",
              label="Normalized Sum DRAM")
 
-    ax2.set_ylabel(ylabel_right, fontsize=20)
-    ax2.tick_params(axis="y", labelsize=18)
+    ax2.set_ylabel(ylabel_right, fontsize=25)
+    ax2.tick_params(axis="y", labelsize=20)
     ax2.set_ylim(0, 1.05)
 
     # Legend (combined)
     lines_1, labels_1 = ax1.get_legend_handles_labels()
     lines_2, labels_2 = ax2.get_legend_handles_labels()
     ax1.legend(lines_1 + lines_2, labels_1 + labels_2,
-               loc="center", fontsize=20)
+               loc="center", fontsize=25)
 
     plt.tight_layout()
     fig.savefig(outpath, dpi=150, bbox_inches="tight")
@@ -288,8 +288,8 @@ def plot_single(
     ax.plot(xs, ys, marker=MARKER, linestyle="-", linewidth=LINEWIDTH,
             markersize=MARKERSIZE, markeredgecolor="black",
             markeredgewidth=0.8)
-    ax.set_xlabel("Fraction", fontsize=20)
-    ax.set_ylabel(ylabel, fontsize=20)
+    ax.set_xlabel("Fraction", fontsize=25)
+    ax.set_ylabel(ylabel, fontsize=25)
     ax.tick_params(axis="both", labelsize=20)
     ax.set_xticks(xs)
     ax.set_xticklabels([fmt(v) for v in frac_labels], rotation=40, ha="right")
@@ -326,7 +326,7 @@ def main():
     # 2. DCGMI Mean DRAM Bandwidth
     plot_single(
         fracs, dcgmi_means,
-        ylabel  = "Mean DRAM Bandwidth Utilization (%)",
+        ylabel  = "Mean DRAM BW (%)",
         outpath = os.path.join(OUT_DIR, "dcgmi_mean_dram_vs_fraction.png"),
     )
 
@@ -341,8 +341,8 @@ def main():
         fracs,
         dcgmi_means,
         dcgmi_sums,
-        ylabel_left="Mean DRAM Bandwidth Utilization (%)",
-        ylabel_right="Normalized Total DRAM (fraction of max)",
+        ylabel_left="Mean DRAM BW (%)",
+        ylabel_right="Normalized Total DRAM",
         outpath=os.path.join(OUT_DIR, "dcgmi_mean_vs_sum_dual.png"),
     )
 
