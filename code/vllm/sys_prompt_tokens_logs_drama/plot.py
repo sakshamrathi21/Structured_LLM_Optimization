@@ -220,8 +220,8 @@ def plot_metric(data: dict, metric: str, out_dir: str, normalised: bool = False)
     all_tokens = sorted({tok for series in data.values() for tok in series})
 
     ylabel_map = {
-        "mean": "Mean DRAM Bandwidth Utilzation (%)",
-        "sum":  "Total DRAM Data Accessed \n(fraction of max)",
+        "mean": "Mean DRAM BW (%)",
+        "sum":  "Normalized Total DRAM",
     }
     fname_map = {
         "mean": "mean_dram_vs_sys_prompt_tokens.png",
@@ -262,13 +262,13 @@ def plot_metric(data: dict, metric: str, out_dir: str, normalised: bool = False)
         )
 
     ax.set_xscale("log")
-    ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=20)
-    ax.set_ylabel(ylabel_map[metric],               fontsize=17)
+    ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=30)
+    ax.set_ylabel(ylabel_map[metric],               fontsize=27)
 
     ax.set_xticks(all_tokens)
     ax.set_xticklabels(all_tokens, rotation=30)
     ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
-    ax.tick_params(axis="both", labelsize=20)
+    ax.tick_params(axis="both", labelsize=25)
 
     if metric == "sum":
         # Show as 0.00–1.00 on y-axis
@@ -278,7 +278,7 @@ def plot_metric(data: dict, metric: str, out_dir: str, normalised: bool = False)
         ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
         ax.set_ylim(bottom=0)
 
-    ax.legend(fontsize=22, framealpha=0.3, ncol=1)
+    ax.legend(fontsize=25, framealpha=0.3, ncol=1)
     ax.grid(True, linewidth=0.7, linestyle="--")
     plt.tight_layout()
     fig.savefig(outpath, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
