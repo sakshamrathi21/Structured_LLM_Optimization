@@ -191,16 +191,16 @@ def make_plot(metric_key, ylabel, title, outpath):
                 label=label
             )
 
-    ax.set_xlabel("Input Workload (req/sec)", fontsize=20)
-    ax.set_ylabel(ylabel, fontsize=20)
+    ax.set_xlabel("Input Workload (req/sec)", fontsize=28)
+    ax.set_ylabel(ylabel, fontsize=28)
 
-    ax.tick_params(axis="both", labelsize=19)
+    ax.tick_params(axis="both", labelsize=25)
 
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
 
     if metric_key == "throughput":
         ax.legend(
-            fontsize=16,
+            fontsize=20,
             framealpha=0.3,
             loc="center right",
             ncol=2
@@ -208,7 +208,20 @@ def make_plot(metric_key, ylabel, title, outpath):
 
     ax.grid(True, linewidth=0.7, linestyle="--")
     ax.set_ylim(bottom=0)
-    ax.axvline(x=5, color='black', linestyle=':', linewidth=2)
+
+    if metric_key == "throughput":
+        ax.axvline(x=5, color='black', linestyle=':', linewidth=2)
+        ax.annotate(
+            "Homogeneity starts here",
+            xy=(5, ax.get_ylim()[1] * 0.85),
+            xytext=(9, ax.get_ylim()[1] * 0.85),
+            fontsize=18,
+            color='black',
+            arrowprops=dict(arrowstyle="->", color='black', lw=1.8),
+            ha='left',
+            va='center'
+        )
+
     plt.tight_layout()
 
     fig.savefig(
