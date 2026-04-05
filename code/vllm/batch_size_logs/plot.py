@@ -191,9 +191,9 @@ def _finish(fig, ax_l, ax_r,
             xlabel, ylabel_l, ylabel_r,
             legend_l, legend_r,
             outpath):
-    ax_l.set_xlabel(xlabel,   fontsize=28, labelpad=8)
-    ax_l.set_ylabel(ylabel_l, fontsize=28, color=ax_l.get_lines()[0].get_color())
-    ax_r.set_ylabel(ylabel_r, fontsize=28, color=ax_r.get_lines()[0].get_color())
+    ax_l.set_xlabel(xlabel,   fontsize=25, labelpad=8)
+    ax_l.set_ylabel(ylabel_l, fontsize=25, color=ax_l.get_lines()[0].get_color())
+    ax_r.set_ylabel(ylabel_r, fontsize=25, color=ax_r.get_lines()[0].get_color())
     ax_l.tick_params(axis="both", labelsize=25)
     ax_r.tick_params(axis="y",    labelsize=25)
     ax_l.grid(True, linewidth=0.6, linestyle="--", alpha=0.55)
