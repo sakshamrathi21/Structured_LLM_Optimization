@@ -160,8 +160,8 @@ def plot_single(
     ax.plot(xs, ys, marker=MARKER, linestyle="-", linewidth=LINEWIDTH,
             markersize=MARKERSIZE, markeredgecolor="black",
             markeredgewidth=0.8, color=color)
-    ax.set_xlabel("Fraction", fontsize=28)
-    ax.set_ylabel(ylabel, fontsize=28)
+    ax.set_xlabel("Fraction", fontsize=30)
+    ax.set_ylabel(ylabel, fontsize=30)
     ax.tick_params(axis="both", labelsize=22)
     ax.set_xticks(xs)
     ax.set_xticklabels([fmt(v) for v in frac_labels], rotation=40, ha="right")
