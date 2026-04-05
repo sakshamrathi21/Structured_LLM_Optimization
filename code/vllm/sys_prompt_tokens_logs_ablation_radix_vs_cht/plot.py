@@ -176,15 +176,15 @@ def make_bar_plot(metric_key, ylabel, outpath):
                     f"{tbt:.3f}s",
                     ha="center",
                     va="bottom",
-                    fontsize=15,
+                    fontsize=18,
                     color="black",
                 )
 
-    ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=20)
-    ax.set_ylabel(ylabel, fontsize=22)
+    ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=30)
+    ax.set_ylabel(ylabel, fontsize=30)
     ax.set_xticks(x_centers)
-    ax.set_xticklabels([str(t) for t in all_tokens], rotation=30, fontsize=19)
-    ax.tick_params(axis="both", labelsize=20)
+    ax.set_xticklabels([str(t) for t in all_tokens], rotation=30, fontsize=25)
+    ax.tick_params(axis="both", labelsize=25)
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
 
     # Build legend: bar colours + TBT annotation marker
@@ -212,7 +212,16 @@ def make_bar_plot(metric_key, ylabel, outpath):
         markersize=12,
         label="Bar top: Time Between Tokens (s)",
     )
-    ax.legend(handles=bar_handles + [tbt_proxy], fontsize=17, framealpha=0.3)
+    ax.legend(
+        handles=bar_handles + [tbt_proxy],
+        fontsize=17,
+        framealpha=0.3,
+        ncol=3,  # or 3 depending on how many entries you have
+        columnspacing=0.6,   # horizontal spacing between columns
+        handletextpad=0.3,   # space between marker and text
+        labelspacing=0.3,    # vertical spacing between rows
+        borderpad=0.4        # padding inside the legend box
+    )
 
     ax.grid(True, axis="y", linewidth=0.7, linestyle="--", zorder=0)
 
