@@ -4,6 +4,11 @@ Parse decode_tokens_logs/ and generate 3 plots:
   1. Throughput vs Decode Tokens
   2. Avg Running Batch Size vs Decode Tokens
   3. Avg Consecutive Time Difference vs Decode Tokens
+
+Changes:
+  - avg_batch and avg_diff are extrapolated leftward from the first
+    available value (flat extension) for points that have no data.
+  - X-axis ticks are thinned to avoid clutter.
 """
 
 import os
@@ -138,6 +143,17 @@ LINESTYLES = ["--", "--", "--", ":", ":", "-"]
 # collect all token counts
 all_tokens = sorted({tok for policy in data.values() for tok in policy})
 
+# Thin x-axis ticks: keep at most ~6 evenly-spaced ticks on a log scale
+def select_display_ticks(tokens, max_ticks=6):
+    if len(tokens) <= max_ticks:
+        return tokens
+    # Pick indices evenly spaced in log space
+    log_vals = np.log10(tokens)
+    indices = np.round(np.linspace(0, len(tokens) - 1, max_ticks)).astype(int)
+    return [tokens[i] for i in sorted(set(indices))]
+
+display_ticks = select_display_ticks(all_tokens)
+
 
 # ── Plot function ───────────────────────────────────────────────────────────
 def make_plot(metric_key, ylabel, title, outpath):
@@ -154,11 +170,32 @@ def make_plot(metric_key, ylabel, title, outpath):
         xs = []
         ys = []
 
+        # For avg_batch / avg_diff: find the first token where a real value exists
+        # so we can extrapolate leftward (flat extension).
+        first_real_tok = None
+        first_real_val = None
+        if metric_key in ("avg_batch", "avg_diff"):
+            for tok in all_tokens:
+                v = data[label].get(tok, {}).get(metric_key)
+                if v is not None:
+                    first_real_tok = tok
+                    first_real_val = round(v, 4) if isinstance(v, float) else v
+                    break
+
         for tok in all_tokens:
             v = data[label].get(tok, {}).get(metric_key)
 
             if v is not None and isinstance(v, float):
                 v = round(v, 4)
+
+            # Leftward extrapolation: fill missing points before first real value
+            if (
+                v is None
+                and metric_key in ("avg_batch", "avg_diff")
+                and first_real_tok is not None
+                and tok < first_real_tok
+            ):
+                v = first_real_val
 
             xs.append(tok)
             ys.append(v if v is not None else np.nan)
@@ -177,18 +214,19 @@ def make_plot(metric_key, ylabel, title, outpath):
         )
 
     ax.set_xscale("log")
-    ax.set_xlabel("Number of Decode Tokens", fontsize=18)
-    ax.set_ylabel(ylabel, fontsize=20)
+    ax.set_xlabel("Number of Decode Tokens", fontsize=30)
+    ax.set_ylabel(ylabel, fontsize=30)
 
-    ax.set_xticks(all_tokens)
-    ax.set_xticklabels(all_tokens, rotation=30)
+    # Use thinned ticks to avoid clutter
+    ax.set_xticks(display_ticks)
+    ax.set_xticklabels(display_ticks, rotation=30)
     ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
 
-    ax.tick_params(axis="both", labelsize=19)
+    ax.tick_params(axis="both", labelsize=25)
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
 
     if metric_key == "throughput":
-        ax.legend(fontsize=20, framealpha=0.3, ncol=1)
+        ax.legend(fontsize=24, framealpha=0.3, ncol=1)
 
     ax.grid(True, linewidth=0.7, linestyle="--")
 
@@ -219,14 +257,14 @@ make_plot(
 
 make_plot(
     "avg_batch",
-    "Avg Running Batch Size",
-    "Average Running Batch Size vs Decode Tokens",
+    "Avg Batch Size",
+    "Average Batch Size vs Decode Tokens",
     os.path.join(OUT, "avg_batch_vs_tok.png")
 )
 
 make_plot(
     "avg_diff",
-    "Time Between Tokens (s)",
+    "TBT (s)",
     "Average Consecutive Scheduler Timestamp Diff vs Decode Tokens",
     os.path.join(OUT, "avg_timediff_vs_tok.png")
 )
