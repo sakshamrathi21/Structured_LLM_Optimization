@@ -9,7 +9,7 @@ from collections import defaultdict
 LOG_FILE = "/home/saksham/CS496/code/vllm/radix_tree_experiment_results.txt"
 
 RENAMING_MAP = {
-    1: "Complete \nsharing",
+    1: "1 level",
     5: "No sharing",
     9: "2 levels",
     10: "3 levels",
@@ -34,6 +34,8 @@ with open(LOG_FILE, "r") as f:
         match = pattern.search(line)
         if match:
             mode = int(match.group(1))
+            if mode == 5:
+                continue
             L = int(match.group(2))
             throughput = float(match.group(3))
             data[mode][L] = throughput
