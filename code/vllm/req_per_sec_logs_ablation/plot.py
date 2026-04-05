@@ -191,10 +191,10 @@ def make_plot(metric_key, ylabel, title, outpath):
                 label=label
             )
 
-    ax.set_xlabel("Input Workload (req/sec)", fontsize=22)
-    ax.set_ylabel(ylabel, fontsize=22)
+    ax.set_xlabel("Input Workload (req/sec)", fontsize=30)
+    ax.set_ylabel(ylabel, fontsize=30)
 
-    ax.tick_params(axis="both", labelsize=20)
+    ax.tick_params(axis="both", labelsize=25)
 
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
 
@@ -234,14 +234,14 @@ make_plot(
 
 make_plot(
     "avg_batch",
-    "Avg Running Batch Size",
-    "Average Running Batch Size vs Request Rate",
+    "Avg Batch Size",
+    "Average Batch Size vs Request Rate",
     os.path.join(OUT, "avg_batch_vs_rps.png")
 )
 
 make_plot(
     "avg_diff",
-    "Time Between Tokens (s)",
+    "TBT (s)",
     "Average Consecutive Scheduler Timestamp Diff vs Request Rate",
     os.path.join(OUT, "avg_timediff_vs_rps.png")
 )
