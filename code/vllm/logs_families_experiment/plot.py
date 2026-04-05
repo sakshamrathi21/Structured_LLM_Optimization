@@ -98,7 +98,7 @@ ax2.set_ylabel("Average Batch Size")
 
 # ── Legend placed INSIDE the plot at upper right ──────────────────────────────
 handles = [bars1, bars2]
-legend_labels = ["Throughput (toks/s)", "Average Running Batch Size"]
+legend_labels = ["Throughput (toks/s)", "Average Batch Size"]
 
 ax1.legend(
     handles,
