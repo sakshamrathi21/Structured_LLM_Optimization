@@ -78,6 +78,8 @@ for path in log_files:
         continue
 
     engine, policy, sys_val, mode = parsed
+    if mode == 5:
+        continue
     if engine == "vllm":
         engine = "vLLM"
     if engine == "sglang":
@@ -195,9 +197,7 @@ for sv in sorted(per_sys.keys()):
         ax.set_xticks(group_pos)
         def mode_labels_func(m):
             if m == 1:
-                return "Complete sharing"
-            if m == 5:
-                return "No sharing" 
+                return "1 level"
             if m == 9:
                 return "2 levels"
             if m == 10:
