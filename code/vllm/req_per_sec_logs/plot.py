@@ -208,6 +208,7 @@ def make_plot(metric_key, ylabel, title, outpath):
 
     ax.grid(True, linewidth=0.7, linestyle="--")
     ax.set_ylim(bottom=0)
+    ax.axvline(x=5, color='black', linestyle=':', linewidth=2)
     plt.tight_layout()
 
     fig.savefig(
