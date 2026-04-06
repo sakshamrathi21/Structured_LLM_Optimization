@@ -205,7 +205,7 @@ def _finish(fig, ax_l, ax_r,
         loc = "lower right"
     else:
         loc = "center right"
-    ax_l.legend(lines, labels, fontsize=28, framealpha=0.35, loc=loc)
+    ax_l.legend(lines, labels, fontsize=25, framealpha=0.35, loc=loc)
 
     plt.tight_layout()
     fig.savefig(outpath, dpi=DPI, bbox_inches="tight")
