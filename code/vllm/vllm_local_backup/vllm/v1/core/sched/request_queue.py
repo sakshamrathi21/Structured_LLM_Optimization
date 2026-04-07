@@ -345,6 +345,7 @@ class ChunkedHashTreeRequestQueue_Python(RequestQueue):
         for request_id in reversed(list(self._pending_requests.keys())):
             yield self._pending_requests[request_id]
 
+    @log_cycles
     def free_request(self, request: Request) -> None:
         request_id = request.request_id
         self._radix.finish_request(request_id)
@@ -355,8 +356,9 @@ class ChunkedHashTreeRequestQueue_Python(RequestQueue):
         if current_batch_size == 0:
             return True
         rid, cost = self._radix.find_best_request()
-        if rid == 0:  # No requests available
+        if rid is None:  # No requests available
             return False
+        return True
         return cost <= 50
 
 
@@ -561,7 +563,7 @@ class RadixCostRequestQueue_RL(RequestQueue):
         scheduler_params: dict = None,
         model_save_path: Optional[str] = None
     ):
-        self.chunk_size = 1
+        self.chunk_size = 50
         self._radix = ChunkedHashTree_RL(chunk_size=self.chunk_size)
         self._pending_requests = {}
         self._id_map = {}
@@ -713,11 +715,6 @@ class RadixCostRequestQueue_RL(RequestQueue):
 
         if rid == 0:
             return False
-        
-        if abs(chunks_before - chunks_after)*self.chunk_size >= 1000:
-            return False
-        else:
-            return True
 
         decision = self.scheduler.should_add_request(
             batch_size=current_batch_size,
@@ -725,6 +722,8 @@ class RadixCostRequestQueue_RL(RequestQueue):
             chunks_after=chunks_after,
             requests_waiting=requests_waiting
         )
+
+        print(f"batch_size={current_batch_size}, chunks_before={chunks_before}, chunks_after={chunks_after}, requests_waiting={requests_waiting}, decision={decision}")
 
         self.decisions_made.append({
             'batch_size': current_batch_size,
@@ -1021,7 +1020,7 @@ def create_request_queue(policy: SchedulingPolicy) -> RequestQueue:
     elif policy == SchedulingPolicy.CHUNKED_HASH_TREE_QLEARNING:
         return RadixCostRequestQueue_RL(scheduler_type="qlearning")
     elif policy == SchedulingPolicy.CHUNKED_HASH_TREE:
-        # return ChunkedHashTreeRequestQueue_Python()
+        return ChunkedHashTreeRequestQueue_Python()
         return ChunkedHashTreeRequestQueue()
     else:
         raise ValueError(f"Unknown scheduling policy: {policy}")

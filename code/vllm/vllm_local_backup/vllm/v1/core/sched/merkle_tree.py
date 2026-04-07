@@ -281,51 +281,61 @@ class SharedMerklePrefixTree:
 
     def find_best_request(self) -> Tuple[Optional[str], int]:
         """
-        DFS over the working-set subtree, children visited before parent
-        (deepest-first).
+        Find the best waiting request to schedule next.
 
-        At the first in-working-set node that has at least one waiting
-        request hanging on it, select the request with the fewest missing
-        chunks (= most of its path already cached).  Return immediately.
+        Strategy (in priority order):
+        1. Among waiting requests whose path has the most nodes already
+            in the working set (i.e. fewest missing chunks) — most cache-hot first.
+        2. If no working-set overlap exists for any request, fall back to
+            the request with the longest token sequence (most tokens = most
+            benefit from being scheduled).
+        3. If still nothing, return (None, 0).
 
-        Returns (request_id, missing_count) or (None, 0).
+        Never returns None just because in_working_set is False — every
+        waiting request is a valid candidate.
         """
-        result: List = [None, 0]
+        if not self._waiting:
+            return None, 0
 
-        def dfs(node: Node) -> bool:
-            if not node.in_working_set:
-                return False
+        best_req     = None
+        best_missing = float("inf")
+        best_tokens  = -1
 
-            # Visit children first — deeper nodes are preferred.
-            for child in node.children.values():
-                if dfs(child):
-                    return True
+        for req_id in self._waiting:
+            path = self._req_path.get(req_id)
+            if path is None:
+                continue
 
-            # No deeper schedulable request.  Check this node's hanging set.
-            if not node.hanging:
-                return False
+            missing   = sum(1 for node in path if not node.in_working_set)
+            in_ws     = len(path) - missing          # how many nodes are cached
+            token_len = len(self._req_tokens.get(req_id, []))
 
-            # Select the waiting request with the fewest missing chunks.
-            best_req     = None
-            best_missing = float("inf")
-            for req_id in node.hanging:
-                missing = self.count_missing(req_id)
-                if missing < best_missing:
-                    best_missing = missing
+            if best_req is None:
+                # First candidate — always accept.
+                best_req     = req_id
+                best_missing = missing
+                best_tokens  = token_len
+                continue
+
+            best_in_ws = len(self._req_path[best_req]) - best_missing
+
+            if in_ws > best_in_ws:
+                # More cache overlap → prefer this one.
+                best_req     = req_id
+                best_missing = missing
+                best_tokens  = token_len
+
+            elif in_ws == best_in_ws:
+                # Tie-break: longer sequence = higher scheduling priority.
+                if token_len > best_tokens:
                     best_req     = req_id
+                    best_missing = missing
+                    best_tokens  = token_len
 
-            if best_req is not None:
-                result[0] = best_req
-                result[1] = int(best_missing)
-                return True
+        if best_req is None:
+            return None, 0
 
-            return False
-
-        for child in self._root.children.values():
-            if dfs(child):
-                break
-
-        return result[0], result[1]
+        return best_req, int(best_missing)
 
     # ------------------------------------------------------------------
     # Stats & dump

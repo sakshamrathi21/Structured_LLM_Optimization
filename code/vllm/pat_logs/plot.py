@@ -8,6 +8,7 @@ import matplotlib.ticker as ticker
 # ── Config ───────────────────────────────────────────────────────────────────
 LOG_DIR   = os.path.expanduser("~/CS496/code/vllm/pat_logs")
 JSONL_PATH = os.path.join(LOG_DIR, "/home/saksham/CS496/code/vllm/pat_logs/pat_fcfs.json")
+JSONL_PATH2 = os.path.join(LOG_DIR, "/home/saksham/CS496/code/vllm/pat_logs/pat_feather.json")
 OUT_DIR   = os.path.expanduser("../../../results/req_per_sec_plots")
 os.makedirs(OUT_DIR, exist_ok=True)
 
@@ -77,6 +78,36 @@ if os.path.exists(JSONL_PATH):
             print(f"  {backend:12s}  rps={rps:.1f}  tput={tput:.2f}")
 else:
     print(f"  JSONL not found: {JSONL_PATH}")
+
+if os.path.exists(JSONL_PATH2):
+    with open(JSONL_PATH2, "r") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                obj = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if obj.get("status") != "success":
+                continue
+            cfg     = obj.get("config", {})
+            backend = cfg.get("ATTENTION_BACKEND", "UNKNOWN")
+            if "flash" in backend.lower():
+                backend = "FCFS"
+            else:
+                backend = "Feather+PAT"
+            rps     = float(cfg.get("request_rate", 0))
+            tput    = obj["metrics"].get("output_token_throughput")
+            if tput is None:
+                continue
+            if backend not in json_data:
+                json_data[backend] = {}
+            if rps not in json_data[backend] or tput > json_data[backend][rps]:
+                json_data[backend][rps] = tput
+            print(f"  {backend:12s}  rps={rps:.1f}  tput={tput:.2f}")
+else:
+    print(f"  JSONL not found: {JSONL_PATH2}")
 
 # ── Plot ─────────────────────────────────────────────────────────────────────
 PALETTE = [
