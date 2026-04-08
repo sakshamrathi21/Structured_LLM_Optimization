@@ -9,7 +9,7 @@ mkdir -p "$LOG_DIR"
 
 LEN_FACTOR=(1000 2000)
 REQ_PER_SEC_S=(1 2 5 10 20 50 75 100)
-NUM_FAMILIES=(1 2 5 10 20 50 100)
+NUM_FAMILIES=(10 20 50 100)
 MAX_NEW_TOKENS=(1 2 5 10 20 50 100 200 300 400 500)
 MODELS=(qwen/qwen2.5-0.5b-instruct meta-llama/Llama-3.1-8B-Instruct lmsys/longchat-13b-16k)
 
@@ -44,7 +44,7 @@ for fam in "${NUM_FAMILIES[@]}"; do
             --num_families "$fam" \
             --sys_prompt_tokens 5000 \
             --model_name "lmsys/longchat-13b-16k" \
-            > "$LOG_FILE" 2>&1
+            2>&1 | tee "$LOG_FILE"
     done
 
     # # Run SGLang policies
