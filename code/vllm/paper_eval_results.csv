@@ -862,3 +862,15 @@ vllm,5,None,700,1,10000,qwen/qwen2.5-0.5b-instruct,200,10000,10000,1963.21143872
 vllm,5,None,800,1,10000,qwen/qwen2.5-0.5b-instruct,200,10000,10000,1944.497615357102,fcfs
 vllm,5,None,900,1,10000,qwen/qwen2.5-0.5b-instruct,200,10000,10000,1950.8569164787264,fcfs
 vllm,10,None,100,1,5000,lmsys/longchat-13b-16k,200,5000,5000,76.66823214469616,fcfs
+vllm,1,None,900,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,3164.501303908081,fcfs
+vllm,1,None,800,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,3148.7199845755435,fcfs
+vllm,1,None,700,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,3157.327838168418,fcfs
+vllm,1,None,600,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,3104.551600611124,fcfs
+vllm,1,None,500,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,3021.2945967685164,fcfs
+vllm,1,None,400,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,3018.989905250705,fcfs
+vllm,1,None,300,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,2776.5074279314126,fcfs
+vllm,1,None,250,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,2813.8610224364024,fcfs
+vllm,1,None,200,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,2912.454059736083,fcfs
+vllm,1,None,150,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,2616.2389113212707,fcfs
+vllm,1,None,100,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,2157.1353821392863,fcfs
+vllm,1,None,50,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,1281.2082771929265,fcfs

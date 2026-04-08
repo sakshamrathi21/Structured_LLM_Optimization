@@ -9,6 +9,7 @@ Parse req_per_sec_logs/ and generate 3 plots:
 import os
 import re
 import glob
+import argparse
 from collections import defaultdict
 import matplotlib
 matplotlib.use('Agg')
@@ -16,7 +17,47 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
 
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--include-feather-sglang",
+    action="store_true",
+    default=False,
+    help="Inject hardcoded SGLang:Feather results into all plots"
+)
+args = parser.parse_args()
+
 LOG_DIR = os.path.expanduser("~/CS496/code/vllm/req_per_sec_logs")
+
+# ── Hardcoded SGLang:Feather data ────────────────────────────────────────────
+FEATHER_SGLANG_THROUGHPUT = {
+    1:   201.21,
+    2:   401.51,
+    5:   991.28,
+    10: 1876.09,
+    20: 2336.57,
+    50: 2381.43,
+    100: 2356.28,
+}
+
+FEATHER_SGLANG_AVG_BATCH = {
+    1:   2.39888,
+    2:   5.05219,
+    5:   16.1344,
+    10:  55.5741,
+    20:  214.357,
+    50:  250.25,
+    100: 250.25,
+}
+
+FEATHER_SGLANG_AVG_DIFF = {
+    1:   23.34  / 1000,
+    2:   25.26  / 1000,
+    5:   32.75  / 1000,
+    10:  62.46  / 1000,
+    20:  285.57 / 1000,
+    50:  352.44 / 1000,
+    100: 337.61 / 1000,
+}
 
 # ── Regex patterns ──────────────────────────────────────────────────────────
 RE_SCHEDULER = re.compile(
@@ -120,6 +161,7 @@ for path in log_files:
         f"tput={throughput}  batch={avg_batch}  "
         f"dt={avg_diff}"
     )
+
     if label in data and rps in data[label]:
         existing_tput = data[label][rps].get("throughput") or 0
         new_tput = throughput or 0
@@ -132,6 +174,18 @@ for path in log_files:
         avg_diff=avg_diff
     )
 
+# ── Inject hardcoded SGLang:Feather data ────────────────────────────────────
+if args.include_feather_sglang:
+    print("\nInjecting hardcoded SGLang:Feather data...")
+    for rps, tput in FEATHER_SGLANG_THROUGHPUT.items():
+        data["SGLang:Feather"][rps]["throughput"] = tput
+        data["SGLang:Feather"][rps]["avg_batch"]  = FEATHER_SGLANG_AVG_BATCH.get(rps)
+        data["SGLang:Feather"][rps]["avg_diff"]   = FEATHER_SGLANG_AVG_DIFF.get(rps)
+        print(
+            f"  SGLang:Feather  rps={rps:4d}  "
+            f"tput={tput}  batch={FEATHER_SGLANG_AVG_BATCH.get(rps)}  "
+            f"dt={FEATHER_SGLANG_AVG_DIFF.get(rps)}"
+        )
 
 # ── Plot styling (color-blind friendly) ─────────────────────────────────────
 PALETTE = [
@@ -141,7 +195,7 @@ PALETTE = [
 ]
 
 MARKERS = ["o", "s", "D", "^", "v", "P", "X", "*", "<", ">"]
-LINESTYLES = ["--", "--", "--", ":", ":", "-"]
+LINESTYLES = ["--", "--", "--", ":", ":", "-", "-"]
 
 all_rps = sorted({rps for policy in data.values() for rps in policy})
 
@@ -151,7 +205,10 @@ def make_plot(metric_key, ylabel, title, outpath):
 
     fig, ax = plt.subplots(figsize=(15, 6))
 
-    policies = sorted(data.keys())
+    policies = (
+        [l for l in sorted(data.keys()) if l != "SGLang:Feather"]
+        + (["SGLang:Feather"] if "SGLang:Feather" in data else [])
+    )
 
     for i, label in enumerate(policies):
 
@@ -200,10 +257,11 @@ def make_plot(metric_key, ylabel, title, outpath):
 
     if metric_key == "throughput":
         ax.legend(
-            fontsize=20,
+            fontsize=17,
             framealpha=0.3,
-            loc="center right",
-            ncol=2
+            ncol=2,
+            loc="upper left",           # or use bbox_to_anchor for fine-tuning
+            bbox_to_anchor=(0.50, 0.89) # x=1% from left, y=99% from bottom
         )
 
     ax.grid(True, linewidth=0.7, linestyle="--")
