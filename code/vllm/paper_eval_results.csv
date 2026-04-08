@@ -874,3 +874,5 @@ vllm,1,None,200,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,2912.45
 vllm,1,None,150,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,2616.2389113212707,fcfs
 vllm,1,None,100,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,2157.1353821392863,fcfs
 vllm,1,None,50,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,1281.2082771929265,fcfs
+vllm,1,None,20,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,10000,10000,547.5259616600852,fcfs
+vllm,1,None,10,1,10000,meta-llama/Llama-3.1-8B-Instruct,200,5000,5000,327.6244751765822,fcfs

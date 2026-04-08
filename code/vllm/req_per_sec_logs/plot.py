@@ -256,12 +256,17 @@ def make_plot(metric_key, ylabel, title, outpath):
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
 
     if metric_key == "throughput":
+        handles, labels = ax.get_legend_handles_labels()
+        sorted_pairs = sorted(zip(labels, handles), key=lambda x: x[0])
+        sorted_labels, sorted_handles = zip(*sorted_pairs) if sorted_pairs else ([], [])
         ax.legend(
+            sorted_handles,
+            sorted_labels,
             fontsize=17,
             framealpha=0.3,
             ncol=2,
-            loc="upper left",           # or use bbox_to_anchor for fine-tuning
-            bbox_to_anchor=(0.50, 0.89) # x=1% from left, y=99% from bottom
+            loc="upper left",
+            bbox_to_anchor=(0.50, 0.89)
         )
 
     ax.grid(True, linewidth=0.7, linestyle="--")
