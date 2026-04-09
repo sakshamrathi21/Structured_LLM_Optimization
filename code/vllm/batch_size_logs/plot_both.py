@@ -49,7 +49,7 @@ from collections import defaultdict
 LOG_DIR_HETERO = "."
 LOG_DIR_HOMO   = "../homo_batch_size_logs"
 OUT_DIR        = "../../../results/merged_batch_size_plots/"
-CACHE_FILE     = "../../../results/merged_batch_size_plots/data_cache.json"
+CACHE_FILE     = "./data_cache.json"
 DPI            = 180
 THROUGHPUT_CAP_HETERO = 420     # cap applied to hetero throughput (set None to disable)
 THROUGHPUT_CAP_HOMO   = None    # no cap for homo
