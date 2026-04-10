@@ -13,9 +13,8 @@ import numpy as np
 
 LOG_DIR = os.path.expanduser("~/CS496/code/vllm/rl_batch_size_logs")
 LOG_FILES = [
-    "rl_batching.log",
-    # "vllm_multiple_families_varying_workloads_5_families_5_rps_chunked_hash_tree_bandit.log",
-    # "vllm_multiple_families_varying_workloads_5_families_5_rps_chunked_hash_tree_qlearning.log",
+    "vllm_multiple_families_varying_workloads_5_families_5_rps_chunked_hash_tree_bandit.log",
+    "vllm_multiple_families_varying_workloads_5_families_5_rps_chunked_hash_tree_heuristic.log",
     # "vllm_multiple_families_varying_workloads_5_families_500_rps_chunked_hash_tree_bandit.log",
     # "vllm_multiple_families_varying_workloads_5_families_500_rps_chunked_hash_tree_qlearning.log",
 ]
@@ -23,7 +22,7 @@ LOG_FILES = [
 LABELS = [
     "Bandit",
     "Q-Learning",
-    "Bandit1",
+    "Bandit",
     "Q-Learning",
 ]
 
@@ -107,7 +106,7 @@ ax.grid(True, linewidth=0.6, linestyle="--")
 ax.set_ylim(bottom=0)
 plt.tight_layout()
 
-OUT = os.path.expanduser("~/CS496/results/rl_batch_size_plots/batch_size_over_time.png")
+OUT = os.path.expanduser("~/CS496/results/rl_batch_size_plots/rl_policies_comparison.png")
 fig.savefig(OUT, dpi=150, bbox_inches="tight")
 plt.close(fig)
 print(f"\nSaved: {OUT}")
