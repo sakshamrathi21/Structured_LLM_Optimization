@@ -13,8 +13,9 @@ import numpy as np
 
 LOG_DIR = os.path.expanduser("~/CS496/code/vllm/rl_batch_size_logs")
 LOG_FILES = [
-    "vllm_multiple_families_varying_workloads_5_families_20_rps_chunked_hash_tree_bandit.log",
-    "vllm_multiple_families_varying_workloads_5_families_20_rps_chunked_hash_tree_qlearning.log",
+    "rl_batching.log",
+    # "vllm_multiple_families_varying_workloads_5_families_5_rps_chunked_hash_tree_bandit.log",
+    # "vllm_multiple_families_varying_workloads_5_families_5_rps_chunked_hash_tree_qlearning.log",
     # "vllm_multiple_families_varying_workloads_5_families_500_rps_chunked_hash_tree_bandit.log",
     # "vllm_multiple_families_varying_workloads_5_families_500_rps_chunked_hash_tree_qlearning.log",
 ]
@@ -22,7 +23,7 @@ LOG_FILES = [
 LABELS = [
     "Bandit",
     "Q-Learning",
-    "Bandit",
+    "Bandit1",
     "Q-Learning",
 ]
 
