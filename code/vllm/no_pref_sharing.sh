@@ -7,10 +7,10 @@ PY_BIN="/home/saksham/CS496/code/vllm/.venv/bin/python"
 LOG_DIR="no_pref_sharing_logs"
 mkdir -p "$LOG_DIR"
 
-REQ_PER_SEC_S=(5 10 15 20)
+REQ_PER_SEC_S=(15 20)
 
-VLLM_POLICIES=(fcfs dynamic_batching chunked_hash_tree_bandit)
-SGLANG_POLICIES=(lpm dfs-weight fcfs)
+VLLM_POLICIES=(chunked_hash_tree_heuristic)
+SGLANG_POLICIES=()
 
 MIN_REQUESTS=10
 MAX_REQUESTS=5000
@@ -34,7 +34,7 @@ for req in "${REQ_PER_SEC_S[@]}"; do
             --num_families "$NUM_REQUESTS" \
             --sys_prompt_tokens 1000 \
             --req_per_sec "$req" \
-            > "$LOG_FILE" 2>&1
+            2>&1 | tee "$LOG_FILE"
     done
 
     # Run SGLang policies
@@ -51,6 +51,6 @@ for req in "${REQ_PER_SEC_S[@]}"; do
             --num_families "$NUM_REQUESTS" \
             --sys_prompt_tokens 1000 \
             --req_per_sec "$req" \
-            > "$LOG_FILE" 2>&1
+            2>&1 | tee "$LOG_FILE"
     done
 done

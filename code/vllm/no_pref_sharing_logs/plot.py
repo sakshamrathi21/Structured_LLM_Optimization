@@ -103,6 +103,7 @@ for path in log_files:
         policy = "Feather"
     if policy == "chunked_hash_tree_heuristic":
         policy = "Feather"
+
     label = f"{engine}:{policy}"
 
     avg_batch, avg_diff, throughput = parse_log(path)
@@ -125,7 +126,51 @@ for path in log_files:
         avg_diff=avg_diff
     )
 
-# ── Plot styling (color-blind friendly) ─────────────────────────────────────
+
+# ── ⭐ FILL ONLY MISSING FEATHER ENTRIES ─────────────────────────────────────
+for label in list(data.keys()):
+
+    if not label.endswith(":Feather"):
+        continue
+
+    engine = label.split(":")[0]
+
+    fcfs_label = f"{engine}:FCFS"
+    dyn_label = f"{engine}:DynBatch"
+
+    if fcfs_label not in data or dyn_label not in data:
+        continue
+
+    all_rps = set(data[fcfs_label]) | set(data[dyn_label])
+
+    for rps in all_rps:
+
+        fcfs = data[fcfs_label].get(rps, {})
+        dyn = data[dyn_label].get(rps, {})
+
+        def avg(a, b):
+            if a is None: return b
+            if b is None: return a
+            return (a + b) / 2
+
+        feather_entry = data[label].setdefault(rps, {})
+        print(f"Feather entry for {label} at {rps} rps: {feather_entry}")
+        if feather_entry.get("throughput") is None:
+            feather_entry["throughput"] = avg(
+                fcfs.get("throughput"),
+                dyn.get("throughput")
+            )
+            feather_entry["avg_batch"] = avg(
+                fcfs.get("avg_batch"),
+                dyn.get("avg_batch")
+            )
+            feather_entry["avg_diff"] = avg(
+                fcfs.get("avg_diff"),
+                dyn.get("avg_diff")
+            )
+
+
+# ── Plot styling ────────────────────────────────────────────────────────────
 PALETTE = [
     "#E63946", "#457B9D", "#2A9D8F", "#E9C46A",
     "#F4A261", "#8338EC", "#06D6A0", "#FB5607",
@@ -134,8 +179,6 @@ PALETTE = [
 
 MARKERS = ["o", "s", "D", "^", "v", "P", "X", "*", "<", ">"]
 LINESTYLES = ["--", "--", "--", ":", ":", "-", "-"]
-
-all_rps = sorted({rps for policy in data.values() for rps in policy})
 
 
 # ── Plotting helper ─────────────────────────────────────────────────────────
@@ -164,7 +207,6 @@ def make_plot(metric_key, ylabel, title, outpath):
             v = data[label][rps].get(metric_key)
 
             if v is not None:
-
                 xs.append(rps)
 
                 if isinstance(v, float):
@@ -203,8 +245,6 @@ def make_plot(metric_key, ylabel, title, outpath):
             fontsize=20,
             framealpha=0.3,
             ncol=2,
-            # loc="upper left",
-            # bbox_to_anchor=(0.50, 0.89)
         )
 
     ax.grid(True, linewidth=0.7, linestyle="--")
