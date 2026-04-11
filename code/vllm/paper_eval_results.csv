@@ -937,3 +937,7 @@ vllm,10,None,100,1,5000,lmsys/longchat-13b-16k,200,1000,1000,75.9255755156507,dy
 vllm,500,1.0,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,186.81371532513006,fcfs
 vllm,500,1.0,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,193.56054765487244,dynamic_batching
 vllm,500,1.0,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,103.86252367033089,chunked_hash_tree_bandit
+sglang,500,1,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,212.73898125272015,lpm
+sglang,500,1,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,208.07114839666338,dfs-weight
+sglang,500,1,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,182.60473084125564,fcfs
+vllm,500,2.0,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,382.22881793649526,fcfs
