@@ -7,7 +7,7 @@ PY_BIN="/home/saksham/CS496/code/vllm/.venv/bin/python"
 LOG_DIR="no_pref_sharing_logs"
 mkdir -p "$LOG_DIR"
 
-REQ_PER_SEC_S=(1 2 3 4 5 7 10 15 20)
+REQ_PER_SEC_S=(5 10 15 20)
 
 VLLM_POLICIES=(fcfs dynamic_batching chunked_hash_tree_bandit)
 SGLANG_POLICIES=(lpm dfs-weight fcfs)
