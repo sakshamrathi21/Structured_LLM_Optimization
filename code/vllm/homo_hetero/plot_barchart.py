@@ -27,12 +27,12 @@ df = df[df["max_new_tokens"].isin([1, 10, 50, 100])].copy()
 df = df.sort_values(["max_new_tokens", "mode"]).reset_index(drop=True)
 
 SETTINGS = [
-    "1x800\n(8 fam)",
-    "2x400\n(4 fam)",
-    "4x200\n(2 fam)",
-    "8x100\n(1 fam)",
-    "16x50\n(1 fam)",
-    "32x25\n(1 fam)",
+    "1x800\n(8 groups)",
+    "2x400\n(4 groups)",
+    "4x200\n(2 groups)",
+    "8x100\n(1 group)",
+    "16x50\n(1 group)",
+    "32x25\n(1 group)",
 ]
 
 tokens = sorted(df["max_new_tokens"].unique())
@@ -66,7 +66,7 @@ for i, tok in enumerate(tokens):
     )
 
 ax.set_xticks(x)
-ax.set_xticklabels(SETTINGS, fontsize=22)
+ax.set_xticklabels(SETTINGS, fontsize=21)
 ax.set_yticklabels(ax.get_yticks(), fontsize=22)
 ax.set_ylabel("Throughput (toks/s)", fontsize=28)  # 🔹 Updated label
 ax.set_xlabel("Batch Configuration", fontsize=28)
