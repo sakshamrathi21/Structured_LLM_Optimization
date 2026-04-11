@@ -102,7 +102,7 @@ for path in log_files:
     if policy == "chunked_hash_tree_bandit":
         policy = "Feather"
     if policy == "chunked_hash_tree_heuristic":
-        continue
+        policy = "Feather"
     label = f"{engine}:{policy}"
 
     avg_batch, avg_diff, throughput = parse_log(path)
