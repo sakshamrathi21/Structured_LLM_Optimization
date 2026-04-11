@@ -1,22 +1,3 @@
-"""
-plot_batch_size.py
-==================
-Reads dcgmi_*.log files and vllm_*.log files from the current directory,
-then produces two publication-quality plots:
-
-  Plot 1  –  Throughput (req/s)  vs  Tensor Core Utilization (%)   [dual y-axis]
-  Plot 2  –  SM Activity (%)     vs  SM Occupancy (%)               [dual y-axis]
-
-X-axis for both: batch size  (extracted from the filename).
-
-File-name patterns expected:
-  dcgmi  : dcgmi_vllm_..._batch-<B>_..._sptokens-<S>_policy-<P>_...
-  vllm   : vllm_<policy>_batch_size<B>_req<R>_tok<T>_fam<F>_sys<S>_<timestamp>.log
-
-Usage:
-  python plot_batch_size.py            # runs in current working directory
-"""
-
 import os
 import re
 import numpy as np

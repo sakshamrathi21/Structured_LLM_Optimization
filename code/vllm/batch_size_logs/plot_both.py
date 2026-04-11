@@ -1,40 +1,3 @@
-"""
-plot_batch_size_merged.py
-=========================
-Reads dcgmi_*.log and vllm_*.log files from TWO directories:
-  - LOG_DIR_HETERO  (original / heterogeneous batch)
-  - LOG_DIR_HOMO    (homogeneous batch)
-
-Produces two publication-quality plots, each with 4 lines:
-
-  Plot 1  –  Throughput (toks/s)  [left, greens]  &  Tensor Core Util (%)  [right, reds]
-               · Hetero throughput  : solid green   (---)
-               · Homo   throughput  : dashed green  (- -)
-               · Hetero tensor util : solid red
-               · Homo   tensor util : dashed red
-
-  Plot 2  –  SM Activity (%)  [left, blues]  &  SM Occupancy (%)  [right, oranges]
-               · Hetero SM Activity  : solid blue
-               · Homo   SM Activity  : dashed blue
-               · Hetero SM Occupancy : solid orange
-               · Homo   SM Occupancy : dashed orange
-
-X-axis for both: batch size (extracted from filenames).
-
-JSON Cache:
-  Parsed data is saved to CACHE_FILE (default: data_cache.json).
-  On subsequent runs, values are loaded from the cache and log files are
-  only re-read for batch sizes / fields that are missing from the cache.
-
-File-name patterns expected:
-  dcgmi : dcgmi_vllm_..._batch-<B>_...
-  vllm  : vllm_<policy>_batch_size<B>_...
-
-Usage:
-  Edit LOG_DIR_HETERO / LOG_DIR_HOMO below, then:
-  python plot_batch_size_merged.py
-"""
-
 import os
 import re
 import json
@@ -67,8 +30,13 @@ C_SMACT_HOMO    = "#90C2FF"
 C_SMOCC_HETERO  = "#FB8500"
 C_SMOCC_HOMO    = "#FFD166"
 
-MARKER_LEFT  = "o"
-MARKER_RIGHT = "s"
+# Hetero and homo each get distinct marker shapes.
+# Left-axis metrics use the first marker, right-axis use the second.
+MARKER_HETERO_LEFT  = "o"   # hetero, left-axis  (throughput / SM Activity)
+MARKER_HETERO_RIGHT = "s"   # hetero, right-axis (tensor core / SM Occupancy)
+MARKER_HOMO_LEFT    = "^"   # homo,   left-axis
+MARKER_HOMO_RIGHT   = "D"   # homo,   right-axis
+
 LW = 2.4
 MS = 10
 
@@ -81,13 +49,6 @@ ALL_FIELDS = ("smact", "smocc", "tenso", "drama", "throughput")
 # ═════════════════════════════════════════════════════════════════════════════
 
 def load_cache(cache_path: str) -> dict:
-    """
-    Load cache from disk.  Returns a dict shaped:
-      { "hetero": { "<batch_size>": { field: value, ... }, ... },
-        "homo":   { "<batch_size>": { field: value, ... }, ... } }
-    Batch-size keys are stored as strings in JSON; we keep them as strings
-    here and convert to int only when building the data dicts.
-    """
     if os.path.isfile(cache_path):
         with open(cache_path) as fh:
             try:
@@ -107,7 +68,6 @@ def save_cache(cache: dict, cache_path: str) -> None:
 
 
 def _cache_has_all_fields(entry: dict) -> bool:
-    """Return True if every field in ALL_FIELDS is present and not None/NaN."""
     for f in ALL_FIELDS:
         val = entry.get(f)
         if val is None:
@@ -176,31 +136,16 @@ def collect_data(log_dir: str,
                  cache_section: dict,
                  throughput_cap=None,
                  label: str = "") -> dict:
-    """
-    Build a {batch_size: {field: value}} dict.
-
-    Strategy
-    --------
-    1. For every batch size already in *cache_section* that has ALL fields
-       present, skip reading log files and use the cached values directly.
-    2. For batch sizes (or fields) not yet cached, parse the relevant log
-       files and add the results to *cache_section* (mutates it in-place so
-       the caller can persist the updated cache).
-    """
-
-    # Accumulator for raw values from log files (needed when cache is partial)
     raw: dict = defaultdict(lambda: {
         "smact": [], "smocc": [], "tenso": [], "drama": [], "throughput": None
     })
 
-    # Determine which batch sizes we can skip (fully cached)
     cached_bs = set()
     for bs_str, entry in cache_section.items():
         if _cache_has_all_fields(entry):
             cached_bs.add(int(bs_str))
             print(f"[{label}/CACHE]  batch={int(bs_str):>4}  (all fields cached – skipping logs)")
 
-    # ── Parse log files only for uncached batch sizes ─────────────────────
     for fname in sorted(os.listdir(log_dir)):
         fpath = os.path.join(log_dir, fname)
 
@@ -210,7 +155,7 @@ def collect_data(log_dir: str,
                 print(f"[SKIP] cannot parse batch size: {fname}")
                 continue
             if bs in cached_bs:
-                continue          # already have it
+                continue
             print(f"[{label}/DCGMI]  batch={bs:>4}  ←  {fname}")
             gpu_stats = read_dcgmi(fpath)
             for key in ("smact", "smocc", "tenso", "drama"):
@@ -224,16 +169,14 @@ def collect_data(log_dir: str,
                 print(f"[SKIP] cannot parse batch size: {fname}")
                 continue
             if bs in cached_bs:
-                continue          # already have it
+                continue
             tput = read_throughput_from_vllm_log(fpath)
             print(f"[{label}/VLLM ]  batch={bs:>4}  throughput={tput}  ←  {fname}")
             if tput is not None:
                 raw[bs]["throughput"] = tput
 
-    # ── Merge: cached entries + freshly parsed entries ────────────────────
     result = {}
 
-    # 3a. Entries that came fully from cache
     for bs_str, entry in cache_section.items():
         bs = int(bs_str)
         if bs in cached_bs:
@@ -248,7 +191,6 @@ def collect_data(log_dir: str,
                 "throughput": tput,
             }
 
-    # 3b. Entries freshly parsed from log files
     for bs, rec in raw.items():
         tput = rec["throughput"]
         if tput is not None and throughput_cap is not None:
@@ -267,7 +209,6 @@ def collect_data(log_dir: str,
             "throughput": tput,
         }
 
-        # Write back to cache section (NaN → None for JSON serialisability)
         def _json_safe(v):
             return None if (isinstance(v, float) and np.isnan(v)) else v
 
@@ -287,10 +228,6 @@ def collect_data(log_dir: str,
 # ═════════════════════════════════════════════════════════════════════════════
 
 def apply_tenso_fallback(hetero: dict, homo: dict) -> None:
-    """
-    If one side is missing a 'tenso' value for a given batch size, fill it
-    in from the other side.  Mutates both dicts in-place and prints a notice.
-    """
     all_bs = set(hetero.keys()) | set(homo.keys())
     for bs in sorted(all_bs):
         h_val = hetero.get(bs, {}).get("tenso")
@@ -337,7 +274,7 @@ def _finish(fig, ax_l, ax_r, xlabel, ylabel_l, ylabel_r, outpath, legend_loc="be
         fontsize=20,
         framealpha=0.35,
         loc="upper left",
-        bbox_to_anchor=(0.42, 0.55)
+        bbox_to_anchor=(0.35, 0.55)
     )
 
     plt.tight_layout()
@@ -363,28 +300,28 @@ def _xy(data: dict, key: str):
 def plot_throughput_tensor(hetero: dict, homo: dict, out_dir: str) -> None:
     fig, ax_l, ax_r = _base_fig()
 
-    kw_base = dict(linewidth=LW, markersize=MS,
+    kw_base = dict(linewidth=LW,
                    markeredgecolor="white", markeredgewidth=0.8)
 
     xs, ys = _xy(hetero, "throughput")
-    ax_l.plot(xs, ys, color=C_TPUT_HETERO, marker=MARKER_LEFT,
-              linestyle="-",  label="Throughput - 5 Pref", **kw_base)
+    ax_l.plot(xs, ys, color=C_TPUT_HETERO, marker=MARKER_HETERO_LEFT,
+              linestyle="-",  label="Throughput - 5 groups", **kw_base, markersize=12)
 
     xs, ys = _xy(homo, "throughput")
-    ax_l.plot(xs, ys, color=C_TPUT_HOMO,   marker=MARKER_LEFT,
-              linestyle="--", label="Throughput - 1 Pref",   **kw_base)
+    ax_l.plot(xs, ys, color=C_TPUT_HOMO,   marker=MARKER_HOMO_LEFT,
+              linestyle="--", label="Throughput - 1 group",   **kw_base, markersize=12)
 
     ax_l.set_ylim(bottom=0)
     ax_l.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
     ax_l.xaxis.set_major_locator(ticker.MaxNLocator(nbins=6, integer=True))
 
     xs, ys = _xy(hetero, "tenso")
-    ax_r.plot(xs, ys, color=C_TENSO_HETERO, marker=MARKER_RIGHT,
-              linestyle="-",  label="Tensor Core - 5 Pref", **kw_base)
+    ax_r.plot(xs, ys, color=C_TENSO_HETERO, marker=MARKER_HETERO_RIGHT,
+              linestyle="-",  label="Tensor Core - 5 groups", **kw_base, markersize=15)
 
     xs, ys = _xy(homo, "tenso")
-    ax_r.plot(xs, ys, color=C_TENSO_HOMO,   marker=MARKER_RIGHT,
-              linestyle="--", label="Tensor Core - 1 Pref",   **kw_base)
+    ax_r.plot(xs, ys, color=C_TENSO_HOMO,   marker=MARKER_HOMO_RIGHT,
+              linestyle="--", label="Tensor Core - 1 group",   **kw_base, markersize=12)
 
     ax_r.set_ylim(0, 105)
     ax_r.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
@@ -394,7 +331,6 @@ def plot_throughput_tensor(hetero: dict, homo: dict, out_dir: str) -> None:
             ylabel_l = "Throughput (toks/s)",
             ylabel_r = "Tensor Core Util. (%)",
             outpath  = os.path.join(out_dir, "plot1_throughput_tensor_merged.png"),
-            # legend_loc = "lower right"
         )
 
 
@@ -409,11 +345,11 @@ def plot_sm_activity_occupancy(hetero: dict, homo: dict, out_dir: str) -> None:
                    markeredgecolor="white", markeredgewidth=0.8)
 
     xs, ys = _xy(hetero, "smact")
-    ax_l.plot(xs, ys, color=C_SMACT_HETERO, marker=MARKER_LEFT,
+    ax_l.plot(xs, ys, color=C_SMACT_HETERO, marker=MARKER_HETERO_LEFT,
               linestyle="-",  label="SM Activity – Hetero", **kw_base)
 
     xs, ys = _xy(homo, "smact")
-    ax_l.plot(xs, ys, color=C_SMACT_HOMO,   marker=MARKER_LEFT,
+    ax_l.plot(xs, ys, color=C_SMACT_HOMO,   marker=MARKER_HOMO_LEFT,
               linestyle="--", label="SM Activity – Homo",   **kw_base)
 
     ax_l.set_ylim(0, 105)
@@ -424,11 +360,11 @@ def plot_sm_activity_occupancy(hetero: dict, homo: dict, out_dir: str) -> None:
     ax_l.set_xticklabels([str(b) for b in all_bs])
 
     xs, ys = _xy(hetero, "smocc")
-    ax_r.plot(xs, ys, color=C_SMOCC_HETERO, marker=MARKER_RIGHT,
+    ax_r.plot(xs, ys, color=C_SMOCC_HETERO, marker=MARKER_HETERO_RIGHT,
               linestyle="-",  label="SM Occupancy – Hetero", **kw_base)
 
     xs, ys = _xy(homo, "smocc")
-    ax_r.plot(xs, ys, color=C_SMOCC_HOMO,   marker=MARKER_RIGHT,
+    ax_r.plot(xs, ys, color=C_SMOCC_HOMO,   marker=MARKER_HOMO_RIGHT,
               linestyle="--", label="SM Occupancy – Homo",   **kw_base)
 
     ax_r.set_ylim(0, 105)
@@ -439,7 +375,8 @@ def plot_sm_activity_occupancy(hetero: dict, homo: dict, out_dir: str) -> None:
             ylabel_l = "SM Activity (%)",
             ylabel_r = "SM Occupancy (%)",
             outpath  = os.path.join(out_dir, "plot2_sm_activity_occupancy_merged.png"),
-            legend_loc = "center right")
+            # legend_loc = "center right"
+        )
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -458,12 +395,10 @@ def _print_summary(data: dict, label: str):
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
 
-    # ── Load cache ────────────────────────────────────────────────────────
     cache = load_cache(CACHE_FILE)
     cache.setdefault("hetero", {})
     cache.setdefault("homo",   {})
 
-    # ── Collect data (reads logs only for what's missing from cache) ──────
     print("=== Collecting HETERO data ===")
     hetero = collect_data(LOG_DIR_HETERO,
                           cache_section=cache["hetero"],
@@ -480,10 +415,8 @@ def main():
         print("No data found — check LOG_DIR_HETERO / LOG_DIR_HOMO.")
         return
 
-    # ── Persist updated cache ─────────────────────────────────────────────
     save_cache(cache, CACHE_FILE)
 
-    # ── Tensor-core fallback: fill missing tenso from the other side ──────
     print("\n=== Applying tenso fallback ===")
     apply_tenso_fallback(hetero, homo)
 
