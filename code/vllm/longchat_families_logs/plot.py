@@ -99,7 +99,7 @@ for path in log_files:
         policy = "FCFS"
     if policy == "dynamic_batching":
         policy = "DynBatch"
-    if policy == "chunked_hash_tree_bandit":
+    if policy == "chunked_hash_tree_bandit" or policy == "family_load":
         policy = "Feather"
     if policy == "chunked_hash_tree_heuristic":
         continue
@@ -185,13 +185,13 @@ def make_plot(metric_key, ylabel, title, outpath):
     ax.set_xticks(all_fams)
     ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
 
-    ax.set_xlabel("Number of Prefix Groups", fontsize=18)
+    ax.set_xlabel("Number of Prefix Groups", fontsize=20)
     ax.set_ylabel(ylabel, fontsize=20)
 
     ax.tick_params(axis="both", labelsize=20)
 
     if metric_key == "throughput":
-        ax.legend(fontsize=15, framealpha=0.3, ncol=2)
+        ax.legend(fontsize=20, framealpha=0.3, ncol=2)
 
     ax.grid(True, linewidth=0.7, linestyle="--")
     ax.set_ylim(bottom=0)

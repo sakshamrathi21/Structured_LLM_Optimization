@@ -925,3 +925,10 @@ sglang,5,75,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,3000,3000,1240.34957
 sglang,5,100,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,3000,3000,1988.3894877172186,fcfs
 sglang,5,100,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,3000,3000,1193.9565695473987,lpm
 sglang,5,100,500,1,5000,meta-llama/Llama-3.1-8B-Instruct,200,3000,3000,1252.8782541413425,dfs-weight
+vllm,100,None,100,1,5000,lmsys/longchat-13b-16k,200,1000,1000,56.85806140935422,fcfs
+vllm,100,None,100,1,5000,lmsys/longchat-13b-16k,200,10000,10000,1210.1742404110862,family_load
+vllm,100,None,100,1,5000,lmsys/longchat-13b-16k,200,1000,1000,55.8260990623182,dynamic_batching
+vllm,50,None,100,1,5000,lmsys/longchat-13b-16k,200,1000,1000,55.42050250349328,fcfs
+vllm,50,None,100,1,5000,lmsys/longchat-13b-16k,200,1000,1000,55.98458152645654,dynamic_batching
+vllm,20,None,100,1,5000,lmsys/longchat-13b-16k,200,1000,1000,60.981819306020746,fcfs
+vllm,20,None,100,1,5000,lmsys/longchat-13b-16k,200,1000,1000,61.350586986499465,dynamic_batching
