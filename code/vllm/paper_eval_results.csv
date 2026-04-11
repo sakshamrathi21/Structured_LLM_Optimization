@@ -968,3 +968,9 @@ sglang,500,10,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,765.862198
 sglang,500,10,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,776.6057271376577,fcfs
 vllm,500,15.0,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,844.931860167176,fcfs
 vllm,500,15.0,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,870.8859066030021,dynamic_batching
+vllm,500,15.0,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,88.21409107702185,chunked_hash_tree_bandit
+sglang,500,15,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,766.8895220662682,lpm
+sglang,500,15,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,759.3497975388678,dfs-weight
+sglang,500,15,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,769.7824702123576,fcfs
+vllm,500,20.0,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,838.7969423887758,fcfs
+vllm,500,20.0,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,880.7658364514591,dynamic_batching
