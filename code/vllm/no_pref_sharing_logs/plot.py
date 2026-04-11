@@ -200,11 +200,11 @@ def make_plot(metric_key, ylabel, title, outpath):
         ax.legend(
             sorted_handles,
             sorted_labels,
-            fontsize=17,
+            fontsize=20,
             framealpha=0.3,
             ncol=2,
-            loc="upper left",
-            bbox_to_anchor=(0.50, 0.89)
+            # loc="upper left",
+            # bbox_to_anchor=(0.50, 0.89)
         )
 
     ax.grid(True, linewidth=0.7, linestyle="--")

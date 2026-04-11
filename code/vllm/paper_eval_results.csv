@@ -941,3 +941,8 @@ sglang,500,1,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,212.7389812
 sglang,500,1,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,208.07114839666338,dfs-weight
 sglang,500,1,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,182.60473084125564,fcfs
 vllm,500,2.0,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,382.22881793649526,fcfs
+vllm,500,2.0,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,399.17524532404184,dynamic_batching
+sglang,500,2,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,441.4858870539068,lpm
+sglang,500,2,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,411.5625565486467,dfs-weight
+sglang,500,2,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,386.6845993695075,fcfs
+vllm,500,3.0,500,1,1000,meta-llama/Llama-3.1-8B-Instruct,200,500,500,592.156272431111,fcfs
