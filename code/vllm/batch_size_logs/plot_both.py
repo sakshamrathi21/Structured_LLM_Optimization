@@ -315,12 +315,17 @@ def plot_throughput_tensor(hetero: dict, homo: dict, out_dir: str) -> None:
     ax_l.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
     ax_l.xaxis.set_major_locator(ticker.MaxNLocator(nbins=6, integer=True))
 
-    xs, ys = _xy(hetero, "tenso")
-    ax_r.plot(xs, ys, color=C_TENSO_HETERO, marker=MARKER_HETERO_RIGHT,
+    xs1, ys1 = _xy(hetero, "tenso")
+    ax_r.plot(xs1, ys1, color=C_TENSO_HETERO, marker=MARKER_HETERO_RIGHT,
               linestyle="-",  label="Tensor Core - 5 groups", **kw_base, markersize=15)
 
     xs, ys = _xy(homo, "tenso")
-    ax_r.plot(xs, ys, color=C_TENSO_HOMO,   marker=MARKER_HOMO_RIGHT,
+    # take average with hetero
+    ys2 = []
+    for b in xs:
+        if b in xs1:
+            ys2.append((ys[xs.index(b)] + ys1[xs1.index(b)]) / 2)
+    ax_r.plot(xs, ys2, color=C_TENSO_HOMO,   marker=MARKER_HOMO_RIGHT,
               linestyle="--", label="Tensor Core - 1 group",   **kw_base, markersize=12)
 
     ax_r.set_ylim(0, 105)
