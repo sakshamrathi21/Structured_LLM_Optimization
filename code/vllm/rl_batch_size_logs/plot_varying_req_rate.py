@@ -34,8 +34,8 @@ REMOVE_RANGES = [
 # Adjust t_start / t_end after checking printed t=[..., ...] output
 RATE_PHASES = [
     (0,   200, "5 req/s",  "#457B9D"),
-    (200, 300, "10 req/s", "#E9C46A"),
-    (300, 400, "20 req/s", "#E63946"),   # 400 is a sentinel; clips to data end
+    (200, 312, "10 req/s", "#E9C46A"),
+    (312, 400, "20 req/s", "#E63946"),   # 400 is a sentinel; clips to data end
 ]
 # ─────────────────────────────────────────────────────────────
 
