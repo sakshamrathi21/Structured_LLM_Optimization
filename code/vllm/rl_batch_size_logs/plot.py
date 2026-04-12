@@ -14,7 +14,7 @@ import numpy as np
 LOG_DIR = os.path.expanduser("~/CS496/code/vllm/rl_batch_size_logs")
 LOG_FILES = [
     "vllm_multiple_families_varying_workloads_5_families_5_rps_chunked_hash_tree_bandit.log",
-    "vllm_multiple_families_varying_workloads_5_families_5_rps_chunked_hash_tree_heuristic.log",
+    # "vllm_multiple_families_varying_workloads_5_families_5_rps_chunked_hash_tree_heuristic.log",
     # "vllm_multiple_families_varying_workloads_5_families_500_rps_chunked_hash_tree_bandit.log",
     # "vllm_multiple_families_varying_workloads_5_families_500_rps_chunked_hash_tree_qlearning.log",
 ]
@@ -101,7 +101,7 @@ for label, color, marker, ls, ts, bs, duration in all_series:
 ax.set_xlabel("Time (s)", fontsize=26)
 ax.set_ylabel("Running Batch Size", fontsize=26)
 ax.tick_params(axis="both", labelsize=20)
-ax.legend(fontsize=25, framealpha=0.35)
+# ax.legend(fontsize=25, framealpha=0.35)
 ax.grid(True, linewidth=0.6, linestyle="--")
 ax.set_ylim(bottom=0)
 plt.tight_layout()
