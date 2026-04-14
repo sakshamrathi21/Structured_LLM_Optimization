@@ -140,19 +140,21 @@ for i, (label, xs, ys) in enumerate(series):
         xs, ys,
         marker=MARKERS[i % len(MARKERS)],
         linestyle=LINESTYLES[i % len(LINESTYLES)],
-        linewidth=2.2,
-        markersize=12,
+        linewidth=5,
+        markersize=15,
         markeredgecolor="black",
         markeredgewidth=0.7,
         color=PALETTE[i % len(PALETTE)],
         label=f"vLLM:{label}",
     )
 
-ax.set_xlabel("Input Workload (req/sec)", fontsize=30)
-ax.set_ylabel("Throughput (toks/s)", fontsize=30)
-ax.tick_params(axis="both", labelsize=25)
-ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.0f'))
-ax.legend(fontsize=25, framealpha=0.3, loc="lower right", ncol=2)
+ax.set_xlabel("Input Workload (req/s)", fontsize=35)
+ax.set_ylabel("TP (toks/s)", fontsize=35)
+ax.tick_params(axis="both", labelsize=30)
+# set thousand to K
+ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: f"{int(x/1000)}K" if x >= 1000 else f"{int(x)}"))
+# ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.0f'))
+ax.legend(fontsize=29, framealpha=0.3, loc="lower right", ncol=2, columnspacing=0.1)
 ax.grid(True, linewidth=0.7, linestyle="--")
 ax.set_ylim(bottom=0)
 plt.tight_layout()
