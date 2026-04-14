@@ -182,14 +182,14 @@ for sv in sorted(per_sys.keys()):
             for mode in sys_modes:
                 v = sys_data[label][mode].get(metric_key) if mode in sys_data[label] else None
                 ys.append(v if v is not None else 0.0)
-
+            # bold the hatches
             ax.bar(
                 xs, ys,
                 width=bar_width * 0.92,
                 color=color,
                 hatch=hatch,
                 edgecolor="black",
-                linewidth=0.7,
+                linewidth=1,
                 label=label,
                 zorder=3,
             )
@@ -206,14 +206,16 @@ for sv in sorted(per_sys.keys()):
                 return "4 levels"
             return None
         mode_labels = [mode_labels_func(m) for m in all_modes]
-        ax.set_xticklabels(mode_labels, fontsize=22)
-        ax.set_xlabel("Sharing Pattern", fontsize=25)
-        ax.set_ylabel(ylabel, fontsize=25)
-        ax.tick_params(axis="both", labelsize=22)
-        ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
+        ax.set_xticklabels(mode_labels, fontsize=30)
+        ax.set_xlabel("Sharing Pattern", fontsize=35)
+        ax.set_ylabel(ylabel, fontsize=35)
+        ax.tick_params(axis="both", labelsize=28)
+        # set 1000 to 1K
+        ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{x/1000:.0f}K" if x >= 1000 else f"{x:.0f}"))
         if metric_key == "throughput":
-            ax.legend(fontsize=20, framealpha=0.35, ncol=3,
-                      loc="upper left", bbox_to_anchor=(0, 1.18))
+            # reduce the gap between rows in the legend
+            ax.legend(fontsize=25, framealpha=0.35, ncol=3,
+                      loc="upper center", bbox_to_anchor=(0, 1.30), columnspacing=0.1, handletextpad=0.3, borderpad=0.3)
         ax.grid(True, axis="y", linewidth=0.7, linestyle="--", zorder=0)
         ax.set_axisbelow(True)
         ax.set_ylim(bottom=0)
@@ -227,7 +229,7 @@ for sv in sorted(per_sys.keys()):
     os.makedirs(sys_dir, exist_ok=True)
 
     make_barchart_for_sys(
-        "throughput", "Throughput (tok/s)",
+        "throughput", "TP (tok/s)",
         "Throughput by Mode",
         os.path.join(sys_dir, "throughput_by_mode.png"),
     )
