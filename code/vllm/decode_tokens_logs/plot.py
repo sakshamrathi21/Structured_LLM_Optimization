@@ -205,8 +205,8 @@ def make_plot(metric_key, ylabel, title, outpath):
             ys,
             marker=marker,
             linestyle=linestyle,
-            linewidth=2.2,
-            markersize=12,
+            linewidth=5,
+            markersize=15,
             markeredgecolor="black",
             markeredgewidth=0.7,
             color=color,
@@ -214,19 +214,20 @@ def make_plot(metric_key, ylabel, title, outpath):
         )
 
     ax.set_xscale("log")
-    ax.set_xlabel("Number of Decode Tokens", fontsize=30)
-    ax.set_ylabel(ylabel, fontsize=30)
+    ax.set_xlabel("Decode Tokens", fontsize=35)
+    ax.set_ylabel(ylabel, fontsize=35)
 
     # Use thinned ticks to avoid clutter
     ax.set_xticks(display_ticks)
     ax.set_xticklabels(display_ticks, rotation=30)
     ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
 
-    ax.tick_params(axis="both", labelsize=25)
-    ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
+    ax.tick_params(axis="both", labelsize=30)
+    # convert 1000 to 1k
+    ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{x/1000:.1f}K" if x >= 1000 else f"{x:.0f}"))
 
     if metric_key == "throughput":
-        ax.legend(fontsize=24, framealpha=0.3, ncol=1)
+        ax.legend(fontsize=25, framealpha=0, ncol=1)
 
     ax.grid(True, linewidth=0.7, linestyle="--")
 
@@ -250,7 +251,7 @@ os.makedirs(OUT, exist_ok=True)
 
 make_plot(
     "throughput",
-    "Throughput (toks/s)",
+    "TP (toks/s)",
     "Throughput vs Decode Tokens",
     os.path.join(OUT, "throughput_vs_tok.png")
 )
