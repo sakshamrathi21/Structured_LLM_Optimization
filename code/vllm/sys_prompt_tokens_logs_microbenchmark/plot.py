@@ -156,8 +156,8 @@ for i, label in enumerate(labels):
         xs, ys,
         marker=marker,
         linestyle=linestyle,
-        linewidth=2.2,
-        markersize=12,
+        linewidth=5,
+        markersize=15,
         markeredgecolor="black",
         markeredgewidth=0.7,
         color=color,
@@ -176,32 +176,32 @@ for i, label in enumerate(labels):
             xs_e, ys_e,
             marker=marker,
             linestyle=":",          # dotted to distinguish
-            linewidth=2.5,
-            markersize=12,
+            linewidth=5,
+            markersize=15,
             markeredgecolor="black",
             markeredgewidth=0.9,
             color=color,
             alpha=0.65,
-            label=f"{label} GPU time",
+            label=f"{label}\nGPU time",
         )
 
 ax.set_xscale("log")
 ax.set_yscale("log")  # <-- LOG SCALE ON Y-AXIS
-ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=30)
-ax.set_ylabel("Time (ms)", fontsize=30)
+ax.set_xlabel("Shared Prefix Tokens", fontsize=35)
+ax.set_ylabel("Time (ms)", fontsize=35)
 
 ax.set_xticks(all_sys_toks)
 ax.set_xticklabels([str(t) for t in all_sys_toks], rotation=30)
 ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
-ax.tick_params(axis="both", labelsize=25)
+ax.tick_params(axis="both", labelsize=22)
 # Use LogFormatter for y-axis ticks since it's now log scale
 ax.yaxis.set_major_formatter(ticker.LogFormatterSciNotation(base=10, labelOnlyBase=False))
 
-ax.legend(fontsize=22, framealpha=0.3,ncol=2)
-ax.grid(True, which="both", linewidth=0.7, linestyle="--")  # grid on both major/minor ticks
+# reduce the gap between legend columns
+ax.legend(fontsize=24, framealpha=0.3,ncol=3, columnspacing=0.5)
+ax.grid(True, which="major", linewidth=0.7, linestyle="--")  # grid on both major/minor ticks
 plt.tight_layout()
 outpath = os.path.join(OUT, "profile_sum_vs_sys_prompt_tokens.png")
 fig.savefig(outpath, dpi=150, bbox_inches="tight")
 plt.close(fig)
 print(f"Saved: {outpath}")
-print(f"\nDone! Plot written to: {OUT}")
