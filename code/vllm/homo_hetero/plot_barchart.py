@@ -67,16 +67,16 @@ for i, tok in enumerate(tokens):
 
 ax.set_xticks(x)
 ax.set_xticklabels(SETTINGS, fontsize=21)
-ax.set_yticklabels(ax.get_yticks(), fontsize=22)
-ax.set_ylabel("Throughput (toks/s)", fontsize=28)  # 🔹 Updated label
-ax.set_xlabel("Batch Configuration", fontsize=28)
+ax.set_yticklabels(ax.get_yticks(), fontsize=30)
+ax.set_ylabel("TP (toks/s)", fontsize=35)  # 🔹 Updated label
+ax.set_xlabel("Batch Configuration", fontsize=35)
 
 ax.yaxis.grid(True, linestyle="--", alpha=0.6)
 ax.set_axisbelow(True)
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 
-ax.legend(title="Decode Tokens", fontsize=18, title_fontsize=20)
+ax.legend(fontsize=24, title_fontsize=20, ncol=2, columnspacing=0.1, loc="upper left", bbox_to_anchor=(-0.01, 1))
 
 plt.tight_layout()
 
