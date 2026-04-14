@@ -82,17 +82,21 @@ mode_labels = [
     for mode in all_modes
 ]
 
-plt.xticks(x, mode_labels, fontsize=25)
-plt.yticks(fontsize=22)
-plt.ylabel("Throughput (toks/s)", fontsize=25)
-plt.xlabel("Sharing Pattern", fontsize=25)
+plt.xticks(x, mode_labels, fontsize=30)
 
+plt.yticks(fontsize=30)
+plt.ylabel("TP(toks/s)", fontsize=35)
+plt.xlabel("Sharing Pattern", fontsize=35)
+# change 1000 to 1K
+ax = plt.gca()
+ax.set_yticklabels([f"{(tick/1000):.1f}K" for tick in ax.get_yticks()])
 plt.legend(
-    fontsize=25,
+    fontsize=30,
     loc="upper center",
-    bbox_to_anchor=(0.5, 1.15),
+    bbox_to_anchor=(0.5, 1.20),
     ncol=len(all_L_values),
-    frameon=False
+    frameon=False,
+    columnspacing=0.1,
 )
 
 plt.grid(axis="y", linestyle="--", alpha=0.4)
