@@ -181,8 +181,8 @@ def make_plot(metric_key, ylabel, title, outpath):
                 ys,
                 marker=marker,
                 linestyle=linestyle,
-                linewidth=2.2,
-                markersize=12,
+                linewidth=5,
+                markersize=15,
                 markeredgecolor="black",
                 markeredgewidth=0.7,
                 color=color,
@@ -193,13 +193,14 @@ def make_plot(metric_key, ylabel, title, outpath):
     ax.set_xticks(all_fams)
     ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
 
-    ax.set_xlabel("Number of Prefix Groups", fontsize=30)
-    ax.set_ylabel(ylabel, fontsize=30)
-
-    ax.tick_params(axis="both", labelsize=25)
+    ax.set_xlabel("Prefix Groups", fontsize=35)
+    ax.set_ylabel(ylabel, fontsize=35)
+    # y axis convert 1000 to 1K
+    ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{x/1000:.0f}K" if x >= 1000 else f"{x:.0f}"))
+    ax.tick_params(axis="both", labelsize=30)
 
     if metric_key == "throughput":
-        ax.legend(fontsize=18, framealpha=0.3, ncol=2)
+        ax.legend(fontsize=22, framealpha=0.1, ncol=2, columnspacing=0.1, bbox_to_anchor=(0.7, 0.7), loc="upper center")
 
     ax.grid(True, linewidth=0.7, linestyle="--")
     ax.set_ylim(bottom=0)
@@ -223,7 +224,7 @@ os.makedirs(OUT, exist_ok=True)
 
 make_plot(
     "throughput",
-    "Throughput (toks/s)",
+    "TP (toks/s)",
     "Throughput vs Prefix Groups",
     os.path.join(OUT, "throughput_vs_fam.png")
 )
