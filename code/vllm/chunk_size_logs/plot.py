@@ -122,20 +122,22 @@ for i, label in enumerate(labels):
         marker=MARKERS[i % len(MARKERS)],
         linestyle=LINESTYLES[i % len(LINESTYLES)],
         color=PALETTE[i % len(PALETTE)],
-        linewidth=2,
+        linewidth=7,
         label=f"{label}",
-        markersize=12
+        markersize=18
     )
 
 ax.set_xscale("log")
-ax.set_xlabel("Shared Prefix Tokens", fontsize=30)
-ax.set_ylabel("Scheduler Time (ms)", fontsize=30)
+ax.set_xlabel("Shared Prefix Tokens", fontsize=32)
+ax.set_ylabel("Scheduler Time (ms)", fontsize=32)
 
 ax.set_xticks(all_sys_toks)
 ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
-
-ax.legend(fontsize=28, ncol=3)
-ax.tick_params(axis="both", labelsize=25)
+ax.yaxis.set_major_formatter(
+    ticker.FuncFormatter(lambda x, _: f"{x/1000:.1f}K" if x >= 1000 else f"{x:.2f}")
+)
+ax.legend(fontsize=30, ncol=3)
+ax.tick_params(axis="both", labelsize=30)
 ax.grid(True, which="both", linestyle="--")
 ax.set_ylim(bottom=0)
 
@@ -164,19 +166,23 @@ for i, label in enumerate(labels):
         marker=MARKERS[i % len(MARKERS)],
         linestyle=LINESTYLES[i % len(LINESTYLES)],
         color=PALETTE[i % len(PALETTE)],
-        linewidth=2,
+        linewidth=5,
         label=f"{label}",
+        markersize=18
     )
 
 ax.set_xscale("log")
-ax.set_xlabel("Shared Prefix Tokens", fontsize=30)
-ax.set_ylabel("Throughput (toks/s)", fontsize=30)
+ax.set_xlabel("Shared Prefix Tokens", fontsize=32)
+ax.set_ylabel("TP (toks/s)", fontsize=32)
 
 ax.set_xticks(all_sys_toks)
 ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
+ax.yaxis.set_major_formatter(
+    ticker.FuncFormatter(lambda x, _: f"{x/1000:.1f}K" if x >= 1000 else f"{x:.2f}")
+)
 
-ax.legend(fontsize=28, ncol=3)
-ax.tick_params(axis="both", labelsize=25)
+ax.legend(fontsize=30, ncol=3)
+ax.tick_params(axis="both", labelsize=30)
 ax.grid(True, which="both", linestyle="--")
 ax.set_ylim(bottom=0)
 
