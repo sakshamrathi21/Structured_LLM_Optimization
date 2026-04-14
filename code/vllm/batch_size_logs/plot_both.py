@@ -37,7 +37,7 @@ MARKER_HETERO_RIGHT = "s"   # hetero, right-axis (tensor core / SM Occupancy)
 MARKER_HOMO_LEFT    = "^"   # homo,   left-axis
 MARKER_HOMO_RIGHT   = "D"   # homo,   right-axis
 
-LW = 2.4
+LW = 5
 MS = 10
 
 # Fields stored per batch-size entry in the cache
@@ -259,11 +259,11 @@ def _base_fig():
 
 
 def _finish(fig, ax_l, ax_r, xlabel, ylabel_l, ylabel_r, outpath, legend_loc="best"):
-    ax_l.set_xlabel(xlabel,   fontsize=25, labelpad=8)
-    ax_l.set_ylabel(ylabel_l, fontsize=25)
-    ax_r.set_ylabel(ylabel_r, fontsize=25)
-    ax_l.tick_params(axis="both", labelsize=22)
-    ax_r.tick_params(axis="y",    labelsize=22)
+    ax_l.set_xlabel(xlabel,   fontsize=35, labelpad=8)
+    ax_l.set_ylabel(ylabel_l, fontsize=35)
+    ax_r.set_ylabel(ylabel_r, fontsize=35)
+    ax_l.tick_params(axis="both", labelsize=30)
+    ax_r.tick_params(axis="y",    labelsize=30)
     ax_l.grid(True, linewidth=0.6, linestyle="--", alpha=0.55)
 
     lines_l, labels_l = ax_l.get_legend_handles_labels()
@@ -305,14 +305,15 @@ def plot_throughput_tensor(hetero: dict, homo: dict, out_dir: str) -> None:
 
     xs, ys = _xy(hetero, "throughput")
     ax_l.plot(xs, ys, color=C_TPUT_HETERO, marker=MARKER_HETERO_LEFT,
-              linestyle="-",  label="Throughput - 5 groups", **kw_base, markersize=12)
+              linestyle="-",  label="Throughput - 5 groups", **kw_base, markersize=15)
 
     xs, ys = _xy(homo, "throughput")
     ax_l.plot(xs, ys, color=C_TPUT_HOMO,   marker=MARKER_HOMO_LEFT,
-              linestyle="--", label="Throughput - 1 group",   **kw_base, markersize=12)
+              linestyle="--", label="Throughput - 1 group",   **kw_base, markersize=15)
 
     ax_l.set_ylim(bottom=0)
-    ax_l.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
+    # change 1000 to 1k
+    ax_l.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, p: f"{x/1000:.1f}K"))
     ax_l.xaxis.set_major_locator(ticker.MaxNLocator(nbins=6, integer=True))
 
     xs1, ys1 = _xy(hetero, "tenso")
@@ -326,15 +327,15 @@ def plot_throughput_tensor(hetero: dict, homo: dict, out_dir: str) -> None:
         if b in xs1:
             ys2.append((ys[xs.index(b)] + ys1[xs1.index(b)]) / 2)
     ax_r.plot(xs, ys2, color=C_TENSO_HOMO,   marker=MARKER_HOMO_RIGHT,
-              linestyle="--", label="Tensor Core - 1 group",   **kw_base, markersize=12)
+              linestyle="--", label="Tensor Core - 1 group",   **kw_base, markersize=15)
 
     ax_r.set_ylim(0, 105)
     ax_r.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
 
     _finish(fig, ax_l, ax_r,
             xlabel   = "Batch Size",
-            ylabel_l = "Throughput (toks/s)",
-            ylabel_r = "Tensor Core Util. (%)",
+            ylabel_l = "TP (toks/s)",
+            ylabel_r = "Tensor Util. (%)",
             outpath  = os.path.join(out_dir, "plot1_throughput_tensor_merged.png"),
         )
 
