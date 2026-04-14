@@ -240,20 +240,21 @@ def make_plot(metric_key, ylabel, title, outpath):
                 ys,
                 marker=marker,
                 linestyle=linestyle,
-                linewidth=2.2,
-                markersize=12,
+                linewidth=5,
+                markersize=15,
                 markeredgecolor="black",
                 markeredgewidth=0.7,
                 color=color,
                 label=label
             )
 
-    ax.set_xlabel("Input Workload (req/sec)", fontsize=30)
-    ax.set_ylabel(ylabel, fontsize=30)
+    ax.set_xlabel("Input Workload (req/s)", fontsize=35)
+    ax.set_ylabel(ylabel, fontsize=35)
 
-    ax.tick_params(axis="both", labelsize=25)
+    ax.tick_params(axis="both", labelsize=30)
 
-    ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
+    # convert 1000 to 1K, and if less than 1, then 2 decimal places, otherwise no decimals
+    ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: f"{x/1000:.1f}K" if x >= 1000 else (f"{x:.2f}" if x < 1 and x > 0.01 else f"{x:.0f}")))
 
     if metric_key == "throughput":
         handles, labels = ax.get_legend_handles_labels()
@@ -262,11 +263,12 @@ def make_plot(metric_key, ylabel, title, outpath):
         ax.legend(
             sorted_handles,
             sorted_labels,
-            fontsize=17,
-            framealpha=0.3,
+            fontsize=28,
+            framealpha=0.1,
             ncol=2,
+            columnspacing=0.1,
             loc="upper left",
-            bbox_to_anchor=(0.50, 0.89)
+            bbox_to_anchor=(0.35, 0.85)
         )
 
     ax.grid(True, linewidth=0.7, linestyle="--")
@@ -275,10 +277,10 @@ def make_plot(metric_key, ylabel, title, outpath):
     if metric_key == "throughput":
         ax.axvline(x=5, color='black', linestyle=':', linewidth=2)
         ax.annotate(
-            "Homogeneity starts here",
+            "Homogeneity\nstarts here",
             xy=(5, ax.get_ylim()[1] * 0.85),
             xytext=(9, ax.get_ylim()[1] * 0.85),
-            fontsize=18,
+            fontsize=28,
             color='black',
             arrowprops=dict(arrowstyle="->", color='black', lw=1.8),
             ha='left',
@@ -305,7 +307,7 @@ os.makedirs(OUT, exist_ok=True)
 
 make_plot(
     "throughput",
-    "Throughput (toks/s)",
+    "TP (toks/s)",
     "Throughput vs Request Rate",
     os.path.join(OUT, "throughput_vs_rps.png")
 )
