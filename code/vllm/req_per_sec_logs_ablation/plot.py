@@ -112,7 +112,7 @@ for path in log_files:
     if policy == "chunked_hash_tree_heuristic":
         continue
     if policy == "chunked_hash_tree":
-        policy = "Feather (without RL)"
+        policy = "Feather\n(without RL)"
     label = f"{engine}:{policy}"
 
     avg_batch, avg_diff, throughput = parse_log(path)
@@ -183,24 +183,24 @@ def make_plot(metric_key, ylabel, title, outpath):
                 ys,
                 marker=marker,
                 linestyle=linestyle,
-                linewidth=2.2,
-                markersize=12,
+                linewidth=7,
+                markersize=20,
                 markeredgecolor="black",
                 markeredgewidth=0.7,
                 color=color,
                 label=label
             )
 
-    ax.set_xlabel("Input Workload (req/sec)", fontsize=30)
-    ax.set_ylabel(ylabel, fontsize=30)
+    ax.set_xlabel("Input Workload (req/s)", fontsize=37)
+    ax.set_ylabel(ylabel, fontsize=37)
 
-    ax.tick_params(axis="both", labelsize=25)
+    ax.tick_params(axis="both", labelsize=32)
 
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
 
     if metric_key == "throughput":
         ax.legend(
-            fontsize=25,
+            fontsize=28,
             framealpha=0.3,
             ncol=1
         )
@@ -227,7 +227,7 @@ os.makedirs(OUT, exist_ok=True)
 
 make_plot(
     "throughput",
-    "Throughput (toks/s)",
+    "TP (toks/s)",
     "Throughput vs Request Rate",
     os.path.join(OUT, "throughput_vs_rps.png")
 )
