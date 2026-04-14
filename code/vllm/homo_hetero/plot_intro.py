@@ -88,9 +88,9 @@ for i, tok in enumerate(tokens):
 
 ax.set_xticks(x)
 ax.set_xticklabels(SETTINGS, fontsize=21)
-ax.set_yticklabels(ax.get_yticks(), fontsize=22)
-ax.set_ylabel("Throughput (toks/s)", fontsize=25)
-ax.set_xlabel("Batch Configuration", fontsize=25)
+ax.set_yticklabels(ax.get_yticks(), fontsize=25)
+ax.set_ylabel("TP (toks/s)", fontsize=35)
+ax.set_xlabel("Batch Configuration", fontsize=35)
 ax.yaxis.grid(True, linestyle="--", alpha=0.6)
 ax.set_axisbelow(True)
 ax.spines["top"].set_visible(False)
@@ -110,7 +110,7 @@ if arrow_bar is not None:
         "Total Execution Time",
         xy=(arrow_bar_x, label_y + ax.get_ylim()[1] * 0.04),  # tip of arrow: just above label
         xytext=(annotation_x, annotation_y),                   # text position
-        fontsize=20,
+        fontsize=22,
         color='black',
         ha='left', va='bottom',
         arrowprops=dict(
