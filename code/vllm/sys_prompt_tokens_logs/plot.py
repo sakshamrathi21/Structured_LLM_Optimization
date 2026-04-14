@@ -172,8 +172,8 @@ def make_plot(metric_key, ylabel, title, outpath):
             ys,
             marker=marker,
             linestyle=linestyle,
-            linewidth=2.2,
-            markersize=12,
+            linewidth=5,
+            markersize=15,
             markeredgecolor="black",
             markeredgewidth=0.7,
             color=color,
@@ -182,19 +182,22 @@ def make_plot(metric_key, ylabel, title, outpath):
 
     ax.set_xscale("log")
 
-    ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=25)
-    ax.set_ylabel(ylabel, fontsize=25)
+    ax.set_xlabel("Shared Prefix Tokens", fontsize=35)
+    ax.set_ylabel(ylabel, fontsize=35)
 
     ax.set_xticks(all_tokens)
     ax.set_xticklabels(all_tokens, rotation=30)
     # ax.get_xaxis().set_major_formatter(ticker.ScalarFormatter())
 
-    ax.tick_params(axis="both", labelsize=22)
+    ax.tick_params(axis="both", labelsize=27)
 
-    ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
+    # set 1000 to 1K
+    ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{x:.0f}" if x < 1000 else f"{x/1000:.1f}K"))
+
+    ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{x:.0f}" if x < 1000 else f"{x/1000:.1f}K"))
 
     if metric_key == "throughput":
-        ax.legend(fontsize=20, framealpha=0.3, ncol=2)
+        ax.legend(fontsize=21, framealpha=0.3, ncol=2, columnspacing=0.1)
 
     ax.grid(True, linewidth=0.7, linestyle="--")
 
@@ -218,7 +221,7 @@ os.makedirs(OUT, exist_ok=True)
 
 make_plot(
     "throughput",
-    "Throughput (toks/s)",
+    "TP (toks/s)",
     "Throughput vs Shared Prefix Tokens",
     os.path.join(OUT, "throughput_vs_sys_prompt_tokens.png")
 )
