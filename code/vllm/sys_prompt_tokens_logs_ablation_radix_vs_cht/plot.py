@@ -97,8 +97,8 @@ for path in log_files:
     if engine == "sglang":
         engine = "SGLang"
 
-    display_policy = "Feather" if policy == "chunked_hash_tree_heuristic" else "RadixTree"
-    label = f"{engine}:{display_policy}"
+    display_policy = "CHT" if policy == "chunked_hash_tree_heuristic" else "RadixTree"
+    label = f"{display_policy}"
 
     avg_batch, avg_diff, throughput = parse_log(path)
 
@@ -118,7 +118,7 @@ for path in log_files:
 # ── Bar chart styling ────────────────────────────────────────────────────────
 PALETTE = {
     "RadixTree": "#8338EC",
-    "Feather":   "#3A86FF",
+    "CHT":   "#3A86FF",
 }
 
 token_sets = [set(data[label].keys()) for label in data]
@@ -140,8 +140,7 @@ def make_bar_plot(metric_key, ylabel, outpath):
     x_centers = np.arange(n_groups) * group_width
 
     for i, label in enumerate(labels_sorted):
-        policy_name = label.split(":")[1]  # e.g. "RadixTree" or "Feather"
-        color = PALETTE.get(policy_name, "#888888")
+        color = PALETTE.get(label, "#888888")
 
         ys = []
         tbt_vals = []
@@ -173,24 +172,26 @@ def make_bar_plot(metric_key, ylabel, outpath):
                 ax.text(
                     bar.get_x() + bar.get_width() / 2,
                     bar.get_height() + ax.get_ylim()[1] * 0.01,
-                    f"{tbt:.3f}s",
+                    f"{tbt:.2f}s",
                     ha="center",
                     va="bottom",
-                    fontsize=18,
+                    fontsize=24,
                     color="black",
                 )
 
-    ax.set_xlabel("Number of Shared Prefix Tokens", fontsize=30)
-    ax.set_ylabel(ylabel, fontsize=30)
+    ax.set_xlabel("Shared Prefix Tokens", fontsize=32)
+    ax.set_ylabel(ylabel, fontsize=32)
     ax.set_xticks(x_centers)
-    ax.set_xticklabels([str(t) for t in all_tokens], rotation=30, fontsize=25)
-    ax.tick_params(axis="both", labelsize=25)
-    ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
+    ax.set_xticklabels([str(t) for t in all_tokens], rotation=0, fontsize=32)
+    ax.tick_params(axis="both", labelsize=32)
+    ax.yaxis.set_major_formatter(
+        ticker.FuncFormatter(lambda x, _: f"{x/1000:.1f}K" if x >= 1000 else f"{x:.2f}")
+    )
 
     # Build legend: bar colours + TBT annotation marker
     bar_handles = [
         plt.Rectangle((0, 0), 1, 1,
-                       color=PALETTE.get(lbl.split(":")[1], "#888888"),
+                       color=PALETTE.get(lbl, "#888888"),
                        edgecolor="black", linewidth=0.7,
                        label=lbl)
         for lbl in labels_sorted
@@ -210,17 +211,19 @@ def make_bar_plot(metric_key, ylabel, outpath):
         linewidth=0,
         marker=r"$\mathtt{s}$",
         markersize=12,
-        label="Bar top: Time Between Tokens (s)",
+        label="Bar top: TBT (s)",
     )
     ax.legend(
         handles=bar_handles + [tbt_proxy],
-        fontsize=17,
+        fontsize=32,
         framealpha=0.3,
-        ncol=3,  # or 3 depending on how many entries you have
-        columnspacing=0.6,   # horizontal spacing between columns
-        handletextpad=0.3,   # space between marker and text
-        labelspacing=0.3,    # vertical spacing between rows
-        borderpad=0.4        # padding inside the legend box
+        ncol=3,
+        columnspacing=0.6,
+        handletextpad=0.3,
+        labelspacing=0.3,
+        borderpad=0.4,
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.2),
     )
 
     ax.grid(True, axis="y", linewidth=0.7, linestyle="--", zorder=0)
@@ -241,8 +244,6 @@ os.makedirs(OUT, exist_ok=True)
 
 make_bar_plot(
     "throughput",
-    "Throughput (toks/s)",
+    "TP (toks/s)",
     os.path.join(OUT, "throughput_vs_sys_prompt_tokens_bar.png")
 )
-
-print("\nDone! Plots written to:", OUT)
