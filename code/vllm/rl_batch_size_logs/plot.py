@@ -90,17 +90,17 @@ for label, color, marker, ls, ts, bs, duration in all_series:
         label=label,
         color=color,
         linestyle=ls,
-        linewidth=1.8,
+        linewidth=5,
         marker=marker,
-        markersize=4,
+        markersize=5,
         markeredgecolor="black",
         markeredgewidth=0.4,
         alpha=0.85,
     )
 
-ax.set_xlabel("Time (s)", fontsize=26)
-ax.set_ylabel("Running Batch Size", fontsize=26)
-ax.tick_params(axis="both", labelsize=20)
+ax.set_xlabel("Time (s)", fontsize=35)
+ax.set_ylabel("Running Batch Size", fontsize=35)
+ax.tick_params(axis="both", labelsize=30)
 # ax.legend(fontsize=25, framealpha=0.35)
 ax.grid(True, linewidth=0.6, linestyle="--")
 ax.set_ylim(bottom=0)
