@@ -321,7 +321,7 @@ def main():
     # 1. Throughput
     plot_single(
         fracs, tps,
-        ylabel  = "Throughput (tok/s)",
+        ylabel  = "TP (tok/s)",
         outpath = os.path.join(OUT_DIR, "throughput_vs_fraction.png"),
     )
 
