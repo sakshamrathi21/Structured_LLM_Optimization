@@ -72,7 +72,7 @@ bars1 = ax1.bar(
     color="#1f77b4",
     alpha=0.85,
     hatch="//",
-    edgecolor="white"
+    edgecolor="black"
 )
 
 ax1.set_xlabel("Prefix Groups", fontsize=30)
@@ -91,7 +91,7 @@ bars2 = ax2.bar(
     color="#d62728",
     alpha=0.85,
     hatch="xx",
-    edgecolor="white"
+    edgecolor="black"
 )
 
 ax2.set_ylabel("Avg Batch Size", fontsize=30)
