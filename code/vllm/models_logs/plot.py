@@ -211,16 +211,19 @@ def make_bar_plot(metric_key, ylabel, title, outpath):
         )
 
     ax.set_xticks(x)
-    ax.set_xticklabels(models, rotation=25)
+    ax.set_xticklabels(models)
 
-    ax.set_xlabel("Model", fontsize=20)
-    ax.set_ylabel(ylabel, fontsize=20)
+    ax.set_xlabel("Model", fontsize=35)
+    ax.set_ylabel(ylabel, fontsize=35)
     if metric_key == "throughput":
-        ax.legend(fontsize=20)
-    ax.set_xticklabels(models, rotation=25, fontsize=20)
-    ax.tick_params(axis="y", labelsize=20)
+        ax.legend(fontsize=25)
+    ax.set_xticklabels(models, fontsize=25)
+    ax.tick_params(axis="y", labelsize=30)
 
     ax.grid(axis="y", linestyle="--", alpha=0.6)
+
+    # set y-axis from 1000 to 1K
+    ax.yaxis.set_major_formatter(lambda x, _: f"{int(x/1000)}K" if x >= 1000 else str(int(x)) if x > 1 else str(f"{x:2f}".rstrip("0").rstrip(".")) if x > 0 else "0")
 
     # ── Optional (clean paper-style plots) ──
     ax.set_axisbelow(True)
@@ -251,21 +254,21 @@ os.makedirs(OUT, exist_ok=True)
 
 make_bar_plot(
     "throughput",
-    "Throughput (toks/s)",
+    "TP (toks/s)",
     "Throughput Across Models",
     os.path.join(OUT, "throughput_model_bar.png"),
 )
 
 make_bar_plot(
     "avg_batch",
-    "Average Running Batch Size",
+    "Average Batch Size",
     "Average Batch Size Across Models",
     os.path.join(OUT, "avg_batch_model_bar.png"),
 )
 
 make_bar_plot(
     "avg_diff",
-    "Time Between Tokens (s)",
+    "TBT (s)",
     "Scheduler Token Time Across Models",
     os.path.join(OUT, "avg_timediff_model_bar.png"),
 )
