@@ -67,11 +67,11 @@ def draw_heatmap(mat, title, fmt, cmap, outfile):
     im = ax.imshow(mat, aspect="auto", cmap=cmap,
                    vmin=np.nanmin(mat), vmax=np.nanmax(mat))
     ax.set_xticks(range(len(f2s)))
-    ax.set_xticklabels(f2s, fontsize=18)
+    ax.set_xticklabels(f2s, fontsize=25)
     ax.set_yticks(range(len(f1s)))
-    ax.set_yticklabels(f1s, fontsize=18)
-    ax.set_xlabel("f2", fontsize=18)
-    ax.set_ylabel("f1", fontsize=18)
+    ax.set_yticklabels(f1s, fontsize=25)
+    ax.set_xlabel("f2", fontsize=30)
+    ax.set_ylabel("f1", fontsize=30)
 
     for i in range(mat.shape[0]):
         for j in range(mat.shape[1]):
@@ -80,9 +80,9 @@ def draw_heatmap(mat, title, fmt, cmap, outfile):
                 norm_v = (v - np.nanmin(mat)) / (np.nanmax(mat) - np.nanmin(mat) + 1e-9)
                 txt_color = "white" if norm_v > 0.55 else "black"
                 ax.text(j, i, fmt(v), ha="center", va="center",
-                        fontsize=15, color=txt_color, fontweight="500")
-
-    plt.colorbar(im, ax=ax, shrink=0.85)
+                        fontsize=20, color=txt_color, fontweight="500")
+    # change the fontsize in the colour bar
+    plt.colorbar(im, ax=ax, shrink=0.85, pad=0.02).ax.tick_params(labelsize=20)
     plt.tight_layout()
     plt.savefig(outfile, dpi=150, bbox_inches="tight")
     print(f"Saved to {outfile}")
