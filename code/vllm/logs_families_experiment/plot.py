@@ -75,26 +75,26 @@ bars1 = ax1.bar(
     edgecolor="white"
 )
 
-ax1.set_xlabel("Prefix Groups", fontsize=25)
-ax1.set_ylabel("TP (toks/s)", fontsize=25)
+ax1.set_xlabel("Prefix Groups", fontsize=30)
+ax1.set_ylabel("TP (toks/s)", fontsize=30)
 ax1.set_xticks(x)
 ax1.set_xticklabels([str(n) for n in family_counts])
 ax1.grid(axis="y", linestyle="--", alpha=0.5)
-ax1.tick_params(axis="x", labelsize=25)
+ax1.tick_params(axis="x", labelsize=30)
 # Right axis → Batch size bars
 ax2 = ax1.twinx()
 bars2 = ax2.bar(
     x + width / 2,
     batch_vals,
     width,
-    label="Average Batch Size",
+    label="Avg Batch Size",
     color="#d62728",
     alpha=0.85,
     hatch="xx",
     edgecolor="white"
 )
 
-ax2.set_ylabel("Average Batch Size", fontsize=25)
+ax2.set_ylabel("Avg Batch Size", fontsize=30)
 
 # ── Legend placed INSIDE the plot at upper right ──────────────────────────────
 handles = [bars1, bars2]
@@ -108,7 +108,8 @@ ax1.legend(
     ncol=2,
     frameon=True,
     framealpha=0.8,
-    fontsize=25,
+    fontsize=30,
+    columnspacing=0.1
 )
 
 # Leave space at the top for legend
