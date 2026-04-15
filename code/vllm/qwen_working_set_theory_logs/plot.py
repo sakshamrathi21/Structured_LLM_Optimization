@@ -83,11 +83,11 @@ def draw_heatmap(mat, title, fmt, cmap, outfile):
     im = ax.imshow(mat, aspect="auto", cmap=cmap,
                    vmin=np.nanmin(mat), vmax=np.nanmax(mat))
     ax.set_xticks(range(len(fams)))
-    ax.set_xticklabels(fams, fontsize=12)
+    ax.set_xticklabels(fams, fontsize=20)
     ax.set_yticks(range(len(toks)))
-    ax.set_yticklabels(toks, fontsize=12)
-    ax.set_xlabel("Number of prefix groups", fontsize=15)
-    ax.set_ylabel("Number of shared prefix tokens", fontsize=15)
+    ax.set_yticklabels(toks, fontsize=20)
+    ax.set_xlabel("Prefix groups", fontsize=25)
+    ax.set_ylabel("Shared prefix tokens", fontsize=25)
 
     for i in range(mat.shape[0]):
         for j in range(mat.shape[1]):
@@ -96,9 +96,9 @@ def draw_heatmap(mat, title, fmt, cmap, outfile):
                 norm_v = (v - np.nanmin(mat)) / (np.nanmax(mat) - np.nanmin(mat) + 1e-9)
                 txt_color = "white" if norm_v > 0.55 else "black"
                 ax.text(j, i, fmt(v), ha="center", va="center",
-                        fontsize=11, color=txt_color, fontweight="500")
+                        fontsize=17, color=txt_color, fontweight="500")
 
-    plt.colorbar(im, ax=ax, shrink=0.85)
+    plt.colorbar(im, ax=ax, shrink=0.85).ax.tick_params(labelsize=18)
     plt.tight_layout()
     plt.savefig(outfile, dpi=150, bbox_inches="tight")
     print(f"Saved to {outfile}")
@@ -110,8 +110,9 @@ draw_heatmap(tp_mat,
              cmap="YlGn",
              outfile=os.path.join(OUT_DIR, "vllm_heatmap_throughput.png"))
 
+# kv cache memory, greater than 1000 switch to G
 draw_heatmap(kv_mat,
              "KV cache memory (MB)",
-             lambda v: f"{(v*1024):.1f}M",
+             lambda v: f"{(v*1024):.0f}M" if v < 1 else f"{v:.1f}G",
              cmap="OrRd",
              outfile=os.path.join(OUT_DIR, "vllm_heatmap_kvcache.png"))
