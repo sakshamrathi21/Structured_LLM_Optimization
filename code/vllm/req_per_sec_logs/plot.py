@@ -268,7 +268,7 @@ def make_plot(metric_key, ylabel, title, outpath):
             ncol=2,
             columnspacing=0.1,
             loc="upper left",
-            bbox_to_anchor=(0.35, 0.85)
+            bbox_to_anchor=(0.35, 0.88)
         )
 
     ax.grid(True, linewidth=0.7, linestyle="--")
