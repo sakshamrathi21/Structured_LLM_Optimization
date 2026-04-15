@@ -220,9 +220,9 @@ def plot_dual_axis(
              color="tab:blue",  
              label="Mean")
 
-    ax1.set_xlabel("Fraction", fontsize=35)
-    ax1.set_ylabel(ylabel_left, fontsize=35)
-    ax1.tick_params(axis="both", labelsize=20)
+    ax1.set_xlabel("Fraction", fontsize=40)
+    ax1.set_ylabel(ylabel_left, fontsize=40)
+    ax1.tick_params(axis="both", labelsize=23)
     ax1.tick_params(axis="y", labelsize=25)
     ax1.set_xticks(xs)
     ax1.set_xticklabels([fmt(v) for v in frac_labels],
@@ -239,7 +239,7 @@ def plot_dual_axis(
              color="tab:red",
              label="Total")
 
-    ax2.set_ylabel(ylabel_right, fontsize=35)
+    ax2.set_ylabel(ylabel_right, fontsize=40)
     ax2.tick_params(axis="y", labelsize=25)
     ax2.set_ylim(0, 1.05)
 
@@ -247,7 +247,7 @@ def plot_dual_axis(
     lines_1, labels_1 = ax1.get_legend_handles_labels()
     lines_2, labels_2 = ax2.get_legend_handles_labels()
     ax1.legend(lines_1 + lines_2, labels_1 + labels_2,
-               loc="center", fontsize=30)
+               loc="center", fontsize=35)
 
     plt.tight_layout()
     fig.savefig(outpath, dpi=150, bbox_inches="tight")
@@ -289,10 +289,10 @@ def plot_single(
     ax.plot(xs, ys, marker=MARKER, linestyle="-", linewidth=LINEWIDTH,
             markersize=MARKERSIZE, markeredgecolor="black",
             markeredgewidth=0.8)
-    ax.set_xlabel("Fraction", fontsize=35)
-    ax.set_ylabel(ylabel, fontsize=35)
+    ax.set_xlabel("Fraction", fontsize=40)
+    ax.set_ylabel(ylabel, fontsize=40)
     ax.tick_params(axis="y", labelsize=25)
-    ax.tick_params(axis="x", labelsize=20)
+    ax.tick_params(axis="x", labelsize=23)
     ax.set_xticks(xs)
     ax.set_xticklabels([fmt(v) for v in frac_labels], rotation=40, ha="right")
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
