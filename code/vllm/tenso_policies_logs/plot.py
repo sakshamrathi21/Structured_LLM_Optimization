@@ -210,8 +210,8 @@ def plot_tenso_vs_rps(data: dict, out_dir: str):
 
     ax.legend(
         sorted_handles, sorted_labels,
-        fontsize=27, framealpha=0.3, ncol=3,
-        loc="upper left", columnspacing=0.2,
+        fontsize=29, framealpha=0.1, ncol=3,
+        loc="upper left", columnspacing=0.1,
     )
 
     ax.grid(True, linewidth=0.7, linestyle="--")
