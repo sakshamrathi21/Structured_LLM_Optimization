@@ -220,20 +220,20 @@ def make_plot(metric_key, ylabel, title, outpath):
                 ys,
                 marker=marker,
                 linestyle=linestyle,
-                linewidth=2.2,
-                markersize=12,
+                linewidth=5,
+                markersize=15,
                 markeredgecolor="black",
                 markeredgewidth=0.7,
                 color=color,
                 label=label
             )
 
-    ax.set_xlabel("Input Workload (req/sec)", fontsize=30)
-    ax.set_ylabel(ylabel, fontsize=30)
+    ax.set_xlabel("Input Workload (req/sec)", fontsize=35)
+    ax.set_ylabel(ylabel, fontsize=35)
 
-    ax.tick_params(axis="both", labelsize=25)
+    ax.tick_params(axis="both", labelsize=30)
 
-    ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
+    ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.1f'))
 
     if metric_key == "throughput":
         handles, labels = ax.get_legend_handles_labels()
@@ -242,7 +242,7 @@ def make_plot(metric_key, ylabel, title, outpath):
         ax.legend(
             sorted_handles,
             sorted_labels,
-            fontsize=20,
+            fontsize=30,
             framealpha=0.3,
             ncol=2,
         )
@@ -270,14 +270,14 @@ os.makedirs(OUT, exist_ok=True)
 
 make_plot(
     "throughput",
-    "Throughput (toks/s)",
+    "TP (toks/s)",
     "Throughput vs Request Rate",
     os.path.join(OUT, "throughput_vs_rps.png")
 )
 
 make_plot(
     "avg_batch",
-    "Avg Batch Size",
+    "Average Batch Size",
     "Average Batch Size vs Request Rate",
     os.path.join(OUT, "avg_batch_vs_rps.png")
 )
