@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "--include-feather-sglang",
     action="store_true",
-    default=False,
+    default=True,
     help="Inject hardcoded SGLang:Feather results into all plots"
 )
 args = parser.parse_args()
